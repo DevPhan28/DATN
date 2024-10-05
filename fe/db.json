@@ -1,0 +1,307 @@
+{
+  "books": [
+    {
+      "id": 1,
+      "nameBook": "The Great Gatsby by F. Scott Fitzgerald",
+      "author": "F. Scott Fitzgerald",
+      "category": 1,
+      "description": "A novel set in the Roaring Twenties."
+    },
+    {
+      "id": 2,
+      "nameBook": "To Kill a Mockingbird by Harper Lee",
+      "author": "Harper Lee",
+      "category": 1,
+      "description": "A novel about racial injustice in the Deep South."
+    },
+    {
+      "id": 3,
+      "nameBook": "1984 by George Orwell",
+      "author": "George Orwell",
+      "category": 2,
+      "description": "A dystopian novel about totalitarianism."
+    },
+    {
+      "id": 4,
+      "nameBook": "Pride and Prejudice by Jane Austen",
+      "author": "Jane Austen",
+      "category": 1,
+      "description": "A classic novel about love and social class."
+    },
+    {
+      "id": 5,
+      "nameBook": "The Catcher in the Rye by J.D. Salinger",
+      "author": "J.D. Salinger",
+      "category": 1,
+      "description": "A novel about teenage angst and alienation."
+    },
+    {
+      "id": 6,
+      "nameBook": "Moby-Dick by Herman Melville",
+      "author": "Herman Melville",
+      "category": 1,
+      "description": "A novel about the obsession with hunting a giant whale."
+    },
+    {
+      "id": 7,
+      "nameBook": "War and Peace by Leo Tolstoy",
+      "author": "Leo Tolstoy",
+      "category": 1,
+      "description": "A historical novel about Napoleon's invasion of Russia."
+    },
+    {
+      "id": 8,
+      "nameBook": "The Odyssey by Homer",
+      "author": "Homer",
+      "category": 1,
+      "description": "An epic poem about Odysseus' journey home from the Trojan War."
+    },
+    {
+      "id": 9,
+      "nameBook": "Crime and Punishment by Fyodor Dostoevsky",
+      "author": "Fyodor Dostoevsky",
+      "category": 1,
+      "description": "A novel about a man's moral struggle after committing a crime."
+    },
+    {
+      "id": 10,
+      "nameBook": "The Brothers Karamazov by Fyodor Dostoevsky",
+      "author": "Fyodor Dostoevsky",
+      "category": 1,
+      "description": "A philosophical novel exploring faith, doubt, and reason."
+    },
+    {
+      "id": 11,
+      "nameBook": "Jane Eyre by Charlotte Brontë",
+      "author": "Charlotte Brontë",
+      "category": 1,
+      "description": "A novel about the struggles of an orphaned girl."
+    },
+    {
+      "id": 12,
+      "nameBook": "The Hobbit by J.R.R. Tolkien",
+      "author": "J.R.R. Tolkien",
+      "category": 3,
+      "description": "A fantasy novel about a hobbit's adventure."
+    },
+    {
+      "id": 13,
+      "nameBook": "Brave New World by Aldous Huxley",
+      "author": "Aldous Huxley",
+      "category": 2,
+      "description": "A dystopian novel about a technologically advanced society."
+    },
+    {
+      "id": 14,
+      "nameBook": "One Hundred Years of Solitude by Gabriel García Márquez",
+      "author": "Gabriel García Márquez",
+      "category": 4,
+      "description": "A novel about the Buendía family in the fictional town of Macondo."
+    },
+    {
+      "id": 15,
+      "nameBook": "The Divine Comedy by Dante Alighieri",
+      "author": "Dante Alighieri",
+      "category": 1,
+      "description": "An epic poem about the journey through Hell, Purgatory, and Paradise."
+    },
+    {
+      "id": 16,
+      "nameBook": "The Da Vinci Code by Dan Brown",
+      "author": "Dan Brown",
+      "category": 5,
+      "description": "A thriller about a conspiracy hidden in art and religion."
+    },
+    {
+      "id": 17,
+      "nameBook": "The Shining by Stephen King",
+      "author": "Stephen King",
+      "category": 6,
+      "description": "A horror novel about a family trapped in a haunted hotel."
+    },
+    {
+      "id": 18,
+      "nameBook": "Les Misérables by Victor Hugo",
+      "author": "Victor Hugo",
+      "category": 1,
+      "description": "A novel about the struggles of ex-convict Jean Valjean."
+    },
+    {
+      "id": 19,
+      "nameBook": "The Catch-22 by Joseph Heller",
+      "author": "Joseph Heller",
+      "category": 7,
+      "description": "A satirical novel about the absurdities of war."
+    },
+    {
+      "id": 20,
+      "nameBook": "The Chronicles of Narnia by C.S. Lewis",
+      "author": "C.S. Lewis",
+      "category": 3,
+      "description": "A series of fantasy novels about the magical land of Narnia."
+    },
+    {
+      "id": 21,
+      "nameBook": "Catch-22 by Joseph Heller",
+      "author": "Joseph Heller",
+      "category": 7,
+      "description": "A satirical novel about the absurdity of war."
+    },
+    {
+      "id": 22,
+      "nameBook": "The Road by Cormac McCarthy",
+      "author": "Cormac McCarthy",
+      "category": 2,
+      "description": "A post-apocalyptic novel about a father and son's journey."
+    },
+    {
+      "id": 23,
+      "nameBook": "Gone with the Wind by Margaret Mitchell",
+      "author": "Margaret Mitchell",
+      "category": 8,
+      "description": "A historical novel set during the American Civil War."
+    },
+    {
+      "id": 24,
+      "nameBook": "The Secret Garden by Frances Hodgson Burnett",
+      "author": "Frances Hodgson Burnett",
+      "category": 9,
+      "description": "A children's novel about a hidden garden and its transformation."
+    },
+    {
+      "id": 25,
+      "nameBook": "The Old Man and the Sea by Ernest Hemingway",
+      "author": "Ernest Hemingway",
+      "category": 1,
+      "description": "A novella about an old fisherman's struggle with a giant marlin."
+    },
+    {
+      "id": 26,
+      "nameBook": "A Tale of Two Cities by Charles Dickens",
+      "author": "Charles Dickens",
+      "category": 1,
+      "description": "A historical novel set during the French Revolution."
+    },
+    {
+      "id": 27,
+      "nameBook": "Fahrenheit 451 by Ray Bradbury",
+      "author": "Ray Bradbury",
+      "category": 2,
+      "description": "A dystopian novel about a future where books are banned."
+    },
+    {
+      "id": 28,
+      "nameBook": "The Bell Jar by Sylvia Plath",
+      "author": "Sylvia Plath",
+      "category": 10,
+      "description": "A novel about a young woman's struggle with mental illness."
+    },
+    {
+      "id": 29,
+      "nameBook": "Dracula by Bram Stoker",
+      "author": "Bram Stoker",
+      "category": 6,
+      "description": "A gothic horror novel about the vampire Count Dracula."
+    },
+    {
+      "id": 30,
+      "nameBook": "The Picture of Dorian Gray by Oscar Wilde",
+      "author": "Oscar Wilde",
+      "category": 1,
+      "description": "A novel about a man who remains youthful while his portrait ages."
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "nameCate": "Classic"
+    },
+    {
+      "id": 2,
+      "nameCate": "Dystopian"
+    },
+    {
+      "id": 3,
+      "nameCate": "Fantasy"
+    },
+    {
+      "id": 4,
+      "nameCate": "Magical Realism"
+    },
+    {
+      "id": 5,
+      "nameCate": "Thriller"
+    },
+    {
+      "id": 6,
+      "nameCate": "Horror"
+    },
+    {
+      "id": 7,
+      "nameCate": "Satire"
+    },
+    {
+      "id": 8,
+      "nameCate": "Historical Fiction"
+    },
+    {
+      "id": 9,
+      "nameCate": "Children's Literature"
+    },
+    {
+      "id": 10,
+      "nameCate": "Literary Fiction"
+    }
+  ],
+  "users": [
+    {
+      "email": "admin@gmail.com",
+      "password": "$2a$10$qxZQgm5b65jVEbxMepqVE.99WNDKeT/6Bmy6BlXQBCGW7XlzzGUoG",
+      "comfirmPassword": "123456",
+      "role": "admin",
+      "id": 1
+    },
+    {
+      "email": "tuan@gmail.com",
+      "password": "$2a$10$DXC06.hJNmgfvHbO6rQWzOEqsE0l.plG7A8iG8Kun4IJNS/TUHo46",
+      "comfirmPassword": "123456",
+      "role": "user",
+      "id": 2
+    },
+    {
+      "email": "tuan105@gmail.com",
+      "password": "$2a$10$lp1XxRy5AAkkNVbualCy0Omi.2kltKywxNa1IJvAZf1WqYTsJJbem",
+      "comfirmPassword": "tuan@gmail.com",
+      "role": "user",
+      "id": 3
+    },
+    {
+      "email": "tuan1@gmail.com",
+      "password": "$2a$10$mPVtPxchNT8SIJW2B95NUOQz/vvRDTaElkqSrVmEaL5SSjS63K3qa",
+      "comfirmPassword": "tuan@gmail.com",
+      "role": "user",
+      "id": 4
+    },
+    {
+      "email": "tuan10@gmail.com",
+      "password": "$2a$10$FAM8nrMVo6wQ7tOT6BhkrOjihKBHz4FOopzcv1UFVTnBDNoLaX.i6",
+      "comfirmPassword": "tuan@gmail.com",
+      "role": "user",
+      "id": 5
+    },
+    {
+      "email": "kieuvanthai@gmail.com",
+      "password": "$2a$10$gJglUBUmgYr9TraerxnaxeCxqRHR1EaUlEu2.mir4qyIF2Mt6QdrO",
+      "comfirmPassword": "kieuvanthai@gmail.com",
+      "role": "user",
+      "id": 6
+    },
+    {
+      "email": "anhntph35568@fpt.edu.vn",
+      "password": "$2a$10$xjJO.dPeGufxDlbyPVBCyeBU4SaVCFKCV6T2NifXGp.5Yv7O13nvC",
+      "comfirmPassword": "anhntph35568@fpt.edu.vn",
+      "role": "user",
+      "id": 7
+    }
+  ]
+}
