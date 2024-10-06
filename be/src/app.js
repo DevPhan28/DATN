@@ -7,6 +7,7 @@ import orderRouter from "./routers/order";
 import cartRouter from "./routers/cart";
 import categoryRouter from "./routers/category";
 import productRouter from "./routers/product";
+import authRouter from "./routers/auth.router";
 
 const app = express();
 // middleware
@@ -19,7 +20,7 @@ app.use(morgan("dev"));
 connectDB(process.env.DB_URI);
 // routes
 app.use("/api", productRouter);
-// app.use("/api", authRouter);
+app.use("/api", authRouter);
 app.use("/api", categoryRouter);
 app.use("/api", cartRouter);
 app.use("/api", orderRouter);

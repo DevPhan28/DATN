@@ -12,7 +12,7 @@ router.get(`/categorys`, getCategorys);
 
 router.get(`/categorys/:id`, getCategoryById);
 
-router.post(`/.`, addCategory);
+router.post(`/categorys`, addCategory);
 
 router.put(`/categorys/:id`, updateCategory);
 
