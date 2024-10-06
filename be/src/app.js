@@ -6,6 +6,8 @@ import { connectDB } from "./config/db";
 import orderRouter from "./routers/order";
 import cartRouter from "./routers/cart";
 import categoryRouter from "./routers/category";
+import productRouter from "./routers/product";
+
 const app = express();
 // middleware
 dotenv.config();
@@ -16,7 +18,7 @@ app.use(morgan("dev"));
 // connect db
 connectDB(process.env.DB_URI);
 // routes
-// app.use("/api", productRouter);
+app.use("/api", productRouter);
 // app.use("/api", authRouter);
 app.use("/api", categoryRouter);
 app.use("/api", cartRouter);
