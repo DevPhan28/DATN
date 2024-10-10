@@ -9,7 +9,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 // Create a new router instance
 export const router = createRouter({ routeTree });
 // Create a new query instance
-const query = new QueryClient();
+export const queryClient = new QueryClient()
 
 // Register the router instance for type safety
 declare module '@tanstack/react-router' {
@@ -25,7 +25,7 @@ if (!rootElement.innerHTML) {
   document.documentElement.classList.remove('dark');
   root.render(
     <StrictMode>
-      <QueryClientProvider client={query}>
+      <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
       </QueryClientProvider>
     </StrictMode>
