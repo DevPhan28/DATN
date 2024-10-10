@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+// Định nghĩa schema cho Variant
 const variantSchema = new mongoose.Schema({
   size: {
     type: String,
@@ -26,7 +27,7 @@ const variantSchema = new mongoose.Schema({
   },
 });
 
-
+// Định nghĩa schema cho Product
 const productSchema = new mongoose.Schema(
   {
     name: {
@@ -37,12 +38,13 @@ const productSchema = new mongoose.Schema(
     slug: {
       type: String,
       unique: true,
+      lowercase: true, // Thêm lowercase để đảm bảo slug đồng nhất
     },
     category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-      required: true,
-    },
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category",
+        required: true,
+      },
     price: {
       type: Number,
       required: true,
@@ -52,7 +54,7 @@ const productSchema = new mongoose.Schema(
       type: String,
     },
     gallery: {
-      type: Array,
+      type: [String], // Chỉ định rõ kiểu dữ liệu cho mảng
     },
     description: {
       type: String,
@@ -70,11 +72,12 @@ const productSchema = new mongoose.Schema(
       default: false,
     },
     tags: {
-      type: Array,
+      type: [String], // Chỉ định rõ kiểu dữ liệu cho mảng
     },
     variants: [variantSchema],
   },
-  { timestamps: true, versionKey: false }
+  { timestamps: true, versionKey: false } // Tự động thêm thời gian tạo và cập nhật
 );
 
+// Xuất mô hình Product
 export default mongoose.model("Product", productSchema);
