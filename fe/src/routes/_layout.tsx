@@ -7,7 +7,7 @@ export const Route = createFileRoute('/_layout')({
   component: () => (
     <div>
       <Header />
-      <CardProduct/>
+      {/* <CardProduct/> */}
       <Outlet />
       <Footer />
     </div>
