@@ -1,22 +1,20 @@
-import Category from "../models/category";
-import Product from "../models/product";
-import slugify from "slugify";
+const Category = require("../models/category");
+const Product = require("../models/product");
+const slugify = require("slugify");
 
-export const getCategorys = async (req, res) => {
+const getCategorys = async (req, res) => {
   try {
     const categories = await Category.find({});
-    if (categories.length < 0) {
-      return res.status(404).json({ message: "Không có danh mục nào" });
+    if (categories.length === 0) {
+      return res.status(200).json([]);
     }
-    return res.status(201).json({
-      categories,
-    });
+    return res.status(200).json(categories);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-export const getCategoryById = async (req, res) => {
+const getCategoryById = async (req, res) => {
   try {
     const products = await Product.find({ category: req.params.id });
     const categories = await Category.findById(req.params.id);
@@ -32,7 +30,7 @@ export const getCategoryById = async (req, res) => {
   }
 };
 
-export const addCategory = async (req, res) => {
+const addCategory = async (req, res) => {
   try {
     const categories = await Category.create({
       name: req.body.name,
@@ -47,7 +45,7 @@ export const addCategory = async (req, res) => {
   }
 };
 
-export const deleteCategory = async (req, res) => {
+const deleteCategory = async (req, res) => {
   try {
     const categories = await Category.findByIdAndDelete(req.params.id);
     if (categories.length < 0) {
@@ -61,7 +59,7 @@ export const deleteCategory = async (req, res) => {
   }
 };
 
-export const updateCategory = async (req, res) => {
+const updateCategory = async (req, res) => {
   try {
     const categories = await Category.findByIdAndUpdate(
       req.params.id,
@@ -80,4 +78,12 @@ export const updateCategory = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+};
+
+module.exports = {
+  getCategorys,
+  getCategoryById,
+  addCategory,
+  deleteCategory,
+  updateCategory,
 };
