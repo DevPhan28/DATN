@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 // Định nghĩa schema cho Variant
 const variantSchema = new mongoose.Schema({
@@ -41,10 +41,10 @@ const productSchema = new mongoose.Schema(
       lowercase: true, // Thêm lowercase để đảm bảo slug đồng nhất
     },
     category: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Category",
-        required: true,
-      },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
     price: {
       type: Number,
       required: true,
@@ -80,4 +80,4 @@ const productSchema = new mongoose.Schema(
 );
 
 // Xuất mô hình Product
-export default mongoose.model("Product", productSchema);
+module.exports = mongoose.model("Product", productSchema);
