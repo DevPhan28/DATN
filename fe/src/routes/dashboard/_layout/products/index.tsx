@@ -1,7 +1,9 @@
+// Đoạn mã này không thay đổi, giữ nguyên các import
 import Header from '@/components/layoutAdmin/header/header';
 import { useFetchProducts } from '@/data/products/useProductList';
+import useProductMutation from '@/data/products/useProductMutation';
 import { Adjustments, ArrowUpTray, Plus, EllipsisVertical } from '@medusajs/icons';
-import { Button, DropdownMenu, Input, Table } from '@medusajs/ui';
+import { Button, DropdownMenu, Input, Prompt, Table } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 
@@ -14,14 +16,12 @@ export const Route = createFileRoute('/dashboard/_layout/products/')({
 function ProductList() {
   const [currentPage, setCurrentPage] = useState(0);
   const navigate = useNavigate();
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 
   const { data: listproduct, error, isLoading } = useFetchProducts({
     limit: pageSize,
-    page: currentPage + 1, // Bắt đầu từ 1 cho page
+    page: currentPage + 1,
   });
-
-  // Ghi log để kiểm tra dữ liệu
-  console.log(listproduct);
 
   const pageCount = useMemo(() => {
     return listproduct?.meta ? Math.ceil(listproduct.meta.totalItems / pageSize) : 0;
@@ -36,6 +36,8 @@ function ProductList() {
     }
   };
 
+  const { deleteProduct } = useProductMutation();
+
   const previousPage = () => {
     if (canPreviousPage) {
       setCurrentPage((prev) => prev - 1);
@@ -43,8 +45,34 @@ function ProductList() {
   };
 
   const currentProducts = useMemo(() => {
-    return listproduct?.data ?? [];
+    return listproduct?.data?.map(product => ({
+      ...product,
+      totalCountInStock: product.countInStock !== undefined
+        ? product.countInStock
+        : product.variants?.reduce((total, variant) => total + (variant.countInStock || 0), 0) || 0
+    })) ?? [];
   }, [listproduct]);
+
+  const handleDelete = () => {
+    if (selectedProductId) {
+      deleteProduct.mutate(selectedProductId, {
+        onSuccess: () => {
+          closeDeletePrompt(); // Đóng hộp thoại xác nhận
+        },
+        onError: (error) => {
+          console.error('Error deleting product:', error);
+        }
+      });
+    }
+  };
+
+  const openDeletePrompt = (_id: string) => {
+    setSelectedProductId(_id);
+  };
+
+  const closeDeletePrompt = () => {
+    setSelectedProductId(null);
+  };
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -73,7 +101,7 @@ function ProductList() {
           </Button>
           <Button variant="primary" onClick={() => navigate({ to: "/dashboard/products/create" })}>
             <Plus />
-            Create Category
+            Create Product
           </Button>
         </div>
       </div>
@@ -84,9 +112,9 @@ function ProductList() {
             <Table.HeaderCell className="font-semibold text-ui-fg-base"></Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">Product Name</Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">Image</Table.HeaderCell>
-            <Table.HeaderCell className="font-semibold text-ui-fg-base">Price</Table.HeaderCell>
+            <Table.HeaderCell className="font-semibold text-ui-fg-base">Price ($)</Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">Category</Table.HeaderCell>
-            <Table.HeaderCell className="font-semibold text-ui-fg-base">Discount</Table.HeaderCell>
+            <Table.HeaderCell className="font-semibold text-ui-fg-base">Discount (%)</Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">Count In Stock</Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">Description</Table.HeaderCell>
           </Table.Row>
@@ -109,9 +137,34 @@ function ProductList() {
                           View Details
                         </DropdownMenu.Item>
                         <DropdownMenu.Item className="gap-x-2">
-                          Delete
+                          <Prompt>
+                            <Prompt.Trigger asChild>
+                              <Button
+                                variant="secondary"
+                                onClick={() => openDeletePrompt(product._id)}
+                              >
+                                Delete
+                              </Button>
+                            </Prompt.Trigger>
+                            <Prompt.Content>
+                              <Prompt.Header>
+                                <Prompt.Title>Delete Product</Prompt.Title>
+                                <Prompt.Description>
+                                  Are you sure you want to delete this product? This action cannot be undone.
+                                </Prompt.Description>
+                              </Prompt.Header>
+                              <Prompt.Footer>
+                                <Prompt.Cancel onClick={closeDeletePrompt}>
+                                  Cancel
+                                </Prompt.Cancel>
+                                <Prompt.Action onClick={handleDelete}>
+                                  Delete
+                                </Prompt.Action>
+                              </Prompt.Footer>
+                            </Prompt.Content>
+                          </Prompt>
                         </DropdownMenu.Item>
-                        <DropdownMenu.Item className="gap-x-2">
+                        <DropdownMenu.Item className="gap-x-2" onClick={() => void navigate({ to: `/dashboard/products/${product._id}/edit` })}>
                           Edit
                         </DropdownMenu.Item>
                       </DropdownMenu.Content>
@@ -122,15 +175,15 @@ function ProductList() {
                     {product.image && (
                       <img
                         src={product.image}
-                        alt="product"
-                        className="h-10 w-8 object-contain"
+                        alt={product.name}
+                        className="h-10 w-9 object-contain rounded-lg"
                       />
                     )}
                   </Table.Cell>
-                  <Table.Cell className="font-semibold text-ui-fg-base">{product.price}</Table.Cell>
+                  <Table.Cell className="font-semibold text-ui-fg-base">{product.price.toFixed(2)}</Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">{product.category?.name}</Table.Cell>
-                  <Table.Cell className="font-semibold text-ui-fg-base">giảm {product.discount} %</Table.Cell>
-                  <Table.Cell className="font-semibold text-ui-fg-base">{product.countInStock} items</Table.Cell>
+                  <Table.Cell className="font-semibold text-ui-fg-base">{product.discount} %</Table.Cell>
+                  <Table.Cell className="font-semibold text-ui-fg-base">{product.totalCountInStock} items</Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">{product.description}</Table.Cell>
                 </Table.Row>
               ))

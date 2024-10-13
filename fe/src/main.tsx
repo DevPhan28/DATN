@@ -6,6 +6,7 @@ import './index.css';
 import { routeTree } from './routeTree.gen';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
+
 // Create a new router instance
 export const router = createRouter({ routeTree });
 // Create a new query instance
@@ -22,7 +23,7 @@ declare module '@tanstack/react-router' {
 const rootElement = document.getElementById('root')!;
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
-  document.documentElement.classList.remove('dark');
+  document.documentElement.classList.remove('light');
   root.render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>

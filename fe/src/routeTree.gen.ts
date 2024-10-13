@@ -24,6 +24,7 @@ import { Route as LayoutAboutImport } from './routes/_layout/about'
 import { Route as DashboardLayoutIndexImport } from './routes/dashboard/_layout/index'
 import { Route as DashboardLayoutProductsIndexImport } from './routes/dashboard/_layout/products/index'
 import { Route as DashboardLayoutProductsCreateImport } from './routes/dashboard/_layout/products/create'
+import { Route as DashboardLayoutProductsIdEditImport } from './routes/dashboard/_layout/products/$id.edit'
 
 // Create Virtual Routes
 
@@ -90,6 +91,12 @@ const DashboardLayoutProductsIndexRoute =
 const DashboardLayoutProductsCreateRoute =
   DashboardLayoutProductsCreateImport.update({
     path: '/products/create',
+    getParentRoute: () => DashboardLayoutRoute,
+  } as any)
+
+const DashboardLayoutProductsIdEditRoute =
+  DashboardLayoutProductsIdEditImport.update({
+    path: '/products/$id/edit',
     getParentRoute: () => DashboardLayoutRoute,
   } as any)
 
@@ -181,6 +188,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLayoutProductsIndexImport
       parentRoute: typeof DashboardLayoutImport
     }
+    '/dashboard/_layout/products/$id/edit': {
+      id: '/dashboard/_layout/products/$id/edit'
+      path: '/products/$id/edit'
+      fullPath: '/dashboard/products/$id/edit'
+      preLoaderRoute: typeof DashboardLayoutProductsIdEditImport
+      parentRoute: typeof DashboardLayoutImport
+    }
   }
 }
 
@@ -205,12 +219,14 @@ interface DashboardLayoutRouteChildren {
   DashboardLayoutIndexRoute: typeof DashboardLayoutIndexRoute
   DashboardLayoutProductsCreateRoute: typeof DashboardLayoutProductsCreateRoute
   DashboardLayoutProductsIndexRoute: typeof DashboardLayoutProductsIndexRoute
+  DashboardLayoutProductsIdEditRoute: typeof DashboardLayoutProductsIdEditRoute
 }
 
 const DashboardLayoutRouteChildren: DashboardLayoutRouteChildren = {
   DashboardLayoutIndexRoute: DashboardLayoutIndexRoute,
   DashboardLayoutProductsCreateRoute: DashboardLayoutProductsCreateRoute,
   DashboardLayoutProductsIndexRoute: DashboardLayoutProductsIndexRoute,
+  DashboardLayoutProductsIdEditRoute: DashboardLayoutProductsIdEditRoute,
 }
 
 const DashboardLayoutRouteWithChildren = DashboardLayoutRoute._addFileChildren(
@@ -243,6 +259,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardLayoutIndexRoute
   '/dashboard/products/create': typeof DashboardLayoutProductsCreateRoute
   '/dashboard/products': typeof DashboardLayoutProductsIndexRoute
+  '/dashboard/products/$id/edit': typeof DashboardLayoutProductsIdEditRoute
 }
 
 export interface FileRoutesByTo {
@@ -255,6 +272,7 @@ export interface FileRoutesByTo {
   '/': typeof LayoutIndexRoute
   '/dashboard/products/create': typeof DashboardLayoutProductsCreateRoute
   '/dashboard/products': typeof DashboardLayoutProductsIndexRoute
+  '/dashboard/products/$id/edit': typeof DashboardLayoutProductsIdEditRoute
 }
 
 export interface FileRoutesById {
@@ -271,6 +289,7 @@ export interface FileRoutesById {
   '/dashboard/_layout/': typeof DashboardLayoutIndexRoute
   '/dashboard/_layout/products/create': typeof DashboardLayoutProductsCreateRoute
   '/dashboard/_layout/products/': typeof DashboardLayoutProductsIndexRoute
+  '/dashboard/_layout/products/$id/edit': typeof DashboardLayoutProductsIdEditRoute
 }
 
 export interface FileRouteTypes {
@@ -287,6 +306,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/dashboard/products/create'
     | '/dashboard/products'
+    | '/dashboard/products/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -298,6 +318,7 @@ export interface FileRouteTypes {
     | '/'
     | '/dashboard/products/create'
     | '/dashboard/products'
+    | '/dashboard/products/$id/edit'
   id:
     | '__root__'
     | '/_layout'
@@ -312,6 +333,7 @@ export interface FileRouteTypes {
     | '/dashboard/_layout/'
     | '/dashboard/_layout/products/create'
     | '/dashboard/_layout/products/'
+    | '/dashboard/_layout/products/$id/edit'
   fileRoutesById: FileRoutesById
 }
 
@@ -382,7 +404,8 @@ export const routeTree = rootRoute
       "children": [
         "/dashboard/_layout/",
         "/dashboard/_layout/products/create",
-        "/dashboard/_layout/products/"
+        "/dashboard/_layout/products/",
+        "/dashboard/_layout/products/$id/edit"
       ]
     },
     "/dashboard/settting": {
@@ -403,6 +426,10 @@ export const routeTree = rootRoute
     },
     "/dashboard/_layout/products/": {
       "filePath": "dashboard/_layout/products/index.tsx",
+      "parent": "/dashboard/_layout"
+    },
+    "/dashboard/_layout/products/$id/edit": {
+      "filePath": "dashboard/_layout/products/$id.edit.tsx",
       "parent": "/dashboard/_layout"
     }
   }
