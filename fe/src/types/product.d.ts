@@ -27,10 +27,23 @@ type Product = {
 };
 
 type ProductParams = {
+<<<<<<< Updated upstream
   keyWord?: string;
   page: number;
   limit: number;
 };
+=======
+    keyWord?: string
+    page: number
+    limit: number
+  }
+  interface CategoryParams {
+    name?: string;
+    parentCategoryId?: string;
+    sort?: string;
+}
+
+>>>>>>> Stashed changes
 type MetaData = {
   totalItems: number;
 };

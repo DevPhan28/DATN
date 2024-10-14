@@ -34,7 +34,7 @@ const addCategory = async (req, res) => {
   try {
     const categories = await Category.create({
       name: req.body.name,
-      slug: slugify(req.body.name, "_"),
+     
     });
     return res.status(201).json({
       messages: "Tạo danh mục thành công",
