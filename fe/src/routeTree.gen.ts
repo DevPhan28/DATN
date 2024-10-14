@@ -25,12 +25,9 @@ import { Route as DashboardLayoutIndexImport } from './routes/dashboard/_layout/
 import { Route as DashboardLayoutProductsIndexImport } from './routes/dashboard/_layout/products/index'
 import { Route as DashboardLayoutCategoryIndexImport } from './routes/dashboard/_layout/category/index'
 import { Route as DashboardLayoutProductsCreateImport } from './routes/dashboard/_layout/products/create'
-<<<<<<< Updated upstream
-import { Route as DashboardLayoutProductsIdEditImport } from './routes/dashboard/_layout/products/$id.edit'
-=======
 import { Route as DashboardLayoutCategoryCreateImport } from './routes/dashboard/_layout/category/create'
+import { Route as DashboardLayoutProductsIdEditImport } from './routes/dashboard/_layout/products/$id.edit'
 import { Route as DashboardLayoutCategoryIdEditImport } from './routes/dashboard/_layout/category/$id.edit'
->>>>>>> Stashed changes
 
 // Create Virtual Routes
 
@@ -106,21 +103,21 @@ const DashboardLayoutProductsCreateRoute =
     getParentRoute: () => DashboardLayoutRoute,
   } as any)
 
-<<<<<<< Updated upstream
-const DashboardLayoutProductsIdEditRoute =
-  DashboardLayoutProductsIdEditImport.update({
-    path: '/products/$id/edit',
-=======
 const DashboardLayoutCategoryCreateRoute =
   DashboardLayoutCategoryCreateImport.update({
     path: '/category/create',
     getParentRoute: () => DashboardLayoutRoute,
   } as any)
 
+const DashboardLayoutProductsIdEditRoute =
+  DashboardLayoutProductsIdEditImport.update({
+    path: '/products/$id/edit',
+    getParentRoute: () => DashboardLayoutRoute,
+  } as any)
+
 const DashboardLayoutCategoryIdEditRoute =
   DashboardLayoutCategoryIdEditImport.update({
     path: '/category/$id/edit',
->>>>>>> Stashed changes
     getParentRoute: () => DashboardLayoutRoute,
   } as any)
 
@@ -226,19 +223,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLayoutProductsIndexImport
       parentRoute: typeof DashboardLayoutImport
     }
-<<<<<<< Updated upstream
-    '/dashboard/_layout/products/$id/edit': {
-      id: '/dashboard/_layout/products/$id/edit'
-      path: '/products/$id/edit'
-      fullPath: '/dashboard/products/$id/edit'
-      preLoaderRoute: typeof DashboardLayoutProductsIdEditImport
-=======
     '/dashboard/_layout/category/$id/edit': {
       id: '/dashboard/_layout/category/$id/edit'
       path: '/category/$id/edit'
       fullPath: '/dashboard/category/$id/edit'
       preLoaderRoute: typeof DashboardLayoutCategoryIdEditImport
->>>>>>> Stashed changes
+      parentRoute: typeof DashboardLayoutImport
+    }
+    '/dashboard/_layout/products/$id/edit': {
+      id: '/dashboard/_layout/products/$id/edit'
+      path: '/products/$id/edit'
+      fullPath: '/dashboard/products/$id/edit'
+      preLoaderRoute: typeof DashboardLayoutProductsIdEditImport
       parentRoute: typeof DashboardLayoutImport
     }
   }
@@ -267,11 +263,8 @@ interface DashboardLayoutRouteChildren {
   DashboardLayoutProductsCreateRoute: typeof DashboardLayoutProductsCreateRoute
   DashboardLayoutCategoryIndexRoute: typeof DashboardLayoutCategoryIndexRoute
   DashboardLayoutProductsIndexRoute: typeof DashboardLayoutProductsIndexRoute
-<<<<<<< Updated upstream
-  DashboardLayoutProductsIdEditRoute: typeof DashboardLayoutProductsIdEditRoute
-=======
   DashboardLayoutCategoryIdEditRoute: typeof DashboardLayoutCategoryIdEditRoute
->>>>>>> Stashed changes
+  DashboardLayoutProductsIdEditRoute: typeof DashboardLayoutProductsIdEditRoute
 }
 
 const DashboardLayoutRouteChildren: DashboardLayoutRouteChildren = {
@@ -280,11 +273,8 @@ const DashboardLayoutRouteChildren: DashboardLayoutRouteChildren = {
   DashboardLayoutProductsCreateRoute: DashboardLayoutProductsCreateRoute,
   DashboardLayoutCategoryIndexRoute: DashboardLayoutCategoryIndexRoute,
   DashboardLayoutProductsIndexRoute: DashboardLayoutProductsIndexRoute,
-<<<<<<< Updated upstream
-  DashboardLayoutProductsIdEditRoute: DashboardLayoutProductsIdEditRoute,
-=======
   DashboardLayoutCategoryIdEditRoute: DashboardLayoutCategoryIdEditRoute,
->>>>>>> Stashed changes
+  DashboardLayoutProductsIdEditRoute: DashboardLayoutProductsIdEditRoute,
 }
 
 const DashboardLayoutRouteWithChildren = DashboardLayoutRoute._addFileChildren(
@@ -319,11 +309,8 @@ export interface FileRoutesByFullPath {
   '/dashboard/products/create': typeof DashboardLayoutProductsCreateRoute
   '/dashboard/category': typeof DashboardLayoutCategoryIndexRoute
   '/dashboard/products': typeof DashboardLayoutProductsIndexRoute
-<<<<<<< Updated upstream
-  '/dashboard/products/$id/edit': typeof DashboardLayoutProductsIdEditRoute
-=======
   '/dashboard/category/$id/edit': typeof DashboardLayoutCategoryIdEditRoute
->>>>>>> Stashed changes
+  '/dashboard/products/$id/edit': typeof DashboardLayoutProductsIdEditRoute
 }
 
 export interface FileRoutesByTo {
@@ -338,11 +325,8 @@ export interface FileRoutesByTo {
   '/dashboard/products/create': typeof DashboardLayoutProductsCreateRoute
   '/dashboard/category': typeof DashboardLayoutCategoryIndexRoute
   '/dashboard/products': typeof DashboardLayoutProductsIndexRoute
-<<<<<<< Updated upstream
-  '/dashboard/products/$id/edit': typeof DashboardLayoutProductsIdEditRoute
-=======
   '/dashboard/category/$id/edit': typeof DashboardLayoutCategoryIdEditRoute
->>>>>>> Stashed changes
+  '/dashboard/products/$id/edit': typeof DashboardLayoutProductsIdEditRoute
 }
 
 export interface FileRoutesById {
@@ -361,11 +345,8 @@ export interface FileRoutesById {
   '/dashboard/_layout/products/create': typeof DashboardLayoutProductsCreateRoute
   '/dashboard/_layout/category/': typeof DashboardLayoutCategoryIndexRoute
   '/dashboard/_layout/products/': typeof DashboardLayoutProductsIndexRoute
-<<<<<<< Updated upstream
-  '/dashboard/_layout/products/$id/edit': typeof DashboardLayoutProductsIdEditRoute
-=======
   '/dashboard/_layout/category/$id/edit': typeof DashboardLayoutCategoryIdEditRoute
->>>>>>> Stashed changes
+  '/dashboard/_layout/products/$id/edit': typeof DashboardLayoutProductsIdEditRoute
 }
 
 export interface FileRouteTypes {
@@ -384,11 +365,8 @@ export interface FileRouteTypes {
     | '/dashboard/products/create'
     | '/dashboard/category'
     | '/dashboard/products'
-<<<<<<< Updated upstream
-    | '/dashboard/products/$id/edit'
-=======
     | '/dashboard/category/$id/edit'
->>>>>>> Stashed changes
+    | '/dashboard/products/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -402,11 +380,8 @@ export interface FileRouteTypes {
     | '/dashboard/products/create'
     | '/dashboard/category'
     | '/dashboard/products'
-<<<<<<< Updated upstream
-    | '/dashboard/products/$id/edit'
-=======
     | '/dashboard/category/$id/edit'
->>>>>>> Stashed changes
+    | '/dashboard/products/$id/edit'
   id:
     | '__root__'
     | '/_layout'
@@ -423,11 +398,8 @@ export interface FileRouteTypes {
     | '/dashboard/_layout/products/create'
     | '/dashboard/_layout/category/'
     | '/dashboard/_layout/products/'
-<<<<<<< Updated upstream
-    | '/dashboard/_layout/products/$id/edit'
-=======
     | '/dashboard/_layout/category/$id/edit'
->>>>>>> Stashed changes
+    | '/dashboard/_layout/products/$id/edit'
   fileRoutesById: FileRoutesById
 }
 
@@ -499,14 +471,10 @@ export const routeTree = rootRoute
         "/dashboard/_layout/",
         "/dashboard/_layout/category/create",
         "/dashboard/_layout/products/create",
-<<<<<<< Updated upstream
-        "/dashboard/_layout/products/",
-        "/dashboard/_layout/products/$id/edit"
-=======
         "/dashboard/_layout/category/",
         "/dashboard/_layout/products/",
-        "/dashboard/_layout/category/$id/edit"
->>>>>>> Stashed changes
+        "/dashboard/_layout/category/$id/edit",
+        "/dashboard/_layout/products/$id/edit"
       ]
     },
     "/dashboard/settting": {
@@ -537,13 +505,12 @@ export const routeTree = rootRoute
       "filePath": "dashboard/_layout/products/index.tsx",
       "parent": "/dashboard/_layout"
     },
-<<<<<<< Updated upstream
-    "/dashboard/_layout/products/$id/edit": {
-      "filePath": "dashboard/_layout/products/$id.edit.tsx",
-=======
     "/dashboard/_layout/category/$id/edit": {
       "filePath": "dashboard/_layout/category/$id.edit.tsx",
->>>>>>> Stashed changes
+      "parent": "/dashboard/_layout"
+    },
+    "/dashboard/_layout/products/$id/edit": {
+      "filePath": "dashboard/_layout/products/$id.edit.tsx",
       "parent": "/dashboard/_layout"
     }
   }
