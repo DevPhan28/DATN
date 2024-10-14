@@ -1,11 +1,25 @@
+import useRegisterMutation from '@/data/auth/useRegisterMutation';
 import { Button, Input } from '@medusajs/ui';
 import { createFileRoute } from '@tanstack/react-router';
+import { useForm } from 'react-hook-form';
 
 export const Route = createFileRoute('/register')({
   component: Register,
 });
 
 function Register() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<Iuser>();
+  const { registerMutation } = useRegisterMutation();
+  const onSubmit = (data: Iuser) => {
+    const userData = { ...data };
+    registerMutation.mutate(userData);
+    reset();
+  };
   return (
     <div className="relative h-screen w-full">
       {/* Background image */}
@@ -48,7 +62,10 @@ function Register() {
           </div>
 
           {/* Form section */}
-          <form className="w-full space-y-6 md:space-y-10">
+          <form
+            onSubmit={e => void handleSubmit(onSubmit)(e)}
+            className="w-full space-y-6 md:space-y-10"
+          >
             {/* Inputs */}
             <div className="space-y-4">
               {/* User input */}
@@ -56,8 +73,9 @@ function Register() {
                 <label htmlFor="user">User</label>
                 <Input
                   id="user"
-                  placeholder="Enter your username"
                   aria-label="User"
+                  {...register('username', { required: true })}
+                  placeholder="Enter your username"
                 />
               </div>
 
@@ -66,8 +84,9 @@ function Register() {
                 <label htmlFor="email">Email</label>
                 <Input
                   id="email"
-                  placeholder="Enter your email"
                   aria-label="Email"
+                  {...register('email', { required: true })}
+                  placeholder="Enter your email"
                 />
               </div>
 
@@ -77,21 +96,21 @@ function Register() {
                 <Input
                   id="password"
                   type="password"
+                  {...register('password', { required: true })}
                   placeholder="Enter your password"
                   aria-label="Password"
                 />
               </div>
 
               {/* Confirm password input */}
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <label htmlFor="confirm-password">Confirm Password</label>
                 <Input
                   id="confirm-password"
                   type="password"
-                  placeholder="Confirm your password"
                   aria-label="Confirm Password"
                 />
-              </div>
+              </div> */}
             </div>
 
             {/* Signup button */}

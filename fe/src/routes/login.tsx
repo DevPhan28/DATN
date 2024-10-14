@@ -1,11 +1,25 @@
+import useLoginMutation from '@/data/auth/useLoginMutation';
 import { Button, Input } from '@medusajs/ui';
 import { createFileRoute } from '@tanstack/react-router';
+import { useForm } from 'react-hook-form';
 
 export const Route = createFileRoute('/login')({
   component: Login,
 });
 
 function Login() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<Iuser>();
+  const { loginMutation } = useLoginMutation();
+  const onSubmit = (data: Iuser) => {
+    const userData = { ...data };
+    loginMutation.mutate(userData);
+    reset();
+  };
   return (
     <div className="relative h-screen w-full">
       {/* Background image */}
@@ -38,7 +52,10 @@ function Login() {
           />
 
           {/* Form section */}
-          <form className="w-full space-y-6 md:space-y-10">
+          <form
+            onSubmit={e => void handleSubmit(onSubmit)(e)}
+            className="w-full space-y-6 md:space-y-10"
+          >
             {/* Welcome message */}
             <div className="space-y-1 text-center">
               <p className="txt-compact-large text-ui-fg-subtle">
@@ -56,6 +73,7 @@ function Login() {
                 <label htmlFor="email">Email</label>
                 <Input
                   id="email"
+                  {...register('email', { required: true })}
                   placeholder="Enter your email"
                   aria-label="Email"
                 />
@@ -66,8 +84,9 @@ function Login() {
                 <label htmlFor="password">Password</label>
                 <Input
                   id="password"
-                  type="password"
+                  {...register('password', { required: true })}
                   placeholder="Enter your password"
+                  type="password"
                   aria-label="Password"
                 />
               </div>
