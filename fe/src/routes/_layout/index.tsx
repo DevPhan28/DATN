@@ -1,3 +1,4 @@
+import CardProduct from '@/components/cardProduct';
 import Category from '@/components/Category';
 import Slider from '@/components/Slider';
 import { Button } from '@medusajs/ui';
@@ -13,8 +14,10 @@ function Index() {
   return (
     <>
       {/* <Button onClick={() => navigate({ to: '/checkout' })}>Click</Button> */}
+
       <Slider />
       <Category />
+      <CardProduct />
     </>
   );
 }

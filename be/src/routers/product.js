@@ -16,7 +16,9 @@ const {
   uploadGallery,
   getProductById,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  getProductAll,
+
 } = require("../controllers/product");
 
 const router = express.Router();
@@ -44,4 +46,5 @@ router.post(
 router.put(`/products/:id`, updateProduct);
 
 router.delete(`/products/:id`, deleteProduct);
+router.get('/product', getProductAll)
 module.exports = router;

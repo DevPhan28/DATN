@@ -68,7 +68,7 @@ const addProduct = async (req, res) => {
       ...productData,
       countInStock: totalCountInStock,
       variants, // Nếu bạn cũng muốn lưu biến thể
-    });    
+    });
     const data = await product.save();
     return res.status(201).json({
       message: "Tạo sản phẩm thành công",
@@ -209,6 +209,34 @@ const uploadGallery = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Server error" + error });
   }
+
+};
+const getProductAll = async (req, res) => {
+  try {
+    // Lấy toàn bộ danh sách sản phẩm, sử dụng populate để lấy tên danh mục
+    const products = await Product.find({}).populate("category", "name");
+
+    // Đếm tổng số sản phẩm
+    const totalItems = await Product.countDocuments();
+
+    if (products.length === 0) {
+      return res.status(200).json({
+        meta: {
+          totalItems: 0,
+        },
+        data: [],
+      });
+    }
+
+    return res.status(200).json({
+      meta: {
+        totalItems, // Tổng số sản phẩm
+      },
+      data: products, // Trả về tất cả sản phẩm
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 module.exports = {
@@ -220,4 +248,5 @@ module.exports = {
   relatedProduct,
   uploadThumbnail,
   uploadGallery,
+  getProductAll,
 };
