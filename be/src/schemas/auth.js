@@ -1,6 +1,6 @@
-import Joi from "joi";
+const Joi =  require("joi");
 
-export const registerSchema = Joi.object({
+ const registerSchema = Joi.object({
     username: Joi.string().required().trim().messages({
         "any.required": "Username Bắt Buộc",
         "string.empty": "Username không được để trống",
@@ -25,7 +25,7 @@ export const registerSchema = Joi.object({
         "string.empty": "Avatar không được để trống",
     }),
 });
-export const signinSchema = Joi.object({
+ const signinSchema = Joi.object({
     email: Joi.string().email().required().messages({
         "any.required": "Email bắt buộc phải nhập",
         "string.email": "Email không đúng định dạng",
@@ -37,3 +37,8 @@ export const signinSchema = Joi.object({
         "string.min": "Password phải có ít nhất 6 ký tự",
     }),
 });
+module.exports = {
+    registerSchema,
+    signinSchema,
+  };
+  

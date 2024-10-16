@@ -13,8 +13,8 @@ const { connectDB } = require("./config/db");
 // import categoryRouter from "./routers/category";
 const productRouter = require("./routers/product");
 const categoryRouter = require("./routers/category");
+const authRouter = require("./routers/auth.router");
 
-// import authRouter from "./routers/auth.router";
 
 const app = express();
 // middleware

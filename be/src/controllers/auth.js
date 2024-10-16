@@ -1,9 +1,9 @@
-import bcryptjs from "bcryptjs";
-import { registerSchema, signinSchema } from "../schemas/auth";
-import User from "../models/user";
-import jwt from "jsonwebtoken";
+const bcryptjs = require("bcryptjs") ;
+const { registerSchema, signinSchema } = require("../schemas/auth") ;
+const User = require("../models/user") ;
+const jwt = require("jsonwebtoken") ;
 
-export const signup = async (req, res) => {
+const signup = async (req, res) => {
     try {
         // lấy dữ liệu từ client gửi lên : req.body
         const { username, email, password, avatar } = req.body;
@@ -48,7 +48,7 @@ export const signup = async (req, res) => {
     }
 };
 
-export const signin = async (req, res) => {
+const signin = async (req, res) => {
     // lấy dữ liệu từ client gửi lên : req.body
     const { email, password } = req.body;
     // kiểm tra dữ liệu từ client gửi lên có đúng với schema không
@@ -82,3 +82,8 @@ export const signin = async (req, res) => {
         token,
     });
 };
+module.exports = {
+    signin,
+    signup
+  };
+  
