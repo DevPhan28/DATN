@@ -1,6 +1,6 @@
 import useLoginMutation from '@/data/auth/useLoginMutation';
 import { Button, Input } from '@medusajs/ui';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 
 export const Route = createFileRoute('/login')({
@@ -15,11 +15,26 @@ function Login() {
     reset,
   } = useForm<Iuser>();
   const { loginMutation } = useLoginMutation();
+
   const onSubmit = (data: Iuser) => {
     const userData = { ...data };
-    loginMutation.mutate(userData);
-    reset();
+
+    loginMutation.mutate(userData, {
+      onSuccess: response => {
+        // Assuming the response contains a token
+        const token = response?.data?.token;
+        if (token) {
+          // Lưu token vào localStorage
+          localStorage.setItem('authToken', token);
+        }
+        reset();
+      },
+      onError: error => {
+        console.error('Login failed:', error);
+      },
+    });
   };
+
   return (
     <div className="relative h-screen w-full">
       {/* Background image */}
@@ -104,9 +119,10 @@ function Login() {
           {/* Forgot password */}
           <p className="txt-compact-large mt-6 text-ui-fg-subtle">
             {' '}
-            <a href="#" className="text-blue-600 hover:underline">
-              Forgot your password?
-            </a>{' '}
+            <Link to="/">Forgot your password?</Link>{' '}
+            <Link className="text-blue-600 hover:underline" to="/register">
+              You do not have an account!
+            </Link>
           </p>
         </div>
       </div>

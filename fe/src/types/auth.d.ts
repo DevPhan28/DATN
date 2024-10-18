@@ -3,10 +3,12 @@ type Iuser = {
   username: string;
   email: string;
   password: string;
+  confirmPassword: string;
   role: string;
 };
 type Ilogin = {
-  id: number;
+  _id: string;
   email: string;
   password: string;
+  user: string[];
 };

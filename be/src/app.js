@@ -15,7 +15,6 @@ const productRouter = require("./routers/product");
 const categoryRouter = require("./routers/category");
 const authRouter = require("./routers/auth.router");
 
-
 const app = express();
 // middleware
 dotenv.config();
@@ -27,7 +26,7 @@ app.use(morgan("dev"));
 connectDB(process.env.DB_URI);
 // routes
 app.use("/api", productRouter);
-// app.use("/api", authRouter);
+app.use("/api", authRouter);
 app.use("/api", categoryRouter);
 // app.use("/api", cartRouter);
 // app.use("/api", orderRouter);

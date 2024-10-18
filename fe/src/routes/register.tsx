@@ -1,6 +1,6 @@
 import useRegisterMutation from '@/data/auth/useRegisterMutation';
 import { Button, Input } from '@medusajs/ui';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { useForm } from 'react-hook-form';
 
 export const Route = createFileRoute('/register')({
@@ -13,13 +13,19 @@ function Register() {
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
   } = useForm<Iuser>();
   const { registerMutation } = useRegisterMutation();
   const onSubmit = (data: Iuser) => {
     const userData = { ...data };
+    console.log('Data to be sent:', userData);
     registerMutation.mutate(userData);
     reset();
   };
+
+  // Lấy giá trị của password để so sánh với confirmPassword
+  const password = watch('password');
+
   return (
     <div className="relative h-screen w-full">
       {/* Background image */}
@@ -74,43 +80,67 @@ function Register() {
                 <Input
                   id="user"
                   aria-label="User"
-                  {...register('username', { required: true })}
+                  {...register('username', {
+                    required: 'Username is required',
+                  })}
                   placeholder="Enter your username"
                 />
+                {errors.username && (
+                  <p className="text-red-500">{errors.username.message}</p>
+                )}
               </div>
 
               {/* Email input */}
               <div className="txt-compact-medium-plus space-y-2 text-ui-fg-subtle">
-                <label htmlFor="email">Email</label>
+                <label htmlFor="user">Email</label>
                 <Input
                   id="email"
-                  aria-label="Email"
-                  {...register('email', { required: true })}
+                  aria-label="email"
+                  {...register('email', {
+                    required: 'Email is required',
+                  })}
                   placeholder="Enter your email"
                 />
+                {errors.email && (
+                  <p className="text-red-500">{errors.email.message}</p>
+                )}
               </div>
 
               {/* Password input */}
-              <div className="space-y-2">
-                <label htmlFor="password">Password</label>
+              <div className="txt-compact-medium-plus space-y-2 text-ui-fg-subtle">
+                <label htmlFor="user">Password</label>
                 <Input
                   id="password"
-                  type="password"
-                  {...register('password', { required: true })}
+                  aria-label="password"
+                  {...register('password', {
+                    required: 'Password is required',
+                  })}
                   placeholder="Enter your password"
-                  aria-label="Password"
                 />
+                {errors.password && (
+                  <p className="text-red-500">{errors.password.message}</p>
+                )}
               </div>
 
-              {/* Confirm password input */}
-              {/* <div className="space-y-2">
-                <label htmlFor="confirm-password">Confirm Password</label>
+              {/* confirmPassword input */}
+              <div className="txt-compact-medium-plus space-y-2 text-ui-fg-subtle">
+                <label htmlFor="user">Confirm Password</label>
                 <Input
-                  id="confirm-password"
-                  type="password"
-                  aria-label="Confirm Password"
+                  id="confirmPassword"
+                  aria-label="confirmPassword"
+                  {...register('confirmPassword', {
+                    required: 'Confirm Password is required',
+                    validate: value =>
+                      value === password || 'Passwords do not match',
+                  })}
+                  placeholder="Confirm your password"
                 />
-              </div> */}
+                {errors.confirmPassword && (
+                  <p className="text-red-500">
+                    {errors.confirmPassword.message}
+                  </p>
+                )}
+              </div>
             </div>
 
             {/* Signup button */}
@@ -125,9 +155,9 @@ function Register() {
           {/* Login link */}
           <p className="txt-compact-large mt-6 text-ui-fg-subtle">
             Already have an account?{' '}
-            <a href="/login" className="text-blue-600 hover:underline">
+            <Link to="/login" className="text-blue-600 hover:underline">
               Login
-            </a>{' '}
+            </Link>{' '}
             here!
           </p>
         </div>
