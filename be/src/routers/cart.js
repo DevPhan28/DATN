@@ -1,5 +1,5 @@
-import { Router } from "express";
-import {
+const express = require("express");
+const{
   addItemToCart,
   decreaseProductQuantity,
   deleteItemFromCart,
@@ -8,8 +8,8 @@ import {
   removeFromCart,
   updateProductQuantity,
   updateQuantityCart,
-} from "../controllers/cart";
-const router = Router();
+} = require("../controllers/cart") ;
+const router = express.Router();
 router.post("/cart/add-to-cart", addItemToCart);
 // router.put("/cart/update-product-quantity", updateQuantityCart);
 router.get("/cart/:userId", getCartByUserId);
@@ -21,4 +21,4 @@ router.post("/carts/decrease", decreaseProductQuantity);
 router.post("/carts/update", updateProductQuantity);
 // Xóa item trong giỏ hàng
 router.post("/carts/remove", deleteItemFromCart);
-export default router;
+module.exports = router;

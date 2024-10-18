@@ -6,8 +6,8 @@ import { Suspense } from 'react';
 export const Route = createRootRoute({
   component: () => (
     <>
+    
       <Outlet />
-      <Toaster />
       <Suspense>
       </Suspense>
     </>

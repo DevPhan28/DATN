@@ -9,7 +9,7 @@ export const fetchCategory = async (params: CategoryParams) => {
         const res = await instance.get<{
             data: Category[];
             meta: MetaData;
-        }>('/categorys', { params });  
+        }>('/categories', { params });  
 
         console.log("Response from server:", res); // Log chi tiết response từ server
 

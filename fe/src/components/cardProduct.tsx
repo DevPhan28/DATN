@@ -1,7 +1,9 @@
 // src/components/CardProduct.tsx
 import React, { useState } from "react";
-import { Funnel, Heart, MagnifyingGlass } from "@medusajs/icons";
+import { Funnel, Heart, MagnifyingGlass, ShoppingCartSolid } from "@medusajs/icons";
 import { useFetchCategory, useFetchProductAll } from "@/data/products/useProductList";
+import useCartMutation from "@/data/cart/useCartMutation";
+import { Link } from "@tanstack/react-router";
 
 // Định nghĩa kiểu dữ liệu cho các thuộc tính
 type SortType = "Default" | "Popularity" | "Average rating" | "Newness" | "Price: Low to High" | "Price: High to Low";
@@ -16,7 +18,7 @@ const CardProduct: React.FC = () => {
     const [selectedColor, setSelectedColor] = useState<ColorType | null>(null);
     const [selectedTags, setSelectedTags] = useState<TagType[]>([]);
     const [showSearch, setShowSearch] = useState<boolean>(false);
-
+    const { addItemToCart } = useCartMutation();
     const toggleTag = (tag: TagType) => {
         setSelectedTags((prevSelectedTags) =>
             prevSelectedTags.includes(tag)
@@ -54,7 +56,13 @@ const CardProduct: React.FC = () => {
     const { listProduct, loading, error } = useFetchProductAll();
     const { data } = useFetchCategory();
     console.log("listCategory", data);
-
+    const handleAddToCart = (product: Product) => {
+        const userId = localStorage.getItem('userId'); // Thay bằng userId thực tế khi có
+        addItemToCart.mutate({
+          userId ,
+          products: [{ productId: product._id, quantity: 1 }],
+        });
+      };
 
     return (
         <div className="container mx-auto p-4 sm:p-8">
@@ -89,7 +97,7 @@ const CardProduct: React.FC = () => {
                         <input
                             type="text"
                             placeholder="Search"
-                            className="w-full border-none focus:outline-none"
+                            className="w-full border-none focus:outline-none search-input bg-white "
                         />
                     </div>
                 </div>
@@ -191,11 +199,18 @@ const CardProduct: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-8">
                     {listProduct.map((product: Product) => (
                         <div key={product._id} className="text-center product-card relative group overflow-hidden">
-                            <img src={product.image} alt={product.name} className="w-full h-80 transform transition-transform duration-500" />
-                            <a href="#" className="quick-view absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow opacity-0 transition-all duration-900 group-hover:opacity-100 group-hover:translate-y-[-100px] hover:bg-black hover:text-white">Quick View</a>
-                            <h2 className="mt-2 text-gray-500 flex justify-between ">{product.name} <Heart /></h2>
-                            <p className="text-gray-600 flex justify-start mt-2">${product.price}</p>
-                        </div>
+                        <img src={product.image} alt={product.name} className="w-full h-80 transform transition-transform duration-500" />
+               
+                        <Link to={ `${product._id}/detailproduct`} className="quick-view absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white px-4 py-2 rounded-full shadow opacity-0 transition-all duration-900 group-hover:opacity-100 group-hover:translate-y-[-100px] hover:bg-black hover:text-white">Quick View</Link>
+                        <h2 className="mt-2 text-gray-500 flex justify-between items-center">
+                          {product.name}
+                          <div className="flex space-x-2">
+                            <Heart />
+                            <ShoppingCartSolid onClick={() => handleAddToCart(product)} />
+                          </div>
+                        </h2>
+                        <p className="text-gray-600 flex justify-start mt-2">${product.price}</p>
+                      </div>
                     ))}
                 </div>
             ) : (

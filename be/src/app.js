@@ -9,7 +9,7 @@ const morgan = require("morgan");
 // import morgan from "morgan";
 const { connectDB } = require("./config/db");
 // import orderRouter from "./routers/order";
-// import cartRouter from "./routers/cart";
+const cartRouter = require("./routers/cart") ;
 // import categoryRouter from "./routers/category";
 const productRouter = require("./routers/product");
 const categoryRouter = require("./routers/category");
@@ -28,7 +28,7 @@ connectDB(process.env.DB_URI);
 app.use("/api", productRouter);
 app.use("/api", authRouter);
 app.use("/api", categoryRouter);
-// app.use("/api", cartRouter);
+app.use("/api", cartRouter);
 // app.use("/api", orderRouter);
 
 app.listen(8080, () => {

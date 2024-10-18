@@ -1,15 +1,24 @@
 import { Link } from '@tanstack/react-router';
-import { useState } from 'react'
-import { MagnifyingGlassMini, ShoppingCartSolid, Heart, BarsThree, XMark } from "@medusajs/icons"
+import { useState } from 'react';
+import { MagnifyingGlassMini, ShoppingCartSolid, Heart, BarsThree, XMark } from "@medusajs/icons";
+import { useFetchCart } from '@/data/cart/useFetchCart';
+
+
 const Header = () => {
   // Trạng thái hiển thị của menu
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
+  const userId = localStorage.getItem('userId'); // Thay thế bằng user ID thực tế
+  const { data: cartData, isLoading } = useFetchCart(userId); // Lấy dữ liệu giỏ hàng
+  
+  // Tính tổng số lượng sản phẩm trong giỏ hàng
+  const totalItems = cartData?.products?.reduce((total: any, product: any) => total + product.quantity, 0) || 0;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-  return (
 
+  return (
     <div className="max-w-6xl m-auto">
       <nav className="relative">
         <div className="flex h-16 items-center justify-between">
@@ -32,8 +41,19 @@ const Header = () => {
           {/* Khu vực chứa các biểu tượng và biểu tượng menu */}
           <div className="text-[19px] flex items-center space-x-2">
             <MagnifyingGlassMini className='text-[35px] hover:text-blue-400' />
-            <ShoppingCartSolid className='text-[35px] hover:text-blue-400' />
+            
+            <Link to="/cart" className="relative">
+              <ShoppingCartSolid className='text-[35px] hover:text-blue-400' />
+              {/* Hiển thị tổng số lượng sản phẩm trong giỏ hàng */}
+              {!isLoading && totalItems > 0 && (
+                <span className="absolute -top-1 -right-2 flex items-center justify-center h-5 w-5 text-xs font-bold text-white bg-red-500 rounded-full">
+                  {totalItems}
+                </span>
+              )}
+            </Link>
+
             <Heart className=' hover:text-blue-400 text-2xl' />
+
             {/* Biểu tượng menu nằm bên phải các biểu tượng */}
             <div className="sm:hidden flex items-center">
               <button onClick={toggleMenu} className="flex items-center justify-center p-2 text-gray-500 hover:text-blue-400 focus:outline-none">
@@ -46,6 +66,7 @@ const Header = () => {
             </div>
           </div>
         </div>
+
         {/* Danh sách menu ẩn */}
         {isMenuOpen && (
           <div className="sm:hidden flex flex-col space-y-2 mt-2">
