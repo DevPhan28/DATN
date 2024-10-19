@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import instance from '@/api/axiosIntance';
 import { toast } from '@medusajs/ui';
 
+// Route cho trang Product Detail
 export const Route = createFileRoute('/_layout/$id/detailproduct')({
   component: () => {
     const { id } = useParams({ from: '/_layout/$id/detailproduct' });
@@ -13,6 +14,7 @@ export const Route = createFileRoute('/_layout/$id/detailproduct')({
     const [error, setError] = useState('');
     const [selectedSize, setSelectedSize] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
+    const [availableColors, setAvailableColors] = useState([]); // State để lưu danh sách màu
     const [quantity, setQuantity] = useState(1); // Số lượng sản phẩm
 
     const queryClient = useQueryClient(); // Để invalidate query khi cần
@@ -47,7 +49,6 @@ export const Route = createFileRoute('/_layout/$id/detailproduct')({
         queryClient.invalidateQueries(['cart']); // Invalidate query cart
       },
       onError: (error) => {
-        // Xử lý lỗi khi thêm vào giỏ hàng
         if (error.response) {
           toast.error(`Có lỗi xảy ra: ${error.response.data.message || 'Lỗi không xác định'}`, {
             description: 'Không thể thêm sản phẩm vào giỏ hàng, vui lòng thử lại.',
@@ -59,38 +60,47 @@ export const Route = createFileRoute('/_layout/$id/detailproduct')({
       },
     });
 
+    // Xử lý khi người dùng chọn size
+    const handleSizeChange = (e) => {
+      const size = e.target.value;
+      setSelectedSize(size);
+      setSelectedColor(''); // Reset màu khi thay đổi size
+
+      // Lọc các màu tương ứng với size đã chọn
+      const availableColors = product.variants
+        .filter(variant => variant.size === size)
+        .map(variant => variant.color);
+
+      // Cập nhật danh sách màu dựa trên size đã chọn
+      setAvailableColors([...new Set(availableColors)]); // Loại bỏ màu trùng lặp
+    };
+
     // Hàm xử lý khi người dùng bấm nút thêm vào giỏ hàng
     const handleAddToCart = () => {
-      // Kiểm tra nếu người dùng chưa chọn size và màu sắc
       if (!selectedSize || !selectedColor) {
         toast.error('Vui lòng chọn size và màu sắc!');
         return;
       }
 
-      // Tìm biến thể của sản phẩm dựa trên size và màu
       const variant = product.variants.find(
         (v) => v.size === selectedSize && v.color === selectedColor
       );
 
-      // Nếu không tìm thấy biến thể phù hợp
       if (!variant) {
         toast.error('Không tìm thấy biến thể sản phẩm với size và màu đã chọn.');
         return;
       }
 
-      // Kiểm tra số lượng tồn kho
       if (quantity > variant.countInStock) {
         toast.error(`Số lượng vượt quá tồn kho. Chỉ còn lại ${variant.countInStock} sản phẩm.`);
         return;
       }
 
-      // Kiểm tra dữ liệu productId, variantId, priceAtTime
       if (!product._id || !variant.sku || !product.price || quantity < 1) {
         toast.error('Dữ liệu sản phẩm không hợp lệ, vui lòng kiểm tra lại.');
         return;
       }
 
-      // Thực hiện gọi API thêm sản phẩm vào giỏ hàng
       addItemToCart.mutate({
         userId: localStorage.getItem('userId'), // Thay bằng userId thực tế
         products: [
@@ -107,11 +117,12 @@ export const Route = createFileRoute('/_layout/$id/detailproduct')({
     // Hiển thị loading hoặc lỗi nếu có
     if (loading) return <div>Đang tải...</div>;
     if (error) return <div>{error}</div>;
-    if (!product) return <div>Không tìm thấy sản phẩm</div>; // Thêm thông báo khi không tìm thấy sản phẩm
+    if (!product) return <div>Không tìm thấy sản phẩm</div>;
 
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-100">
         <div className="flex flex-col md:flex-row rounded-lg bg-white p-6 shadow-lg w-full max-w-7xl h-full">
+          {/* Hiển thị hình ảnh sản phẩm */}
           <div className="mr-4 flex flex-col items-center">
             {product.gallery && product.gallery.map((img, index) => (
               <img
@@ -129,6 +140,7 @@ export const Route = createFileRoute('/_layout/$id/detailproduct')({
               src={product.image}
             />
           </div>
+          {/* Chi tiết sản phẩm */}
           <div className="ml-10 mt-4 md:mt-0 flex-1">
             <h1 className="text-2xl font-bold">{product.name}</h1>
             <p className="mt-2 text-xl text-gray-700">${product.price}</p>
@@ -139,7 +151,7 @@ export const Route = createFileRoute('/_layout/$id/detailproduct')({
                 <select
                   className="flex-1 rounded border border-gray-300 p-2"
                   value={selectedSize}
-                  onChange={(e) => setSelectedSize(e.target.value)}
+                  onChange={handleSizeChange}
                 >
                   <option value="">Chọn size</option>
                   {product.variants && product.variants.map(variant => (
@@ -153,10 +165,11 @@ export const Route = createFileRoute('/_layout/$id/detailproduct')({
                   className="flex-1 rounded border border-gray-300 p-2"
                   value={selectedColor}
                   onChange={(e) => setSelectedColor(e.target.value)}
+                  disabled={!selectedSize} // Disable nếu chưa chọn size
                 >
                   <option value="">Chọn màu</option>
-                  {product.variants && product.variants.map(variant => (
-                    <option key={variant.sku} value={variant.color}>{variant.color}</option>
+                  {availableColors && availableColors.map((color, index) => (
+                    <option key={index} value={color}>{color}</option>
                   ))}
                 </select>
               </div>

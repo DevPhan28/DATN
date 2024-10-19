@@ -28,10 +28,11 @@ const useCartMutation = () => {
     },
   });
 
-  // Mutation để xóa sản phẩm khỏi giỏ hàng (bao gồm cả biến thể)
   const deleteItemFromCart = useMutation({
-    mutationFn: (data: { userId: string; productId: string; variantId: string }) =>
-      instance.delete('/cart/remove', { data }), // Gọi API xóa sản phẩm khỏi giỏ hàng (sửa thành DELETE)
+    mutationFn: ({ userId, productId, variantId }: { userId: string; productId: string; variantId: string }) =>
+      instance.delete(`/cart/${userId}/product/${productId}`, {
+        data: { variantId }, // Truyền variantId trong body nếu cần
+      }), // Gọi API xóa sản phẩm khỏi giỏ hàng
 
     onSuccess: () => {
       toast.success('Sản phẩm đã bị xóa khỏi giỏ hàng', {
@@ -49,6 +50,7 @@ const useCartMutation = () => {
       });
     },
   });
+
 
   // Mutation để cập nhật số lượng sản phẩm (bao gồm cả biến thể) trong giỏ hàng
   const updateQuantity = useMutation({

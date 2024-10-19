@@ -29,8 +29,8 @@ const Header = () => {
 
             {/* Menu chính */}
             <div className="hidden sm:flex flex-wrap">
-              <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">Home</a>
-              <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">Shop</a>
+              <Link  to='/' className="px-2 py-2 font-medium hover:text-blue-400">Home</Link>
+              <Link  to='/shop' className="px-2 py-2 font-medium hover:text-blue-400">Shop</Link>
               <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">Features</a>
               <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">Blog</a>
               <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">About</a>
@@ -46,7 +46,7 @@ const Header = () => {
               <ShoppingCartSolid className='text-[35px] hover:text-blue-400' />
               {/* Hiển thị tổng số lượng sản phẩm trong giỏ hàng */}
               {!isLoading && totalItems > 0 && (
-                <span className="absolute -top-1 -right-2 flex items-center justify-center h-5 w-5 text-xs font-bold text-white bg-red-500 rounded-full">
+                <span className="absolute -top-3 -right-3 flex items-center justify-center h-5 w-5 text-xs font-bold text-white bg-red-500 rounded-full">
                   {totalItems}
                 </span>
               )}

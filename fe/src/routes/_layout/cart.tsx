@@ -1,7 +1,9 @@
-import { useState } from 'react'; 
+import { useState } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { useFetchCart } from '@/data/cart/useFetchCart';
 import { useNavigate } from '@tanstack/react-router';
+import { Trash, MinusMini, Plus } from '@medusajs/icons';
+import useCartMutation from '@/data/cart/useCartMutation';
 
 // Route cho trang Cart
 export const Route = createFileRoute('/_layout/cart')({
@@ -11,22 +13,24 @@ export const Route = createFileRoute('/_layout/cart')({
 // Component Cart
 function Cart() {
   const navigate = useNavigate();
-  const userId = localStorage.getItem('userId'); // Thay thế bằng user ID thực tế (có thể lấy từ context, session, v.v.)
-  const { data: cartData, isLoading, error } = useFetchCart(userId); 
+  const userId = localStorage.getItem('userId'); // Lấy userId từ localStorage
+  const { data: cartData, isLoading, error } = useFetchCart(userId); // Fetch giỏ hàng
+  const { deleteItemFromCart } = useCartMutation(); // Sử dụng mutation để xóa sản phẩm
 
   // State để theo dõi số lượng sản phẩm
   const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
-
+  console.log('log data: ', cartData);
+  
   // Xử lý khi dữ liệu đang tải
   if (isLoading) {
-    return <div>Đang tải...</div>;  // Hiển thị trạng thái đang tải
+    return <div>Đang tải...</div>;
   }
 
   if (!userId) {
     return (
       <div className="max-w-6xl m-auto p-10 text-center">
         <h2 className="text-xl font-bold mb-5">Bạn chưa đăng nhập</h2>
-        <button 
+        <button
           onClick={() => navigate({ to: '/login' })} // Điều hướng đến trang đăng nhập
           className="px-6 py-2 border border-gray-300 rounded-2xl bg-gray-100 hover:bg-blue-400"
         >
@@ -36,9 +40,18 @@ function Cart() {
     );
   }
 
-  // Xử lý khi có lỗi
   if (error) {
-    return <div>Lỗi khi tải giỏ hàng: {error.message}</div>;  // Hiển thị lỗi nếu có
+    return (
+      <div className="max-w-6xl m-auto p-10 text-center">
+        <h2 className="text-xl font-bold mb-5">Giỏ hàng của bạn hiện tại trống!</h2>
+        <button
+          onClick={() => navigate({ to: '/' })} // Điều hướng đến trang chủ
+          className="px-6 py-2 border border-gray-300 rounded-2xl bg-gray-100 hover:bg-blue-400"
+        >
+          Mua sắm ngay
+        </button>
+      </div>
+    );
   }
 
   // Hàm cập nhật số lượng từ trường nhập liệu
@@ -73,10 +86,21 @@ function Cart() {
     return variantPrice > 0 ? variantPrice : product?.price; // Nếu biến thể có giá, dùng giá đó, nếu không dùng giá chung của sản phẩm
   };
 
+  // Hàm để xóa sản phẩm khỏi giỏ hàng
+  const handleDeleteProduct = (productId: string, variantId: string) => {
+    deleteItemFromCart.mutate({
+      userId: userId || '', 
+      productId, 
+      variantId, 
+      
+    });
+    console.log("Xóa sản phẩm với productId:", productId, "variantId:", variantId);
+  };
+
   return (
-    <div className="max-w-6xl m-auto">
+    <div className="container m-auto">
       <div className="p-2 mt-5">
-        <div className="flex md:max-w-3xl w-full">
+        <div className="flex w-full">
           <div className="flex-none w-14">Home</div>
           <div className="flex-initial w-7">
             <i className="fa-solid fa-chevron-right"></i>
@@ -86,110 +110,75 @@ function Cart() {
       </div>
 
       <div>
-        <div className="flex flex-col md:flex-row mt-10 gap-8 md:gap-12 lg:gap-16">
-          <div className="flex-none w-full md:w-[70%]">
-            <div className="flex justify-evenly border border-slate-300 py-2 md:max-w-3xl w-full items-center">
-              <div className="flex-initial text-center font-bold uppercase text-gray-600 px-4">
-                Sản phẩm
-              </div>
-              <div className="flex-grow text-center font-bold uppercase text-gray-600 px-4">
-                Giá
-              </div>
-              <div className="flex-grow text-center font-bold uppercase text-gray-600 px-4">
-                Số lượng
-              </div>
-              <div className="flex-grow text-center font-bold uppercase text-gray-600 px-4">
-                Size
-              </div>
-              <div className="flex-grow text-center font-bold uppercase text-gray-600 px-4">
-                Color
-              </div>
-              <div className="flex-grow text-center font-bold uppercase text-gray-600 px-4">
-                Tổng cộng
-              </div>
-              <div className="flex-grow text-center font-bold uppercase text-gray-600 px-4">
-                Hành động
-              </div>
-            </div>
-
-            {/* Hiển thị các sản phẩm trong giỏ hàng */}
+        <table className="table-auto w-full border-collapse">
+          <thead>
+            <tr className="border-b-2 border-gray-300">
+              <th className="text-left p-4">Sản phẩm</th>
+              <th className="text-center p-4">Đơn giá</th>
+              <th className="text-center p-4">size</th>
+              <th className="text-center p-4">color</th>
+              <th className="text-center p-4">Số lượng</th>
+              <th className="text-center p-4">Số tiền</th>
+              <th className="text-center p-4">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
             {cartData?.products?.map((product: any, index: any) => (
-              <div key={product.productId} className="border-l border-r border-b border-slate-300 md:max-w-3xl w-full">
-                <div className="flex justify-around items-center p-4">
-                  <div className="">
-                    <img src={product.image} alt={product.name} className="w-16 h-auto" />
+              <tr key={product.productId} className="border-b border-gray-200">
+                <td className="flex items-center p-4">
+                  <img src={product.image} alt={product.name} className="w-16 h-auto mr-4" />
+                  <div>
                     <div>{product.name}</div>
                   </div>
-                  <div className="text-lg">${productPrice(index).toFixed(2)}</div>
-                  <div className="flex items-center border rounded-md overflow-hidden">
-                    <button onClick={() => decrementQuantity(index)} className="flex-1 py-2 px-4 border-r hover:bg-blue-400">-</button>
+                </td>
+                <td className="text-center p-4">
+                  {productPrice(index).toFixed(2)}₫
+                </td>
+                <td className="text-center p-4">
+                  {product.size || 'N/A'}
+                </td>
+                <td className="text-center p-4">
+                  {product.color || 'N/A'}
+                </td>
+                <td className="text-center p-4">
+                  <div className="flex justify-center items-center">
+                    <button onClick={() => decrementQuantity(index)} className="px-2 py-1 border-r">
+                      <MinusMini />
+                    </button>
                     <input
-                      type="number"
+                      type="text"
                       min="0"
                       value={quantities[index] || product.quantity}
-                      onChange={(e) => handleQuantityChange(index, e.target.value)} // Cập nhật số lượng
-                      className="flex-1 py-2 text-center border-none w-16"
+                      onChange={(e) => handleQuantityChange(index, e.target.value)}
+                      className="w-12 text-center"
                     />
-                    <button onClick={() => incrementQuantity(index)} className="flex-1 py-2 px-4 border-l hover:bg-blue-400">+</button>
+                    <button onClick={() => incrementQuantity(index)} className="px-2 py-1 border-l">
+                      <Plus />
+                    </button>
                   </div>
-
-                  {/* Hiển thị size */}
-                  <div className="text-lg text-center">
-                    {product.size ? product.size : 'Không có'}
-                  </div>
-
-                  {/* Hiển thị color */}
-                  <div className="text-lg text-center">
-                    {product.color ? product.color : 'Không có'}
-                  </div>
-
-                  <div className="text-lg text-center">
-                    ${(quantities[index] || product.quantity) * productPrice(index)}.00 {/* Tính tổng */}
-                  </div>
-                </div>
-              </div>
+                </td>
+                <td className="text-center p-4">
+                  {(quantities[index] || product.quantity) * productPrice(index)}₫
+                </td>
+                <td className="text-center p-4">
+                  <button onClick={() => handleDeleteProduct(product.productId, product.variantId)}>
+                    <Trash />
+                  </button>
+                </td>
+              </tr>
             ))}
+          </tbody>
+        </table>
 
-            {/* Phần nhập mã giảm giá và cập nhật giỏ hàng */}
-            <div className="border-l border-r border-b border-slate-300 md:max-w-3xl w-full">
-              <div className="flex flex-wrap justify-around items-center p-4 gap-4">
-                <div className="flex-none">
-                  <div className="p-2 border border-gray-400 rounded-2xl">
-                    <input type="text" placeholder="Mã giảm giá" className="focus:outline-none w-full" />
-                  </div>
-                </div>
-                <div className="flex-none">
-                  <button className='px-6 py-2 border border-gray-300 rounded-2xl bg-gray-100 hover:bg-blue-400'>Áp dụng mã</button>
-                </div>
-                <div className="flex-none">
-                  <button className='px-6 py-2 border border-gray-300 rounded-2xl bg-gray-100 hover:bg-blue-400'>Cập nhật giỏ hàng</button>
-                </div>
-              </div>
-            </div>
+        {/* Tổng cộng và thanh toán */}
+        <div className="mt-5 flex justify-between items-center border-t border-gray-300 pt-4 mb-5">
+          <div className="text-xl font-bold">Tổng cộng: {(cartData?.products?.reduce((sum: any, product: any, index: any) => sum + (quantities[index] || product.quantity) * productPrice(index), 0))}₫</div>
+          <div className="text-xl">
+            
           </div>
-
-          {/* Phần tổng tiền giỏ hàng */}
-          <div className='p-10 w-full md:w-[30%] lg:max-w-lg border border-gray-300'>
-            <div className="w-full">
-              <h2 className='uppercase font-bold text-xl'>Tổng tiền giỏ hàng</h2>
-              <div className="flex items-center mt-5">
-                <div className='w-32 flex-none font-medium'>Tạm tính:</div>
-                <div className="flex-none text-lg">
-                  ${(cartData?.products?.reduce((sum: any, product: any, index: any) => sum + (quantities[index] || product.quantity) * productPrice(index), 0)).toFixed(2)}
-                </div>
-              </div>
-              <hr className="mt-3 border border-gray-300" />
-              <div className="flex items-center mt-5">
-                <div className='w-32 flex-none font-bold text-xl'>Tổng cộng:</div>
-                <div className="flex-none text-xl">
-                  ${(cartData?.products?.reduce((sum: any, product: any, index: any) => sum + (quantities[index] || product.quantity) * productPrice(index), 0)).toFixed(2)}
-                </div>
-              </div>
-              <div className="flex-none mt-5">
-                <button className='p-4 w-full border border-gray-300 uppercase text-lg text-white font-bold rounded-3xl text-[15px] bg-black hover:bg-blue-400'>Tiến hành thanh toán</button>
-              </div>
-            </div>
-          </div>
+          <button className="p-4 border border-gray-300 uppercase text-white font-bold rounded-3xl bg-black hover:bg-blue-400">
+            Tiến hành thanh toán
+          </button>
         </div>
       </div>
     </div>

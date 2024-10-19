@@ -20,5 +20,5 @@ router.post("/carts/decrease", decreaseProductQuantity);
 // Cập nhật số lượng của sản phẩm trong giỏ hàng từ input
 router.post("/carts/update", updateProductQuantity);
 // Xóa item trong giỏ hàng
-router.post("/carts/remove", deleteItemFromCart);
+router.delete("/cart/:userId/product/:productId", deleteItemFromCart);
 module.exports = router;
