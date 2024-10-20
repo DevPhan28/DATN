@@ -82,6 +82,11 @@ function Register() {
                   aria-label="User"
                   {...register('username', {
                     required: 'Username is required',
+                    validate: {
+                      noWhitespace: value =>
+                        !/\s/.test(value) ||
+                        'Username should not contain spaces',
+                    },
                   })}
                   placeholder="Enter your username"
                 />
@@ -92,12 +97,16 @@ function Register() {
 
               {/* Email input */}
               <div className="txt-compact-medium-plus space-y-2 text-ui-fg-subtle">
-                <label htmlFor="user">Email</label>
+                <label htmlFor="email">Email</label>
                 <Input
                   id="email"
-                  aria-label="email"
+                  aria-label="Email"
                   {...register('email', {
                     required: 'Email is required',
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: 'Invalid email format or contains spaces',
+                    },
                   })}
                   placeholder="Enter your email"
                 />
@@ -108,12 +117,17 @@ function Register() {
 
               {/* Password input */}
               <div className="txt-compact-medium-plus space-y-2 text-ui-fg-subtle">
-                <label htmlFor="user">Password</label>
+                <label htmlFor="password">Password</label>
                 <Input
                   id="password"
-                  aria-label="password"
+                  aria-label="Password"
+                  type="password"
                   {...register('password', {
                     required: 'Password is required',
+                    minLength: {
+                      value: 6,
+                      message: 'Password must be at least 6 characters',
+                    },
                   })}
                   placeholder="Enter your password"
                 />
@@ -122,12 +136,13 @@ function Register() {
                 )}
               </div>
 
-              {/* confirmPassword input */}
+              {/* Confirm Password input */}
               <div className="txt-compact-medium-plus space-y-2 text-ui-fg-subtle">
-                <label htmlFor="user">Confirm Password</label>
+                <label htmlFor="confirmPassword">Confirm Password</label>
                 <Input
                   id="confirmPassword"
-                  aria-label="confirmPassword"
+                  aria-label="Confirm Password"
+                  type="password"
                   {...register('confirmPassword', {
                     required: 'Confirm Password is required',
                     validate: value =>
