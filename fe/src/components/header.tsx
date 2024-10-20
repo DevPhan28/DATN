@@ -1,3 +1,4 @@
+import { useFetchCart } from '@/data/cart/useFetchCart';
 import {
   ArrowRightOnRectangle,
   BarsThree,
@@ -7,6 +8,7 @@ import {
   XMark,
 } from '@medusajs/icons';
 import { toast } from '@medusajs/ui';
+import { Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
 const Header = () => {
@@ -25,6 +27,11 @@ const Header = () => {
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+  const userId = localStorage.getItem('userId'); 
+  const { data: cartData, isLoading } = useFetchCart(userId); // Lấy dữ liệu giỏ hàng
+  
+  // Tính tổng số lượng sản phẩm trong giỏ hàng
+  const totalItems = cartData?.products?.reduce((total: any, product: any) => total + product.quantity, 0) || 0;
 
   // Hàm đăng xuất
   const handleLogout = () => {
@@ -53,12 +60,8 @@ const Header = () => {
 
             {/* Menu chính */}
             <div className="hidden flex-wrap sm:flex">
-              <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">
-                Home
-              </a>
-              <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">
-                Shop
-              </a>
+            <Link  to='/' className="px-2 py-2 font-medium hover:text-blue-400">Home</Link>
+            <Link  to='/shop' className="px-2 py-2 font-medium hover:text-blue-400">Shop</Link>
               <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">
                 Features
               </a>
@@ -77,7 +80,15 @@ const Header = () => {
           {/* Khu vực chứa các biểu tượng và biểu tượng menu */}
           <div className="flex items-center space-x-2 text-[19px]">
             <MagnifyingGlassMini className="text-[35px] hover:text-blue-400" />
-            <ShoppingCartSolid className="text-[35px] hover:text-blue-400" />
+            <Link to="/cart" className="relative">
+              <ShoppingCartSolid className='text-[35px] hover:text-blue-400' />
+              {/* Hiển thị tổng số lượng sản phẩm trong giỏ hàng */}
+              {!isLoading && totalItems > 0 && (
+                <span className="absolute -top-3 -right-3 flex items-center justify-center h-5 w-5 text-xs font-bold text-white bg-red-500 rounded-full">
+                  {totalItems}
+                </span>
+              )}
+            </Link>
             <Heart className="text-2xl hover:text-blue-400" />
             <div className="flex items-center sm:hidden">
               <button
