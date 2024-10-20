@@ -6,7 +6,8 @@ const jwt = require("jsonwebtoken");
 const signup = async (req, res) => {
   try {
     // lấy dữ liệu từ client gửi lên : req.body
-    const { username, email, password, avatar } = req.body;
+    const { username, email, password, confirmPassword, avatar } = req.body;
+
     // kiểm tra dữ liệu từ client gửi lên có đúng với schema không
     const { error } = registerSchema.validate(req.body, { abortEarly: false });
     if (error) {
@@ -15,17 +16,20 @@ const signup = async (req, res) => {
         messages,
       });
     }
-    // nếu đúng thì kiểm xem email có tồn tại trong db chưa
+
+    // kiểm tra email có tồn tại trong db chưa
     const existUser = await User.findOne({ email });
     if (existUser) {
       return res.status(400).json({
         messages: "Email đã tồn tại",
       });
     }
-    // nếu chưa thì mã hóa password
+
+    // mã hóa password
     const hashPassword = await bcryptjs.hash(password, 10);
     const role = (await User.countDocuments({})) === 0 ? "admin" : "user";
-    // tạo mới user: User.create({ name, email, password: mã hóa, age, address})
+
+    // tạo mới user
     const user = await User.create({
       username,
       email,
@@ -33,7 +37,9 @@ const signup = async (req, res) => {
       avatar,
       role,
     });
+
     const token = jwt.sign({ userId: user._id }, "123456", { expiresIn: "1h" });
+
     // trả về client thông tin user vừa tạo
     user.password = undefined;
     return res.status(201).json({

@@ -4,7 +4,7 @@ const registerSchema = Joi.object({
   username: Joi.string().required().trim().messages({
     "any.required": "Username Bắt Buộc",
     "string.empty": "Username không được để trống",
-    "string.trim": "Username không được chưa khoảng trắng",
+    "string.trim": "Username không được chứa khoảng trắng",
   }),
   email: Joi.string().email().required().messages({
     "any.required": "Bắt buộc phải nhập Email",
@@ -20,6 +20,7 @@ const registerSchema = Joi.object({
     "any.only": "confirmPassword không khớp",
     "any.required": "confirmPassword bắt buộc phải nhập",
   }),
+  avatar: Joi.string().optional(),
 });
 const signinSchema = Joi.object({
   email: Joi.string().email().required().messages({
