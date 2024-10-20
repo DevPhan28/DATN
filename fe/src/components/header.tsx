@@ -1,16 +1,16 @@
 import { Link } from '@tanstack/react-router';
 import { useState } from 'react';
-import { MagnifyingGlassMini, ShoppingCartSolid, Heart, BarsThree, XMark } from "@medusajs/icons";
+import { MagnifyingGlassMini, ShoppingCartSolid, Heart, BarsThree, XMark, User } from "@medusajs/icons";
 import { useFetchCart } from '@/data/cart/useFetchCart';
 
 
 const Header = () => {
   // Trạng thái hiển thị của menu
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  
+
   const userId = localStorage.getItem('userId'); // Thay thế bằng user ID thực tế
   const { data: cartData, isLoading } = useFetchCart(userId); // Lấy dữ liệu giỏ hàng
-  
+
   // Tính tổng số lượng sản phẩm trong giỏ hàng
   const totalItems = cartData?.products?.reduce((total: any, product: any) => total + product.quantity, 0) || 0;
 
@@ -29,8 +29,8 @@ const Header = () => {
 
             {/* Menu chính */}
             <div className="hidden sm:flex flex-wrap">
-              <Link  to='/' className="px-2 py-2 font-medium hover:text-blue-400">Home</Link>
-              <Link  to='/shop' className="px-2 py-2 font-medium hover:text-blue-400">Shop</Link>
+              <Link to='/' className="px-2 py-2 font-medium hover:text-blue-400">Home</Link>
+              <Link to='/shop' className="px-2 py-2 font-medium hover:text-blue-400">Shop</Link>
               <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">Features</a>
               <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">Blog</a>
               <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">About</a>
@@ -41,7 +41,7 @@ const Header = () => {
           {/* Khu vực chứa các biểu tượng và biểu tượng menu */}
           <div className="text-[19px] flex items-center space-x-2">
             <MagnifyingGlassMini className='text-[35px] hover:text-blue-400' />
-            
+
             <Link to="/cart" className="relative">
               <ShoppingCartSolid className='text-[35px] hover:text-blue-400' />
               {/* Hiển thị tổng số lượng sản phẩm trong giỏ hàng */}
@@ -51,9 +51,9 @@ const Header = () => {
                 </span>
               )}
             </Link>
-
-            <Heart className=' hover:text-blue-400 text-2xl' />
-
+            <Link to='/login'>
+              <User className=' hover:text-blue-400 text-2xl' />
+            </Link>
             {/* Biểu tượng menu nằm bên phải các biểu tượng */}
             <div className="sm:hidden flex items-center">
               <button onClick={toggleMenu} className="flex items-center justify-center p-2 text-gray-500 hover:text-blue-400 focus:outline-none">

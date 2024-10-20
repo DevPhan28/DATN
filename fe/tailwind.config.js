@@ -7,8 +7,13 @@ export default {
     './src/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        poppins: ['Poppins', 'sans-serif'],
+      },
+    },
   },
+
   presets: [require('@medusajs/ui-preset')],
   plugins: [],
 };
