@@ -27,11 +27,15 @@ const Header = () => {
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-  const userId = localStorage.getItem('userId'); 
+  const userId = localStorage.getItem('userId');
   const { data: cartData, isLoading } = useFetchCart(userId); // Lấy dữ liệu giỏ hàng
-  
+
   // Tính tổng số lượng sản phẩm trong giỏ hàng
-  const totalItems = cartData?.products?.reduce((total: any, product: any) => total + product.quantity, 0) || 0;
+  const totalItems =
+    cartData?.products?.reduce(
+      (total: any, product: any) => total + product.quantity,
+      0
+    ) || 0;
 
   // Hàm đăng xuất
   const handleLogout = () => {
@@ -51,17 +55,23 @@ const Header = () => {
         <div className="flex h-16 items-center justify-between">
           <div className="flex gap-x-14">
             <div className="flex items-center">
-              <img
-                className="h-8 w-24"
-                src="https://picsum.photos/id/237/500/100"
-                alt="Your Company"
-              />
+              <img className="w-24" src="/logotachne.png" alt="Your Company" />
             </div>
 
             {/* Menu chính */}
             <div className="hidden flex-wrap sm:flex">
-            <Link  to='/' className="px-2 py-2 font-medium hover:text-blue-400">Home</Link>
-            <Link  to='/shop' className="px-2 py-2 font-medium hover:text-blue-400">Shop</Link>
+              <Link
+                to="/"
+                className="px-2 py-2 font-medium hover:text-blue-400"
+              >
+                Home
+              </Link>
+              <Link
+                to="/shop"
+                className="px-2 py-2 font-medium hover:text-blue-400"
+              >
+                Shop
+              </Link>
               <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">
                 Features
               </a>
@@ -81,10 +91,10 @@ const Header = () => {
           <div className="flex items-center space-x-2 text-[19px]">
             <MagnifyingGlassMini className="text-[35px] hover:text-blue-400" />
             <Link to="/cart" className="relative">
-              <ShoppingCartSolid className='text-[35px] hover:text-blue-400' />
+              <ShoppingCartSolid className="text-[35px] hover:text-blue-400" />
               {/* Hiển thị tổng số lượng sản phẩm trong giỏ hàng */}
               {!isLoading && totalItems > 0 && (
-                <span className="absolute -top-3 -right-3 flex items-center justify-center h-5 w-5 text-xs font-bold text-white bg-red-500 rounded-full">
+                <span className="absolute -right-3 -top-3 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
                   {totalItems}
                 </span>
               )}

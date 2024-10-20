@@ -139,12 +139,7 @@ function ProductList() {
                         <DropdownMenu.Item className="gap-x-2">
                           <Prompt>
                             <Prompt.Trigger asChild>
-                              <Button
-                                variant="secondary"
-                                onClick={() => openDeletePrompt(product._id)}
-                              >
-                                Delete
-                              </Button>
+                              <span onClick={() => openDeletePrompt(product._id)}>Delete</span>
                             </Prompt.Trigger>
                             <Prompt.Content>
                               <Prompt.Header>
@@ -181,7 +176,11 @@ function ProductList() {
                     )}
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">{product.price.toFixed(2)}</Table.Cell>
-                  <Table.Cell className="font-semibold text-ui-fg-base">{product.category?.name}</Table.Cell>
+                  <Table.Cell className="font-semibold text-ui-fg-base">
+                    <div className='className="text-xs w-fit rounded-md border border-ui-tag-blue-border bg-ui-tag-blue-bg p-1 text-ui-tag-blue-text'>
+                      {product.category?.name}
+                    </div>
+                  </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">{product.discount} %</Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">{product.totalCountInStock} items</Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">{product.description}</Table.Cell>

@@ -7,6 +7,8 @@ type Variant = {
 };
 
 type Category = {
+  data: Category | PromiseLike<Category>;
+  status: number;
   _id: string;
   name: string;
 };
@@ -27,12 +29,6 @@ type Product = {
 };
 
 type ProductParams = {
-<<<<<<< Updated upstream
-  keyWord?: string;
-  page: number;
-  limit: number;
-};
-=======
     keyWord?: string
     page: number
     limit: number
@@ -43,7 +39,6 @@ type ProductParams = {
     sort?: string;
 }
 
->>>>>>> Stashed changes
 type MetaData = {
   totalItems: number;
 };

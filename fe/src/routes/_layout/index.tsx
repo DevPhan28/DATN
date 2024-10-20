@@ -1,7 +1,6 @@
 import CardProduct from '@/components/cardProduct';
 import Category from '@/components/Category';
 import Slider from '@/components/Slider';
-import { Button } from '@medusajs/ui';
 import { useNavigate } from '@tanstack/react-router';
 import { createFileRoute } from '@tanstack/react-router';
 

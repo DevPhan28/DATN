@@ -1,20 +1,41 @@
+import instance from '@/api/axiosIntance';
 import Header from '@/components/layoutAdmin/header/header';
+import { useFetchCategoryById } from '@/data/category/useCategoryList';
+import useCategoryMutation from '@/data/category/useCategoryMutation';
+import { useFetchCategory } from '@/data/products/useProductList';
 import { Button, Input } from '@medusajs/ui';
 import { createFileRoute, useNavigate, useParams } from '@tanstack/react-router';
-import { useForm, SubmitHandler } from 'react-hook-form';
 import { useEffect } from 'react';
-import useCategoryMutation from '@/data/category/useCategoryMutation';
-import instance from '@/api/axiosIntance';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
+// Define the Route with corrected loader
 export const Route = createFileRoute('/dashboard/_layout/category/$id/edit')({
+  loader: async ({ params }) => {
+    const { id } = params;
+    console.log('Loader called with id:', id); // Debug
+    if (!id) {
+      throw new Error('Category ID is missing');
+    }
+    try {
+      const response = await instance.get(`categorys/${id}`); // Ensure correct endpoint
+      console.log('Loader response data:', response.data); // Debug
+      return response.data as Category; // Return single Category
+    } catch (error) {
+      console.error('Error fetching category:', error);
+      throw new Response('Failed to fetch category', { status: 500 });
+    }
+  },
   component: EditCategory
 });
 
 function EditCategory() {
   const navigate = useNavigate();
-  const { id } = useParams({from : '/dashboard/_layout/category/$id/edit'}); // Get ID from URL params
+  const { id } = useParams({ from: '/dashboard/_layout/category/$id/edit' }); // Get ID from URL params
 
   const { updateCategory } = useCategoryMutation();
+
+  // Access loader data using useRouteLoaderData
+  const categories = Route.useLoaderData();
 
   const {
     register,
@@ -27,30 +48,28 @@ function EditCategory() {
     }
   });
 
+  // Populate the form with the fetched category data
   useEffect(() => {
-    const fetchCategoryData = async (_id: string) => {
-      try {
-        const response = await instance.get(`/categories/${_id}`);
-        setValue('name', response.data.data.name); // Set category name into form
-      } catch (error) {
-        console.error('Failed to fetch category data:', error);
-      }
-    };
-
-    fetchCategoryData();
-  }, [_id, setValue]); // Fetch category data when ID changes
+    if (categories) {
+      // Use setValue to update individual fields in the form
+      setValue('name', categories.name);
+    }
+  }, [categories, setValue]);
 
   const onUpdateCategory: SubmitHandler<Category> = async (data) => {
     try {
       // Call API to update category
-      await updateCategory.mutateAsync({ _id, data });
-      
+      await updateCategory.mutateAsync({ id, data });
       // Navigate back to the category list after updating
       navigate({ to: '/dashboard/category' });
     } catch (error) {
       console.error('Failed to update category:', error);
+      // Optionally, display an error message to the user
     }
   };
+
+  // Handle cases where category data might not be available
+  if (!categories) return <div>Loading...</div>;
 
   return (
     <div className="h-screen overflow-y-auto">

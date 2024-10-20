@@ -25,8 +25,8 @@ function AddCategory() {
   const onCreateCategory: SubmitHandler<Category> = async (data) => {
     try {
       // Send API request to create category
-      await instance.post('/categorys', { name: data.name });
-      
+      await instance.post('/categories', { name: data.name });
+
       // Redirect to categories list after creation
       navigate({ to: '/dashboard/category' });
     } catch (error) {

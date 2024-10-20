@@ -4,13 +4,11 @@ import banner3 from '../assets/images/banner-03.jpg';
 const Category = () => {
   return (
     <div>
-      <div className="slider-container">{/* Nội dung slider */}</div>
-
-      <div className="mt-20">
+      <div className="mt-16">
         <div className="max-w-6xl m-auto">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
             {/* Women Category */}
-            <div className="aspect-w-16 aspect-h-9 group relative overflow-hidden rounded-lg border border-gray-200">
+            <div className="aspect-w-16 aspect-h-9 group relative overflow-hidden border border-gray-200">
               <img
                 src={banner1}
                 alt="Women"
@@ -35,7 +33,7 @@ const Category = () => {
             </div>
 
             {/* Men Category */}
-            <div className="aspect-w-16 aspect-h-9 group relative overflow-hidden rounded-lg border border-gray-200">
+            <div className="aspect-w-16 aspect-h-9 group relative overflow-hidden border border-gray-200">
               <img
                 src={banner2}
                 alt="Men"
@@ -60,7 +58,7 @@ const Category = () => {
             </div>
 
             {/* Accessories Category */}
-            <div className="aspect-w-16 aspect-h-9 group relative overflow-hidden rounded-lg border border-gray-200">
+            <div className="aspect-w-16 aspect-h-9 group relative overflow-hidden border border-gray-200">
               <img
                 src={banner3}
                 alt="Accessories"

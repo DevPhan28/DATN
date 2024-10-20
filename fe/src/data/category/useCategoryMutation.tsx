@@ -12,7 +12,7 @@ const useCategoryMutation = (
     // Tạo danh mục (Create Category)
     const createCategory = useMutation({
         mutationFn: (data: Category) =>
-            instance.post<{ id: string }>('/categories', data),
+            instance.post('/categories', data),
 
         onSuccess: async (result) => {
             await queryClient.invalidateQueries({
@@ -33,7 +33,7 @@ const useCategoryMutation = (
     // Cập nhật danh mục (Update Category)
     const updateCategory = useMutation({
         mutationFn: ({ id, data }: { id: string, data: Category }) =>
-            instance.put(`/categories/${id}`, data),
+            instance.put(`/categorys/${id}`, data),
 
         onSuccess: async () => {
             await queryClient.invalidateQueries({

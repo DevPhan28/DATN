@@ -355,7 +355,9 @@ function AddBrand() {
                 {fields.map((item, index) => (
                   <div key={item.id} className="flex space-x-4 mb-4">
                     <div className="flex-1 space-y-3">
-                      <label className="block text-sm font-medium text-ui-fg-base">Size</label>
+                      <label className="block text-sm font-medium text-ui-fg-base">
+                        <span className="text-ui-tag-red-text">*</span> Size
+                      </label>
                       <Input
                         placeholder="e.g., M"
                         size="base"
@@ -370,7 +372,9 @@ function AddBrand() {
                       )}
                     </div>
                     <div className="flex-1 space-y-3">
-                      <label className="block text-sm font-medium text-ui-fg-base">Color</label>
+                      <label className="block text-sm font-medium text-ui-fg-base">
+                        <span className="text-ui-tag-red-text">*</span> Color
+                      </label>
                       <Input
                         placeholder="e.g., Red"
                         size="base"
@@ -385,7 +389,9 @@ function AddBrand() {
                       )}
                     </div>
                     <div className="flex-1 space-y-3">
-                      <label className="block text-sm font-medium text-ui-fg-base">Price ($)</label>
+                      <label className="block text-sm font-medium text-ui-fg-base">
+                        <span className="text-ui-tag-red-text">*</span> Price ($)
+                      </label>
                       <Input
                         type="number"
                         placeholder="e.g., 199.99"
@@ -402,7 +408,9 @@ function AddBrand() {
                       )}
                     </div>
                     <div className="flex-1 space-y-3">
-                      <label className="block text-sm font-medium text-ui-fg-base">Count In Stock</label>
+                      <label className="block text-sm font-medium text-ui-fg-base">
+                        <span className="text-ui-tag-red-text">*</span> CountInStock
+                      </label>
                       <Input
                         type="number"
                         placeholder="e.g., 100"
@@ -419,7 +427,9 @@ function AddBrand() {
                       )}
                     </div>
                     <div className="flex-1 space-y-3">
-                      <label className="block text-sm font-medium text-ui-fg-base">SKU</label>
+                      <label className="block text-sm font-medium text-ui-fg-base">
+                        <span className="text-ui-tag-red-text">*</span> SKU
+                      </label>
                       <Input
                         placeholder="e.g., SKU123"
                         size="base"

@@ -49,7 +49,7 @@ const Slider = () => {
         <img
           src={slides[currentIndex].url}
           alt={slides[currentIndex].alt}
-          className="h-auto w-full object-cover transition duration-500 ease-in-out"
+          className="h-[500px] w-full object-cover transition duration-500 ease-in-out"
         />
       </div>
 
