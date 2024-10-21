@@ -38,8 +38,9 @@ export default function useRegisterMutation() {
         localStorage.setItem('token', data.token);
       }
 
-      // Điều hướng đến trang đăng nhập sau khi đăng ký thành công
-      void navigate({ to: '/login' });
+      setTimeout(() => {
+        void navigate({ to: '/login' });
+      }, 3000);
     },
     onError: (error: Error) => {
       toast.error('Đăng ký thất bại', {

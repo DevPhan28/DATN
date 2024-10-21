@@ -1,6 +1,7 @@
 import useLoginMutation from '@/data/auth/useLoginMutation';
 import { Button, Input } from '@medusajs/ui';
 import { createFileRoute, Link, redirect } from '@tanstack/react-router';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 export const Route = createFileRoute('/login')({
@@ -13,18 +14,25 @@ export const Route = createFileRoute('/login')({
 });
 
 function Login() {
+  const [loginError, setLoginError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm<Iuser>();
   const { loginMutation } = useLoginMutation();
 
   const onSubmit = (data: Iuser) => {
     const userData = { ...data };
-
-    loginMutation.mutate(userData); // Gọi mutate mà không cần xử lý ở đây
+    setLoginError(null);
+    loginMutation.mutate(userData, {
+      onError: (error: any) => {
+        setLoginError(
+          error?.response?.data?.message ||
+            'Đăng nhập thất bại. Vui lòng kiểm tra email hoặc mật khẩu của bạn'
+        );
+      },
+    });
   };
 
   return (
@@ -116,6 +124,9 @@ function Login() {
                 )}
               </div>
             </div>
+            {loginError && (
+              <div className="text-center text-red-500">{loginError}</div>
+            )}
 
             {/* Submit button */}
             <Button

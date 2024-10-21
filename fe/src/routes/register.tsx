@@ -1,6 +1,7 @@
 import useRegisterMutation from '@/data/auth/useRegisterMutation';
 import { Button, Input } from '@medusajs/ui';
 import { createFileRoute, Link } from '@tanstack/react-router';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 export const Route = createFileRoute('/register')({
@@ -8,22 +9,35 @@ export const Route = createFileRoute('/register')({
 });
 
 function Register() {
+  const [registerError, setRegisterError] = useState<string | null>(null);
+  const [registerSuccess, setRegisterSuccess] = useState<string | null>(null); // Thêm trạng thái cho thành công
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-    reset,
     watch,
   } = useForm<Iuser>();
   const { registerMutation } = useRegisterMutation();
   const onSubmit = (data: Iuser) => {
     const userData = { ...data };
-    console.log('Data to be sent:', userData);
-    registerMutation.mutate(userData);
-    reset();
+    setRegisterError(null);
+    setRegisterSuccess(null); // Đặt lại trạng thái thành công
+    registerMutation.mutate(userData, {
+      onSuccess: () => {
+        setRegisterSuccess(
+          'Đăng ký thành công! Chào mừng bạn đến với Fashion Zone'
+        );
+      },
+      onError: (error: any) => {
+        setRegisterError(
+          error?.response?.data?.message ||
+            'Đăng ký thất bại. User hoặc email đã tồn tại'
+        );
+      },
+    });
   };
 
-  // Lấy giá trị của password để so sánh với confirmPassword
   const password = watch('password');
 
   return (
@@ -54,7 +68,7 @@ function Register() {
           <img
             src="./logotachne.png"
             alt="fashionzone-logo"
-            className="mb-6 max-h-24 w-24 object-cover md:mb-8 md:w-32"
+            className="mb-6 w-24 object-cover md:mb-8 md:w-32"
           />
 
           {/* Welcome message */}
@@ -157,7 +171,14 @@ function Register() {
                 )}
               </div>
             </div>
-
+            {registerError && (
+              <div className="text-center text-red-500">{registerError}</div>
+            )}
+            {registerSuccess && (
+              <div className="text-center text-green-500">
+                {registerSuccess}
+              </div>
+            )}
             {/* Signup button */}
             <Button
               type="submit"
