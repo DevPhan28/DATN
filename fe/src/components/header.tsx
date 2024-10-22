@@ -5,6 +5,7 @@ import {
   Heart,
   MagnifyingGlassMini,
   ShoppingCartSolid,
+  User,
   XMark,
 } from '@medusajs/icons';
 import { toast } from '@medusajs/ui';
@@ -46,6 +47,7 @@ const Header = () => {
     setIsLoggedIn(false);
     toast.success('Đăng xuất', {
       description: 'Bạn đã đăng xuất thành công',
+      duration: 900,
     });
   };
 
@@ -100,6 +102,7 @@ const Header = () => {
               )}
             </Link>
             <Heart className="text-2xl hover:text-blue-400" />
+
             <div className="flex items-center sm:hidden">
               <button
                 onClick={toggleMenu}
@@ -112,10 +115,14 @@ const Header = () => {
                 )}
               </button>
             </div>
-            {isLoggedIn && (
+            {isLoggedIn ? (
               <button onClick={handleLogout}>
                 <ArrowRightOnRectangle />
               </button>
+            ) : (
+              <Link to="/login">
+                <User className="text-2xl hover:text-blue-400" />
+              </Link>
             )}
           </div>
         </div>

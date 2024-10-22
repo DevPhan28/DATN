@@ -50,11 +50,10 @@ function AddBrand() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileInput2Ref = useRef<HTMLInputElement>(null);
 
-
   const { createProduct } = useProductMutation();
 
   const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let selectedGallery: File[] = []
+    let selectedGallery: File[] = [];
     if (e.target.files && e.target.files.length > 0) {
       // const file = e.target.files[];
       for (let file of e.target.files) {
@@ -64,7 +63,7 @@ function AddBrand() {
     }
   };
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
+    const files = e.target.files;
     if (files && files.length > 0) {
       setSelectedImage(files[0]);
     }
@@ -97,31 +96,32 @@ function AddBrand() {
     totalCountInStock: number;
     discount: number;
     variants: Variant[];
-  }> = async (data) => {
+  }> = async data => {
     if (!selectedImage) return;
 
     const totalCountInStock = data.variants.reduce((total, variant) => {
       console.log(typeof variant.countInStock);
-      return total + Number(variant.countInStock)
+      return total + Number(variant.countInStock);
     }, 0);
 
     const formDataThumbnail = new FormData();
     const formDataGallery = new FormData();
     formDataThumbnail.append('image', selectedImage);
     for (let file of selectedGallery) {
-      formDataGallery.append("photos", file);
+      formDataGallery.append('photos', file);
     }
 
-
     try {
-      const [responseThumbnail, responseGallery] = await Promise.all([await axios.post(
-        `http://localhost:8080/api/upload-thumbnail-product`,
-        formDataThumbnail
-      ), await axios.post(
-        `http://localhost:8080/api/upload-gallery-product`,
-        formDataGallery
-      )
-      ])
+      const [responseThumbnail, responseGallery] = await Promise.all([
+        await axios.post(
+          `http://localhost:8080/api/upload-thumbnail-product`,
+          formDataThumbnail
+        ),
+        await axios.post(
+          `http://localhost:8080/api/upload-gallery-product`,
+          formDataGallery
+        ),
+      ]);
       if (responseThumbnail?.data && responseGallery.data) {
         createProduct.mutate({
           ...data,
@@ -131,8 +131,7 @@ function AddBrand() {
         });
         reset();
       }
-      console.log("totalCountInStock", totalCountInStock);
-
+      console.log('totalCountInStock', totalCountInStock);
     } catch (error) {
       throw new Error('Failed to upload image');
     }
@@ -144,7 +143,12 @@ function AddBrand() {
       <form onSubmit={handleSubmit(onCreateProduct)} className="m-8">
         <div className="my-3 flex justify-between">
           <div className="w-[330px]">
-            <Input placeholder="Search" id="search-input" size='small' type="search" />
+            <Input
+              placeholder="Search"
+              id="search-input"
+              size="small"
+              type="search"
+            />
           </div>
           <div className="flex gap-2">
             <Button variant="secondary" type="button">
@@ -156,9 +160,12 @@ function AddBrand() {
           </div>
         </div>
         <div className="rounded-lg border bg-ui-bg-base p-7">
-          <h1 className="text-2xl font-medium text-ui-fg-base">General Information</h1>
+          <h1 className="text-2xl font-medium text-ui-fg-base">
+            General Information
+          </h1>
           <p className="mb-4 text-sm font-normal text-ui-fg-subtle">
-            Provide the basic brand details like name, category, price, discount, and description.
+            Provide the basic brand details like name, category, price,
+            discount, and description.
           </p>
 
           <div className="space-y-4">
@@ -175,7 +182,11 @@ function AddBrand() {
                     required: 'Product name is required',
                   })}
                 />
-                {errors.name && <span className="text-xs text-red-500">{errors.name.message}</span>}
+                {errors.name && (
+                  <span className="text-xs text-red-500">
+                    {errors.name.message}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -194,11 +205,12 @@ function AddBrand() {
               >
                 <div className="mb-2 flex items-center">
                   <ArrowDownTray className="mr-1 h-5 w-5" />
-                  <p className="text-xs font-medium text-ui-fg-base">Import Files</p>
+                  <p className="text-xs font-medium text-ui-fg-base">
+                    Import Files
+                  </p>
                   <input
                     type="file"
                     id="image"
-
                     ref={fileInputRef}
                     accept=".jpg, .png"
                     onChange={handleThumbnailChange}
@@ -213,10 +225,17 @@ function AddBrand() {
                 {selectedImage && (
                   <div className="mb-3 flex items-center justify-between gap-3 rounded-lg border bg-ui-bg-subtle-hover px-2 py-3">
                     <div>
-                      <p className="text-sm font-normal text-ui-fg-base">{selectedImage.name}</p>
-                      <p className="text-xs font-normal text-ui-fg-subtle">{formatFileSize(selectedImage.size)}</p>
+                      <p className="text-sm font-normal text-ui-fg-base">
+                        {selectedImage.name}
+                      </p>
+                      <p className="text-xs font-normal text-ui-fg-subtle">
+                        {formatFileSize(selectedImage.size)}
+                      </p>
                     </div>
-                    <XMark className="cursor-pointer" onClick={() => setSelectedImage(null)} />
+                    <XMark
+                      className="cursor-pointer"
+                      onClick={() => setSelectedImage(null)}
+                    />
                   </div>
                 )}
               </div>
@@ -238,7 +257,11 @@ function AddBrand() {
                     min: { value: 0, message: 'Price must be positive' },
                   })}
                 />
-                {errors.price && <span className="text-xs text-red-500">{errors.price.message}</span>}
+                {errors.price && (
+                  <span className="text-xs text-red-500">
+                    {errors.price.message}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -250,14 +273,14 @@ function AddBrand() {
                 </label>
                 <div className="w-full">
                   <Select
-                    onValueChange={(value) => setValue('category', value)}
+                    onValueChange={value => setValue('category', value)}
                     defaultValue=""
                   >
                     <Select.Trigger>
                       <Select.Value placeholder="Select a category" />
                     </Select.Trigger>
                     <Select.Content>
-                      {categories.map((category) => (
+                      {categories.map(category => (
                         <Select.Item key={category._id} value={category._id}>
                           {category.name}
                         </Select.Item>
@@ -265,7 +288,11 @@ function AddBrand() {
                     </Select.Content>
                   </Select>
                 </div>
-                {errors.category && <span className="text-xs text-red-500">{errors.category.message}</span>}
+                {errors.category && (
+                  <span className="text-xs text-red-500">
+                    {errors.category.message}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -321,7 +348,9 @@ function AddBrand() {
               >
                 <div className="mb-2 flex items-center">
                   <ArrowDownTray className="mr-1 h-5 w-5" />
-                  <p className="text-xs font-medium text-ui-fg-base">Import Files</p>
+                  <p className="text-xs font-medium text-ui-fg-base">
+                    Import Files
+                  </p>
                   <input
                     type="file"
                     id="photos"
@@ -337,23 +366,37 @@ function AddBrand() {
                 </p>
               </button>
               <div className="mt-5">
-                {selectedGallery.length > 0 && selectedGallery.map((item) => (
-                  <div className="mb-3 flex items-center justify-between gap-3 rounded-lg border bg-ui-bg-subtle-hover px-2 py-3">
-                    <div>
-                      <p className="text-sm font-normal text-ui-fg-base">{item.name}</p>
-                      <p className="text-xs font-normal text-ui-fg-subtle">{formatFileSize(item.size)}</p>
+                {selectedGallery.length > 0 &&
+                  selectedGallery.map(item => (
+                    <div className="mb-3 flex items-center justify-between gap-3 rounded-lg border bg-ui-bg-subtle-hover px-2 py-3">
+                      <div>
+                        <p className="text-sm font-normal text-ui-fg-base">
+                          {item.name}
+                        </p>
+                        <p className="text-xs font-normal text-ui-fg-subtle">
+                          {formatFileSize(item.size)}
+                        </p>
+                      </div>
+                      <XMark
+                        className="cursor-pointer"
+                        onClick={() =>
+                          setSelectedGallery(prev =>
+                            prev.filter(file => file.name != item.name)
+                          )
+                        }
+                      />
                     </div>
-                    <XMark className="cursor-pointer" onClick={() => setSelectedGallery((prev => prev.filter(file => file.name != item.name)))} />
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
             {/* Variants */}
             <div>
-              <h2 className="mt-5 text-lg font-medium text-ui-fg-base">Variants</h2>
-              <div className='mt-4'>
+              <h2 className="mt-5 text-lg font-medium text-ui-fg-base">
+                Variants
+              </h2>
+              <div className="mt-4">
                 {fields.map((item, index) => (
-                  <div key={item.id} className="flex space-x-4 mb-4">
+                  <div key={item.id} className="mb-4 flex space-x-4">
                     <div className="flex-1 space-y-3">
                       <label className="block text-sm font-medium text-ui-fg-base">
                         <span className="text-ui-tag-red-text">*</span> Size
@@ -390,7 +433,8 @@ function AddBrand() {
                     </div>
                     <div className="flex-1 space-y-3">
                       <label className="block text-sm font-medium text-ui-fg-base">
-                        <span className="text-ui-tag-red-text">*</span> Price ($)
+                        <span className="text-ui-tag-red-text">*</span> Price
+                        ($)
                       </label>
                       <Input
                         type="number"
@@ -409,16 +453,23 @@ function AddBrand() {
                     </div>
                     <div className="flex-1 space-y-3">
                       <label className="block text-sm font-medium text-ui-fg-base">
-                        <span className="text-ui-tag-red-text">*</span> CountInStock
+                        <span className="text-ui-tag-red-text">*</span>{' '}
+                        CountInStock
                       </label>
                       <Input
                         type="number"
                         placeholder="e.g., 100"
                         size="base"
-                        {...register(`variants.${index}.countInStock` as const, {
-                          required: 'CountInStock is required',
-                          min: { value: 0, message: 'CountInStock must be positive' },
-                        })}
+                        {...register(
+                          `variants.${index}.countInStock` as const,
+                          {
+                            required: 'CountInStock is required',
+                            min: {
+                              value: 0,
+                              message: 'CountInStock must be positive',
+                            },
+                          }
+                        )}
                       />
                       {errors.variants?.[index]?.countInStock && (
                         <span className="text-xs text-red-500">
@@ -436,12 +487,23 @@ function AddBrand() {
                         {...register(`variants.${index}.sku` as const)}
                       />
                     </div>
-                    <Trash className='mt-9 text-red-500 cursor-pointer' onClick={() => remove(index)} />
+                    <Trash
+                      className="mt-9 cursor-pointer text-red-500"
+                      onClick={() => remove(index)}
+                    />
                   </div>
                 ))}
                 <Button
-                  variant='secondary'
-                  onClick={() => append({ size: '', color: '', price: 0, countInStock: 0, sku: '' })}
+                  variant="secondary"
+                  onClick={() =>
+                    append({
+                      size: '',
+                      color: '',
+                      price: 0,
+                      countInStock: 0,
+                      sku: '',
+                    })
+                  }
                 >
                   <PlusMini /> Add Variant
                 </Button>
@@ -449,8 +511,8 @@ function AddBrand() {
             </div>
           </div>
         </div>
-      </form >
-    </div >
+      </form>
+    </div>
   );
 }
 

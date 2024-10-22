@@ -2,7 +2,12 @@
 import Header from '@/components/layoutAdmin/header/header';
 import { useFetchProducts } from '@/data/products/useProductList';
 import useProductMutation from '@/data/products/useProductMutation';
-import { Adjustments, ArrowUpTray, Plus, EllipsisVertical } from '@medusajs/icons';
+import {
+  Adjustments,
+  ArrowUpTray,
+  Plus,
+  EllipsisVertical,
+} from '@medusajs/icons';
 import { Button, DropdownMenu, Input, Prompt, Table } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
@@ -16,23 +21,34 @@ export const Route = createFileRoute('/dashboard/_layout/products/')({
 function ProductList() {
   const [currentPage, setCurrentPage] = useState(0);
   const navigate = useNavigate();
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(
+    null
+  );
 
-  const { data: listproduct, error, isLoading } = useFetchProducts({
+  const {
+    data: listproduct,
+    error,
+    isLoading,
+  } = useFetchProducts({
     limit: pageSize,
     page: currentPage + 1,
   });
 
   const pageCount = useMemo(() => {
-    return listproduct?.meta ? Math.ceil(listproduct.meta.totalItems / pageSize) : 0;
+    return listproduct?.meta
+      ? Math.ceil(listproduct.meta.totalItems / pageSize)
+      : 0;
   }, [listproduct]);
 
-  const canNextPage = useMemo(() => currentPage < pageCount - 1, [currentPage, pageCount]);
+  const canNextPage = useMemo(
+    () => currentPage < pageCount - 1,
+    [currentPage, pageCount]
+  );
   const canPreviousPage = useMemo(() => currentPage > 0, [currentPage]);
 
   const nextPage = () => {
     if (canNextPage) {
-      setCurrentPage((prev) => prev + 1);
+      setCurrentPage(prev => prev + 1);
     }
   };
 
@@ -40,17 +56,23 @@ function ProductList() {
 
   const previousPage = () => {
     if (canPreviousPage) {
-      setCurrentPage((prev) => prev - 1);
+      setCurrentPage(prev => prev - 1);
     }
   };
 
   const currentProducts = useMemo(() => {
-    return listproduct?.data?.map(product => ({
-      ...product,
-      totalCountInStock: product.countInStock !== undefined
-        ? product.countInStock
-        : product.variants?.reduce((total, variant) => total + (variant.countInStock || 0), 0) || 0
-    })) ?? [];
+    return (
+      listproduct?.data?.map(product => ({
+        ...product,
+        totalCountInStock:
+          product.countInStock !== undefined
+            ? product.countInStock
+            : product.variants?.reduce(
+                (total, variant) => total + (variant.countInStock || 0),
+                0
+              ) || 0,
+      })) ?? []
+    );
   }, [listproduct]);
 
   const handleDelete = () => {
@@ -59,9 +81,9 @@ function ProductList() {
         onSuccess: () => {
           closeDeletePrompt(); // Đóng hộp thoại xác nhận
         },
-        onError: (error) => {
+        onError: error => {
           console.error('Error deleting product:', error);
-        }
+        },
       });
     }
   };
@@ -79,7 +101,7 @@ function ProductList() {
 
   return (
     <div className="h-screen overflow-y-auto">
-      <Header title='Product List' pathname='/' />
+      <Header title="Product List" pathname="/" />
       <div className="relative flex justify-between px-6 py-4">
         <div className="relative w-80">
           <Input
@@ -99,28 +121,45 @@ function ProductList() {
             <ArrowUpTray className="text-black" />
             Export list
           </Button>
-          <Button variant="primary" onClick={() => navigate({ to: "/dashboard/products/create" })}>
+          <Button
+            variant="primary"
+            onClick={() => navigate({ to: '/dashboard/products/create' })}
+          >
             <Plus />
             Create Product
           </Button>
         </div>
       </div>
 
-      <div className="border-gray-200 mx-6 flex flex-col gap-1 rounded-lg border bg-ui-bg-base px-6 py-4">
+      <div className="mx-6 flex flex-col gap-1 rounded-lg border border-gray-200 bg-ui-bg-base px-6 py-4">
         <Table>
           <Table.Row className="bg-ui-bg-base-hover">
             <Table.HeaderCell className="font-semibold text-ui-fg-base"></Table.HeaderCell>
-            <Table.HeaderCell className="font-semibold text-ui-fg-base">Product Name</Table.HeaderCell>
-            <Table.HeaderCell className="font-semibold text-ui-fg-base">Image</Table.HeaderCell>
-            <Table.HeaderCell className="font-semibold text-ui-fg-base">Price ($)</Table.HeaderCell>
-            <Table.HeaderCell className="font-semibold text-ui-fg-base">Category</Table.HeaderCell>
-            <Table.HeaderCell className="font-semibold text-ui-fg-base">Discount (%)</Table.HeaderCell>
-            <Table.HeaderCell className="font-semibold text-ui-fg-base">Count In Stock</Table.HeaderCell>
-            <Table.HeaderCell className="font-semibold text-ui-fg-base">Description</Table.HeaderCell>
+            <Table.HeaderCell className="font-semibold text-ui-fg-base">
+              Product Name
+            </Table.HeaderCell>
+            <Table.HeaderCell className="font-semibold text-ui-fg-base">
+              Image
+            </Table.HeaderCell>
+            <Table.HeaderCell className="font-semibold text-ui-fg-base">
+              Price ($)
+            </Table.HeaderCell>
+            <Table.HeaderCell className="font-semibold text-ui-fg-base">
+              Category
+            </Table.HeaderCell>
+            <Table.HeaderCell className="font-semibold text-ui-fg-base">
+              Discount (%)
+            </Table.HeaderCell>
+            <Table.HeaderCell className="font-semibold text-ui-fg-base">
+              Count In Stock
+            </Table.HeaderCell>
+            <Table.HeaderCell className="font-semibold text-ui-fg-base">
+              Description
+            </Table.HeaderCell>
           </Table.Row>
           <Table.Body>
             {currentProducts.length > 0 ? (
-              currentProducts.map((product) => (
+              currentProducts.map(product => (
                 <Table.Row
                   key={product._id}
                   className="[&_td:last-child]:w-[10%] [&_td:last-child]:whitespace-nowrap"
@@ -139,13 +178,18 @@ function ProductList() {
                         <DropdownMenu.Item className="gap-x-2">
                           <Prompt>
                             <Prompt.Trigger asChild>
-                              <span onClick={() => openDeletePrompt(product._id)}>Delete</span>
+                              <span
+                                onClick={() => openDeletePrompt(product._id)}
+                              >
+                                Delete
+                              </span>
                             </Prompt.Trigger>
                             <Prompt.Content>
                               <Prompt.Header>
                                 <Prompt.Title>Delete Product</Prompt.Title>
                                 <Prompt.Description>
-                                  Are you sure you want to delete this product? This action cannot be undone.
+                                  Are you sure you want to delete this product?
+                                  This action cannot be undone.
                                 </Prompt.Description>
                               </Prompt.Header>
                               <Prompt.Footer>
@@ -159,31 +203,48 @@ function ProductList() {
                             </Prompt.Content>
                           </Prompt>
                         </DropdownMenu.Item>
-                        <DropdownMenu.Item className="gap-x-2" onClick={() => void navigate({ to: `/dashboard/products/${product._id}/edit` })}>
+                        <DropdownMenu.Item
+                          className="gap-x-2"
+                          onClick={() =>
+                            void navigate({
+                              to: `/dashboard/products/${product._id}/edit`,
+                            })
+                          }
+                        >
                           Edit
                         </DropdownMenu.Item>
                       </DropdownMenu.Content>
                     </DropdownMenu>
                   </Table.Cell>
-                  <Table.Cell className="font-semibold text-ui-fg-base">{product.name}</Table.Cell>
+                  <Table.Cell className="font-semibold text-ui-fg-base">
+                    {product.name}
+                  </Table.Cell>
                   <Table.Cell>
                     {product.image && (
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="h-10 w-9 object-contain rounded-lg"
+                        className="h-10 w-9 rounded-lg object-contain"
                       />
                     )}
                   </Table.Cell>
-                  <Table.Cell className="font-semibold text-ui-fg-base">{product.price.toFixed(2)}</Table.Cell>
+                  <Table.Cell className="font-semibold text-ui-fg-base">
+                    {product.price.toFixed(2)}
+                  </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     <div className='className="text-xs w-fit rounded-md border border-ui-tag-blue-border bg-ui-tag-blue-bg p-1 text-ui-tag-blue-text'>
                       {product.category?.name}
                     </div>
                   </Table.Cell>
-                  <Table.Cell className="font-semibold text-ui-fg-base">{product.discount} %</Table.Cell>
-                  <Table.Cell className="font-semibold text-ui-fg-base">{product.totalCountInStock} items</Table.Cell>
-                  <Table.Cell className="font-semibold text-ui-fg-base">{product.description}</Table.Cell>
+                  <Table.Cell className="font-semibold text-ui-fg-base">
+                    {product.discount} %
+                  </Table.Cell>
+                  <Table.Cell className="font-semibold text-ui-fg-base">
+                    {product.totalCountInStock} items
+                  </Table.Cell>
+                  <Table.Cell className="font-semibold text-ui-fg-base">
+                    {product.description}
+                  </Table.Cell>
                 </Table.Row>
               ))
             ) : (

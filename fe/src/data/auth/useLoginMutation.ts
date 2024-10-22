@@ -37,7 +37,7 @@ export default function useLoginMutation() {
     },
 
     onSuccess: data => {
-      if (data.status_code === 401) {
+      if (data.status_code === 400) {
         toast.error('Đăng nhập', {
           description: 'Thông tin đăng nhập không chính xác',
         });
@@ -46,6 +46,7 @@ export default function useLoginMutation() {
       setTimeout(() => {
         toast.success('Đăng nhập', {
           description: 'Bạn đã đăng nhập thành công',
+          duration: 1000,
         });
       }, 100);
       // Lưu trữ thông tin người dùng và token (nếu có)
@@ -56,6 +57,10 @@ export default function useLoginMutation() {
 
       // Điều hướng dựa vào vai trò của người dùng
       if (data.user.role === 'admin') {
+        toast.success('Đăng nhập', {
+          description: 'Bạn đã đăng nhập thành công vào trang quản trị',
+          duration: 1000,
+        });
         void navigate({ to: '/dashboard' });
       } else {
         void navigate({ to: '/' });
