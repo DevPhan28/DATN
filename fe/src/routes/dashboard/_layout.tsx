@@ -1,5 +1,5 @@
 import Sidebar from '@/components/layoutAdmin/sidebar';
-import { toast } from '@medusajs/ui';
+import { toast, Toaster } from '@medusajs/ui';
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/dashboard/_layout')({
@@ -24,12 +24,11 @@ export const Route = createFileRoute('/dashboard/_layout')({
       throw redirect({
         to: '/',
       });
-    } else {
-      toast.success('Đăng nhập thành công');
     }
   },
   component: () => (
     <div className="flex min-h-screen min-w-full flex-row">
+      <Toaster position="top-right" className="mt-7" />
       <Sidebar />
       <div className="w-full overflow-hidden bg-ui-bg-subtle pb-6">
         <Outlet />

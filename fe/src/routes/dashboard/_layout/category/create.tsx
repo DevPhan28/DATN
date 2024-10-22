@@ -1,13 +1,12 @@
 import Header from '@/components/layoutAdmin/header/header';
-import { Button, Input } from '@medusajs/ui';
+import { Button, Input, toast } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import instance from '@/api/axiosIntance';
 
 export const Route = createFileRoute('/dashboard/_layout/category/create')({
-  component: AddCategory
+  component: AddCategory,
 });
-
 
 function AddCategory() {
   const navigate = useNavigate();
@@ -15,18 +14,21 @@ function AddCategory() {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
   } = useForm<Category>({
     defaultValues: {
-      name: ''
-    }
+      name: '',
+    },
   });
 
-  const onCreateCategory: SubmitHandler<Category> = async (data) => {
+  const onCreateCategory: SubmitHandler<Category> = async data => {
     try {
       // Send API request to create category
       await instance.post('/categories', { name: data.name });
-
+      toast.success('Create successful', {
+        description: 'Create category successful!',
+        duration: 1000,
+      });
       // Redirect to categories list after creation
       navigate({ to: '/dashboard/category' });
     } catch (error) {
@@ -55,7 +57,11 @@ function AddCategory() {
             </button>
           </div>
           <div className="flex gap-2">
-            <Button variant="secondary" type="button" onClick={() => navigate({ to: '/dashboard/category' })}>
+            <Button
+              variant="secondary"
+              type="button"
+              onClick={() => navigate({ to: '/dashboard/category' })}
+            >
               Cancel
             </Button>
             <Button variant="primary" type="submit">
@@ -68,7 +74,7 @@ function AddCategory() {
           <h1 className="text-2xl font-medium text-ui-fg-base">
             General Information
           </h1>
-          <p className="text-sm mb-4 font-normal text-ui-fg-subtle">
+          <p className="mb-4 text-sm font-normal text-ui-fg-subtle">
             Provide the category name.
           </p>
 
@@ -82,9 +88,15 @@ function AddCategory() {
                 <Input
                   placeholder="Type here"
                   size="base"
-                  {...register('name', { required: 'Category name is required' })}
+                  {...register('name', {
+                    required: 'Category name is required',
+                  })}
                 />
-                {errors.name && <span className="text-red-500 text-xs">{errors.name.message}</span>}
+                {errors.name && (
+                  <span className="text-xs text-red-500">
+                    {errors.name.message}
+                  </span>
+                )}
               </div>
             </div>
           </div>

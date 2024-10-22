@@ -61,7 +61,9 @@ export default function useLoginMutation() {
           description: 'Bạn đã đăng nhập thành công vào trang quản trị',
           duration: 1000,
         });
-        void navigate({ to: '/dashboard' });
+        setTimeout(() => {
+          void navigate({ to: '/dashboard' });
+        }, 2000); // Hoãn điều hướng để thông báo có thời gian hiển thị
       } else {
         void navigate({ to: '/' });
       }
