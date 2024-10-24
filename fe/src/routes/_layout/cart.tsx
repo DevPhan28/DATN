@@ -270,7 +270,9 @@ function Cart() {
                 .toFixed(2)}
             </span>
           </div>
-          <button className="mt-5 w-full whitespace-nowrap rounded-3xl bg-black p-4 font-bold uppercase text-white hover:bg-blue-600">
+          <button 
+            onClick={() => navigate({ to: '/checkout' })} 
+           className="mt-5 w-full whitespace-nowrap rounded-3xl bg-black p-4 font-bold uppercase text-white hover:bg-blue-600">
             product to checkout
           </button>
         </div>

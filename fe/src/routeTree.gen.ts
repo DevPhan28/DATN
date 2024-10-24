@@ -20,6 +20,7 @@ import { Route as LayoutIndexImport } from './routes/_layout/index'
 import { Route as DashboardSetttingImport } from './routes/dashboard/settting'
 import { Route as DashboardLayoutImport } from './routes/dashboard/_layout'
 import { Route as LayoutShopImport } from './routes/_layout/shop'
+import { Route as LayoutCheckoutImport } from './routes/_layout/checkout'
 import { Route as LayoutCartImport } from './routes/_layout/cart'
 import { Route as LayoutAboutImport } from './routes/_layout/about'
 import { Route as DashboardLayoutIndexImport } from './routes/dashboard/_layout/index'
@@ -74,6 +75,11 @@ const DashboardLayoutRoute = DashboardLayoutImport.update({
 
 const LayoutShopRoute = LayoutShopImport.update({
   path: '/shop',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutCheckoutRoute = LayoutCheckoutImport.update({
+  path: '/checkout',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -170,6 +176,13 @@ declare module '@tanstack/react-router' {
       path: '/cart'
       fullPath: '/cart'
       preLoaderRoute: typeof LayoutCartImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/checkout': {
+      id: '/_layout/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof LayoutCheckoutImport
       parentRoute: typeof LayoutImport
     }
     '/_layout/shop': {
@@ -271,6 +284,7 @@ declare module '@tanstack/react-router' {
 interface LayoutRouteChildren {
   LayoutAboutRoute: typeof LayoutAboutRoute
   LayoutCartRoute: typeof LayoutCartRoute
+  LayoutCheckoutRoute: typeof LayoutCheckoutRoute
   LayoutShopRoute: typeof LayoutShopRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
   LayoutIdDetailproductRoute: typeof LayoutIdDetailproductRoute
@@ -279,6 +293,7 @@ interface LayoutRouteChildren {
 const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutAboutRoute: LayoutAboutRoute,
   LayoutCartRoute: LayoutCartRoute,
+  LayoutCheckoutRoute: LayoutCheckoutRoute,
   LayoutShopRoute: LayoutShopRoute,
   LayoutIndexRoute: LayoutIndexRoute,
   LayoutIdDetailproductRoute: LayoutIdDetailproductRoute,
@@ -331,6 +346,7 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/about': typeof LayoutAboutRoute
   '/cart': typeof LayoutCartRoute
+  '/checkout': typeof LayoutCheckoutRoute
   '/shop': typeof LayoutShopRoute
   '/dashboard': typeof DashboardLayoutRouteWithChildren
   '/dashboard/settting': typeof DashboardSetttingRoute
@@ -350,6 +366,7 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/about': typeof LayoutAboutRoute
   '/cart': typeof LayoutCartRoute
+  '/checkout': typeof LayoutCheckoutRoute
   '/shop': typeof LayoutShopRoute
   '/dashboard': typeof DashboardLayoutIndexRoute
   '/dashboard/settting': typeof DashboardSetttingRoute
@@ -370,6 +387,7 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/_layout/about': typeof LayoutAboutRoute
   '/_layout/cart': typeof LayoutCartRoute
+  '/_layout/checkout': typeof LayoutCheckoutRoute
   '/_layout/shop': typeof LayoutShopRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/dashboard/_layout': typeof DashboardLayoutRouteWithChildren
@@ -393,6 +411,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/about'
     | '/cart'
+    | '/checkout'
     | '/shop'
     | '/dashboard'
     | '/dashboard/settting'
@@ -411,6 +430,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/about'
     | '/cart'
+    | '/checkout'
     | '/shop'
     | '/dashboard'
     | '/dashboard/settting'
@@ -429,6 +449,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/_layout/about'
     | '/_layout/cart'
+    | '/_layout/checkout'
     | '/_layout/shop'
     | '/dashboard'
     | '/dashboard/_layout'
@@ -482,6 +503,7 @@ export const routeTree = rootRoute
       "children": [
         "/_layout/about",
         "/_layout/cart",
+        "/_layout/checkout",
         "/_layout/shop",
         "/_layout/",
         "/_layout/$id/detailproduct"
@@ -499,6 +521,10 @@ export const routeTree = rootRoute
     },
     "/_layout/cart": {
       "filePath": "_layout/cart.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/checkout": {
+      "filePath": "_layout/checkout.tsx",
       "parent": "/_layout"
     },
     "/_layout/shop": {
