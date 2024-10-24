@@ -38,7 +38,8 @@ const productSchema = new mongoose.Schema(
     slug: {
       type: String,
       unique: true,
-      lowercase: true, // Thêm lowercase để đảm bảo slug đồng nhất
+      lowercase: true,
+      required: true,
     },
     category: {
       type: mongoose.Schema.Types.ObjectId,

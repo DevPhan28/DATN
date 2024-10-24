@@ -5,9 +5,10 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import instance from '@/api/axiosIntance';
 import { toast } from '@medusajs/ui';
 
-export const Route = createFileRoute('/_layout/$id/detailproduct')({
+export const Route = createFileRoute('/_layout/$slug/detailproduct')({
+  // Đổi :id thành :slug
   component: () => {
-    const { id } = useParams({ from: '/_layout/$id/detailproduct' });
+    const { slug } = useParams({ from: '/_layout/$slug/detailproduct' }); // Lấy slug từ params
     const navigate = useNavigate();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -22,21 +23,24 @@ export const Route = createFileRoute('/_layout/$id/detailproduct')({
     // Lấy thông tin sản phẩm từ API
     useEffect(() => {
       const fetchProduct = async () => {
+        setLoading(true); // Bắt đầu loading
         try {
-          const response = await instance.get(`/products/${id}`);
-          if (response.data && response.data.data) {
-            setProduct(response.data.data);
+          // Sử dụng slug trong URL
+          const response = await instance.get(`/products/${slug}`);
+          if (response.data && response.data.product) {
+            setProduct(response.data.product);
           } else {
             throw new Error('Dữ liệu sản phẩm không có');
           }
         } catch (err) {
           setError('Có lỗi khi lấy sản phẩm');
         } finally {
-          setLoading(false);
+          setLoading(false); // Kết thúc loading
         }
       };
+
       fetchProduct();
-    }, [id]);
+    }, [slug]); // Chạy lại khi slug thay đổi
 
     // Mutation thêm sản phẩm vào giỏ hàng
     const addItemToCart = useMutation({

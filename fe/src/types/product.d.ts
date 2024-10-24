@@ -16,7 +16,8 @@ type Category = {
 type Product = {
   _id: string;
   name: string;
-  price: number;  
+  price: number;
+  slug: string;
   image: string;
   category: string[]; // Thay đổi từ string thành Category
   gallery?: string[];
@@ -29,14 +30,14 @@ type Product = {
 };
 
 type ProductParams = {
-    keyWord?: string
-    page: number
-    limit: number
-  }
-  interface CategoryParams {
-    name?: string;
-    parentCategoryId?: string;
-    sort?: string;
+  keyWord?: string;
+  page: number;
+  limit: number;
+};
+interface CategoryParams {
+  name?: string;
+  parentCategoryId?: string;
+  sort?: string;
 }
 
 type MetaData = {

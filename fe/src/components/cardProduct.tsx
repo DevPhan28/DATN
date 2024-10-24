@@ -152,7 +152,7 @@ const CardProduct: React.FC = () => {
                 className="h-80 w-full transform transition-transform duration-500"
               />
               <Link
-                to={`${product._id}/detailproduct`}
+                to={`${product.slug ? product.slug : product._id}/detailproduct`} // Sử dụng slug nếu có
                 className="quick-view duration-900 absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-full bg-white px-4 py-2 opacity-0 shadow transition-all hover:bg-black hover:text-white group-hover:translate-y-[-100px] group-hover:opacity-100"
               >
                 Quick View

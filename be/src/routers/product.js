@@ -18,13 +18,13 @@ const {
   updateProduct,
   deleteProduct,
   getProductAll,
-
+  getProductBySlug,
 } = require("../controllers/product");
 
 const router = express.Router();
 router.get(`/products`, getProduct);
-
-router.get(`/products/:id`, getProductById);
+router.get(`/products/:slug`, getProductBySlug);
+// router.get(`/products/:id`, getProductById);
 
 // router.get(`/products/:categoryId/related`, relatedProduct);
 router.post(`/products`, addProduct);
@@ -46,5 +46,5 @@ router.post(
 router.put(`/products/:id`, updateProduct);
 
 router.delete(`/products/:id`, deleteProduct);
-router.get('/product', getProductAll)
+router.get("/product", getProductAll);
 module.exports = router;

@@ -1,3 +1,5 @@
+const CreateSlugByTitle = require("../config/slug"); // Không sử dụng destructuring
+
 const Product = require("../models/product");
 const getProduct = async (req, res) => {
   // Lấy limit và page từ query, với giá trị mặc định là 10 và 1
@@ -51,98 +53,60 @@ const getProductById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-const addProduct = async (req, res) => {
-  // lấy file ảnh từ req ( req image) 1 anh
-  // lấy nhiều ảnh gallery
-  // use cloudary push links lên nhận vè url ảnh trên cloud
+const getProductBySlug = async (req, res) => {
   try {
-    // Giả sử req.body có một trường variants chứa danh sách các biến thể
-    const { variants, ...productData } = req.body;
-    // Tính tổng countInStock từ các biến thể
-    const totalCountInStock = variants.reduce((total, variant) => {
-      return total + Number(variant.countInStock);
-    }, 0);
-    // Tạo sản phẩm mới với totalCountInStock
-    const product = new Product({
-      ...productData,
-      countInStock: totalCountInStock,
-      variants, // Nếu bạn cũng muốn lưu biến thể
-    });
-    const data = await product.save();
-    return res.status(201).json({
-      message: "Tạo sản phẩm thành công",
-      data,
-    });
+    const productSlug = req.params.slug; // Lấy slug từ tham số đường dẫn
+
+    // Tìm sản phẩm theo slug
+    const product = await Product.findOne({ slug: productSlug });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found." });
+    }
+
+    return res.status(200).json({ product });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
-// const addProduct = async (req, res) => {
-//   try {
-//     // Destructure variants and other product data from the request body
-//     const { variants, ...productData } = req.body;
+const addProduct = async (req, res) => {
+  try {
+    // Lấy file ảnh từ req (req.image) và nhiều ảnh gallery
+    // Giả sử req.body có một trường variants chứa danh sách các biến thể
+    const { variants, ...productData } = req.body;
 
-//     // Validate that variants exist and are in an array format
-//     if (!variants || !Array.isArray(variants)) {
-//       return res.status(400).json({ message: "Variants must be provided as an array." });
-//     }
+    // Kiểm tra xem có variants không và tính tổng countInStock
+    const totalCountInStock =
+      variants?.reduce((total, variant) => {
+        return total + Number(variant.countInStock);
+      }, 0) || 0; // Nếu không có variants, totalCountInStock sẽ là 0
 
-//     // Validate each variant and ensure countInStock is a number
-//     for (let i = 0; i < variants.length; i++) {
-//       const variant = variants[i];
+    // Tạo slug từ name
+    const slug = CreateSlugByTitle(productData.name); // Đảm bảo sử dụng productData.name
 
-//       // Check for the presence of countInStock
-//       if (variant.countInStock === undefined || variant.countInStock === null) {
-//         return res.status(400).json({ message: `countInStock is missing in variant at index ${i}.` });
-//       }
+    // Tạo sản phẩm mới với totalCountInStock
+    const product = new Product({
+      ...productData,
+      slug, // Gán slug vào sản phẩm
+      countInStock: totalCountInStock,
+      variants, // Nếu bạn cũng muốn lưu biến thể
+    });
 
-//       // Ensure countInStock is a number
-//       if (typeof variant.countInStock !== 'number') {
-//         // Attempt to parse it if it's a string
-//         const parsedCount = Number(variant.countInStock);
-//         if (isNaN(parsedCount)) {
-//           return res.status(400).json({ message: `countInStock must be a number in variant at index ${i}.` });
-//         }
-//         variants[i].countInStock = parsedCount;
-//       }
+    // Lưu sản phẩm vào cơ sở dữ liệu
+    const data = await product.save();
 
-//       // Optional: Validate other fields in variant as needed
-//       // Example:
-//       // if (!variant.size || !variant.color) {
-//       //   return res.status(400).json({ message: `Size and color are required in variant at index ${i}.` });
-//       // }
-//     }
-
-//     // Calculate total countInStock from variants
-//     const totalCountInStock = variants.reduce((total, variant) => total + variant.countInStock, 0);
-
-//     // Optional: Handle image uploads here if necessary
-//     // Example: Upload image to Cloudinary and get the URL
-//     // const imageUploadResult = await uploadImageToCloudinary(req.file);
-//     // productData.image = imageUploadResult.url;
-
-//     // Create a new product instance with the aggregated countInStock
-//     const product = new Product({
-//       ...productData,
-//       countInStock: totalCountInStock,
-//       variants, // Save variants if you intend to keep them in the product document
-//     });
-
-//     // Save the product to the database
-//     const savedProduct = await product.save();
-
-//     // Respond with success and the saved product data
-//     return res.status(201).json({
-//       message: "Tạo sản phẩm thành công",
-//       data: savedProduct,
-//     });
-//   } catch (error) {
-//     console.error("Error in addProduct:", error);
-//     return res.status(500).json({ message: "Đã xảy ra lỗi khi tạo sản phẩm.", error: error.message });
-//   }
-// };
+    return res.status(201).json({
+      message: "Tạo sản phẩm thành công",
+      data,
+    });
+  } catch (error) {
+    // Trả về thông báo lỗi cụ thể hơn nếu có thể
+    return res
+      .status(500)
+      .json({ message: error.message || "Có lỗi xảy ra khi tạo sản phẩm." });
+  }
+};
 
 const deleteProduct = async (req, res) => {
   try {
@@ -209,7 +173,6 @@ const uploadGallery = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Server error" + error });
   }
-
 };
 const getProductAll = async (req, res) => {
   try {
@@ -249,4 +212,5 @@ module.exports = {
   uploadThumbnail,
   uploadGallery,
   getProductAll,
+  getProductBySlug,
 };
