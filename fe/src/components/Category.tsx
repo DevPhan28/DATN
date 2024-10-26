@@ -4,8 +4,8 @@ import banner3 from '../assets/images/banner-03.jpg';
 const Category = () => {
   return (
     <div>
-      <div className="mt-16">
-        <div className="max-w-6xl m-auto">
+      <div className="mt-16 ">
+        <div className="max-w-6xl m-auto p-5 xl:p-0 lg:p-5 md:p-5 sm:p-5">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
             {/* Women Category */}
             <div className="aspect-w-16 aspect-h-9 group relative overflow-hidden border border-gray-200">

@@ -11,6 +11,7 @@ import {
   MagnifyingGlass,
   Heart,
   ShoppingCartSolid,
+  ChevronRightMini,
 } from '@medusajs/icons';
 import FilterBar from '@/components/FilterBar';
 export const Route = createFileRoute('/_layout/shop')({
@@ -68,8 +69,13 @@ function Shop() {
     : [];
 
   return (
-    <div className="container mx-auto p-4 sm:p-8">
-      <div className="mb-4 flex flex-wrap items-center justify-between sm:mb-8">
+    <div className="max-w-6xl m-auto mt-5 p-5 xl:p-0 lg:p-5 md:p-5 sm:p-5">
+      <div className='mt-5 flex gap-2 items-center text-[#666666]'>
+        <a href="#" className="hover:underline">Home</a>
+        <ChevronRightMini />
+        <a href="#" className="hover:underline">Shop</a>
+      </div>
+      <div className="mb-4 flex flex-wrap items-center justify-between sm:mb-8 mt-5">
         <div className="flex flex-wrap space-x-4 sm:space-x-8">
           <button
             onClick={() => setSelectedCategory(null)}
@@ -143,7 +149,7 @@ function Shop() {
                 className="h-80 w-full transform transition-transform duration-500"
               />
               <Link
-                to={`/${product._id}/detailproduct`}
+                to={`/${product.slug ? product.slug : product._id}/quickviewProduct`}
                 className="quick-view duration-900 absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-full bg-white px-4 py-2 opacity-0 shadow transition-all hover:bg-black hover:text-white group-hover:translate-y-[-100px] group-hover:opacity-100"
               >
                 Quick View
@@ -151,6 +157,11 @@ function Shop() {
               <h2 className="mt-2 flex items-center justify-between text-gray-500">
                 {product.name}
                 <div className="flex space-x-2">
+                  <Link
+                    to={`/${product.slug ? product.slug : product._id}/detailproduct`}
+                  >
+                    <ShoppingCartSolid />
+                  </Link>
                   <Heart />
                 </div>
               </h2>

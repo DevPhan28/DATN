@@ -52,7 +52,7 @@ const Header = () => {
   };
 
   return (
-    <div className="m-auto max-w-6xl">
+    <div className="m-auto max-w-6xl  p-5 xl:p-0 lg:p-5 md:p-5 sm:p-5">
       <nav className="relative">
         <div className="flex h-16 items-center justify-between">
           <div className="flex gap-x-14">
@@ -61,7 +61,7 @@ const Header = () => {
             </div>
 
             {/* Menu chính */}
-            <div className="hidden flex-wrap sm:flex">
+            <div className="hidden flex-wrap sm:flex lg:gap-5 lg:text-[16px] md:text-[14px]  sm:gap-1 sm:text-[10px]">
               <Link
                 to="/"
                 className="px-2 py-2 font-medium hover:text-blue-400"
@@ -74,8 +74,9 @@ const Header = () => {
               >
                 Shop
               </Link>
-              <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">
+              <a href="#" className="relative px-2 py-2 font-medium hover:text-blue-400">
                 Features
+                <span className='bg-red-400 text-white uppercase rounded-xl text-xs w-9 absolute mt-[-8px] left-14 text-center'>Hot</span>
               </a>
               <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">
                 Blog
@@ -91,9 +92,9 @@ const Header = () => {
 
           {/* Khu vực chứa các biểu tượng và biểu tượng menu */}
           <div className="flex items-center space-x-2 text-[19px]">
-            <MagnifyingGlassMini className="text-[35px] hover:text-blue-400" />
+            <i className="fa-solid fa-magnifying-glass text-[20px] hover:text-blue-400 p-3"></i>
             <Link to="/cart" className="relative">
-              <ShoppingCartSolid className="text-[35px] hover:text-blue-400" />
+              <i className="fa-solid fa-cart-shopping text-[20px] hover:text-blue-400"></i>
               {/* Hiển thị tổng số lượng sản phẩm trong giỏ hàng */}
               {!isLoading && totalItems > 0 && (
                 <span className="absolute -right-3 -top-3 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
@@ -101,8 +102,7 @@ const Header = () => {
                 </span>
               )}
             </Link>
-            <Heart className="text-2xl hover:text-blue-400" />
-
+            <i className="fa-regular fa-heart text-[20px] hover:text-blue-400 p-3"></i>
             <div className="flex items-center sm:hidden">
               <button
                 onClick={toggleMenu}
@@ -121,7 +121,7 @@ const Header = () => {
               </button>
             ) : (
               <Link to="/login">
-                <User className="text-2xl hover:text-blue-400" />
+                <i className="fa-solid fa-user text-[20px] hover:text-blue-400"></i>
               </Link>
             )}
           </div>

@@ -24,6 +24,11 @@ type Product = {
 };
 
 const CardProduct: React.FC = () => {
+  const [isFavorite, setIsFavorite] = useState(false);
+  //click trái tim thành color red
+  const toggleFavorite = () => {
+    setIsFavorite(!isFavorite);
+  };
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null); // Thêm trạng thái để theo dõi danh mục được chọn
   const [showFilter, setShowFilter] = useState<boolean>(false);
   const [showSearch, setShowSearch] = useState<boolean>(false);
@@ -74,7 +79,7 @@ const CardProduct: React.FC = () => {
     : [];
 
   return (
-    <div className="container mx-auto p-4 sm:p-8">
+    <div className="max-w-6xl m-auto mt-10 p-5 xl:p-0 lg:p-5 md:p-5 sm:p-5">
       <h1 className="mb-4 text-2xl font-bold sm:mb-8 sm:text-4xl">
         PRODUCT OVERVIEW
       </h1>
@@ -152,15 +157,25 @@ const CardProduct: React.FC = () => {
                 className="h-80 w-full transform transition-transform duration-500"
               />
               <Link
-                to={`${product.slug ? product.slug : product._id}/detailproduct`} // Sử dụng slug nếu có
+                to={`${product.slug ? product.slug : product._id}/quickviewProduct`} // Sử dụng slug nếu có
                 className="quick-view duration-900 absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-full bg-white px-4 py-2 opacity-0 shadow transition-all hover:bg-black hover:text-white group-hover:translate-y-[-100px] group-hover:opacity-100"
               >
                 Quick View
               </Link>
               <h2 className="mt-2 flex items-center justify-between text-gray-500">
                 {product.name}
-                <div className="flex space-x-2">
-                  <Heart />
+                <div className="flex space-x-2 gap-1">
+                  <Link
+                    to={`/${product.slug ? product.slug : product._id}/detailproduct`}
+                    className='hover:text-blue-300'
+                  >
+                    <ShoppingCartSolid />
+                  </Link>
+                  <i
+                    onClick={toggleFavorite}
+                    className={`text-[18px] cursor-pointer ${isFavorite ? 'fa-solid fa-heart text-red-500' : 'fa-regular fa-heart hover:text-blue-300'
+                      }`}
+                  ></i>
                 </div>
               </h2>
               <p className="mt-2 flex justify-start text-gray-600">
