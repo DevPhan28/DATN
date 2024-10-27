@@ -1,7 +1,7 @@
-import Order from '../models/order';
-import { StatusCodes } from "http-status-codes";
+const Order = require('../models/order') ;
+const { StatusCodes } = require("http-status-codes") ;
 
-export const createOrder = async (req, res) => {
+ const createOrder = async (req, res) => {
     try {
         const { userId, items, totalPrice, customerInfo } = req.body;
         const order = await Order.create({ userId, items, totalPrice, customerInfo });
@@ -11,7 +11,7 @@ export const createOrder = async (req, res) => {
     }
 };
 //lấy all thông tin đặt hàng
-export const getOrders = async (req, res) => {
+ const getOrders = async (req, res) => {
     try {
         const order = await Order.find();
         if (order.length === 0) {
@@ -23,7 +23,7 @@ export const getOrders = async (req, res) => {
     }
 };
 //lấy 1 id
-export const getOrderById = async (req, res) => {
+ const getOrderById = async (req, res) => {
     try {
         const { userId, orderId } = req.params;
         const order = await Order.findOne({ userId, _id: orderId });
@@ -35,7 +35,7 @@ export const getOrderById = async (req, res) => {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 };
-export const updateOrder = async (req, res) => {
+const updateOrder = async (req, res) => {
     try {
         const { orderId } = req.params;
         const order = await Order.findOneAndUpdate({ _id: orderId }, req.body, {
@@ -49,7 +49,7 @@ export const updateOrder = async (req, res) => {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 };
-export const deleteOrder = async (req, res) => {
+const deleteOrder = async (req, res) => {
     try {
         const { userId, orderId } = req.params;
         const order = await Order.findOne({ _id: orderId });
@@ -64,3 +64,11 @@ export const deleteOrder = async (req, res) => {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 }
+
+module.exports = {
+    getOrderById,
+    getOrders,
+    updateOrder,
+    deleteOrder,
+    createOrder
+  };

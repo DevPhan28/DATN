@@ -13,9 +13,17 @@ function Cart() {
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
   const { data: cartData, isLoading, error } = useFetchCart(userId);
-  const { deleteItemFromCart, increaseQuantity, decreaseQuantity, updateQuantity } = useCartMutation();
+  const {
+    deleteItemFromCart,
+    increaseQuantity,
+    decreaseQuantity,
+    updateQuantity,
+  } = useCartMutation();
 
   const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
+  const [selectedProducts, setSelectedProducts] = useState<{
+    [key: number]: boolean;
+  }>({});
 
   if (isLoading) {
     return <div>Đang tải...</div>;
@@ -38,7 +46,9 @@ function Cart() {
   if (error) {
     return (
       <div className="m-auto max-w-6xl p-10 text-center">
-        <h2 className="mb-5 text-xl font-bold">Giỏ hàng của bạn hiện tại trống!</h2>
+        <h2 className="mb-5 text-xl font-bold">
+          Giỏ hàng của bạn hiện tại trống!
+        </h2>
         <button
           onClick={() => navigate({ to: '/' })}
           className="rounded-2xl border border-gray-300 bg-gray-100 px-6 py-2 hover:bg-blue-400"
@@ -55,20 +65,11 @@ function Cart() {
       ...prev,
       [index]: quantity,
     }));
-
-    const product = cartData?.products[index];
-    if (product) {
-      updateQuantity.mutate({
-        userId: userId || '',
-        productId: product.productId,
-        variantId: product.variantId,
-        quantity,
-      });
-    }
   };
 
   const incrementQuantity = (index: number) => {
-    const newQuantity = (quantities[index] || cartData?.products[index].quantity) + 1;
+    const newQuantity =
+      (quantities[index] || cartData?.products[index].quantity) + 1;
     setQuantities(prev => ({
       ...prev,
       [index]: newQuantity,
@@ -83,9 +84,11 @@ function Cart() {
       });
     }
   };
-
   const decrementQuantity = (index: number) => {
-    const newQuantity = Math.max((quantities[index] || cartData?.products[index].quantity) - 1, 0);
+    const newQuantity = Math.max(
+      (quantities[index] || cartData?.products[index].quantity) - 1,
+      0
+    );
     setQuantities(prev => ({
       ...prev,
       [index]: newQuantity,
@@ -100,7 +103,6 @@ function Cart() {
       });
     }
   };
-
   const productPrice = (index: number) => {
     const product = cartData?.products[index];
     const variantPrice = product?.priceAtTime ?? 0;
@@ -115,18 +117,53 @@ function Cart() {
     });
   };
 
+  // Hàm để thay đổi trạng thái checkbox
+  const toggleSelectProduct = (index: number) => {
+    setSelectedProducts(prev => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
+
+  // Tính tổng giá trị của các sản phẩm đã chọn
+  const totalSelectedPrice = cartData?.products
+    .reduce((sum, product, index) => {
+      if (selectedProducts[index]) {
+        return (
+          sum + (quantities[index] || product.quantity) * productPrice(index)
+        );
+      }
+      return sum;
+    }, 0)
+    .toFixed(2);
+  const getSelectedItems = () => {
+    return cartData.products.filter((_, index) => selectedProducts[index]);
+  };
+
+  const handleCheckout = () => {
+    const selectedItems = getSelectedItems();
+    navigate({
+      to: '/checkout',
+      state: { selectedItems },
+    });
+  };
   return (
     <div className="mx-auto mb-10 max-w-6xl">
       <div className="mt-5 p-2">
         <div className="flex w-full">
-          <Link to="/" className="w-14 flex-none">Home</Link>
-          <div className="w-7 flex-initial"><i className="fa-solid fa-chevron-right"></i></div>
+          <Link to="/" className="w-14 flex-none">
+            Home
+          </Link>
+          <div className="w-7 flex-initial">
+            <i className="fa-solid fa-chevron-right"></i>
+          </div>
           <div className="flex-initial text-gray-500">Cart</div>
         </div>
       </div>
       <div className="mt-10 flex flex-col gap-8 md:flex-row md:gap-12 lg:gap-16">
         <div className="w-full flex-none md:w-[70%]">
           <div className="flex items-center justify-between border-b bg-gray-100 px-4 py-3 font-bold uppercase text-gray-600">
+            <div className="flex-1 text-center">Select</div>
             <div className="flex-1 text-center">Product</div>
             <div className="flex-1 text-center">Price</div>
             <div className="flex-1 text-center">Quantity</div>
@@ -136,15 +173,37 @@ function Cart() {
           </div>
 
           {cartData?.products?.map((product, index) => (
-            <div key={product.productId} className="flex items-center justify-between border-b p-4">
+            <div
+              key={product.productId}
+              className="flex items-center justify-between border-b p-4"
+            >
+              <div className="flex-1 text-center">
+                <input
+                  type="checkbox"
+                  checked={selectedProducts[index] || false}
+                  onChange={() => toggleSelectProduct(index)}
+                />
+              </div>
               <div className="flex flex-none items-center gap-x-2">
-                <img src={product.image} alt={product.name} className="h-auto w-12" />
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="h-auto w-12"
+                />
                 <div>{product.name}</div>
               </div>
 
-              <div className="flex-1 text-center">${productPrice(index).toFixed(2)}</div>
+              <div className="flex-1 text-center">
+                ${productPrice(index).toFixed(2)}
+              </div>
               <div className="flex flex-1 items-center justify-center">
-                <button onClick={() => decrementQuantity(index)} className="rounded-l-md border px-2 hover:bg-blue-400">-</button>
+                <button
+                  onClick={() => decrementQuantity(index)}
+                  className="rounded-l-md border px-2 hover:bg-blue-400"
+                >
+                  -
+                </button>
+
                 <input
                   type="text"
                   min="0"
@@ -152,23 +211,39 @@ function Cart() {
                   onChange={e => handleQuantityChange(index, e.target.value)}
                   className="mx-2 w-12 border text-center"
                 />
-                <button onClick={() => incrementQuantity(index)} className="rounded-r-md border px-2 hover:bg-blue-400">+</button>
+                <button
+                  onClick={() => incrementQuantity(index)}
+                  className="rounded-r-md border px-2 hover:bg-blue-400"
+                >
+                  +
+                </button>
+              </div>
+              <div className="flex-1 text-center">
+                <div className="flex-1 text-center">
+                  Size: {product.size || 'Không có'}
+                </div>
+                <div className="flex-1 text-center">
+                  Color: {product.color || 'Không có'}
+                </div>
               </div>
 
               <div className="flex-1 text-center">
-                <div>Size: {product.size || 'Không có'}</div>
-                <div>Color: {product.color || 'Không có'}</div>
+                $
+                {(quantities[index] || product.quantity) *
+                  productPrice(index).toFixed(2)}
               </div>
-
-              <div className="flex-1 text-center">${((quantities[index] || product.quantity) * productPrice(index)).toFixed(2)}</div>
               <div className="flex-1 text-center">
-                <button className="text-red-500 hover:text-red-700" onClick={() => handleDeleteProduct(product.productId, product.variantId)}>
+                <button
+                  className="text-red-500 hover:text-red-700"
+                  onClick={() =>
+                    handleDeleteProduct(product.productId, product.variantId)
+                  }
+                >
                   <Trash />
                 </button>
               </div>
             </div>
           ))}
-
           <div className="flex items-center gap-x-5 border-b p-6">
             <CurrencyDollarSolid className="text-red-500" />
             <div>Voucher reduced to 50k</div>
@@ -186,7 +261,12 @@ function Cart() {
             </a>
           </div>
 
-          {/* Apply Coupon and Update Cart */}
+          {/* Show total price of selected products */}
+          <div className="flex items-center justify-between p-4 font-bold">
+            <span>Tổng giá trị sản phẩm đã chọn:</span>
+            <span>${totalSelectedPrice || '0.00'}</span>
+          </div>
+
           <div className="border-t p-4">
             <div className="flex justify-around">
               <input
@@ -203,8 +283,6 @@ function Cart() {
             </div>
           </div>
         </div>
-
-        {/* Cart Summary */}
         <div className="w-full rounded-md border p-10 md:w-[30%] lg:max-w-lg">
           <h2 className="mb-4 whitespace-nowrap text-xl font-bold uppercase">
             Cart Totals
@@ -214,41 +292,51 @@ function Cart() {
             <span className="text-lg">
               $
               {cartData?.products
-                ?.reduce(
+                .reduce(
                   (sum, product, index) =>
                     sum +
                     (quantities[index] || product.quantity) *
-                    productPrice(index),
+                      productPrice(index),
                   0
                 )
                 .toFixed(2)}
             </span>
           </div>
           <hr className="border-gray-300" />
-          <div className="mt-5 flex items-center justify-between">
-            <span className="text-xl font-bold">Subtotal:</span>
-            <span className="text-xl">
-              $
-              {cartData?.products
-                ?.reduce(
-                  (sum, product, index) =>
-                    sum +
-                    (quantities[index] || product.quantity) *
-                    productPrice(index),
-                  0
-                )
-                .toFixed(2)}
-            </span>
-          </div>
+          <div className="flexitems-center mt-5 justify-between">
+            {' '}
+            <span className="font-medium">Total:</span>{' '}
+            <span className="text-lg font-bold">
+              {' '}
+              ${totalSelectedPrice || '0.00'}{' '}
+            </span>{' '}
+          </div>{' '}
+          // Trong nút Checkout ở trang Cart
           <button
-            onClick={() => navigate({ to: '/checkout' })}
-            className="mt-5 w-full whitespace-nowrap rounded-3xl bg-black p-4 font-bold uppercase text-white hover:bg-blue-600">
-            product to checkout
+            onClick={() =>
+              navigate({
+                to: '/checkout',
+                state: {
+                  selectedItems: cartData.products.map(product => ({
+                    productId: product.productId, // Đảm bảo đây là `productId` mà backend yêu cầu
+                    variantId: product.variantId, // Truyền thêm variantId nếu cần
+                    name: product.name,
+                    price: product.price,
+                    quantity: product.quantity,
+                    image: product.image, // Thêm hình ảnh sản phẩm nếu cần
+                    size: product.size,
+                    color: product.color,
+                  })),
+                },
+              })
+            }
+            className="mt-5 w-full whitespace-nowrap rounded-3xl bg-black p-4 font-bold uppercase text-white hover:bg-blue-600"
+          >
+            Proceed to Checkout
           </button>
-        </div>
-      </div>
+        </div>{' '}
+      </div>{' '}
     </div>
   );
 }
-
 export default Cart;

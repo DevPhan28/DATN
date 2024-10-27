@@ -14,6 +14,7 @@ const cartRouter = require("./routers/cart") ;
 const productRouter = require("./routers/product");
 const categoryRouter = require("./routers/category");
 const authRouter = require("./routers/auth.router");
+const orderRouter = require("./routers/order");
 
 const app = express();
 // middleware
@@ -29,7 +30,7 @@ app.use("/api", productRouter);
 app.use("/api", authRouter);
 app.use("/api", categoryRouter);
 app.use("/api", cartRouter);
-// app.use("/api", orderRouter);
+app.use("/api", orderRouter);
 
 app.listen(8080, () => {
   console.log("server running...");

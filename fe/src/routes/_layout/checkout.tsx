@@ -1,200 +1,278 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useLocation } from '@tanstack/react-router';
+import { useFetchCart } from '@/data/cart/useFetchCart';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import useCheckoutMutation from '@/data/oder/useOderMutation';
+
 
 export const Route = createFileRoute('/_layout/checkout')({
-  component: () => <div>
-    <section className=" max-w-6xl m-auto mt-10 p-5 xl:p-0 lg:p-5 md:p-5 sm:p-5">
-      <form action="#" className="mx-auto max-w-screen-xl px-4 2xl:px-0">
-        {/* Đường dẫn thông tin giao hàng  */}
-        <div className="flex justify-center">
-          <ol className="flex w-[600px] text-gray-500 dark:text-gray-400 ">
-            <li className="after:border-1 flex items-center text-primary-700 after:mx-6 after:hidden after:h-1 after:w-full after:border-b after:border-gray-200 dark:text-primary-500 dark:after:border-gray-700 sm:after:inline-block sm:after:content-[''] md:w-full xl:after:mx-10">
-              <span className="flex items-center after:mx-2 after:text-gray-200 after:content-['/'] dark:after:text-gray-500 sm:after:hidden">
-                Checkout
-              </span>
-            </li>
-            <li className="after:border-1 flex items-center text-primary-700 after:mx-6 after:hidden after:h-1 after:w-full after:border-b after:border-gray-200 dark:text-primary-500 dark:after:border-gray-700 sm:after:inline-block sm:after:content-[''] md:w-full xl:after:mx-10">
-              <span className="flex items-center after:mx-2 after:text-gray-200 after:content-['/'] dark:after:text-gray-500 sm:after:hidden">
-                check
-              </span>
-            </li>
-            <li className="flex shrink-0 items-center">
-              Order summary
-            </li>
-          </ol>
-        </div>
-        <div className="mt-6 sm:mt-8 lg:flex lg:items-start lg:gap-12 xl:gap-16">
-          {/* form nhap thong tin  */}
-          <div className="min-w-0 flex-1 space-y-8">
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Delivery Information</h2>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 ">
-                <div>
-                  <label htmlFor="your_name" className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Your name </label>
-                  <input type="text" id="your_name" className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" placeholder="the quyyen" required />
-                </div>
-                <div>
-                  <label htmlFor="your_email" className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Your email <span className='text-red-500'>*</span></label>
-                  <input type="email" id="your_email" className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" placeholder="thequyen@gmail.com" required />
-                </div>
-                {/* city */}
-                <div>
-                  <div className="mb-2 flex items-center gap-2">
-                    <label htmlFor="select-country-input-3" className="block text-sm font-medium text-gray-900 dark:text-white"> Tỉnh thành <span className='text-red-500'>*</span></label>
-                  </div>
-                  <select id="select-country-input-3" className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
-                    <option selected>United States</option>
-                    <option value="AS">Australia</option>
-                    <option value="FR">France</option>
-                    <option value="ES">Spain</option>
-                    <option value="UK">United Kingdom</option>
-                  </select>
-                </div>
-                {/*  */}
-                <div>
-                  <div className="mb-2 flex items-center gap-2">
-                    <label htmlFor="select-city-input-3" className="block text-sm font-medium text-gray-900 dark:text-white"> Quận/huyện <span className='text-red-500'>*</span> </label>
-                  </div>
-                  <select id="select-city-input-3" className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
-                    <option selected>San Francisco</option>
-                    <option value="NY">New York</option>
-                    <option value="LA">Los Angeles</option>
-                    <option value="CH">Chicago</option>
-                    <option value="HU">Houston</option>
-                  </select>
-                </div>
-                {/*  */}
-                <div>
-                  <div className="mb-2 flex items-center gap-2">
-                    <label htmlFor="select-city-input-3" className="block text-sm font-medium text-gray-900 dark:text-white"> Xã <span className='text-red-500'>*</span> </label>
-                  </div>
-                  <select id="select-city-input-3" className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500">
-                    <option selected>San Francisco</option>
-                    <option value="NY">New York</option>
-                    <option value="LA">Los Angeles</option>
-                    <option value="CH">Chicago</option>
-                    <option value="HU">Houston</option>
-                  </select>
-                </div>
+  component: () => {
+    const location = useLocation();
+    const selectedItems = location.state?.selectedItems || []; // Các sản phẩm đã chọn
 
-                <div>
-                  <label htmlFor="phone-input-3" className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Phone Number<span className='text-red-500'>*</span> </label>
-                  <div className="flex items-center">
+    // Địa chỉ
+    const [cities, setCities] = useState([]);
+    const [districts, setDistricts] = useState([]);
+    const [wards, setWards] = useState([]);
+    const [selectedCity, setSelectedCity] = useState('');
+    const [selectedDistrict, setSelectedDistrict] = useState(null);
+    const [selectedWard, setSelectedWard] = useState(null);
 
-                    <div className="relative w-full">
-                      <input type="text" id="phone-input" className="z-20 block w-full rounded-lg border  border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:border-s-gray-700  dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500" placeholder="123-456-7890" required />
+    const { createOrder } = useCheckoutMutation(); // Sử dụng hook `createOrder`
+
+    // Tải dữ liệu địa chỉ
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const response = await axios.get(
+            'https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json'
+          );
+          setCities(response.data);
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        }
+      };
+      fetchData();
+    }, []);
+
+    const handleCityChange = (e) => {
+      const cityId = e.target.value;
+      setSelectedCity(cityId);
+      setSelectedDistrict('');
+      setWards([]);
+    };
+
+    const handleDistrictChange = (e) => {
+      const districtId = e.target.value;
+      setSelectedDistrict(districtId);
+      const selectedDistrict = cities
+        .find((city) => city.Id === selectedCity)
+        ?.Districts.find((district) => district.Id === districtId);
+      setWards(selectedDistrict ? selectedDistrict.Wards : []);
+    };
+
+    const handleWardChange = (e) => {
+      setSelectedWard(e.target.value);
+    };
+
+    const totalAmount = selectedItems.reduce(
+      (acc, item) => acc + item.price * item.quantity,
+      0
+    );
+
+    const cityName = cities.find((city) => city.Id === selectedCity)?.Name || '';
+    const districtName =
+      cities
+        .find((city) => city.Id === selectedCity)
+        ?.Districts.find((district) => district.Id === selectedDistrict)?.Name || '';
+    const wardName =
+      cities
+        .find((city) => city.Id === selectedCity)
+        ?.Districts.find((district) => district.Id === selectedDistrict)
+        ?.Wards.find((ward) => ward.Id === selectedWard)?.Name || '';
+
+        const handleSubmit = (e) => {
+          e.preventDefault();
+          const userId = localStorage.getItem('userId');
+        
+          const formData = {
+            userId,
+            items: selectedItems.map((item) => ({
+              productId: item.productId, // Đảm bảo `productId` được truyền chính xác
+              name: item.name,
+              price: item.price,
+              quantity: item.quantity,
+              variantId: item.variantId, // Nếu cần thiết
+            })),
+            customerInfo: {
+              name: e.target.your_name.value,
+              phone: e.target['phone-input'].value,
+              email: e.target.your_email.value,
+              city: cityName,
+              districts: districtName,
+              wards: wardName,
+            },
+            totalPrice: totalAmount,
+          };
+        
+          console.log("Form Data:", formData); // Kiểm tra cấu trúc `formData` trước khi gửi
+        
+          createOrder.mutate(formData, {
+            onSuccess: () => {
+              alert("Checkout successful!");
+            },
+            onError: (error) => {
+              alert(`Checkout failed: ${error.message}`);
+            },
+          });
+        };
+        
+
+    return (
+      <div>
+        <section className="m-auto mt-10 max-w-6xl p-5">
+          <form onSubmit={handleSubmit} className="mx-auto max-w-screen-xl px-4">
+            {/* Đường dẫn thông tin giao hàng */}
+            <div className="flex justify-center">
+              <ol className="flex w-[600px] text-gray-500 dark:text-gray-400">
+                <li className="text-primary-700 dark:text-primary-500 flex items-center after:mx-6 after:hidden after:h-1 after:w-full after:border-b after:border-gray-200 dark:after:border-gray-700 sm:after:inline-block">
+                  <span className="flex items-center after:mx-2 after:content-['/'] dark:after:text-gray-500 sm:after:hidden">
+                    Checkout
+                  </span>
+                </li>
+                <li className="text-primary-700 dark:text-primary-500 flex items-center after:mx-6 after:hidden after:h-1 after:w-full after:border-b after:border-gray-200 dark:after:border-gray-700 sm:after:inline-block">
+                  <span className="flex items-center after:mx-2 after:content-['/'] dark:after:text-gray-500 sm:after:hidden">
+                    Check
+                  </span>
+                </li>
+                <li className="flex shrink-0 items-center">Order summary</li>
+              </ol>
+            </div>
+
+            <div className="mt-6 lg:flex lg:items-start lg:gap-12">
+              {/* Form nhập thông tin giao hàng */}
+              <div className="flex-1 space-y-8">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Delivery Information
+                </h2>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div>
+                    <label htmlFor="your_name" className="mb-2 block text-sm font-medium text-gray-900">
+                      Your name
+                    </label>
+                    <input
+                      type="text"
+                      id="your_name"
+                      className="block w-full rounded-lg border p-2.5 text-sm bg-gray-50 dark:bg-gray-700"
+                      placeholder="Your name"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="your_email" className="mb-2 block text-sm font-medium text-gray-900">
+                      Your email
+                    </label>
+                    <input
+                      type="email"
+                      id="your_email"
+                      className="block w-full rounded-lg border p-2.5 text-sm bg-gray-50 dark:bg-gray-700"
+                      placeholder="Your email"
+                      required
+                    />
+                  </div>
+
+                  {/* Chọn Tỉnh, Quận, Xã */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-900">Tỉnh thành</label>
+                    <select
+                      value={selectedCity}
+                      onChange={handleCityChange}
+                      className="block w-full rounded-lg border p-2.5 text-sm bg-gray-50 dark:bg-gray-700"
+                    >
+                      <option value="">Chọn tỉnh thành</option>
+                      {cities.map((city) => (
+                        <option key={city.Id} value={city.Id}>
+                          {city.Name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-900">Quận/huyện</label>
+                    <select
+                      value={selectedDistrict}
+                      onChange={handleDistrictChange}
+                      className="block w-full rounded-lg border p-2.5 text-sm bg-gray-50 dark:bg-gray-700"
+                    >
+                      <option value="">Chọn quận/huyện</option>
+                      {selectedCity &&
+                        cities
+                          .find((city) => city.Id === selectedCity)
+                          ?.Districts.map((district) => (
+                            <option key={district.Id} value={district.Id}>
+                              {district.Name}
+                            </option>
+                          ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-900">Xã</label>
+                    <select
+                      onChange={handleWardChange}
+                      value={selectedWard || ''}
+                      className="block w-full rounded-lg border p-2.5 text-sm bg-gray-50 dark:bg-gray-700"
+                    >
+                      <option value="">Chọn phường/xã</option>
+                      {wards.map((ward) => (
+                        <option key={ward.Id} value={ward.Id}>
+                          {ward.Name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label htmlFor="phone-input" className="block text-sm font-medium text-gray-900">
+                      Phone Number
+                    </label>
+                    <input
+                      type="text"
+                      id="phone-input"
+                      className="block w-full rounded-lg border p-2.5 text-sm bg-gray-50 dark:bg-gray-700"
+                      placeholder="123-456-7890"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="code_postal" className="block text-sm font-medium text-gray-900">
+                      Địa chỉ cụ thể
+                    </label>
+                    <input
+                      type="text"
+                      id="code_postal"
+                      className="block w-full rounded-lg border p-2.5 text-sm bg-gray-50 dark:bg-gray-700"
+                      placeholder="Address"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Phương thức thanh toán */}
+              <div className="mt-4 lg:mt-0 lg:max-w-xs">
+                <h3 className="text-xl font-semibold text-gray-900">Order Summary</h3>
+                {selectedItems.map((product) => (
+                  <div key={product.id} className="flex gap-3 p-4 shadow-md">
+                    <img src={product.image} alt={product.name} className="w-16 h-16 rounded-lg" />
+                    <div>
+                      <h4 className="text-lg font-medium">{product.name}</h4>
+                      <p className="text-gray-500">Size: {product.size}, Color: {product.color}</p>
+                      <p className="text-lg font-bold">${(product.price * product.quantity).toFixed(2)}</p>
                     </div>
                   </div>
-                </div>
+                ))}
 
-                <div>
-                  <label htmlFor="code_postal" className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Code postal </label>
-                  <input type="text" id="code_postal" className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" placeholder="Flowbite LLC" required />
-                </div>
-                <div>
-                  <label htmlFor="vat_number" className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> VAT number </label>
-                  <input type="text" id="vat_number" className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" placeholder="DE42313253" required />
-                </div>
-                <div className="sm:col-span-2">
-                  <button type="submit" className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-blue-400 px-5 py-2.5 text-base uppercase font-medium text-gray-900 hover:bg-black hover:text-white focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">
-                    Save address
+                <div className="rounded-lg bg-gray-50 p-4 shadow-md mt-4">
+                  <div className="flex justify-between">
+                    <span className="text-sm">Subtotal</span>
+                    <span className="text-sm font-medium">${totalAmount.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between border-t pt-3">
+                    <span className="text-sm font-bold">Total</span>
+                    <span className="text-sm font-bold">${totalAmount.toFixed(2)}</span>
+                  </div>
+                  <button
+                    type="submit"
+                    className="mt-5 w-full bg-blue-400 py-2.5 font-medium uppercase text-black hover:bg-black hover:text-white"
+                  >
+                    Check out
                   </button>
                 </div>
               </div>
             </div>
-            {/* Phuong thuc thanh toan */}
-            <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white">Payment</h3>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 ps-4 dark:border-gray-700 dark:bg-gray-800">
-                  <div className="flex items-start">
-                    <div className="flex h-5 items-center">
-                      <input id="credit-card" aria-describedby="credit-card-text" type="radio" name="payment-method" className="h-4 w-4 border-gray-300 bg-white text-primary-600 focus:ring-2 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" defaultChecked />
-                    </div>
-                    <div className="ms-4 text-sm">
-                      <label htmlFor="credit-card" className="font-medium leading-none text-gray-900 dark:text-white"> Credit Card </label>
-                      <p id="credit-card-text" className="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">Pay with your credit card</p>
-                    </div>
-                  </div>
-
-                </div>
-                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 ps-4 dark:border-gray-700 dark:bg-gray-800">
-                  <div className="flex items-start">
-                    <div className="flex h-5 items-center">
-                      <input id="pay-on-delivery" aria-describedby="pay-on-delivery-text" type="radio" name="payment-method" className="h-4 w-4 border-gray-300 bg-white text-primary-600 focus:ring-2 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
-                    </div>
-                    <div className="ms-4 text-sm">
-                      <label htmlFor="pay-on-delivery" className="font-medium leading-none text-gray-900 dark:text-white"> Payment on delivery </label>
-                      <p id="pay-on-delivery-text" className="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">+$15 payment processing fee</p>
-                    </div>
-                  </div>
-
-                </div>
-                <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 ps-4 dark:border-gray-700 dark:bg-gray-800">
-                  <div className="flex items-start">
-                    <div className="flex h-5 items-center">
-                      <input id="paypal-2" aria-describedby="paypal-text" type="radio" name="payment-method" className="h-4 w-4 border-gray-300 bg-white text-primary-600 focus:ring-2 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" />
-                    </div>
-                    <div className="ms-4 text-sm">
-                      <label htmlFor="paypal-2" className="font-medium leading-none text-gray-900 dark:text-white"> Paypal account </label>
-                      <p id="paypal-text" className="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">Connect to your account</p>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-
-
-          </div>
-          {/* chi tiet tien hang  */}
-          <div className="mt-4 w-full space-y-4 sm:mt-6 lg:mt-0 lg:max-w-xs xl:max-w-md">
-            {/* Thông tin sản phẩm */}
-            <div className="bg-white p-4 rounded-lg shadow-md md:flex md:gap-3 flex gap-3 lg:flex-col">
-              <div className="flex justify-center">
-                <img
-                  src="https://picsum.photos/seed/picsum/200/300"
-                  alt="Product"
-                  className="lg:h-80 lg:w-full object-cover rounded-lg"
-                />
-              </div>
-
-              <div className="mt-4">
-                <h1 className="text-xl font-bold text-gray-900">Sản phẩm 1</h1>
-                <p className="mt-1 text-lg text-gray-700">Giá: <span className='text-red-500'>$1000</span></p>
-              </div>
-
-              <div className="mt-4 space-y-2">
-                <div className="flex items-center">
-                  <label className="w-16 text-gray-700">Size:</label>
-                  <p className="text-gray-900">ANH MINH</p>
-                </div>
-                <div className="flex items-center">
-                  <label className="w-16 text-gray-700">Color:</label>
-                  <p className="text-gray-900">Red</p>
-                </div>
-              </div>
-            </div>
-            {/* Tổng tiền */}
-            <div className="bg-gray-50 p-4 rounded-lg shadow-md">
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-normal text-gray-500">Subtotal</span>
-                  <span className="text-sm font-medium text-gray-900">$8,094.00</span>
-                </div>
-                <div className="flex items-center justify-between border-t border-gray-200 pt-3">
-                  <span className="text-sm font-bold text-gray-900">Total</span>
-                  <span className="text-sm font-bold text-gray-900">$8,094.00</span>
-                </div>
-              </div>
-              <button type="submit" className="mt-5 flex w-full items-center justify-center  rounded-lg border border-gray-200 bg-blue-400 px-5 py-2.5 text-base uppercase font-medium text-black hover:bg-black hover:text-white ">
-                Check out
-              </button>
-            </div>
-          </div>
-        </div>
-      </form>
-    </section>
-
-
-  </div>
-})
+          </form>
+        </section>
+      </div>
+    );
+  },
+});

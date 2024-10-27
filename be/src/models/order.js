@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
-
-const OrderItemSchema = new mongoose.Schema({
+const mongoose = require("mongoose");
+const { Schema } = require("mongoose");
+const OrderItemSchema = new Schema({
     productId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Product' },
     name: { type: String, required: true },
     quantity: { type: Number, required: true },
@@ -23,8 +23,9 @@ const OrderItemSchema = new mongoose.Schema({
               name: { type: String, required: true },
               phone: { type: Number, required: true },
               email: { type: String, required: true },
-              payment: { type: Number, required: true },
-              city: { type: String, required: true }
+              city: { type: String, required: true },
+              districts: { type: String, required: true },
+              wards: { type: String, required: true }
           },
           required: true,
       },
@@ -51,4 +52,4 @@ OrderSchema.pre('save', async function(next) {
     next();
 });
 
-export default mongoose.model('Order', OrderSchema);
+module.exports = mongoose.model('Order', OrderSchema);
