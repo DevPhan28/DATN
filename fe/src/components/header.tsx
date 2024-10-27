@@ -74,7 +74,7 @@ const Header = () => {
               >
                 Shop
               </Link>
-              <a href="#" className="relative px-2 py-2 font-medium hover:text-blue-400">
+              <a href="/featuredProducts" className="relative px-2 py-2 font-medium hover:text-blue-400">
                 Features
                 <span className='bg-red-400 text-white uppercase rounded-xl text-xs w-9 absolute mt-[-8px] left-14 text-center'>Hot</span>
               </a>
