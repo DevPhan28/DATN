@@ -26,7 +26,7 @@ function DetailProduct() {
 
   const queryClient = useQueryClient();
 
-  // Fetch product information from API
+
   useEffect(() => {
     const fetchProduct = async () => {
       setLoading(true);
