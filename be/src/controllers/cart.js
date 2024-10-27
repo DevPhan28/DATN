@@ -1,3 +1,4 @@
+
 const Cart = require("../models/cart");
 const Product = require("../models/product"); // Model sản phẩm
 
@@ -163,7 +164,6 @@ const updateQuantityCart = async (req, res) => {
   }
 };
 
-// Tăng số lượng sản phẩm trong giỏ hàng
 const increaseProductQuantity = async (req, res) => {
   const { userId, productId, variantId } = req.body;
   try {
@@ -179,17 +179,26 @@ const increaseProductQuantity = async (req, res) => {
       return res.status(404).json({ message: "Product not found in cart" });
     }
 
+    // Lấy sản phẩm và biến thể từ DB để cập nhật tồn kho
+    const dbProduct = await Product.findById(productId);
+    const variant = dbProduct.variants.find(v => v.sku === variantId);
+
+    if (variant.countInStock <= 0) {
+      return res.status(400).json({ message: "Hết hàng trong kho" });
+    }
+
     product.quantity++;
     product.totalPrice += product.priceAtTime;
+    variant.countInStock--;
 
-    await cart.save();
+    await dbProduct.save(); // Lưu lại tồn kho cập nhật vào DB
+    await cart.save(); // Lưu lại giỏ hàng vào DB
     res.status(200).json(cart);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// Giảm số lượng sản phẩm trong giỏ hàng
 const decreaseProductQuantity = async (req, res) => {
   const { userId, productId, variantId } = req.body;
   try {
@@ -206,16 +215,26 @@ const decreaseProductQuantity = async (req, res) => {
     }
 
     if (product.quantity > 1) {
+      // Giảm số lượng trong giỏ hàng
       product.quantity--;
       product.totalPrice -= product.priceAtTime;
-    }
 
-    await cart.save();
-    res.status(200).json(cart);
+      // Cập nhật tồn kho sản phẩm trong DB
+      const dbProduct = await Product.findById(productId);
+      const variant = dbProduct.variants.find(v => v.sku === variantId);
+      variant.countInStock++;
+
+      await dbProduct.save(); // Lưu lại tồn kho cập nhật vào DB
+      await cart.save(); // Lưu lại giỏ hàng vào DB
+      res.status(200).json(cart);
+    } else {
+      return res.status(400).json({ message: "Cannot reduce quantity below 1" });
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Xóa sản phẩm khỏi giỏ hàng của user
 const removeFromCart = async (req, res) => {
