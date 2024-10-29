@@ -97,14 +97,7 @@ export const Route = createFileRoute('/_layout/checkout')({
         
           console.log("Form Data:", formData); // Kiểm tra cấu trúc `formData` trước khi gửi
         
-          createOrder.mutate(formData, {
-            onSuccess: () => {
-              alert("Checkout successful!");
-            },
-            onError: (error) => {
-              alert(`Checkout failed: ${error.message}`);
-            },
-          });
+          createOrder.mutate(formData);
         };
         
 

@@ -21,9 +21,9 @@ const useCheckoutMutation = () => {
         queryKey: [QUERY_KEY.FETCH_CART],
       });
 
-    //   void navigate({
-    //     to: '/dashboard/orders',
-    //   });
+      void navigate({
+        to: '/',
+      });
 
       return result;
     },

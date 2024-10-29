@@ -16,9 +16,10 @@ function Index() {
       {/* <Button onClick={() => navigate({ to: '/checkout' })}>Click</Button> */}
 
       <Slider />
-      <FeaturedProducts />
+      
       <Category />
       <CardProduct />
+      <FeaturedProducts />
     </>
   );
 }
