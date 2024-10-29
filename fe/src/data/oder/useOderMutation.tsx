@@ -8,6 +8,7 @@ const useCheckoutMutation = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  // Hàm tạo đơn hàng
   const createOrder = useMutation({
     mutationFn: (data) => instance.post('/orders', data), // Tạo đơn hàng
 
@@ -33,7 +34,21 @@ const useCheckoutMutation = () => {
     },
   });
 
-  return { createOrder };
+  // Hàm cập nhật trạng thái đơn hàng
+  const updateOrderStatus = useMutation({
+    mutationFn: ({ orderId, status }) => instance.put(`/orders/${orderId}`, { status }),
+    
+    onSuccess: () => {
+      toast.success('Order status updated successfully');
+      queryClient.invalidateQueries([QUERY_KEY.FETCH_ORDERS]); // Invalidates the orders list
+    },
+    
+    onError: (error) => {
+      toast.error(`Failed to update status: ${error.message}`);
+    },
+  });
+
+  return { createOrder, updateOrderStatus }; // Đảm bảo trả về updateOrderStatus
 };
 
 export default useCheckoutMutation;

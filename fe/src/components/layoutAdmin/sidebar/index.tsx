@@ -48,6 +48,12 @@ const menuProducts: MenuItem[] = [
     icon: <Tag />,
     href: '/dashboard/category',
   },
+  {
+    id: 1,
+    name: 'Order List',
+    icon: <Tag />,
+    href: '/dashboard/order',
+  },
 ];
 
 const menuAccount: MenuItem[] = [

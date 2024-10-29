@@ -24,19 +24,41 @@ const createOrder = async (req, res) => {
     }
 };
 
-//lấy all thông tin đặt hàng
- const getOrders = async (req, res) => {
+const getOrders = async (req, res) => {
     try {
-        const order = await Order.find();
-        if (order.length === 0) {
-            return res.status(StatusCodes.NOT_FOUND).json({ error: "No orders found" });
+        const { page = 1, limit = 10, status, sortBy = 'createdAt', order = 'desc' } = req.query;
+
+        // Tạo bộ lọc dựa vào trạng thái đơn hàng (nếu có)
+        const filter = {};
+        if (status) {
+            filter.status = status;
         }
-        return res.status(StatusCodes.OK).json(order);
+
+        // Tính toán số lượng đơn hàng cần bỏ qua để lấy trang hiện tại
+        const skip = (page - 1) * limit;
+
+        // Lấy danh sách đơn hàng với phân trang và sắp xếp
+        const orders = await Order.find(filter)
+            .sort({ [sortBy]: order === 'desc' ? -1 : 1 })
+            .skip(skip)
+            .limit(Number(limit));
+
+        const totalOrders = await Order.countDocuments(filter); // Tổng số đơn hàng theo bộ lọc
+
+        return res.status(StatusCodes.OK).json({
+            data: orders,
+            meta: {
+                totalItems: totalOrders,
+                totalPages: Math.ceil(totalOrders / limit),
+                currentPage: Number(page),
+                pageSize: Number(limit),
+            },
+        });
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 };
-//lấy 1 id
+
  const getOrderById = async (req, res) => {
     try {
         const { userId, orderId } = req.params;
@@ -52,17 +74,25 @@ const createOrder = async (req, res) => {
 const updateOrder = async (req, res) => {
     try {
         const { orderId } = req.params;
-        const order = await Order.findOneAndUpdate({ _id: orderId }, req.body, {
-            new: true,
-        });
+        const { status } = req.body;
+
+        const order = await Order.findById(orderId);
+
         if (!order) {
             return res.status(StatusCodes.NOT_FOUND).json({ error: "Order not found" });
         }
+        if (order.status !== status) {
+            order.statusHistory.push(order.status); 
+            order.status = status; 
+            await order.save(); 
+        }
+
         return res.status(StatusCodes.OK).json(order);
     } catch (error) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 };
+
 const deleteOrder = async (req, res) => {
     try {
         const { userId, orderId } = req.params;

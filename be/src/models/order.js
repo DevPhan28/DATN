@@ -39,6 +39,7 @@ const OrderSchema = new mongoose.Schema({
         enum: ["pending", "confirmed", "shipped", "canceled"],
         default: "pending",
     },
+    statusHistory: { type: [String], default: [] }
 }, { timestamps: true, versionKey: false });
 
 OrderSchema.pre('save', async function(next) {

@@ -9,6 +9,15 @@ const {
 const router = express.Router();
 
 router.post("/orders", createOrder);
+
 router.get("/orders", getOrders);
+
+
 router.get("/orders/:userId/:orderId", getOrderById);
+
+
+router.put("/orders/:orderId", updateOrder);
+
+router.delete("/orders/:userId/:orderId", deleteOrder);
+
 module.exports = router;

@@ -27,6 +27,7 @@ import { Route as DashboardLayoutIndexImport } from './routes/dashboard/_layout/
 import { Route as LayoutSlugQuickviewProductImport } from './routes/_layout/$slug.quickviewProduct'
 import { Route as LayoutSlugDetailproductImport } from './routes/_layout/$slug.detailproduct'
 import { Route as DashboardLayoutProductsIndexImport } from './routes/dashboard/_layout/products/index'
+import { Route as DashboardLayoutOrderIndexImport } from './routes/dashboard/_layout/order/index'
 import { Route as DashboardLayoutCategoryIndexImport } from './routes/dashboard/_layout/category/index'
 import { Route as DashboardLayoutProductsCreateImport } from './routes/dashboard/_layout/products/create'
 import { Route as DashboardLayoutCategoryCreateImport } from './routes/dashboard/_layout/category/create'
@@ -116,6 +117,11 @@ const DashboardLayoutProductsIndexRoute =
     path: '/products/',
     getParentRoute: () => DashboardLayoutRoute,
   } as any)
+
+const DashboardLayoutOrderIndexRoute = DashboardLayoutOrderIndexImport.update({
+  path: '/order/',
+  getParentRoute: () => DashboardLayoutRoute,
+} as any)
 
 const DashboardLayoutCategoryIndexRoute =
   DashboardLayoutCategoryIndexImport.update({
@@ -270,6 +276,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLayoutCategoryIndexImport
       parentRoute: typeof DashboardLayoutImport
     }
+    '/dashboard/_layout/order/': {
+      id: '/dashboard/_layout/order/'
+      path: '/order'
+      fullPath: '/dashboard/order'
+      preLoaderRoute: typeof DashboardLayoutOrderIndexImport
+      parentRoute: typeof DashboardLayoutImport
+    }
     '/dashboard/_layout/products/': {
       id: '/dashboard/_layout/products/'
       path: '/products'
@@ -324,6 +337,7 @@ interface DashboardLayoutRouteChildren {
   DashboardLayoutCategoryCreateRoute: typeof DashboardLayoutCategoryCreateRoute
   DashboardLayoutProductsCreateRoute: typeof DashboardLayoutProductsCreateRoute
   DashboardLayoutCategoryIndexRoute: typeof DashboardLayoutCategoryIndexRoute
+  DashboardLayoutOrderIndexRoute: typeof DashboardLayoutOrderIndexRoute
   DashboardLayoutProductsIndexRoute: typeof DashboardLayoutProductsIndexRoute
   DashboardLayoutCategoryIdEditRoute: typeof DashboardLayoutCategoryIdEditRoute
   DashboardLayoutProductsIdEditRoute: typeof DashboardLayoutProductsIdEditRoute
@@ -334,6 +348,7 @@ const DashboardLayoutRouteChildren: DashboardLayoutRouteChildren = {
   DashboardLayoutCategoryCreateRoute: DashboardLayoutCategoryCreateRoute,
   DashboardLayoutProductsCreateRoute: DashboardLayoutProductsCreateRoute,
   DashboardLayoutCategoryIndexRoute: DashboardLayoutCategoryIndexRoute,
+  DashboardLayoutOrderIndexRoute: DashboardLayoutOrderIndexRoute,
   DashboardLayoutProductsIndexRoute: DashboardLayoutProductsIndexRoute,
   DashboardLayoutCategoryIdEditRoute: DashboardLayoutCategoryIdEditRoute,
   DashboardLayoutProductsIdEditRoute: DashboardLayoutProductsIdEditRoute,
@@ -374,6 +389,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/category/create': typeof DashboardLayoutCategoryCreateRoute
   '/dashboard/products/create': typeof DashboardLayoutProductsCreateRoute
   '/dashboard/category': typeof DashboardLayoutCategoryIndexRoute
+  '/dashboard/order': typeof DashboardLayoutOrderIndexRoute
   '/dashboard/products': typeof DashboardLayoutProductsIndexRoute
   '/dashboard/category/$id/edit': typeof DashboardLayoutCategoryIdEditRoute
   '/dashboard/products/$id/edit': typeof DashboardLayoutProductsIdEditRoute
@@ -394,6 +410,7 @@ export interface FileRoutesByTo {
   '/dashboard/category/create': typeof DashboardLayoutCategoryCreateRoute
   '/dashboard/products/create': typeof DashboardLayoutProductsCreateRoute
   '/dashboard/category': typeof DashboardLayoutCategoryIndexRoute
+  '/dashboard/order': typeof DashboardLayoutOrderIndexRoute
   '/dashboard/products': typeof DashboardLayoutProductsIndexRoute
   '/dashboard/category/$id/edit': typeof DashboardLayoutCategoryIdEditRoute
   '/dashboard/products/$id/edit': typeof DashboardLayoutProductsIdEditRoute
@@ -418,6 +435,7 @@ export interface FileRoutesById {
   '/dashboard/_layout/category/create': typeof DashboardLayoutCategoryCreateRoute
   '/dashboard/_layout/products/create': typeof DashboardLayoutProductsCreateRoute
   '/dashboard/_layout/category/': typeof DashboardLayoutCategoryIndexRoute
+  '/dashboard/_layout/order/': typeof DashboardLayoutOrderIndexRoute
   '/dashboard/_layout/products/': typeof DashboardLayoutProductsIndexRoute
   '/dashboard/_layout/category/$id/edit': typeof DashboardLayoutCategoryIdEditRoute
   '/dashboard/_layout/products/$id/edit': typeof DashboardLayoutProductsIdEditRoute
@@ -442,6 +460,7 @@ export interface FileRouteTypes {
     | '/dashboard/category/create'
     | '/dashboard/products/create'
     | '/dashboard/category'
+    | '/dashboard/order'
     | '/dashboard/products'
     | '/dashboard/category/$id/edit'
     | '/dashboard/products/$id/edit'
@@ -461,6 +480,7 @@ export interface FileRouteTypes {
     | '/dashboard/category/create'
     | '/dashboard/products/create'
     | '/dashboard/category'
+    | '/dashboard/order'
     | '/dashboard/products'
     | '/dashboard/category/$id/edit'
     | '/dashboard/products/$id/edit'
@@ -483,6 +503,7 @@ export interface FileRouteTypes {
     | '/dashboard/_layout/category/create'
     | '/dashboard/_layout/products/create'
     | '/dashboard/_layout/category/'
+    | '/dashboard/_layout/order/'
     | '/dashboard/_layout/products/'
     | '/dashboard/_layout/category/$id/edit'
     | '/dashboard/_layout/products/$id/edit'
@@ -570,6 +591,7 @@ export const routeTree = rootRoute
         "/dashboard/_layout/category/create",
         "/dashboard/_layout/products/create",
         "/dashboard/_layout/category/",
+        "/dashboard/_layout/order/",
         "/dashboard/_layout/products/",
         "/dashboard/_layout/category/$id/edit",
         "/dashboard/_layout/products/$id/edit"
@@ -605,6 +627,10 @@ export const routeTree = rootRoute
     },
     "/dashboard/_layout/category/": {
       "filePath": "dashboard/_layout/category/index.tsx",
+      "parent": "/dashboard/_layout"
+    },
+    "/dashboard/_layout/order/": {
+      "filePath": "dashboard/_layout/order/index.tsx",
       "parent": "/dashboard/_layout"
     },
     "/dashboard/_layout/products/": {
