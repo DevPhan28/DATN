@@ -91,6 +91,7 @@ export const Route = createFileRoute('/_layout/checkout')({
               city: cityName,
               districts: districtName,
               wards: wardName,
+              address: e.target['address-input'].value,
             },
             totalPrice: totalAmount,
           };
@@ -217,12 +218,12 @@ export const Route = createFileRoute('/_layout/checkout')({
                     />
                   </div>
                   <div>
-                    <label htmlFor="code_postal" className="block text-sm font-medium text-gray-900">
+                    <label htmlFor="address-input" className="block text-sm font-medium text-gray-900">
                       Địa chỉ cụ thể
                     </label>
                     <input
                       type="text"
-                      id="code_postal"
+                      id="address-input"
                       className="block w-full rounded-lg border p-2.5 text-sm bg-gray-50 dark:bg-gray-700"
                       placeholder="Address"
                       required

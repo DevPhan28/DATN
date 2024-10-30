@@ -6,7 +6,7 @@ import {
   ArrowUpTray,
   EllipsisVertical,
 } from '@medusajs/icons';
-import { Button, DropdownMenu, Input, Table } from '@medusajs/ui';
+import { Button, DropdownMenu, Input, Table, Tooltip } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 
@@ -30,7 +30,7 @@ function OrderList() {
   });
 
   const { updateOrderStatus } = useCheckoutMutation();
-  
+
   const pageCount = useMemo(() => {
     return listOrder?.meta
       ? Math.ceil(listOrder.meta.totalItems / pageSize)
@@ -55,7 +55,17 @@ function OrderList() {
     }
   };
 
-  const handleStatusChange = (orderId, newStatus) => {
+  const handleStatusChange = (orderId, newStatus, currentStatus) => {
+    // Xác định thứ tự các trạng thái
+    const statusOrder = ["pending", "confirmed", "shipped", "canceled"];
+    const currentIndex = statusOrder.indexOf(currentStatus);
+    const newIndex = statusOrder.indexOf(newStatus);
+
+    // Không cho phép quay lại trạng thái trước đó
+    if (newIndex < currentIndex) {
+      return;
+    }
+
     updateOrderStatus.mutate(
       { orderId, status: newStatus },
       {
@@ -68,6 +78,7 @@ function OrderList() {
       }
     );
   };
+
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -114,6 +125,12 @@ function OrderList() {
               Email
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
+              Address
+            </Table.HeaderCell>
+            <Table.HeaderCell className="font-semibold text-ui-fg-base">
+              Products
+            </Table.HeaderCell>
+            <Table.HeaderCell className="font-semibold text-ui-fg-base">
               Total Price ($)
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
@@ -153,17 +170,43 @@ function OrderList() {
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     {order.customerInfo.email}
                   </Table.Cell>
+                  <Table.Cell className="font-semibold text-ui-fg-base overflow-hidden text-ellipsis whitespace-nowrap max-w-[150px]">
+                    <DropdownMenu>
+                      <DropdownMenu.Trigger asChild>
+                        <span className="cursor-pointer">
+                          {order.customerInfo.address}, {order.customerInfo.wards}, {order.customerInfo.districts}, {order.customerInfo.city}
+                        </span>
+                      </DropdownMenu.Trigger>
+                      <DropdownMenu.Content className="w-96 p-4">
+                        <div>
+                          <p className="font-semibold">Địa chỉ chi tiết:</p>
+                          <p>
+                            {order.customerInfo.address}, {order.customerInfo.wards}, {order.customerInfo.districts}, {order.customerInfo.city}
+                          </p>
+                        </div>
+                      </DropdownMenu.Content>
+                    </DropdownMenu>
+                  </Table.Cell>
+                  <Table.Cell className="font-semibold text-ui-fg-base">
+                    {order.items.map((product, index) => (
+                      <span key={product._id || index}>
+                        <div className="">
+                          {product.name}
+                        </div>
+                      </span>
+                    ))}
+                  </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     {order.totalPrice.toFixed(2)}
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     <select
                       value={order.status}
-                      onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                      onChange={(e) => handleStatusChange(order._id, e.target.value, order.status)}
                     >
-                      <option value="pending">Pending</option>
-                      <option value="confirmed">Confirmed</option>
-                      <option value="shipped">Shipped</option>
+                      <option value="pending" disabled={order.status !== "pending"}>Pending</option>
+                      <option value="confirmed" disabled={["shipped", "canceled"].includes(order.status)}>Confirmed</option>
+                      <option value="shipped" disabled={order.status === "canceled"}>Shipped</option>
                       <option value="canceled">Canceled</option>
                     </select>
                   </Table.Cell>

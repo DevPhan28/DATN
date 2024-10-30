@@ -26,7 +26,8 @@ const OrderSchema = new mongoose.Schema({
             email: { type: String, required: true },
             city: { type: String, required: true },
             districts: { type: String, required: true },
-            wards: { type: String, required: true }
+            wards: { type: String, required: true },
+            address: { type: String, required: true }
         },
         required: true,
     },
