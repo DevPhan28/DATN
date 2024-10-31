@@ -1,14 +1,23 @@
 import { createFileRoute, useLocation } from '@tanstack/react-router';
-import { useFetchCart } from '@/data/cart/useFetchCart';
+
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import useCheckoutMutation from '@/data/oder/useOderMutation';
+import useCartMutation from '@/data/cart/useCartMutation';
+import { useQueryClient } from '@tanstack/react-query';
+
+
 
 
 export const Route = createFileRoute('/_layout/checkout')({
   component: () => {
     const location = useLocation();
     const selectedItems = location.state?.selectedItems || []; // Các sản phẩm đã chọn
+    console.log("san pham da select",selectedItems)
+    const { deleteItemFromCart } =
+    useCartMutation();
+    const queryClient = useQueryClient()
+
 
     // Địa chỉ
     const [cities, setCities] = useState([]);
@@ -82,6 +91,7 @@ export const Route = createFileRoute('/_layout/checkout')({
               name: item.name,
               price: item.price,
               quantity: item.quantity,
+              image: item.image,
               variantId: item.variantId, // Nếu cần thiết
             })),
             customerInfo: {
@@ -98,9 +108,29 @@ export const Route = createFileRoute('/_layout/checkout')({
         
           console.log("Form Data:", formData); // Kiểm tra cấu trúc `formData` trước khi gửi
         
-          createOrder.mutate(formData);
-        };
+          createOrder.mutate(formData, {
+            onSuccess: async () => {
+              // Lặp qua tất cả sản phẩm đã chọn và xóa
+              const deletePromises = selectedItems.map((item) =>
+                deleteItemFromCart.mutateAsync({
+                  userId: userId || '',
+                  productId: item.productId,
+                  variantId: item.variantId || '',
+                })
+              );
         
+              try {
+                await Promise.all(deletePromises); // Xóa tất cả sản phẩm
+                console.log("Sản phẩm đã xóa sau khi thanh toán:", selectedItems);
+                queryClient.invalidateQueries({
+                  queryKey: ['cart'],
+                });
+              } catch (error) {
+                console.error("Lỗi khi xóa sản phẩm:", error);
+              }
+            },
+          });
+        };
 
     return (
       <div>
@@ -159,7 +189,7 @@ export const Route = createFileRoute('/_layout/checkout')({
                   <div>
                     <label className="block text-sm font-medium text-gray-900">Tỉnh thành</label>
                     <select
-                      value={selectedCity}
+                      value={selectedCity || ""}
                       onChange={handleCityChange}
                       className="block w-full rounded-lg border p-2.5 text-sm bg-gray-50 dark:bg-gray-700"
                     >
@@ -174,7 +204,7 @@ export const Route = createFileRoute('/_layout/checkout')({
                   <div>
                     <label className="block text-sm font-medium text-gray-900">Quận/huyện</label>
                     <select
-                      value={selectedDistrict}
+                      value={selectedDistrict || ""}
                       onChange={handleDistrictChange}
                       className="block w-full rounded-lg border p-2.5 text-sm bg-gray-50 dark:bg-gray-700"
                     >

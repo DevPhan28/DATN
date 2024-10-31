@@ -46,10 +46,7 @@ const useCartMutation = () => {
       }),
 
     onSuccess: () => {
-      toast.success('Sản phẩm đã bị xóa khỏi giỏ hàng', {
-        description: 'Sản phẩm của bạn đã bị xóa khỏi giỏ hàng thành công!',
-        duration: 1000,
-      });
+      
       queryClient.invalidateQueries({
         queryKey: ['cart'],
       });
