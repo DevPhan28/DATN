@@ -71,6 +71,18 @@ const getOrders = async (req, res) => {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
     }
 };
+const getOrdersByUserId = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const orders = await Order.find({ userId });
+        if (!orders || orders.length === 0) {
+            return res.status(StatusCodes.NOT_FOUND).json({ error: "No orders found for this user" });
+        }
+        return res.status(StatusCodes.OK).json(orders);
+    } catch (error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: error.message });
+    }
+};
 const updateOrder = async (req, res) => {
     try {
         const { orderId } = req.params;
@@ -114,5 +126,6 @@ module.exports = {
     getOrders,
     updateOrder,
     deleteOrder,
-    createOrder
+    createOrder,
+    getOrdersByUserId
   };

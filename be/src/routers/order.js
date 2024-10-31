@@ -4,7 +4,8 @@ const {
     getOrders,
     updateOrder,
     deleteOrder,
-    createOrder
+    createOrder,
+    getOrdersByUserId
 } = require("../controllers/order");
 const router = express.Router();
 
@@ -15,7 +16,7 @@ router.get("/orders", getOrders);
 
 router.get("/orders/:userId/:orderId", getOrderById);
 
-
+router.get('/orders/:userId', getOrdersByUserId);
 router.put("/orders/:orderId", updateOrder);
 
 router.delete("/orders/:userId/:orderId", deleteOrder);
