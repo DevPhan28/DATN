@@ -26,7 +26,7 @@ export const Route = createFileRoute('/_layout/$slug/detailproduct')({
         setLoading(true); // Bắt đầu loading
         try {
           // Sử dụng slug trong URL
-          const response = await instance.get(`/products/${slug}`);
+          const response = await instance.get(`/products/slug/${slug}`);
           if (response.data && response.data.product) {
             setProduct(response.data.product);
           } else {

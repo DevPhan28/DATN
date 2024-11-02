@@ -1,7 +1,11 @@
 import Header from '@/components/layoutAdmin/header/header';
 import useProductMutation from '@/data/products/useProductMutation';
 import { Button, Input, Select, Textarea } from '@medusajs/ui';
-import { createFileRoute, useNavigate, RouteParams } from '@tanstack/react-router';
+import {
+  createFileRoute,
+  useNavigate,
+  RouteParams,
+} from '@tanstack/react-router';
 import axios from 'axios';
 import { useRef, useState, useEffect } from 'react';
 import { ArrowDownTray, PlusMini, Trash, XMark } from '@medusajs/icons';
@@ -71,7 +75,7 @@ function EditProduct() {
   const fileInput2Ref = useRef<HTMLInputElement>(null);
 
   const { editProduct } = useProductMutation();
-  console.log("edit", editProduct); // Thêm dòng này trước khi gọi mutation
+  console.log('edit', editProduct); // Thêm dòng này trước khi gọi mutation
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -142,8 +146,13 @@ function EditProduct() {
     totalCountInStock: number;
     discount: number;
     variants: Variant[];
-  }> = async (data) => {
-    if (!data.name || !data.price || data.category.length === 0 || !data.description) {
+  }> = async data => {
+    if (
+      !data.name ||
+      !data.price ||
+      data.category.length === 0 ||
+      !data.description
+    ) {
       // Kiểm tra các trường bắt buộc
       return;
     }
@@ -168,10 +177,16 @@ function EditProduct() {
     try {
       const [responseThumbnail, responseGallery] = await Promise.all([
         selectedImage
-          ? axios.post(`http://localhost:8080/api/upload-thumbnail-product`, formDataThumbnail)
+          ? axios.post(
+              `http://localhost:8080/api/upload-thumbnail-product`,
+              formDataThumbnail
+            )
           : Promise.resolve({ data: data.image }), // Nếu không tải lên hình mới, giữ hình hiện tại
         selectedGallery.length > 0
-          ? axios.post(`http://localhost:8080/api/upload-gallery-product`, formDataGallery)
+          ? axios.post(
+              `http://localhost:8080/api/upload-gallery-product`,
+              formDataGallery
+            )
           : Promise.resolve({ data: data.gallery }), // Nếu không tải lên gallery mới, giữ gallery hiện tại
       ]);
 
@@ -183,10 +198,10 @@ function EditProduct() {
           totalCountInStock: totalCountInStock,
         });
 
-        navigate({ to: "/dashboard/products" }); // Chuyển hướng sau khi thành công
+        navigate({ to: '/dashboard/products' }); // Chuyển hướng sau khi thành công
       }
 
-      console.log("totalCountInStock", totalCountInStock);
+      console.log('totalCountInStock', totalCountInStock);
     } catch (error) {
       console.error('Failed to upload image', error);
       // Xử lý lỗi nếu cần
@@ -199,10 +214,19 @@ function EditProduct() {
       <form onSubmit={handleSubmit(onCreateProduct)} className="m-8">
         <div className="my-3 flex justify-between">
           <div className="w-[330px]">
-            <Input placeholder="Search" id="search-input" size='small' type="search" />
+            <Input
+              placeholder="Search"
+              id="search-input"
+              size="small"
+              type="search"
+            />
           </div>
           <div className="flex gap-2">
-            <Button variant="secondary" type="button" onClick={() => navigate({ to: '/dashboard/products' })}>
+            <Button
+              variant="secondary"
+              type="button"
+              onClick={() => navigate({ to: '/dashboard/products' })}
+            >
               Cancel
             </Button>
             <Button variant="primary" type="submit">
@@ -211,9 +235,12 @@ function EditProduct() {
           </div>
         </div>
         <div className="rounded-lg border bg-ui-bg-base p-7">
-          <h1 className="text-2xl font-medium text-ui-fg-base">General Information</h1>
+          <h1 className="text-2xl font-medium text-ui-fg-base">
+            General Information
+          </h1>
           <p className="mb-4 text-sm font-normal text-ui-fg-subtle">
-            Provide the basic product details like name, category, price, discount, and description.
+            Provide the basic product details like name, category, price,
+            discount, and description.
           </p>
 
           <div className="space-y-4">
@@ -230,7 +257,11 @@ function EditProduct() {
                     required: 'Product name is required',
                   })}
                 />
-                {errors.name && <span className="text-xs text-red-500">{errors.name.message}</span>}
+                {errors.name && (
+                  <span className="text-xs text-red-500">
+                    {errors.name.message}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -249,7 +280,9 @@ function EditProduct() {
               >
                 <div className="mb-2 flex items-center">
                   <ArrowDownTray className="mr-1 h-5 w-5" />
-                  <p className="text-xs font-medium text-ui-fg-base">Import Files</p>
+                  <p className="text-xs font-medium text-ui-fg-base">
+                    Import Files
+                  </p>
                   <input
                     type="file"
                     id="image"
@@ -267,18 +300,32 @@ function EditProduct() {
                 {selectedImage ? (
                   <div className="mb-3 flex items-center justify-between gap-3 rounded-lg border bg-ui-bg-subtle-hover px-2 py-3">
                     <div>
-                      <p className="text-sm font-normal text-ui-fg-base">{selectedImage.name}</p>
-                      <p className="text-xs font-normal text-ui-fg-subtle">{formatFileSize(selectedImage.size)}</p>
+                      <p className="text-sm font-normal text-ui-fg-base">
+                        {selectedImage.name}
+                      </p>
+                      <p className="text-xs font-normal text-ui-fg-subtle">
+                        {formatFileSize(selectedImage.size)}
+                      </p>
                     </div>
-                    <XMark className="cursor-pointer" onClick={() => setSelectedImage(null)} />
+                    <XMark
+                      className="cursor-pointer"
+                      onClick={() => setSelectedImage(null)}
+                    />
                   </div>
                 ) : product.image ? (
                   <div className="mb-3 flex items-center justify-between gap-3 rounded-lg border bg-ui-bg-subtle-hover px-2 py-3">
                     <div>
-                      <img src={product.image} alt={product.name} className="h-10 w-10 object-cover" />
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="h-10 w-10 object-cover"
+                      />
                       {/* <p className="text-sm font-normal text-ui-fg-base">{product.image}</p> */}
                     </div>
-                    <XMark className="cursor-pointer" onClick={() => setValue('image', '')} />
+                    <XMark
+                      className="cursor-pointer"
+                      onClick={() => setValue('image', '')}
+                    />
                   </div>
                 ) : null}
               </div>
@@ -300,7 +347,11 @@ function EditProduct() {
                     min: { value: 0, message: 'Price must be positive' },
                   })}
                 />
-                {errors.price && <span className="text-xs text-red-500">{errors.price.message}</span>}
+                {errors.price && (
+                  <span className="text-xs text-red-500">
+                    {errors.price.message}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -313,14 +364,14 @@ function EditProduct() {
                 <div className="w-full">
                   <Select
                     multiple
-                    onValueChange={(value) => setValue('category', value)}
+                    onValueChange={value => setValue('category', value)}
                     value={watch('category')}
                   >
                     <Select.Trigger>
                       <Select.Value placeholder="Select a category" />
                     </Select.Trigger>
                     <Select.Content>
-                      {categories.map((category) => (
+                      {categories.map(category => (
                         <Select.Item key={category._id} value={category._id}>
                           {category.name}
                         </Select.Item>
@@ -328,7 +379,11 @@ function EditProduct() {
                     </Select.Content>
                   </Select>
                 </div>
-                {errors.category && <span className="text-xs text-red-500">{errors.category.message}</span>}
+                {errors.category && (
+                  <span className="text-xs text-red-500">
+                    {errors.category.message}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -369,7 +424,9 @@ function EditProduct() {
                   })}
                 />
                 {errors.description && (
-                  <span className="text-xs text-red-500">{errors.description.message}</span>
+                  <span className="text-xs text-red-500">
+                    {errors.description.message}
+                  </span>
                 )}
               </div>
             </div>
@@ -389,7 +446,9 @@ function EditProduct() {
               >
                 <div className="mb-2 flex items-center">
                   <ArrowDownTray className="mr-1 h-5 w-5" />
-                  <p className="text-xs font-medium text-ui-fg-base">Import Files</p>
+                  <p className="text-xs font-medium text-ui-fg-base">
+                    Import Files
+                  </p>
                   <input
                     type="file"
                     id="photos"
@@ -406,50 +465,70 @@ function EditProduct() {
               </button>
               <div className="mt-5">
                 {selectedGallery.length > 0
-                  ? selectedGallery.map((item) => (
-                    <div key={item.name} className="mb-3 flex items-center justify-between gap-3 rounded-lg border bg-ui-bg-subtle-hover px-2 py-3">
-                      <div>
-                        <p className="text-sm font-normal text-ui-fg-base">{item.name}</p>
-                        <p className="text-xs font-normal text-ui-fg-subtle">{formatFileSize(item.size)}</p>
+                  ? selectedGallery.map(item => (
+                      <div
+                        key={item.name}
+                        className="mb-3 flex items-center justify-between gap-3 rounded-lg border bg-ui-bg-subtle-hover px-2 py-3"
+                      >
+                        <div>
+                          <p className="text-sm font-normal text-ui-fg-base">
+                            {item.name}
+                          </p>
+                          <p className="text-xs font-normal text-ui-fg-subtle">
+                            {formatFileSize(item.size)}
+                          </p>
+                        </div>
+                        <XMark
+                          className="cursor-pointer"
+                          onClick={() =>
+                            setSelectedGallery(prev =>
+                              prev.filter(file => file.name !== item.name)
+                            )
+                          }
+                        />
                       </div>
-                      <XMark
-                        className="cursor-pointer"
-                        onClick={() =>
-                          setSelectedGallery((prev) =>
-                            prev.filter((file) => file.name !== item.name)
-                          )
-                        }
-                      />
-                    </div>
-                  ))
+                    ))
                   : product.gallery &&
-                  product.gallery.map((imgUrl) => (
-                    <div key={imgUrl} className="mb-3 flex items-center justify-between gap-3 rounded-lg border bg-ui-bg-subtle-hover px-2 py-3">
-                      <div>
-                        <img src={imgUrl} alt="Gallery Image" className="h-10 w-10 object-cover" />
-                        {/* <p className="text-sm font-normal text-ui-fg-base">{imgUrl}</p> */}
+                    product.gallery.map(imgUrl => (
+                      <div
+                        key={imgUrl}
+                        className="mb-3 flex items-center justify-between gap-3 rounded-lg border bg-ui-bg-subtle-hover px-2 py-3"
+                      >
+                        <div>
+                          <img
+                            src={imgUrl}
+                            alt="Gallery Image"
+                            className="h-10 w-10 object-cover"
+                          />
+                          {/* <p className="text-sm font-normal text-ui-fg-base">{imgUrl}</p> */}
+                        </div>
+                        <XMark
+                          className="cursor-pointer"
+                          onClick={() => {
+                            // Implement removal logic, e.g., remove from gallery array
+                            const updatedGallery = watch('gallery').filter(
+                              url => url !== imgUrl
+                            );
+                            setValue('gallery', updatedGallery);
+                          }}
+                        />
                       </div>
-                      <XMark
-                        className="cursor-pointer"
-                        onClick={() => {
-                          // Implement removal logic, e.g., remove from gallery array
-                          const updatedGallery = watch('gallery').filter((url) => url !== imgUrl);
-                          setValue('gallery', updatedGallery);
-                        }}
-                      />
-                    </div>
-                  ))}
+                    ))}
               </div>
             </div>
 
             {/* Variants */}
             <div>
-              <h2 className="mt-5 text-lg font-medium text-ui-fg-base">Variants</h2>
-              <div className='mt-4'>
+              <h2 className="mt-5 text-lg font-medium text-ui-fg-base">
+                Variants
+              </h2>
+              <div className="mt-4">
                 {fields.map((item, index) => (
-                  <div key={item.id} className="flex space-x-4 mb-4">
+                  <div key={item.id} className="mb-4 flex space-x-4">
                     <div className="flex-1 space-y-3">
-                      <label className="block text-sm font-medium text-ui-fg-base">Size</label>
+                      <label className="block text-sm font-medium text-ui-fg-base">
+                        Size
+                      </label>
                       <Input
                         placeholder="e.g., M"
                         size="base"
@@ -464,7 +543,9 @@ function EditProduct() {
                       )}
                     </div>
                     <div className="flex-1 space-y-3">
-                      <label className="block text-sm font-medium text-ui-fg-base">Color</label>
+                      <label className="block text-sm font-medium text-ui-fg-base">
+                        Color
+                      </label>
                       <Input
                         placeholder="e.g., Red"
                         size="base"
@@ -479,7 +560,9 @@ function EditProduct() {
                       )}
                     </div>
                     <div className="flex-1 space-y-3">
-                      <label className="block text-sm font-medium text-ui-fg-base">Price ($)</label>
+                      <label className="block text-sm font-medium text-ui-fg-base">
+                        Price ($)
+                      </label>
                       <Input
                         type="number"
                         placeholder="e.g., 199.99"
@@ -496,15 +579,23 @@ function EditProduct() {
                       )}
                     </div>
                     <div className="flex-1 space-y-3">
-                      <label className="block text-sm font-medium text-ui-fg-base">Count In Stock</label>
+                      <label className="block text-sm font-medium text-ui-fg-base">
+                        Count In Stock
+                      </label>
                       <Input
                         type="number"
                         placeholder="e.g., 100"
                         size="base"
-                        {...register(`variants.${index}.countInStock` as const, {
-                          required: 'Count In Stock is required',
-                          min: { value: 0, message: 'Count In Stock must be positive' },
-                        })}
+                        {...register(
+                          `variants.${index}.countInStock` as const,
+                          {
+                            required: 'Count In Stock is required',
+                            min: {
+                              value: 0,
+                              message: 'Count In Stock must be positive',
+                            },
+                          }
+                        )}
                       />
                       {errors.variants?.[index]?.countInStock && (
                         <span className="text-xs text-red-500">
@@ -513,19 +604,32 @@ function EditProduct() {
                       )}
                     </div>
                     <div className="flex-1 space-y-3">
-                      <label className="block text-sm font-medium text-ui-fg-base">SKU</label>
+                      <label className="block text-sm font-medium text-ui-fg-base">
+                        SKU
+                      </label>
                       <Input
                         placeholder="e.g., SKU123"
                         size="base"
                         {...register(`variants.${index}.sku` as const)}
                       />
                     </div>
-                    <Trash className='mt-9 text-red-500 cursor-pointer' onClick={() => remove(index)} />
+                    <Trash
+                      className="mt-9 cursor-pointer text-red-500"
+                      onClick={() => remove(index)}
+                    />
                   </div>
                 ))}
                 <Button
-                  variant='secondary'
-                  onClick={() => append({ size: '', color: '', price: 0, countInStock: 0, sku: '' })}
+                  variant="secondary"
+                  onClick={() =>
+                    append({
+                      size: '',
+                      color: '',
+                      price: 0,
+                      countInStock: 0,
+                      sku: '',
+                    })
+                  }
                 >
                   <PlusMini /> Add Variant
                 </Button>

@@ -2,6 +2,7 @@ const bcryptjs = require("bcryptjs");
 const { registerSchema, signinSchema } = require("../schemas/auth");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+const Mail = require("../helpers/node-mailler");
 
 const signup = async (req, res) => {
   try {
@@ -88,7 +89,88 @@ const signin = async (req, res) => {
     token,
   });
 };
+
+let EMAIL = null;
+
+const requestResetPassword = async (req, res) => {
+  // get email ( user nhập vào email)
+  try {
+    const { email } = req.body;
+    // check email có tôn tại trên hệ thống
+    const accounts = await User.find();
+    const emails = accounts.map((acc) => acc.email);
+
+    if (!emails.includes(email)) res.json("Invalid Email");
+
+    EMAIL = email;
+
+    // create token
+    const resetPasswordToken = jwt.sign(
+      {
+        data: "resetpassword",
+      },
+      "SECRET",
+      {
+        expiresIn: 60,
+      }
+    );
+    // send email with code
+    if (!resetPasswordToken) return;
+    const messageId = Mail.sendResetPassword(email, resetPasswordToken);
+    res.json(messageId);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+//http://localhost:5173/reset-password?code=12345
+
+const processResetPassword = async (req, res) => {
+  const { code } = req.body;
+  if (!code) return;
+
+  // check expires code
+  try {
+    const decoded = jwt.verify(code, "SECRET");
+    res.json("Token Valid");
+  } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      res.json({
+        message: "Token expired",
+      });
+    } else {
+      res.json("Token is invalid:", error.message);
+    }
+  }
+};
+
+// client send { newPasword: ... }
+const updatePassword = async (req, res) => {
+  const { newPassword } = req.body;
+  if (!newPassword) return;
+  try {
+    // mã hóa password
+    const hashPassword = await bcryptjs.hash(newPassword, 10);
+    // tạo mới user
+    const result = await User.updateOne(
+      { email: EMAIL },
+      { password: hashPassword }
+    );
+
+    if (result.modifiedCount > 0) {
+      res.json("Reset password success!");
+    } else {
+      res.json("No user found with this email.");
+    }
+  } catch (error) {
+    res.json("error while hash new password");
+  }
+};
+
 module.exports = {
   signin,
   signup,
+  requestResetPassword,
+  processResetPassword,
+  updatePassword,
 };

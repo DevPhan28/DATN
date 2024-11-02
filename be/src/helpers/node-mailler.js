@@ -1,0 +1,95 @@
+const nodemailer = require("nodemailer");
+require("dotenv").config();
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.EMAIL_SERVICE_ACC,
+    pass: process.env.EMAIL_SERVICE_PASS,
+  },
+});
+
+const Mail = {
+  sendResetPassword: async (email, token) => {
+    try {
+      const info = await transporter.sendMail({
+        from: '"Shop Fashion Zone xin thông báo !" <admin@ethereal.email>',
+        to: email,
+        subject: "Reset Password",
+        html: `
+          <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+            <h2 style="color: #4CAF50; text-align: center;">Yêu cầu đặt lại mật khẩu</h2>
+            <p>Xin chào,</p>
+            <p>Bạn đã yêu cầu đặt lại mật khẩu cho tài khoản của mình tại <strong>Shop Fashion Zone</strong>. Vui lòng nhấn vào liên kết dưới đây để thay đổi mật khẩu của bạn:</p>
+            <div style="text-align: center; margin: 20px 0;">
+              <a href="http://localhost:5173/reset-password?code=${token}"
+                 style="background-color: #4CAF50; color: #fff; padding: 12px 20px; text-decoration: none; font-size: 16px; border-radius: 5px;">
+                Đặt lại mật khẩu
+              </a>
+            </div>
+            <p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này. Mật khẩu của bạn sẽ không thay đổi cho đến khi bạn nhấp vào liên kết ở trên và tạo mật khẩu mới.</p>
+            <p style="margin-top: 30px; color: #888;">Trân trọng,<br/>Đội ngũ hỗ trợ Shop Fashion Zone</p>
+          </div>
+        `,
+      });
+      return info.messageId;
+    } catch (error) {
+      console.error("Lỗi khi gửi email reset mật khẩu:", error);
+      throw error; // Đẩy lỗi ra ngoài để có thể kiểm tra và xử lý
+    }
+  },
+
+  sendOrderConfirmation: async (email, order) => {
+    const info = await transporter.sendMail({
+      from: '"Shop Fashion Zone" <admin@ethereal.email>',
+      to: email,
+      subject: "Xác nhận đơn hàng của bạn",
+      html: `
+        <div style="font-family: Arial, sans-serif; color: #333;">
+          <h2 style="color: #4CAF50;">Cảm ơn bạn đã đặt hàng tại Fashion Zone!</h2>
+          <p>Đơn hàng của bạn đã được xác nhận. Dưới đây là chi tiết đơn hàng:</p>
+
+          <h3 style="color: #4CAF50;">Thông tin khách hàng</h3>
+          <p><strong>Tên:</strong> ${order.customerInfo.name}</p>
+          <p><strong>Số điện thoại:</strong> ${order.customerInfo.phone}</p>
+          <p><strong>Email:</strong> ${order.customerInfo.email}</p>
+          <p><strong>Địa chỉ:</strong> ${order.customerInfo.address}, ${
+        order.customerInfo.wards
+      }, ${order.customerInfo.districts}, ${order.customerInfo.city}</p>
+
+          <h3 style="color: #4CAF50;">Chi tiết đơn hàng</h3>
+          <p><strong style="color: #FF5733;">Mã đơn hàng:</strong> ${
+            order.orderNumber
+          }</p>
+          <ul style="list-style-type: none; padding: 0;">
+            ${order.items
+              .map(
+                (item) => `
+                  <li style="margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
+                    <p><strong>Tên sản phẩm:</strong> ${item.name}</p>
+                    <p><strong>Số lượng:</strong> ${item.quantity}</p>
+                    <p><strong>Giá:</strong> <span style="color: #FF5733;">${item.price} VND</span></p>
+                    <p><strong>Ảnh:</strong> <img src="${item.image}" alt="${item.name}" width="100" height="100" style="border: 1px solid #ddd; padding: 5px;" /></p>
+                  </li>
+                `
+              )
+              .join("")}
+          </ul>
+          <p><strong style="font-size: 18px; color: #FF5733;">Tổng giá trị đơn hàng:</strong> <span style="color: #4CAF50; font-size: 18px;">${
+            order.totalPrice
+          } VND</span></p>
+
+          <p style="margin-top: 20px; color: #555;">Chúng tôi sẽ liên hệ với bạn sớm để giao hàng.</p>
+          <p style="margin-top: 20px; color: #555;">Vui lòng theo dõi đơn hàng của bạn trên website để biết trạng thái đơn hàng của bạn!.</p>
+          <p style="margin-top: 20px; color: #555;">Shop Fashion Zone xin cảm ơn quý khách!.</p>
+        </div>
+      `,
+    });
+
+    return info.messageId;
+  },
+};
+
+module.exports = Mail;

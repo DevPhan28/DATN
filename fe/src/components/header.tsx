@@ -57,7 +57,7 @@ const Header = () => {
         <div className="flex h-16 items-center justify-between">
           <div className="flex gap-x-14">
             <div className="flex items-center">
-              <img className="w-24" src="/logotachne.png" alt="Your Company" />
+              <img className="w-40" src="/fasion zone.png" alt="Your Company" />
             </div>
 
             {/* Menu chính */}

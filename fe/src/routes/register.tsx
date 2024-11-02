@@ -41,7 +41,7 @@ function Register() {
   const password = watch('password');
 
   return (
-    <div className="relative h-screen w-full">
+    <div className="relative h-screen w-full overflow-y-auto">
       {/* Background image */}
       <img
         src="/image.png"
@@ -66,9 +66,9 @@ function Register() {
         <div className="flex w-full flex-col items-center justify-center rounded-3xl bg-ui-bg-base px-8 py-10 shadow-lg md:w-1/2 md:px-16">
           {/* Logo */}
           <img
-            src="./logotachne.png"
+            src="./fasion zone.png"
             alt="fashionzone-logo"
-            className="mb-6 w-24 object-cover md:mb-8 md:w-32"
+            // className="mb-6 object-cover md:mb-8 md:w-32"
           />
 
           {/* Welcome message */}

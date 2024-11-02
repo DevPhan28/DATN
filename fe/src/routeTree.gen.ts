@@ -13,8 +13,11 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as TokenExpiresImport } from './routes/token-expires'
+import { Route as ResetPasswordImport } from './routes/reset-password'
 import { Route as RegisterImport } from './routes/register'
 import { Route as LoginImport } from './routes/login'
+import { Route as ForgotPasswordImport } from './routes/forgot-password'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
 import { Route as DashboardSetttingImport } from './routes/dashboard/settting'
@@ -45,6 +48,16 @@ const DashboardRoute = DashboardImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const TokenExpiresRoute = TokenExpiresImport.update({
+  path: '/token-expires',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ResetPasswordRoute = ResetPasswordImport.update({
+  path: '/reset-password',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const RegisterRoute = RegisterImport.update({
   path: '/register',
   getParentRoute: () => rootRoute,
@@ -52,6 +65,11 @@ const RegisterRoute = RegisterImport.update({
 
 const LoginRoute = LoginImport.update({
   path: '/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ForgotPasswordRoute = ForgotPasswordImport.update({
+  path: '/forgot-password',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -164,6 +182,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutImport
       parentRoute: typeof rootRoute
     }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordImport
+      parentRoute: typeof rootRoute
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -176,6 +201,20 @@ declare module '@tanstack/react-router' {
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterImport
+      parentRoute: typeof rootRoute
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordImport
+      parentRoute: typeof rootRoute
+    }
+    '/token-expires': {
+      id: '/token-expires'
+      path: '/token-expires'
+      fullPath: '/token-expires'
+      preLoaderRoute: typeof TokenExpiresImport
       parentRoute: typeof rootRoute
     }
     '/_layout/about': {
@@ -374,8 +413,11 @@ const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
 
 export interface FileRoutesByFullPath {
   '': typeof LayoutRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/token-expires': typeof TokenExpiresRoute
   '/about': typeof LayoutAboutRoute
   '/cart': typeof LayoutCartRoute
   '/checkout': typeof LayoutCheckoutRoute
@@ -396,8 +438,11 @@ export interface FileRoutesByFullPath {
 }
 
 export interface FileRoutesByTo {
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/token-expires': typeof TokenExpiresRoute
   '/about': typeof LayoutAboutRoute
   '/cart': typeof LayoutCartRoute
   '/checkout': typeof LayoutCheckoutRoute
@@ -419,8 +464,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_layout': typeof LayoutRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/token-expires': typeof TokenExpiresRoute
   '/_layout/about': typeof LayoutAboutRoute
   '/_layout/cart': typeof LayoutCartRoute
   '/_layout/checkout': typeof LayoutCheckoutRoute
@@ -445,8 +493,11 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | ''
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
+    | '/token-expires'
     | '/about'
     | '/cart'
     | '/checkout'
@@ -466,8 +517,11 @@ export interface FileRouteTypes {
     | '/dashboard/products/$id/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
+    | '/token-expires'
     | '/about'
     | '/cart'
     | '/checkout'
@@ -487,8 +541,11 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_layout'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
+    | '/token-expires'
     | '/_layout/about'
     | '/_layout/cart'
     | '/_layout/checkout'
@@ -512,15 +569,21 @@ export interface FileRouteTypes {
 
 export interface RootRouteChildren {
   LayoutRoute: typeof LayoutRouteWithChildren
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
+  TokenExpiresRoute: typeof TokenExpiresRoute
   DashboardRoute: typeof DashboardRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   LayoutRoute: LayoutRouteWithChildren,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
+  TokenExpiresRoute: TokenExpiresRoute,
   DashboardRoute: DashboardRouteWithChildren,
 }
 
@@ -537,8 +600,11 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_layout",
+        "/forgot-password",
         "/login",
         "/register",
+        "/reset-password",
+        "/token-expires",
         "/dashboard"
       ]
     },
@@ -554,11 +620,20 @@ export const routeTree = rootRoute
         "/_layout/$slug/quickviewProduct"
       ]
     },
+    "/forgot-password": {
+      "filePath": "forgot-password.tsx"
+    },
     "/login": {
       "filePath": "login.tsx"
     },
     "/register": {
       "filePath": "register.tsx"
+    },
+    "/reset-password": {
+      "filePath": "reset-password.tsx"
+    },
+    "/token-expires": {
+      "filePath": "token-expires.tsx"
     },
     "/_layout/about": {
       "filePath": "_layout/about.tsx",

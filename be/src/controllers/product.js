@@ -43,16 +43,17 @@ const getProduct = async (req, res) => {
 const getProductById = async (req, res) => {
   try {
     const data = await Product.findById(req.params.id);
-    if (data.length < 0) {
+    if (!data) {
       return res.status(404).json({ message: "Không có sản phẩm nào" });
     }
-    return res.status(201).json({
+    return res.status(200).json({
       data,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 const getProductBySlug = async (req, res) => {
   try {
     const productSlug = req.params.slug; // Lấy slug từ tham số đường dẫn

@@ -48,6 +48,9 @@ const menuProducts: MenuItem[] = [
     icon: <Tag />,
     href: '/dashboard/category',
   },
+];
+
+const menuOders: MenuItem[] = [
   {
     id: 1,
     name: 'Order List',
@@ -74,13 +77,7 @@ const menuAccount: MenuItem[] = [
 const Sidebar = () => {
   return (
     <aside className="border-cool-gray-20 relative max-h-screen min-w-fit space-y-4 overflow-hidden border-r bg-ui-bg-base px-4 py-6">
-      <img
-        src="/logotachne.png"
-        alt="logo"
-        className="ml-4"
-        width={100}
-        height={53}
-      />
+      <img src="/fasion zone.png" alt="logo" width={150} height={53} />
       <nav className="space-y-4">
         <ul>
           {menuItems.map(item => (
@@ -99,6 +96,22 @@ const Sidebar = () => {
           </header>
           <div>
             {menuProducts.map(item => (
+              <ItemSidebar
+                key={item.id}
+                href={item.href}
+                id={item.id}
+                name={item.name}
+                icon={item.icon}
+              />
+            ))}
+          </div>
+        </section>
+        <section className="space-y-1">
+          <header className="py-1.5 pl-2 text-xs font-medium text-ui-fg-muted">
+            Oders
+          </header>
+          <div>
+            {menuOders.map(item => (
               <ItemSidebar
                 key={item.id}
                 href={item.href}

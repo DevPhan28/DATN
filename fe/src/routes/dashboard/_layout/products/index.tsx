@@ -1,14 +1,13 @@
-// Đoạn mã này không thay đổi, giữ nguyên các import
 import Header from '@/components/layoutAdmin/header/header';
 import { useFetchProducts } from '@/data/products/useProductList';
 import useProductMutation from '@/data/products/useProductMutation';
 import {
   Adjustments,
   ArrowUpTray,
-  Plus,
   EllipsisVertical,
+  Plus,
 } from '@medusajs/icons';
-import { Button, DropdownMenu, Input, Prompt, Table } from '@medusajs/ui';
+import { Button, DropdownMenu, Input, Table, usePrompt } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 
@@ -21,9 +20,8 @@ export const Route = createFileRoute('/dashboard/_layout/products/')({
 function ProductList() {
   const [currentPage, setCurrentPage] = useState(0);
   const navigate = useNavigate();
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(
-    null
-  );
+
+  const dialog = usePrompt();
 
   const {
     data: listproduct,
@@ -53,6 +51,15 @@ function ProductList() {
   };
 
   const { deleteProduct } = useProductMutation();
+  const deleteEntity = async (_id: string) => {
+    const userHasConfirmed = await dialog({
+      title: 'Delete products',
+      description: 'Are you sure you want to delete?',
+    });
+    if (userHasConfirmed) {
+      deleteProduct.mutate(_id);
+    }
+  };
 
   const previousPage = () => {
     if (canPreviousPage) {
@@ -74,27 +81,6 @@ function ProductList() {
       })) ?? []
     );
   }, [listproduct]);
-
-  const handleDelete = () => {
-    if (selectedProductId) {
-      deleteProduct.mutate(selectedProductId, {
-        onSuccess: () => {
-          closeDeletePrompt(); // Đóng hộp thoại xác nhận
-        },
-        onError: error => {
-          console.error('Error deleting product:', error);
-        },
-      });
-    }
-  };
-
-  const openDeletePrompt = (_id: string) => {
-    setSelectedProductId(_id);
-  };
-
-  const closeDeletePrompt = () => {
-    setSelectedProductId(null);
-  };
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -175,33 +161,10 @@ function ProductList() {
                         <DropdownMenu.Item className="p-2 text-ui-tag-neutral-text hover:text-ui-code-bg-base">
                           View Details
                         </DropdownMenu.Item>
-                        <DropdownMenu.Item className="gap-x-2">
-                          <Prompt>
-                            <Prompt.Trigger asChild>
-                              <span
-                                onClick={() => openDeletePrompt(product._id)}
-                              >
-                                Delete
-                              </span>
-                            </Prompt.Trigger>
-                            <Prompt.Content>
-                              <Prompt.Header>
-                                <Prompt.Title>Delete Product</Prompt.Title>
-                                <Prompt.Description>
-                                  Are you sure you want to delete this product?
-                                  This action cannot be undone.
-                                </Prompt.Description>
-                              </Prompt.Header>
-                              <Prompt.Footer>
-                                <Prompt.Cancel onClick={closeDeletePrompt}>
-                                  Cancel
-                                </Prompt.Cancel>
-                                <Prompt.Action onClick={handleDelete}>
-                                  Delete
-                                </Prompt.Action>
-                              </Prompt.Footer>
-                            </Prompt.Content>
-                          </Prompt>
+                        <DropdownMenu.Item className="gap-x-2" asChild>
+                          <span onClick={async () => deleteEntity(product._id)}>
+                            Delete
+                          </span>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item
                           className="gap-x-2"
