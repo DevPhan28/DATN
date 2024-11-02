@@ -15,6 +15,7 @@ import FilterBar from './FilterBar';
 
 // Định nghĩa kiểu dữ liệu cho sản phẩm
 type Product = {
+  slug: string;
   _id: string;
   name: string;
   price: number;
@@ -79,7 +80,7 @@ const CardProduct: React.FC = () => {
     : [];
 
   return (
-    <div className="max-w-6xl m-auto mt-10 p-5 xl:p-0 lg:p-5 md:p-5 sm:p-5">
+    <div className="m-auto mt-10 max-w-6xl p-5 sm:p-5 md:p-5 lg:p-5 xl:p-0">
       <h1 className="mb-4 text-2xl font-bold sm:mb-8 sm:text-4xl">
         PRODUCT OVERVIEW
       </h1>
@@ -160,21 +161,24 @@ const CardProduct: React.FC = () => {
                 to={`${product.slug ? product.slug : product._id}/quickviewProduct`} // Sử dụng slug nếu có
                 className="quick-view duration-900 absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-full bg-white px-4 py-2 opacity-0 shadow transition-all hover:bg-black hover:text-white group-hover:translate-y-[-100px] group-hover:opacity-100"
               >
-                Quick View
+                View Details
               </Link>
               <h2 className="mt-2 flex items-center justify-between text-gray-500">
                 {product.name}
-                <div className="flex space-x-2 gap-1">
+                <div className="flex gap-1 space-x-2">
                   <Link
                     to={`/${product.slug ? product.slug : product._id}/detailproduct`}
-                    className='hover:text-blue-300'
+                    className="hover:text-blue-300"
                   >
                     <ShoppingCartSolid />
                   </Link>
                   <i
                     onClick={toggleFavorite}
-                    className={`text-[18px] cursor-pointer ${isFavorite ? 'fa-solid fa-heart text-red-500' : 'fa-regular fa-heart hover:text-blue-300'
-                      }`}
+                    className={`cursor-pointer text-[18px] ${
+                      isFavorite
+                        ? 'fa-solid fa-heart text-red-500'
+                        : 'fa-regular fa-heart hover:text-blue-300'
+                    }`}
                   ></i>
                 </div>
               </h2>

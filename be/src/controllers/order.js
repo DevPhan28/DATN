@@ -1,17 +1,29 @@
 const Mail = require("../helpers/node-mailler");
 const Order = require("../models/order");
 const { StatusCodes } = require("http-status-codes");
+const Product = require("../models/product");
 
 const createOrder = async (req, res) => {
   try {
     const { userId, items, totalPrice, customerInfo } = req.body;
+
+    // Tạo đơn hàng mới
     const order = await Order.create({
       userId,
       items,
       totalPrice,
       customerInfo,
     });
+
+    for (const item of items) {
+      await Product.findByIdAndUpdate(
+        item.productId,
+        { $inc: { countInStock: -item.quantity } },
+        { new: true }
+      );
+    }
     await Mail.sendOrderConfirmation(customerInfo.email, order);
+
     return res.status(StatusCodes.CREATED).json(order);
   } catch (error) {
     if (error.name === "ValidationError") {
@@ -37,24 +49,19 @@ const getOrders = async (req, res) => {
       sortBy = "createdAt",
       order = "desc",
     } = req.query;
-
-    // Tạo bộ lọc dựa vào trạng thái đơn hàng (nếu có)
     const filter = {};
     if (status) {
       filter.status = status;
     }
 
-    // Tính toán số lượng đơn hàng cần bỏ qua để lấy trang hiện tại
     const skip = (page - 1) * limit;
 
-    // Lấy danh sách đơn hàng với phân trang và sắp xếp
     const orders = await Order.find(filter)
       .sort({ [sortBy]: order === "desc" ? -1 : 1 })
       .skip(skip)
       .limit(Number(limit));
 
-    const totalOrders = await Order.countDocuments(filter); // Tổng số đơn hàng theo bộ lọc
-
+    const totalOrders = await Order.countDocuments(filter);
     return res.status(StatusCodes.OK).json({
       data: orders,
       meta: {
