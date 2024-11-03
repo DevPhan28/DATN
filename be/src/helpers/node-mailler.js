@@ -71,6 +71,8 @@ const Mail = {
                     <p><strong>Tên sản phẩm:</strong> ${item.name}</p>
                     <p><strong>Số lượng:</strong> ${item.quantity}</p>
                     <p><strong>Giá:</strong> <span style="color: #FF5733;">${item.price} VND</span></p>
+                    <p><strong>Giá:</strong> <span style="color: #FF5733;">${item.color} VND</span></p>
+                    <p><strong>Giá:</strong> <span style="color: #FF5733;">${item.size} VND</span></p>
                     <p><strong>Ảnh:</strong> <img src="${item.image}" alt="${item.name}" width="100" height="100" style="border: 1px solid #ddd; padding: 5px;" /></p>
                   </li>
                 `

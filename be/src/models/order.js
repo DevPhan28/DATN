@@ -7,6 +7,8 @@ const OrderItemSchema = new Schema({
   quantity: { type: Number, required: true },
   price: { type: Number, required: true },
   image: { type: String, required: true },
+  color: { type: String }, // Thêm thuộc tính màu
+  size: { type: String }, // Thêm thuộc tính kích thước
 });
 
 const OrderSchema = new mongoose.Schema(
@@ -16,7 +18,7 @@ const OrderSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    items: [OrderItemSchema],
+    items: [OrderItemSchema], // Đơn hàng bao gồm các sản phẩm
     orderNumber: {
       type: String,
       unique: true,
@@ -39,7 +41,14 @@ const OrderSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending", "confirmed", "shipped", "canceled"],
+      enum: [
+        "pending",
+        "confirmed",
+        "shipped",
+        "received",
+        "delivered",
+        "canceled",
+      ],
       default: "pending",
     },
     statusHistory: { type: [String], default: [] },

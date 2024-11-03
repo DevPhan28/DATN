@@ -1,11 +1,7 @@
 import Header from '@/components/layoutAdmin/header/header';
 import { useFetchOrders } from '@/data/oder/useOderList';
 import useCheckoutMutation from '@/data/oder/useOderMutation';
-import {
-  Adjustments,
-  ArrowUpTray,
-  EllipsisVertical,
-} from '@medusajs/icons';
+import { Adjustments, ArrowUpTray, EllipsisVertical } from '@medusajs/icons';
 import { Button, DropdownMenu, Input, Table, Tooltip } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
@@ -57,7 +53,13 @@ function OrderList() {
 
   const handleStatusChange = (orderId, newStatus, currentStatus) => {
     // Xác định thứ tự các trạng thái
-    const statusOrder = ["pending", "confirmed", "shipped", "canceled"];
+    const statusOrder = [
+      'pending',
+      'confirmed',
+      'shipped',
+      'delivered',
+      'canceled',
+    ];
     const currentIndex = statusOrder.indexOf(currentStatus);
     const newIndex = statusOrder.indexOf(newStatus);
 
@@ -73,12 +75,11 @@ function OrderList() {
           // Tải lại danh sách hoặc cập nhật trạng thái cục bộ để hiển thị thay đổi
         },
         onError: error => {
-          console.error("Failed to update status:", error);
+          console.error('Failed to update status:', error);
         },
       }
     );
   };
-
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -170,18 +171,24 @@ function OrderList() {
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     {order.customerInfo.email}
                   </Table.Cell>
-                  <Table.Cell className="font-semibold text-ui-fg-base overflow-hidden text-ellipsis whitespace-nowrap max-w-[150px]">
+                  <Table.Cell className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-ui-fg-base">
                     <DropdownMenu>
                       <DropdownMenu.Trigger asChild>
                         <span className="cursor-pointer">
-                          {order.customerInfo.address}, {order.customerInfo.wards}, {order.customerInfo.districts}, {order.customerInfo.city}
+                          {order.customerInfo.address},{' '}
+                          {order.customerInfo.wards},{' '}
+                          {order.customerInfo.districts},{' '}
+                          {order.customerInfo.city}
                         </span>
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Content className="w-96 p-4">
                         <div>
                           <p className="font-semibold">Địa chỉ chi tiết:</p>
                           <p>
-                            {order.customerInfo.address}, {order.customerInfo.wards}, {order.customerInfo.districts}, {order.customerInfo.city}
+                            {order.customerInfo.address},{' '}
+                            {order.customerInfo.wards},{' '}
+                            {order.customerInfo.districts},{' '}
+                            {order.customerInfo.city}
                           </p>
                         </div>
                       </DropdownMenu.Content>
@@ -190,9 +197,7 @@ function OrderList() {
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     {order.items.map((product, index) => (
                       <span key={product._id || index}>
-                        <div className="">
-                          {product.name}
-                        </div>
+                        <div className="">{product.name}</div>
                       </span>
                     ))}
                   </Table.Cell>
@@ -202,12 +207,55 @@ function OrderList() {
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     <select
                       value={order.status}
-                      onChange={(e) => handleStatusChange(order._id, e.target.value, order.status)}
+                      onChange={e =>
+                        handleStatusChange(
+                          order._id,
+                          e.target.value,
+                          order.status
+                        )
+                      }
+                      disabled={
+                        order.status === 'delivered' ||
+                        order.status === 'canceled'
+                      } // Khóa toàn bộ select khi đã giao hoặc đã hủy
                     >
-                      <option value="pending" disabled={order.status !== "pending"}>Pending</option>
-                      <option value="confirmed" disabled={["shipped", "canceled"].includes(order.status)}>Confirmed</option>
-                      <option value="shipped" disabled={order.status === "canceled"}>Shipped</option>
-                      <option value="canceled">Canceled</option>
+                      <option
+                        value="pending"
+                        disabled={order.status !== 'pending'}
+                      >
+                        Pending
+                      </option>
+                      <option
+                        value="confirmed"
+                        disabled={
+                          order.status === 'shipped' ||
+                          order.status === 'canceled' ||
+                          order.status === 'delivered'
+                        }
+                      >
+                        Confirmed
+                      </option>
+                      <option
+                        value="shipped"
+                        disabled={
+                          order.status === 'canceled' ||
+                          order.status === 'delivered'
+                        }
+                      >
+                        Shipped
+                      </option>
+                      <option
+                        value="delivered"
+                        disabled={order.status === 'delivered'}
+                      >
+                        Delivered
+                      </option>
+                      <option
+                        value="canceled"
+                        disabled={order.status !== 'pending'}
+                      >
+                        Canceled
+                      </option>
                     </select>
                   </Table.Cell>
                 </Table.Row>

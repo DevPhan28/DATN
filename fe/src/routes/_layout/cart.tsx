@@ -16,6 +16,7 @@ function Cart() {
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
   const { data: cartData, isLoading, error } = useFetchCart(userId);
+  
   const { deleteItemFromCart, increaseQuantity, decreaseQuantity } =
     useCartMutation();
 

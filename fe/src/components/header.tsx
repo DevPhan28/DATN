@@ -1,13 +1,5 @@
 import { useFetchCart } from '@/data/cart/useFetchCart';
-import {
-  ArrowRightOnRectangle,
-  BarsThree,
-  Heart,
-  MagnifyingGlassMini,
-  ShoppingCartSolid,
-  User,
-  XMark,
-} from '@medusajs/icons';
+import { ArrowRightOnRectangle, BarsThree, XMark } from '@medusajs/icons';
 import { toast } from '@medusajs/ui';
 import { Link } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
@@ -53,14 +45,14 @@ const Header = () => {
   //Phần menu của user
   const menuRef = useRef(null);
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = event => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setIsMenuOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
   // End-Phần menu của user
@@ -72,17 +64,21 @@ const Header = () => {
 
   console.log('Đã lưu tên người dùng:', username);
   return (
-    <div className='bg-white'>
-      <div className="m-auto max-w-7xl  p-5 xl:p-0 lg:p-5 md:p-5 sm:p-5 ">
+    <div className="bg-white">
+      <div className="m-auto max-w-7xl p-5 sm:p-5 md:p-5 lg:p-5 xl:p-0">
         <nav className="relative">
           <div className="flex h-16 items-center justify-between">
             <div className="flex gap-x-14">
               <div className="flex items-center">
-                <img className="w-40" src="/fasion zone.png" alt="Your Company" />
+                <img
+                  className="w-40"
+                  src="/fasion zone.png"
+                  alt="Your Company"
+                />
               </div>
 
               {/* Menu chính */}
-              <div className="hidden flex-wrap sm:flex lg:gap-5 lg:text-[16px] md:text-[14px]  sm:gap-1 sm:text-[10px]">
+              <div className="hidden flex-wrap sm:flex sm:gap-1 sm:text-[10px] md:text-[14px] lg:gap-5 lg:text-[16px]">
                 <Link
                   to="/"
                   className="px-2 py-2 font-medium hover:text-blue-400"
@@ -95,25 +91,39 @@ const Header = () => {
                 >
                   Shop
                 </Link>
-                <a href="/featuredProducts" className="relative px-2 py-2 font-medium hover:text-blue-400">
+                <a
+                  href="/featuredProducts"
+                  className="relative px-2 py-2 font-medium hover:text-blue-400"
+                >
                   Features
-                  <span className='bg-red-400 text-white uppercase rounded-xl text-xs w-9 absolute mt-[-8px] left-14 text-center'>Hot</span>
+                  <span className="absolute left-14 mt-[-8px] w-9 rounded-xl bg-red-400 text-center text-xs uppercase text-white">
+                    Hot
+                  </span>
                 </a>
-                <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">
+                <a
+                  href="#"
+                  className="px-2 py-2 font-medium hover:text-blue-400"
+                >
                   Blog
                 </a>
-                <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">
+                <a
+                  href="#"
+                  className="px-2 py-2 font-medium hover:text-blue-400"
+                >
                   About
                 </a>
-                <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">
+                <a
+                  href="#"
+                  className="px-2 py-2 font-medium hover:text-blue-400"
+                >
                   Contact
                 </a>
               </div>
             </div>
 
             {/* Khu vực chứa các biểu tượng và biểu tượng menu */}
-            <div className="flex items-center space-x-2 text-[19px] ">
-              <i className="fa-solid fa-magnifying-glass text-[20px] hover:text-blue-400 p-3"></i>
+            <div className="flex items-center space-x-2 text-[19px]">
+              <i className="fa-solid fa-magnifying-glass p-3 text-[20px] hover:text-blue-400"></i>
               <Link to="/cart" className="relative">
                 <i className="fa-solid fa-cart-shopping text-[20px] hover:text-blue-400"></i>
                 {/* Hiển thị tổng số lượng sản phẩm trong giỏ hàng */}
@@ -123,7 +133,7 @@ const Header = () => {
                   </span>
                 )}
               </Link>
-              <i className="fa-regular fa-heart text-[20px] hover:text-blue-400 p-3"></i>
+              <i className="fa-regular fa-heart p-3 text-[20px] hover:text-blue-400"></i>
               <div className="flex items-center sm:hidden">
                 <button
                   onClick={toggleMenu}
@@ -136,17 +146,20 @@ const Header = () => {
                   )}
                 </button>
               </div>
-              <div className="relative group z-10" ref={menuRef}>
-                <div onClick={toggleMenu} className="flex items-center gap-x-2 cursor-pointer custom-cursor-on-hover ">
+              <div className="group relative z-10" ref={menuRef}>
+                <div
+                  onClick={toggleMenu}
+                  className="custom-cursor-on-hover flex cursor-pointer items-center gap-x-2"
+                >
                   {isLoggedIn ? (
                     <>
                       <img
                         src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg"
                         alt=""
-                        className="size-8 object-cover rounded-full"
+                        className="size-8 rounded-full object-cover"
                       />
-                      <span className="text-base font-medium hidden md:flex">
-                        {username || "kkk"}
+                      <span className="hidden text-base font-medium md:flex">
+                        {username || 'kkk'}
                       </span>
                     </>
                   ) : (
@@ -155,34 +168,58 @@ const Header = () => {
                 </div>
 
                 {isMenuOpen && (
-                  <ul className="absolute text-lg bg-white w-44 rounded top-10 right-3 cursor-pointer shadow-lg">
+                  <ul className="absolute right-3 top-10 w-44 cursor-pointer rounded bg-white text-lg shadow-lg">
                     {isLoggedIn ? (
                       <>
                         <li className="hidden px-3 hover:bg-white hover:text-blue-400">
-                          <a className="w-full block" href="/admin">Trang quản trị</a>
+                          <a className="block w-full" href="/admin">
+                            Trang quản trị
+                          </a>
                         </li>
-                        <li className="hover:bg-white px-3 p-1 hover:text-blue-400 custom-cursor-on-hover">
-                          <a className="w-full block" href="#">Tài khoản của tôi</a>
+                        <li className="custom-cursor-on-hover p-1 px-3 hover:bg-white hover:text-blue-400">
+                          <a className="block w-full" href="#">
+                            Tài khoản của tôi
+                          </a>
                         </li>
-                        <li className="hover:bg-white px-3 p-1 hover:text-blue-400 custom-cursor-on-hover">
-                          <a className="w-full block" href="#">Đơn mua</a>
+                        <li className="custom-cursor-on-hover p-1 px-3 hover:bg-white hover:text-blue-400">
+                          <Link
+                            to="/orderuser"
+                            className="block w-full"
+                            href="#"
+                          >
+                            Đơn mua
+                          </Link>
                         </li>
-                        <li className="hover:bg-white px-3 p-1 hover:text-blue-400 w-full block custom-cursor-on-hover">
-                          <a onClick={handleLogout} href="#" className="w-full block">Đăng Xuất</a>
+                        <li className="custom-cursor-on-hover block w-full p-1 px-3 hover:bg-white hover:text-blue-400">
+                          <a
+                            onClick={handleLogout}
+                            href="#"
+                            className="block w-full"
+                          >
+                            Đăng xuất
+                          </a>
                         </li>
                       </>
                     ) : (
-
-                      <div className=" w-[300px] p-4 rounded-xl bg-[#F7F4F0] text-center">
+                      <div className="w-[300px] rounded-xl bg-[#F7F4F0] p-4 text-center">
                         <Link to="/login">
-                          <a className="button-main w-full text-center bg-[#3B82F6] p-2 px-6 rounded-lg hover:bg-black text-white" href="/buyer/login">Đăng nhập</a>
+                          <a
+                            className="button-main w-full rounded-lg bg-[#3B82F6] p-2 px-6 text-center text-white hover:bg-black"
+                            href="/buyer/login"
+                          >
+                            Đăng nhập
+                          </a>
                         </Link>
-                        <div className="text-gray-500  mt-3">
+                        <div className="mt-3 text-gray-500">
                           Bạn chưa có tài khoản?
-                          <a className="text-black pl-1 hover:underline w-full" href="/register">Đăng ký</a>
+                          <a
+                            className="w-full pl-1 text-black hover:underline"
+                            href="/register"
+                          >
+                            Đăng ký
+                          </a>
                         </div>
                       </div>
-
                     )}
                   </ul>
                 )}

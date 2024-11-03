@@ -49,7 +49,10 @@ const getProductById = async (req, res) => {
     return res.status(200).json({
       data,
     });
+    
   } catch (error) {
+    // Xử lý lỗi nếu có
+    console.error('Error fetching product:', error);
     res.status(500).json({ message: error.message });
   }
 };

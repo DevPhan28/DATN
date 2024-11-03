@@ -7,14 +7,23 @@ const createOrder = async (req, res) => {
   try {
     const { userId, items, totalPrice, customerInfo } = req.body;
 
-    // Tạo đơn hàng mới
+    // Tạo đơn hàng mới với `color` và `size` trong từng `item`
     const order = await Order.create({
       userId,
-      items,
+      items: items.map((item) => ({
+        productId: item.productId,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        image: item.image,
+        color: item.variant?.color || item.color, // Lấy color từ variant hoặc item
+        size: item.variant?.size || item.size, // Lấy size từ variant hoặc item
+      })),
       totalPrice,
       customerInfo,
     });
 
+    // Cập nhật `countInStock` cho mỗi sản phẩm
     for (const item of items) {
       await Product.findByIdAndUpdate(
         item.productId,
@@ -22,6 +31,8 @@ const createOrder = async (req, res) => {
         { new: true }
       );
     }
+
+    // Gửi email xác nhận đơn hàng
     await Mail.sendOrderConfirmation(customerInfo.email, order);
 
     return res.status(StatusCodes.CREATED).json(order);
@@ -62,6 +73,20 @@ const getOrders = async (req, res) => {
       .limit(Number(limit));
 
     const totalOrders = await Order.countDocuments(filter);
+
+    // Trả về mảng trống nếu không có đơn hàng nào
+    if (totalOrders === 0) {
+      return res.status(StatusCodes.OK).json({
+        data: [],
+        meta: {
+          totalItems: 0,
+          totalPages: 0,
+          currentPage: Number(page),
+          pageSize: Number(limit),
+        },
+      });
+    }
+
     return res.status(StatusCodes.OK).json({
       data: orders,
       meta: {
@@ -97,12 +122,25 @@ const getOrderById = async (req, res) => {
 const getOrdersByUserId = async (req, res) => {
   try {
     const { userId } = req.params;
+
+    // Tìm kiếm các đơn hàng theo userId
     const orders = await Order.find({ userId });
+
+    // Nếu không có đơn hàng nào, trả về mảng trống
     if (!orders || orders.length === 0) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ error: "No orders found for this user" });
+      return res.status(StatusCodes.OK).json([]); // Trả về mảng trống thay vì lỗi
     }
+
+    // Kiểm tra và log chi tiết các thuộc tính của từng sản phẩm
+    orders.forEach((order) => {
+      order.items.forEach((item) => {
+        console.log(`Order item:`, item);
+        if (!item.color || !item.size) {
+          console.warn(`Order item missing color or size: ${item.name}`);
+        }
+      });
+    });
+
     return res.status(StatusCodes.OK).json(orders);
   } catch (error) {
     return res
@@ -110,6 +148,7 @@ const getOrdersByUserId = async (req, res) => {
       .json({ error: error.message });
   }
 };
+
 const updateOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -157,12 +196,69 @@ const deleteOrder = async (req, res) => {
       .json({ error: error.message });
   }
 };
+const cancelOrder = async (req, res) => {
+  const { orderId } = req.params;
+
+  try {
+    // Tìm đơn hàng theo ID
+    const order = await Order.findById(orderId);
+
+    // Kiểm tra nếu đơn hàng không tồn tại
+    if (!order) {
+      return res.status(404).json({ message: "Đơn hàng không tồn tại" });
+    }
+
+    // Kiểm tra trạng thái của đơn hàng, chỉ cho phép hủy nếu trạng thái là "pending"
+    if (order.status !== "pending") {
+      return res.status(400).json({
+        message: "Đơn hàng đã được xác nhận hoặc đang xử lý, không thể hủy",
+      });
+    }
+
+    // Cập nhật trạng thái thành "canceled"
+    order.status = "canceled";
+    await order.save();
+
+    res.status(200).json({ message: "Đơn hàng đã được hủy thành công", order });
+  } catch (error) {
+    res.status(500).json({ message: "Có lỗi xảy ra khi hủy đơn hàng", error });
+  }
+};
+// In your orders controller
+const confirmReceived = async (req, res) => {
+  const { orderId } = req.params;
+
+  try {
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Only allow update if the status is 'delivered'
+    if (order.status !== "delivered") {
+      return res
+        .status(400)
+        .json({
+          message: "Only delivered orders can be confirmed as received",
+        });
+    }
+
+    order.status = "received";
+    await order.save();
+
+    res.json({ message: "Order status updated to received" });
+  } catch (error) {
+    res.status(500).json({ message: "Error confirming order received" });
+  }
+};
 
 module.exports = {
   getOrderById,
+  confirmReceived,
   getOrders,
   updateOrder,
   deleteOrder,
   createOrder,
   getOrdersByUserId,
+  cancelOrder,
 };

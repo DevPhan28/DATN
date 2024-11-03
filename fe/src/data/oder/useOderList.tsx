@@ -65,3 +65,29 @@ export const useFetchOrderAll = () => {
 
   return { listOrder, loading, error };
 };
+
+export const fetchOrdersByUserId = async (userId) => {
+  try {
+    const res = await instance.get(`/orders/${userId}`);
+
+    if (res.status !== 200 && res.status !== 201) {
+      throw new Error(
+        `Error while fetching orders - status code: ${res.status}`
+      );
+    }
+
+    return res.data;
+  } catch (error) {
+    console.error("Error while fetching orders:", error);
+    throw new Error('Error while fetching orders');
+  }
+};
+
+// Hook `useFetchOrdersByUserId` để gọi API lấy đơn hàng của người dùng theo `userId`
+export const useFetchOrdersByUserId = (userId) => {
+  return useQuery({
+    queryKey: [QUERY_KEY.FETCH_ORDERS_BY_USER, userId],
+    queryFn: () => fetchOrdersByUserId(userId),
+    enabled: !!userId, // Chỉ kích hoạt khi `userId` có giá trị
+  });
+};
