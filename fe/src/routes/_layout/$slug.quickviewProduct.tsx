@@ -145,265 +145,256 @@ function DetailProduct() {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="m-auto max-w-6xl bg-white p-5 sm:p-5 md:p-5 lg:p-5 xl:p-0">
-      <div className="mt-5 flex items-center gap-2 text-[#666666]">
-        <a href="#" className="hover:underline">
-          Home
-        </a>
-        <ChevronRightMini />
-        <a href="#" className="hover:underline">
-          Shop
-        </a>
-        <ChevronRightMini />
-        <a href="#">Quick view</a>
-      </div>
-
-      <div className="mt-5 flex flex-col justify-between lg:flex-row">
-        <div className="flex gap-5 lg:flex-row">
-          {/* Thumbnails section */}
-          <div className="">
-            <img
-              alt="Main Product"
-              className="h-20 w-28 cursor-pointer rounded-lg border border-white object-cover p-1 hover:border-black hover:opacity-75"
-              src={product.image} // Hình ảnh chính
-              onClick={() => setCurrentImage(product.image)}
-              onMouseEnter={() => setCurrentImage(product.image)} // Thay đổi khi hover
-            />
-            {product.gallery &&
-              product.gallery.map((img, index) => (
-                <img
-                  key={index}
-                  alt={`Thumbnail ${index + 1}`}
-                  className="h-20 w-28 cursor-pointer rounded-lg border border-white object-cover p-1 hover:border-black hover:opacity-75"
-                  src={img}
-                  onClick={() => setCurrentImage(img)}
-                  onMouseEnter={() => setCurrentImage(img)} // Thay đổi khi hover
-                />
-              ))}
-          </div>
-          {/* Main product image */}
-          <div className="sm:w-[22rem] md:w-[26rem] lg:mt-0 lg:w-[30rem]">
-            <div className="mb-4 h-[500px] w-[500px]">
-              <img
-                src={currentImage || product.image} // Hiển thị ảnh chính từ currentImage
-                alt="Product"
-                className="h-[500px] w-[500px] rounded-lg bg-slate-400 object-cover shadow-lg"
-              />
+    <div className=''>
+      <div className=''>
+        <div className="main-content w-full h-48 flex flex-col items-center justify-center ">
+          <div className="text-content">
+            <div className="text-4xl font-semibold text-center">
+              Shop
+            </div>
+            <div className="link flex items-center justify-center gap-1 caption1 mt-3">
+              <div className="flex items-center justify-center">
+                <a href="/">Home</a>
+                <ChevronRightMini />
+              </div>
+              <div className="flex items-center justify-center">
+                <a href="/">Shop</a>
+                <ChevronRightMini />
+              </div>
+              <div className="text-gray-500 capitalize">
+                <a href="#">Quick View</a>
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Product details and purchase section */}
-        <div className="mt-6 flex-none lg:mt-0">
-          <h2 className="mb-4 text-xl font-bold sm:text-2xl lg:text-3xl">
-            {product.name}
-          </h2>
-          <p className="mb-2 text-sm text-gray-600 sm:text-base">
-            SKU: {product.sku}
-          </p>
-          <div className="mb-4 text-lg font-semibold text-red-600 sm:text-xl lg:text-2xl">
-            ${product.price}
-            <span className="text-sm text-gray-400 line-through sm:text-base lg:text-lg">
-              $1199
-            </span>
-          </div>
-          <div className="mb-4 text-lg sm:text-xl">
-            <p>{product.description}</p>
-          </div>
-
-          <div className="mb-4 flex items-center">
-            <label className="w-20 text-gray-700">Size</label>
-            <select
-              className="flex-1 rounded border border-gray-300 p-2"
-              value={selectedSize}
-              onChange={handleSizeChange}
-            >
-              <option value="">Chọn size</option>
-              {product.variants &&
-                product.variants.map(variant => (
-                  <option key={variant.sku} value={variant.size}>
-                    {variant.size}
-                  </option>
-                ))}
-            </select>
-          </div>
-
-          <div className="mb-4 flex items-center">
-            <label className="w-20 text-gray-700">Color</label>
-            <select
-              className="flex-1 rounded border border-gray-300 p-2"
-              value={selectedColor}
-              onChange={e => setSelectedColor(e.target.value)}
-              disabled={!selectedSize} // Disable nếu chưa chọn size
-            >
-              <option value="">Chọn màu</option>
-              {availableColors &&
-                availableColors.map((color, index) => (
-                  <option key={index} value={color}>
-                    {color}
-                  </option>
-                ))}
-            </select>
-          </div>
-
-          <div className="mb-4 flex items-center gap-5">
-            <div>Quantity</div>
-            <div>
-              <button
-                className="rounded border border-gray-300 p-2"
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              >
-                -
-              </button>
-              <input
-                className="mx-2 w-12 rounded border border-gray-300 p-2 text-center"
-                type="text"
-                min="1"
-                value={quantity}
-                readOnly
-              />
-              <button
-                className="rounded border border-gray-300 p-2"
-                onClick={() => setQuantity(quantity + 1)}
-              >
-                +
-              </button>
-            </div>
-          </div>
-          {/* Review section */}
-          <div className="flex gap-2 text-red-400">
-            <ThumbUp />
-            91%
-            <div className="flex items-center gap-2 text-[#767676]">
-              <div>The customer said it was true to size</div>
-              <ChevronRightMini />
-            </div>
-          </div>
-          {/* Size guide section */}
-          <div className="mt-2 flex gap-2 text-[#767676]">
-            <CommandLine className="text-blue-400" />
-            <div>Size guide</div>
-          </div>
-          {/* Add to cart button */}
-          <button
-            className="mt-3 rounded-md bg-blue-500 px-5 py-2 text-sm text-white transition hover:bg-gray-800 sm:px-6 sm:py-3 sm:text-lg"
-            onClick={handleAddToCart}
-            disabled={addItemToCart.isLoading} // Disable nút khi đang thêm vào giỏ hàng
-          >
-            {addItemToCart.isLoading ? 'Đang thêm...' : 'ADD TO CART'}
-          </button>
-          {/* Shipping and return info */}
-          <div className="mt-4 w-full bg-[#EEEEEE] p-4">
-            <div className="flex gap-4">
-              <RocketLaunch className="mt-1.5 text-xl text-green-700" />
-              <div>
-                <div className="text-lg font-semibold">Free ship</div>
-                <div className="text-sm">Free standard ship</div>
-                <div className="text-sm">
-                  Estimated delivery is October 30, 2024 - October 31, 2024.
+      </div>
+      <div className='bg-gray-50 py-10'>
+        <div className=" max-w-7xl m-auto p-5 xl:p-0 lg:p-5 md:p-5 sm:p-5 ">
+          <div className="flex flex-col lg:flex-row justify-between mt-5  md:gap-48 bg-white p-5 shadow">
+            <div className="flex flex-col lg:flex-row gap-5">
+              {/* Thumbnails section */}
+              <div className='flex sm:flex-row md:flex-row lg:flex-col'>
+                <img
+                  alt="Main Product"
+                  className="w-28 h-20  p-1 object-cover rounded-lg cursor-pointer hover:opacity-75 border border-white hover:border-black"
+                  src={product.image} // Hình ảnh chính
+                  onClick={() => setCurrentImage(product.image)}
+                  onMouseEnter={() => setCurrentImage(product.image)} // Thay đổi khi hover
+                />
+                {product.gallery &&
+                  product.gallery.map((img, index) => (
+                    <img
+                      key={index}
+                      alt={`Thumbnail ${index + 1}`}
+                      className="w-28 h-20  p-1 object-cover rounded-lg cursor-pointer hover:opacity-75 border border-white hover:border-black"
+                      src={img}
+                      onClick={() => setCurrentImage(img)}
+                      onMouseEnter={() => setCurrentImage(img)} // Thay đổi khi hover
+                    />
+                  ))}
+              </div>
+              {/* Main product image */}
+              <div className="lg:w-[35rem] md:w-[26rem] sm:w-[22rem] lg:mt-0">
+                <div className="mb-4 lg:h-[400px] lg:w-[600px] md:h-[300px]  md:w-[500px]">
+                  <img
+                    src={currentImage || product.image} // Hiển thị ảnh chính từ currentImage
+                    alt="Product"
+                    className="h-[500px] bg-slate-400 w-[600px] object-cover rounded-lg shadow-lg"
+                  />
                 </div>
               </div>
             </div>
-            <div className="mt-3 flex gap-4">
-              <ArrowUpRightOnBox className="mt-1.5 text-xl text-green-700" />
-              <div>
-                <div className="text-lg font-semibold">Return Policy</div>
-                <div className="text-sm">Learn more</div>
+
+
+            {/* Product details and purchase section */}
+            <div className="mt-6 lg:mt-0">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 w-96">{product.name}</h2>
+              <p className="text-sm sm:text-base text-gray-600 mb-2">
+                SKU: {product.sku}
+              </p>
+              <div className="text-lg sm:text-xl lg:text-2xl font-semibold text-red-600 mb-4">
+                ${product.price}
+                <span className="text-sm sm:text-base lg:text-lg text-gray-400 line-through">$1199</span>
+              </div>
+              <div className="text-lg sm:text-xl mb-4">
+                <p>{product.description}</p>
+              </div>
+
+              <div className="mb-4 flex items-center">
+                <label className="w-20 text-gray-700">Size</label>
+                <select
+                  className="flex-1 rounded border border-gray-300 p-2"
+                  value={selectedSize}
+                  onChange={handleSizeChange}
+                >
+                  <option value="">Chọn size</option>
+                  {product.variants &&
+                    product.variants.map(variant => (
+                      <option key={variant.sku} value={variant.size}>
+                        {variant.size}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              <div className="mb-4 flex items-center">
+                <label className="w-20 text-gray-700">Color</label>
+                <select
+                  className="flex-1 rounded border border-gray-300 p-2"
+                  value={selectedColor}
+                  onChange={e => setSelectedColor(e.target.value)}
+                  disabled={!selectedSize} // Disable nếu chưa chọn size
+                >
+                  <option value="">Chọn màu</option>
+                  {availableColors &&
+                    availableColors.map((color, index) => (
+                      <option key={index} value={color}>
+                        {color}
+                      </option>
+                    ))}
+                </select>
+              </div>
+
+              <div className="mb-4 flex items-center gap-5">
+                <div>Quantity</div>
+                <div>
+                  <button
+                    className="rounded border border-gray-300 p-2"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  >
+                    -
+                  </button>
+                  <input
+                    className="mx-2 w-12 rounded border border-gray-300 p-2 text-center"
+                    type="text"
+                    min="1"
+                    value={quantity}
+                    readOnly
+                  />
+                  <button
+                    className="rounded border border-gray-300 p-2"
+                    onClick={() => setQuantity(quantity + 1)}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+              {/* Review section */}
+              <div className="text-red-400 flex gap-2">
+                <ThumbUp />91%
+                <div className="text-[#767676] flex items-center gap-2">
+                  <div>The customer said it was true to size</div>
+                  <ChevronRightMini />
+                </div>
+              </div>
+              {/* Size guide section */}
+              <div className="flex gap-2 text-[#767676] mt-2">
+                <CommandLine className="text-blue-400" />
+                <div>Size guide</div>
+              </div>
+              {/* Add to cart button */}
+              <button
+                className="bg-blue-500 text-white py-2 sm:py-3 px-5 mt-3 sm:px-6 rounded-md text-sm sm:text-lg hover:bg-gray-800 transition"
+                onClick={handleAddToCart}
+                disabled={addItemToCart.isLoading} // Disable nút khi đang thêm vào giỏ hàng
+              >
+                {addItemToCart.isLoading
+                  ? 'Đang thêm...'
+                  : 'ADD TO CART'}
+              </button>
+              {/* Shipping and return info */}
+              <div className="w-full p-4 bg-[#EEEEEE] mt-4">
+                <div className="flex gap-4">
+                  <RocketLaunch className="text-green-700 text-xl mt-1.5" />
+                  <div>
+                    <div className="font-semibold text-lg">Free ship</div>
+                    <div className="text-sm">Free standard ship</div>
+                    <div className="text-sm">Estimated delivery is October 30, 2024 - October 31, 2024.</div>
+                  </div>
+                </div>
+                <div className="flex gap-4 mt-3">
+                  <ArrowUpRightOnBox className="text-green-700 text-xl mt-1.5" />
+                  <div>
+                    <div className="font-semibold text-lg">Return Policy</div>
+                    <div className="text-sm">Learn more</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+          <div className="flex flex-col lg:flex-row gap-10   py-5">
+            {/* Left side - Customer Reviews lg:w-1/2*/}
+            <div className="mt-10 w-full bg-white p-5 shadow">
+              <div className='w-full mt-5 flex justify-between'>
+                <h2 className='font-semibold text-[24px]'>Customer Reviews (500+)</h2>
+                <div className='font-normal text-[18px] flex items-center text-[#666666]'>
+                  <div>See All</div>
+                  <ChevronRightMini />
+                </div>
+              </div>
+
+              {/* Rating Section */}
+              <div className="flex gap-2 mt-6 border h-20 p-2 bg-gray-100">
+                <h1 className='font-semibold text-[28px]'>4.8</h1>
+                <div className='flex mt-2'>
+                  <StarSolid className='text-orange-300' />
+                  <StarSolid className='text-orange-300' />
+                  <StarSolid className='text-orange-300' />
+                  <StarSolid className='text-orange-300' />
+                  <StarSolid className='text-orange-200' />
+                </div>
+                <div className="flex gap-2 self-center">
+                  <button className='border p-2 bg-white'>ALL</button>
+                  <button className='border p-2 bg-white'>5 stars (99)</button>
+                  <button className='border p-2 bg-white'>4 stars (8)</button>
+                  <button className='border p-2 bg-white'>2 stars (2)</button>
+                  <button className='border p-2 bg-white'>1 stars (8)</button>
+                </div>
+              </div>
+
+              {/* Review 1 */}
+              <div className='mt-5 border-b pb-5'>
+                <h3 className='font-semibold'>Anh Thư <span className='text-[#767676] font-light'>14 Jun, 2024</span></h3>
+                <div className='flex'>
+                  <StarSolid className='text-orange-300' />
+                  <StarSolid className='text-orange-300' />
+                  <StarSolid className='text-orange-300' />
+                  <StarSolid className='text-orange-300' />
+                  <StarSolid className='text-orange-300' />
+                </div>
+                <p className='mt-1'>Áo đẹp, chất lượng ổn áp, mình m72 nặng 58kg mặc size M nhe.</p>
+                <div className="mt-10 flex gap-2 justify-end text-[#767676]">
+                  <ThumbUp className='text-black' />
+                  Hữu ích(2)
+                  <EllipsisHorizontal className='text-black' />
+                </div>
+              </div>
+
+              {/* Review 2 */}
+              <div className='mt-5 border-b pb-5'>
+                <h3 className='font-semibold'>Anh Thư <span className='text-[#767676] font-light'>14 Jun, 2024</span></h3>
+                <div className='flex'>
+                  <StarSolid className='text-orange-300' />
+                  <StarSolid className='text-orange-300' />
+                  <StarSolid className='text-orange-300' />
+                  <StarSolid className='text-orange-300' />
+                  <StarSolid className='text-orange-300' />
+                </div>
+                <p className='mt-1'>Áo đẹp, chất lượng ổn áp, mình m72 nặng 58kg mặc size M nhe.</p>
+                <div className="mt-10 flex gap-2 justify-end text-[#767676]">
+                  <ThumbUp className='text-black' />
+                  Hữu ích(2)
+                  <EllipsisHorizontal className='text-black' />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div className="flex flex-col gap-10 lg:flex-row">
-        {/* Left side - Customer Reviews lg:w-1/2*/}
-        <div className="mt-10 w-full">
-          <div className="mt-5 flex w-full justify-between">
-            <h2 className="text-[24px] font-semibold">
-              Customer Reviews (500+)
-            </h2>
-            <div className="flex items-center text-[18px] font-normal text-[#666666]">
-              <div>See All</div>
-              <ChevronRightMini />
-            </div>
-          </div>
-
-          {/* Rating Section */}
-          <div className="mt-6 flex h-20 gap-2 border bg-gray-100 p-2">
-            <h1 className="text-[28px] font-semibold">4.8</h1>
-            <div className="mt-2 flex">
-              <StarSolid className="text-orange-300" />
-              <StarSolid className="text-orange-300" />
-              <StarSolid className="text-orange-300" />
-              <StarSolid className="text-orange-300" />
-              <StarSolid className="text-orange-200" />
-            </div>
-            <div className="flex gap-2 self-center">
-              <button className="border bg-white p-2">ALL</button>
-              <button className="border bg-white p-2">5 stars (99)</button>
-              <button className="border bg-white p-2">4 stars (8)</button>
-              <button className="border bg-white p-2">2 stars (2)</button>
-              <button className="border bg-white p-2">1 stars (8)</button>
-            </div>
-          </div>
-
-          {/* Review 1 */}
-          <div className="mt-5 border-b pb-5">
-            <h3 className="font-semibold">
-              Anh Thư{' '}
-              <span className="font-light text-[#767676]">14 Jun, 2024</span>
-            </h3>
-            <div className="flex">
-              <StarSolid className="text-orange-300" />
-              <StarSolid className="text-orange-300" />
-              <StarSolid className="text-orange-300" />
-              <StarSolid className="text-orange-300" />
-              <StarSolid className="text-orange-300" />
-            </div>
-            <p className="mt-1">
-              Áo đẹp, chất lượng ổn áp, mình m72 nặng 58kg mặc size M nhe.
-            </p>
-            <div className="mt-10 flex justify-end gap-2 text-[#767676]">
-              <ThumbUp className="text-black" />
-              Hữu ích(2)
-              <EllipsisHorizontal className="text-black" />
-            </div>
-          </div>
-
-          {/* Review 2 */}
-          <div className="mt-5 border-b pb-5">
-            <h3 className="font-semibold">
-              Anh Thư{' '}
-              <span className="font-light text-[#767676]">14 Jun, 2024</span>
-            </h3>
-            <div className="flex">
-              <StarSolid className="text-orange-300" />
-              <StarSolid className="text-orange-300" />
-              <StarSolid className="text-orange-300" />
-              <StarSolid className="text-orange-300" />
-              <StarSolid className="text-orange-300" />
-            </div>
-            <p className="mt-1">
-              Áo đẹp, chất lượng ổn áp, mình m72 nặng 58kg mặc size M nhe.
-            </p>
-            <div className="mt-10 flex justify-end gap-2 text-[#767676]">
-              <ThumbUp className="text-black" />
-              Hữu ích(2)
-              <EllipsisHorizontal className="text-black" />
-            </div>
+          <div className='mt-5 bg-white shadow p-5'>
+            <h2 className='font-semibold text-[24px]'>Other products</h2>
           </div>
         </div>
-
-        {/* <div className='mt-10 w-full lg:w-1/2'>
-          <h2 className='font-semibold text-[24px]'>Customer Reviews (500+)</h2>
-          <div className='font-normal text-[18px] flex items-center text-[#666666]'>
-            <div>See All</div>
-            <ChevronRightMini />
-          </div>
-        </div> */}
-      </div>
-
-      <div className="mt-5">
-        <h2 className="text-[24px] font-semibold">Other products</h2>
       </div>
     </div>
   );

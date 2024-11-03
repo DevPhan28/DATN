@@ -10,7 +10,7 @@ import {
 } from '@medusajs/icons';
 import { toast } from '@medusajs/ui';
 import { Link } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const Header = () => {
   // Trạng thái hiển thị của menu
@@ -50,124 +50,188 @@ const Header = () => {
       duration: 900,
     });
   };
+  //Phần menu của user
+  const menuRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+  // End-Phần menu của user
+  // Đọc dữ liệu từ localStorage
+  const storedData = JSON.parse(localStorage.getItem('user'));
 
+  // Truy xuất tên người dùng (username)
+  const username = storedData?.user?.username || 'Không có tên người dùng';
+
+  console.log('Đã lưu tên người dùng:', username);
   return (
-    <div className="m-auto max-w-6xl  p-5 xl:p-0 lg:p-5 md:p-5 sm:p-5">
-      <nav className="relative">
-        <div className="flex h-16 items-center justify-between">
-          <div className="flex gap-x-14">
-            <div className="flex items-center">
-              <img className="w-40" src="/fasion zone.png" alt="Your Company" />
+    <div className='bg-white'>
+      <div className="m-auto max-w-7xl  p-5 xl:p-0 lg:p-5 md:p-5 sm:p-5 ">
+        <nav className="relative">
+          <div className="flex h-16 items-center justify-between">
+            <div className="flex gap-x-14">
+              <div className="flex items-center">
+                <img className="w-40" src="/fasion zone.png" alt="Your Company" />
+              </div>
+
+              {/* Menu chính */}
+              <div className="hidden flex-wrap sm:flex lg:gap-5 lg:text-[16px] md:text-[14px]  sm:gap-1 sm:text-[10px]">
+                <Link
+                  to="/"
+                  className="px-2 py-2 font-medium hover:text-blue-400"
+                >
+                  Home
+                </Link>
+                <Link
+                  to="/shop"
+                  className="px-2 py-2 font-medium hover:text-blue-400"
+                >
+                  Shop
+                </Link>
+                <a href="/featuredProducts" className="relative px-2 py-2 font-medium hover:text-blue-400">
+                  Features
+                  <span className='bg-red-400 text-white uppercase rounded-xl text-xs w-9 absolute mt-[-8px] left-14 text-center'>Hot</span>
+                </a>
+                <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">
+                  Blog
+                </a>
+                <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">
+                  About
+                </a>
+                <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">
+                  Contact
+                </a>
+              </div>
             </div>
 
-            {/* Menu chính */}
-            <div className="hidden flex-wrap sm:flex lg:gap-5 lg:text-[16px] md:text-[14px]  sm:gap-1 sm:text-[10px]">
-              <Link
-                to="/"
-                className="px-2 py-2 font-medium hover:text-blue-400"
+            {/* Khu vực chứa các biểu tượng và biểu tượng menu */}
+            <div className="flex items-center space-x-2 text-[19px] ">
+              <i className="fa-solid fa-magnifying-glass text-[20px] hover:text-blue-400 p-3"></i>
+              <Link to="/cart" className="relative">
+                <i className="fa-solid fa-cart-shopping text-[20px] hover:text-blue-400"></i>
+                {/* Hiển thị tổng số lượng sản phẩm trong giỏ hàng */}
+                {!isLoading && totalItems > 0 && (
+                  <span className="absolute -right-3 -top-3 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+                    {totalItems}
+                  </span>
+                )}
+              </Link>
+              <i className="fa-regular fa-heart text-[20px] hover:text-blue-400 p-3"></i>
+              <div className="flex items-center sm:hidden">
+                <button
+                  onClick={toggleMenu}
+                  className="flex items-center justify-center p-2 text-gray-500 hover:text-blue-400 focus:outline-none"
+                >
+                  {isMenuOpen ? (
+                    <XMark className="hover:text-blue-400" />
+                  ) : (
+                    <BarsThree className="hover:text-blue-400" />
+                  )}
+                </button>
+              </div>
+              <div className="relative group z-10" ref={menuRef}>
+                <div onClick={toggleMenu} className="flex items-center gap-x-2 cursor-pointer custom-cursor-on-hover ">
+                  {isLoggedIn ? (
+                    <>
+                      <img
+                        src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg"
+                        alt=""
+                        className="size-8 object-cover rounded-full"
+                      />
+                      <span className="text-base font-medium hidden md:flex">
+                        {username || "kkk"}
+                      </span>
+                    </>
+                  ) : (
+                    <i className="fa-solid fa-user text-[20px] hover:text-blue-400"></i>
+                  )}
+                </div>
+
+                {isMenuOpen && (
+                  <ul className="absolute text-lg bg-white w-44 rounded top-10 right-3 cursor-pointer shadow-lg">
+                    {isLoggedIn ? (
+                      <>
+                        <li className="hidden px-3 hover:bg-white hover:text-blue-400">
+                          <a className="w-full block" href="/admin">Trang quản trị</a>
+                        </li>
+                        <li className="hover:bg-white px-3 p-1 hover:text-blue-400 custom-cursor-on-hover">
+                          <a className="w-full block" href="#">Tài khoản của tôi</a>
+                        </li>
+                        <li className="hover:bg-white px-3 p-1 hover:text-blue-400 custom-cursor-on-hover">
+                          <a className="w-full block" href="#">Đơn mua</a>
+                        </li>
+                        <li className="hover:bg-white px-3 p-1 hover:text-blue-400 w-full block custom-cursor-on-hover">
+                          <a onClick={handleLogout} href="#" className="w-full block">Đăng Xuất</a>
+                        </li>
+                      </>
+                    ) : (
+
+                      <div className=" w-[300px] p-4 rounded-xl bg-[#F7F4F0] text-center">
+                        <Link to="/login">
+                          <a className="button-main w-full text-center bg-[#3B82F6] p-2 px-6 rounded-lg hover:bg-black text-white" href="/buyer/login">Đăng nhập</a>
+                        </Link>
+                        <div className="text-gray-500  mt-3">
+                          Bạn chưa có tài khoản?
+                          <a className="text-black pl-1 hover:underline w-full" href="/register">Đăng ký</a>
+                        </div>
+                      </div>
+
+                    )}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </div>
+          {/* Danh sách menu ẩn */}
+          {isMenuOpen && (
+            <div className="mt-2 flex flex-col space-y-2 sm:hidden">
+              <a
+                href="#"
+                className="block px-3 py-2 font-medium hover:text-blue-400"
               >
                 Home
-              </Link>
-              <Link
-                to="/shop"
-                className="px-2 py-2 font-medium hover:text-blue-400"
+              </a>
+              <a
+                href="#"
+                className="block px-3 py-2 font-medium hover:text-blue-400"
               >
                 Shop
-              </Link>
-              <a href="/featuredProducts" className="relative px-2 py-2 font-medium hover:text-blue-400">
-                Features
-                <span className='bg-red-400 text-white uppercase rounded-xl text-xs w-9 absolute mt-[-8px] left-14 text-center'>Hot</span>
               </a>
-              <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">
+              <a
+                href="#"
+                className="block px-3 py-2 font-medium hover:text-blue-400"
+              >
+                Features
+              </a>
+              <a
+                href="#"
+                className="block px-3 py-2 font-medium hover:text-blue-400"
+              >
                 Blog
               </a>
-              <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">
+              <a
+                href="#"
+                className="block px-3 py-2 font-medium hover:text-blue-400"
+              >
                 About
               </a>
-              <a href="#" className="px-2 py-2 font-medium hover:text-blue-400">
+              <a
+                href="#"
+                className="block px-3 py-2 font-medium hover:text-blue-400"
+              >
                 Contact
               </a>
             </div>
-          </div>
-
-          {/* Khu vực chứa các biểu tượng và biểu tượng menu */}
-          <div className="flex items-center space-x-2 text-[19px]">
-            <i className="fa-solid fa-magnifying-glass text-[20px] hover:text-blue-400 p-3"></i>
-            <Link to="/cart" className="relative">
-              <i className="fa-solid fa-cart-shopping text-[20px] hover:text-blue-400"></i>
-              {/* Hiển thị tổng số lượng sản phẩm trong giỏ hàng */}
-              {!isLoading && totalItems > 0 && (
-                <span className="absolute -right-3 -top-3 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
-                  {totalItems}
-                </span>
-              )}
-            </Link>
-            <i className="fa-regular fa-heart text-[20px] hover:text-blue-400 p-3"></i>
-            <div className="flex items-center sm:hidden">
-              <button
-                onClick={toggleMenu}
-                className="flex items-center justify-center p-2 text-gray-500 hover:text-blue-400 focus:outline-none"
-              >
-                {isMenuOpen ? (
-                  <XMark className="hover:text-blue-400" />
-                ) : (
-                  <BarsThree className="hover:text-blue-400" />
-                )}
-              </button>
-            </div>
-            {isLoggedIn ? (
-              <button onClick={handleLogout}>
-                <ArrowRightOnRectangle />
-              </button>
-            ) : (
-              <Link to="/login">
-                <i className="fa-solid fa-user text-[20px] hover:text-blue-400"></i>
-              </Link>
-            )}
-          </div>
-        </div>
-        {/* Danh sách menu ẩn */}
-        {isMenuOpen && (
-          <div className="mt-2 flex flex-col space-y-2 sm:hidden">
-            <a
-              href="#"
-              className="block px-3 py-2 font-medium hover:text-blue-400"
-            >
-              Home
-            </a>
-            <a
-              href="#"
-              className="block px-3 py-2 font-medium hover:text-blue-400"
-            >
-              Shop
-            </a>
-            <a
-              href="#"
-              className="block px-3 py-2 font-medium hover:text-blue-400"
-            >
-              Features
-            </a>
-            <a
-              href="#"
-              className="block px-3 py-2 font-medium hover:text-blue-400"
-            >
-              Blog
-            </a>
-            <a
-              href="#"
-              className="block px-3 py-2 font-medium hover:text-blue-400"
-            >
-              About
-            </a>
-            <a
-              href="#"
-              className="block px-3 py-2 font-medium hover:text-blue-400"
-            >
-              Contact
-            </a>
-          </div>
-        )}
-      </nav>
+          )}
+        </nav>
+      </div>
     </div>
   );
 };

@@ -80,7 +80,7 @@ const CardProduct: React.FC = () => {
     : [];
 
   return (
-    <div className="m-auto mt-10 max-w-6xl p-5 sm:p-5 md:p-5 lg:p-5 xl:p-0">
+    <div className="m-auto mt-10 max-w-7xl p-5 sm:p-5 md:p-5 lg:p-5 xl:p-0">
       <h1 className="mb-4 text-2xl font-bold sm:mb-8 sm:text-4xl">
         PRODUCT OVERVIEW
       </h1>
@@ -174,11 +174,10 @@ const CardProduct: React.FC = () => {
                   </Link>
                   <i
                     onClick={toggleFavorite}
-                    className={`cursor-pointer text-[18px] ${
-                      isFavorite
-                        ? 'fa-solid fa-heart text-red-500'
-                        : 'fa-regular fa-heart hover:text-blue-300'
-                    }`}
+                    className={`cursor-pointer text-[18px] ${isFavorite
+                      ? 'fa-solid fa-heart text-red-500'
+                      : 'fa-regular fa-heart hover:text-blue-300'
+                      }`}
                   ></i>
                 </div>
               </h2>
@@ -194,9 +193,9 @@ const CardProduct: React.FC = () => {
       <div className="m-auto max-w-6xl p-10 text-center">
         <button
           onClick={() => navigate({ to: '/shop' })} // Điều hướng đến trang đăng nhập
-          className="rounded-2xl border border-gray-300 bg-gray-100 px-6 py-2 hover:bg-blue-400"
+          className="rounded-2xl border border-gray-300 bg-blue-500 px-6 py-2 hover:bg-black text-white"
         >
-          Thêm sản phẩm
+          Xem thêm
         </button>
       </div>
     </div>

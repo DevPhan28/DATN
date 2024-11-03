@@ -104,13 +104,13 @@ const FeaturedProducts = () => {
   };
 
   return (
-    <div className="max-w-6xl m-auto mt-5 p-5 xl:p-0 lg:p-5 md:p-5 sm:p-5 relative">
+    <div className="max-w-7xl m-auto mt-5 p-5 xl:p-0 lg:p-5 md:p-5 sm:p-5 relative">
       {/* Loading or Error State */}
       {loading && <p>Loading products...</p>}
       {error && <p className="text-red-500">{error}</p>}
 
-      <h2 className="text-center text-2xl font-bold mb-5 relative">
-        <span className="bg-red-400 text-white uppercase rounded-xl text-xs px-2 py-1 absolute top-0 left-0">Hot</span>
+      <h2 className="text-left text-4xl uppercase font-bold mb-5 relative">
+        {/* <span className="bg-red-400 text-white uppercase rounded-xl text-xs px-2 py-1 absolute top-0 left-0">Hot</span> */}
         Featured Product
       </h2>
 
