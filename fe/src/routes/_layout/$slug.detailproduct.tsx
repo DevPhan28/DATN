@@ -6,26 +6,24 @@ import instance from '@/api/axiosIntance';
 import { toast } from '@medusajs/ui';
 
 export const Route = createFileRoute('/_layout/$slug/detailproduct')({
-  // Đổi :id thành :slug
   component: () => {
-    const { slug } = useParams({ from: '/_layout/$slug/detailproduct' }); // Lấy slug từ params
+    const { slug } = useParams({ from: '/_layout/$slug/detailproduct' });
     const navigate = useNavigate();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [selectedSize, setSelectedSize] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
-    const [availableColors, setAvailableColors] = useState([]); // State để lưu danh sách màu
-    const [quantity, setQuantity] = useState(1); // Số lượng sản phẩm
+    const [availableColors, setAvailableColors] = useState([]);
+    const [quantity, setQuantity] = useState(1);
 
-    const queryClient = useQueryClient(); // Để invalidate query khi cần
+    const queryClient = useQueryClient();
 
-    // Lấy thông tin sản phẩm từ API
+    // Fetch product data from API
     useEffect(() => {
       const fetchProduct = async () => {
-        setLoading(true); // Bắt đầu loading
+        setLoading(true);
         try {
-          // Sử dụng slug trong URL
           const response = await instance.get(`/products/slug/${slug}`);
           if (response.data && response.data.product) {
             setProduct(response.data.product);
@@ -35,22 +33,22 @@ export const Route = createFileRoute('/_layout/$slug/detailproduct')({
         } catch (err) {
           setError('Có lỗi khi lấy sản phẩm');
         } finally {
-          setLoading(false); // Kết thúc loading
+          setLoading(false);
         }
       };
 
       fetchProduct();
-    }, [slug]); // Chạy lại khi slug thay đổi
+    }, [slug]);
 
-    // Mutation thêm sản phẩm vào giỏ hàng
+    // Mutation to add product to cart
     const addItemToCart = useMutation({
-      mutationFn: data => instance.post('/cart/add-to-cart', data), // Gọi API thêm vào giỏ hàng
+      mutationFn: data => instance.post('/cart/add-to-cart', data),
       onSuccess: () => {
         toast.success('Đã thêm sản phẩm vào giỏ hàng', {
           description: 'Sản phẩm của bạn đã được thêm vào giỏ hàng thành công!',
           duration: 1000,
         });
-        queryClient.invalidateQueries(['cart']); // Invalidate query cart
+        queryClient.invalidateQueries(['cart']);
       },
       onError: error => {
         if (error.response) {
@@ -68,22 +66,21 @@ export const Route = createFileRoute('/_layout/$slug/detailproduct')({
       },
     });
 
-    // Xử lý khi người dùng chọn size
+    // Handle size change
     const handleSizeChange = e => {
       const size = e.target.value;
       setSelectedSize(size);
-      setSelectedColor(''); // Reset màu khi thay đổi size
+      setSelectedColor(''); // Reset color when size changes
 
-      // Lọc các màu tương ứng với size đã chọn
-      const availableColors = product.variants
+      // Filter available colors based on selected size
+      const colors = product.variants
         .filter(variant => variant.size === size)
         .map(variant => variant.color);
 
-      // Cập nhật danh sách màu dựa trên size đã chọn
-      setAvailableColors([...new Set(availableColors)]); // Loại bỏ màu trùng lặp
+      setAvailableColors([...new Set(colors)]); // Remove duplicate colors
     };
 
-    // Hàm xử lý khi người dùng bấm nút thêm vào giỏ hàng
+    // Handle add to cart action
     const handleAddToCart = () => {
       if (!selectedSize || !selectedColor) {
         toast.error('Vui lòng chọn size và màu sắc!');
@@ -108,43 +105,43 @@ export const Route = createFileRoute('/_layout/$slug/detailproduct')({
         return;
       }
 
-      if (!product._id || !variant.sku || !product.price || quantity < 1) {
-        toast.error('Dữ liệu sản phẩm không hợp lệ, vui lòng kiểm tra lại.');
-        return;
-      }
-
       addItemToCart.mutate({
-        userId: localStorage.getItem('userId'), // Thay bằng userId thực tế
+        userId: localStorage.getItem('userId'),
         products: [
           {
             productId: product._id,
-            variantId: variant.sku, // Biến thể đã được kiểm tra hợp lệ
+            variantId: variant.sku,
             quantity,
-            priceAtTime: product.price, // Thêm giá hiện tại của sản phẩm
+            priceAtTime: product.price,
           },
         ],
       });
     };
 
-    // Hiển thị loading hoặc lỗi nếu có
+    // Handle unique size generation for dropdown
+    const uniqueSizes = product
+      ? [...new Set(product.variants.map(variant => variant.size))]
+      : [];
+
+    // Display loading, error, or product details
     if (loading) return <div>Đang tải...</div>;
     if (error) return <div>{error}</div>;
     if (!product) return <div>Không tìm thấy sản phẩm</div>;
 
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
-        {/* Overlay mờ */}
+        {/* Background overlay */}
         <div
           className="absolute inset-0 bg-black bg-opacity-50"
-          onClick={() => navigate({ to: '/' })} // Đóng modal khi click vào nền
+          onClick={() => navigate({ to: '/' })}
         ></div>
 
-        {/* Modal chi tiết sản phẩm */}
+        {/* Product detail modal */}
         <div className="relative z-50 w-full max-w-7xl rounded-lg bg-white p-6 shadow-lg">
-          {/* Nút đóng "X" */}
+          {/* Close button */}
           <button
             className="absolute right-4 top-4 text-gray-500 hover:text-gray-800"
-            onClick={() => navigate({ to: '/' })} // Điều hướng về trang chủ khi đóng modal
+            onClick={() => navigate({ to: '/' })}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -163,7 +160,7 @@ export const Route = createFileRoute('/_layout/$slug/detailproduct')({
           </button>
 
           <div className="flex h-full flex-col md:flex-row">
-            {/* Hiển thị hình ảnh sản phẩm */}
+            {/* Product images */}
             <div className="mr-4 flex flex-col items-center">
               {product.gallery &&
                 product.gallery.map((img, index) => (
@@ -182,11 +179,14 @@ export const Route = createFileRoute('/_layout/$slug/detailproduct')({
                 src={product.image}
               />
             </div>
-            {/* Chi tiết sản phẩm */}
+
+            {/* Product details */}
             <div className="ml-10 mt-4 flex-1 md:mt-0">
               <h1 className="text-2xl font-bold">{product.name}</h1>
               <p className="mt-2 text-xl text-gray-700">${product.price}</p>
               <p className="mt-4 text-gray-600">{product.description}</p>
+
+              {/* Size dropdown with unique sizes */}
               <div className="mt-6">
                 <div className="mb-4 flex items-center">
                   <label className="w-20 text-gray-700">Size</label>
@@ -196,31 +196,33 @@ export const Route = createFileRoute('/_layout/$slug/detailproduct')({
                     onChange={handleSizeChange}
                   >
                     <option value="">Chọn size</option>
-                    {product.variants &&
-                      product.variants.map(variant => (
-                        <option key={variant.sku} value={variant.size}>
-                          {variant.size}
-                        </option>
-                      ))}
+                    {uniqueSizes.map(size => (
+                      <option key={size} value={size}>
+                        {size}
+                      </option>
+                    ))}
                   </select>
                 </div>
+
+                {/* Color dropdown */}
                 <div className="mb-4 flex items-center">
                   <label className="w-20 text-gray-700">Color</label>
                   <select
                     className="flex-1 rounded border border-gray-300 p-2"
                     value={selectedColor}
                     onChange={e => setSelectedColor(e.target.value)}
-                    disabled={!selectedSize} // Disable nếu chưa chọn size
+                    disabled={!selectedSize}
                   >
                     <option value="">Chọn màu</option>
-                    {availableColors &&
-                      availableColors.map((color, index) => (
-                        <option key={index} value={color}>
-                          {color}
-                        </option>
-                      ))}
+                    {availableColors.map((color, index) => (
+                      <option key={index} value={color}>
+                        {color}
+                      </option>
+                    ))}
                   </select>
                 </div>
+
+                {/* Quantity and Add to Cart */}
                 <div className="mb-4 flex items-center">
                   <button
                     className="rounded border border-gray-300 p-2"
@@ -244,21 +246,17 @@ export const Route = createFileRoute('/_layout/$slug/detailproduct')({
                     +
                   </button>
                 </div>
+
+                {/* Add to cart button */}
                 <button
                   className="w-full rounded bg-blue-500 p-3 text-white"
                   onClick={handleAddToCart}
-                  disabled={addItemToCart.isLoading} // Disable nút khi đang thêm vào giỏ hàng
+                  disabled={addItemToCart.isLoading}
                 >
                   {addItemToCart.isLoading
                     ? 'Đang thêm...'
                     : 'THÊM VÀO GIỎ HÀNG'}
                 </button>
-              </div>
-              <div className="mt-6 flex items-center space-x-4">
-                <i className="far fa-heart text-gray-500"></i>
-                <i className="fab fa-facebook text-gray-500"></i>
-                <i className="fab fa-twitter text-gray-500"></i>
-                <i className="fab fa-google-plus text-gray-500"></i>
               </div>
             </div>
           </div>

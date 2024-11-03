@@ -7,7 +7,6 @@ import { toast } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 
-
 export const Route = createFileRoute('/_layout/cart')({
   component: Cart,
 });
@@ -16,7 +15,7 @@ function Cart() {
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
   const { data: cartData, isLoading, error } = useFetchCart(userId);
-  
+
   const { deleteItemFromCart, increaseQuantity, decreaseQuantity } =
     useCartMutation();
 
@@ -31,15 +30,12 @@ function Cart() {
   }
 
   if (!userId) {
-    return (
-      <LoginCart />
-    );
+    return <LoginCart />;
   }
   if (!cartData || !cartData.products || cartData.products.length === 0) {
-    return (
-      <ErrorCart />
-    )
+    return <ErrorCart />;
   }
+
   const handleQuantityChange = (index: number, value: string) => {
     const quantity = Math.max(parseInt(value) || 0, 0);
     setQuantities(prev => ({
@@ -90,8 +86,31 @@ function Cart() {
     return variantPrice > 0 ? variantPrice : product?.price;
   };
 
-  const handleDeleteProduct = (productId: string, variantId: string) => {
-    deleteItemFromCart.mutate({ userId: userId || '', productId, variantId });
+  // Handle delete for selected products
+  const handleDeleteSelectedProducts = () => {
+    const selectedProductIndices = Object.keys(selectedProducts).filter(
+      index => selectedProducts[parseInt(index)]
+    );
+
+    if (selectedProductIndices.length === 0) {
+      toast.error('Vui lòng chọn ít nhất một sản phẩm để xóa.');
+      return;
+    }
+
+    selectedProductIndices.forEach(index => {
+      const product = cartData?.products[parseInt(index)];
+      if (product) {
+        deleteItemFromCart.mutate({
+          userId: userId || '',
+          productId: product.productId,
+          variantId: product.variantId,
+        });
+      }
+    });
+
+    // Clear selected products after deletion
+    setSelectedProducts({});
+    setSelectAll(false);
   };
 
   const toggleSelectProduct = (index: number) => {
@@ -100,6 +119,7 @@ function Cart() {
       [index]: !prev[index],
     }));
   };
+
   const toggleSelectAll = () => {
     const newSelectAll = !selectAll;
     setSelectAll(newSelectAll);
@@ -132,7 +152,6 @@ function Cart() {
     const selectedItems = getSelectedItems();
     if (selectedItems.length === 0) {
       toast.error('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
-      // alert("Vui lòng chọn ít nhất một sản phẩm để thanh toán.");
       return;
     }
     navigate({
@@ -142,60 +161,59 @@ function Cart() {
   };
 
   return (
-    <div className=''>
-      <div className="main-content w-full h-48 flex flex-col items-center justify-center ">
+    <div className="">
+      <div className="main-content flex h-48 w-full flex-col items-center justify-center">
         <div className="text-content">
-          <div className="text-4xl font-semibold text-center">
-            Cart
-          </div>
-          <div className="link flex items-center justify-center gap-1 caption1 mt-3">
+          <div className="text-center text-4xl font-semibold">Cart</div>
+          <div className="link caption1 mt-3 flex items-center justify-center gap-1">
             <div className="flex items-center justify-center">
               <a href="/">Home</a>
               <ChevronRightMini />
             </div>
-            <div className="text-gray-500 capitalize">
+            <div className="capitalize text-gray-500">
               <a href="#">cart</a>
             </div>
           </div>
         </div>
       </div>
       <div className="bg-gray-50">
-        <div className="mx-auto mb-10 max-w-7xl pt-10 py-10">
+        <div className="mx-auto mb-10 max-w-7xl py-10 pt-10">
           <div className="w-full flex-none">
-            <table className="min-w-full ">
+            <table className="min-w-full">
               <thead className="shadow">
-                <tr className="font-bold uppercase text-gray-600 bg-white">
+                <tr className="bg-white font-bold uppercase text-gray-600">
                   <th className="px-4 py-3 text-center">
-                    <input type="checkbox" className='w-4 h-4' checked={selectAll} onChange={toggleSelectAll} />
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4"
+                      checked={selectAll}
+                      onChange={toggleSelectAll}
+                    />
                   </th>
                   <th className="w-28 text-left">Sản Phẩm</th>
                   <th className="text-center">Giá</th>
                   <th className="text-center">Số Lượng</th>
                   <th className="text-center">Tổng</th>
-                  <th className="text-center">Thao Tác</th>
                 </tr>
               </thead>
 
-              {/* Dòng trống để tạo khoảng cách */}
-              <tbody>
-                <tr>
-                  <td colSpan="6" className="py-1"></td>
-                </tr>
-              </tbody>
-
-              <tbody className='bg-white'>
+              <tbody className="bg-white">
                 {cartData?.products?.map((product, index) => (
                   <tr key={product.productId} className="shadow">
                     <td className="px-4 py-4 text-center">
                       <input
-                        className='w-4 h-4'
+                        className="h-4 w-4"
                         type="checkbox"
                         checked={selectedProducts[index] || false}
                         onChange={() => toggleSelectProduct(index)}
                       />
                     </td>
-                    <td className="flex items-center gap-x-2 py-4 ">
-                      <img src={product.image} alt={product.name} className="h-auto w-12" />
+                    <td className="flex items-center gap-x-2 py-4">
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="h-auto w-12"
+                      />
                       <div className="w-32 truncate">
                         {product.name}
                         <span className="text-gray-400">
@@ -206,12 +224,14 @@ function Cart() {
                         </span>
                       </div>
                     </td>
-                    <td className="text-center px-4 py-4">${productPrice(index)}</td>
-                    <td className="text-center px-4 py-4">
+                    <td className="px-4 py-4 text-center">
+                      ${productPrice(index)}
+                    </td>
+                    <td className="px-4 py-4 text-center">
                       <div className="flex items-center justify-center">
                         <button
                           onClick={() => decrementQuantity(index)}
-                          className=" border px-2 hover:bg-blue-400"
+                          className="border px-2 hover:bg-blue-400"
                         >
                           -
                         </button>
@@ -219,56 +239,66 @@ function Cart() {
                           type="text"
                           min="0"
                           value={quantities[index] || product.quantity}
-                          onChange={(e) => handleQuantityChange(index, e.target.value)}
-                          className=" w-12 border text-center"
+                          onChange={e =>
+                            handleQuantityChange(index, e.target.value)
+                          }
+                          className="w-12 border text-center"
                         />
                         <button
                           onClick={() => incrementQuantity(index)}
-                          className=" border px-2 hover:bg-blue-400"
+                          className="border px-2 hover:bg-blue-400"
                         >
                           +
                         </button>
                       </div>
                     </td>
-                    <td className="text-center px-4 py-4">
-                      ${((quantities[index] || product.quantity) * productPrice(index)).toFixed(2)}
-                    </td>
-                    <td className="text-center px-4 py-4">
-                      <button
-                        className="text-red-500 hover:text-red-700"
-                        onClick={() => handleDeleteProduct(product.productId, product.variantId)}
-                      >
-                        <Trash />
-                      </button>
+                    <td className="px-4 py-4 text-center">
+                      $
+                      {(
+                        (quantities[index] || product.quantity) *
+                        productPrice(index)
+                      ).toFixed(2)}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
 
-            <div className='bg-white mt-2 shadow'>
-              <div className='flex justify-end px-4 py-2 gap-3 items-center'>
-                <ReceiptPercent className=' text-orange-600' />
+            <div className="mt-2 bg-white shadow">
+              <div className="flex items-center justify-end gap-3 px-4 py-2">
+                <ReceiptPercent className="text-orange-600" />
                 <span>fashion zone voucher</span>
-                <a href="#" className="text-blue-400 hover:underline">Chọn hoặc nhập mã</a>
+                <a href="#" className="text-blue-400 hover:underline">
+                  Chọn hoặc nhập mã
+                </a>
               </div>
-              <div className="flex justify-between p-4 ">
-                <div className="flex gap-5 items-center ml-10">
+              <div className="flex justify-between p-4">
+                <div className="ml-10 flex items-center gap-5">
                   <input
-                    className='w-4 h-4'
+                    className="h-4 w-4"
                     type="checkbox"
                     checked={selectAll}
                     onChange={toggleSelectAll}
                   />
                   Chọn tất cả({cartData?.products?.length || 0})
-                  <button onClick={() => handleDeleteAllSelected()}>Xóa</button>
+                  <button
+                    onClick={handleDeleteSelectedProducts}
+                    className="text-red-600 hover:underline"
+                  >
+                    Xóa
+                  </button>
                 </div>
                 <div className="flex items-center gap-5">
-
                   <div>
-                    Tổng thanh toán: $ <span className="text-red-500">{totalSelectedPrice || '0'}</span>
+                    Tổng thanh toán: ${' '}
+                    <span className="text-red-500">
+                      {totalSelectedPrice || '0'}
+                    </span>
                   </div>
-                  <button onClick={handleCheckout} className="rounded-md bg-blue-500 px-6 py-3 text-white hover:bg-black">
+                  <button
+                    onClick={handleCheckout}
+                    className="rounded-md bg-blue-500 px-6 py-3 text-white hover:bg-black"
+                  >
                     Proceed to Checkout
                   </button>
                 </div>
@@ -277,9 +307,8 @@ function Cart() {
           </div>
         </div>
       </div>
-
     </div>
-
   );
 }
+
 export default Cart;

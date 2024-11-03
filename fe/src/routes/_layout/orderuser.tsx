@@ -105,6 +105,20 @@ function UserOder() {
     }
   };
 
+  const handleCancelOrder = async orderId => {
+    try {
+      await instance.put(`/orders/${orderId}/cancel`);
+      setOrders(prevOrders =>
+        prevOrders.map(order =>
+          order._id === orderId ? { ...order, status: 'canceled' } : order
+        )
+      );
+      toast.success('Đơn hàng của bạn đã được hủy thành công.');
+    } catch (error) {
+      toast.error('Có lỗi xảy ra khi hủy đơn hàng.');
+    }
+  };
+
   return (
     <div className="mx-auto flex max-w-6xl p-4">
       {/* Sidebar: User Profile and Navigation */}
@@ -213,6 +227,17 @@ function UserOder() {
                 ))}
 
                 <div className="mt-4 flex items-center justify-between border-t pt-4">
+                  {/* Cancel Order Button */}
+                  {order.status === 'pending' && (
+                    <button
+                      onClick={() => handleCancelOrder(order._id)}
+                      className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+                    >
+                      Hủy đơn hàng
+                    </button>
+                  )}
+
+                  {/* Confirm Received Button */}
                   {order.status === 'delivered' &&
                     selectedTab === 'shipped' && (
                       <button

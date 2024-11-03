@@ -47,11 +47,11 @@ const Mail = {
       to: email,
       subject: "Xác nhận đơn hàng của bạn",
       html: `
-        <div style="font-family: Arial, sans-serif; color: #333;">
-          <h2 style="color: #4CAF50;">Cảm ơn bạn đã đặt hàng tại Fashion Zone!</h2>
-          <p>Đơn hàng của bạn đã được xác nhận. Dưới đây là chi tiết đơn hàng:</p>
+        <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
+          <h2 style="color: #4CAF50; text-align: center;">Cảm ơn bạn đã đặt hàng tại Fashion Zone!</h2>
+          <p style="text-align: center; font-size: 16px;">Đơn hàng của bạn đã được xác nhận. Dưới đây là chi tiết đơn hàng:</p>
 
-          <h3 style="color: #4CAF50;">Thông tin khách hàng</h3>
+          <h3 style="color: #4CAF50; border-bottom: 2px solid #4CAF50; padding-bottom: 5px;">Thông tin khách hàng</h3>
           <p><strong>Tên:</strong> ${order.customerInfo.name}</p>
           <p><strong>Số điện thoại:</strong> ${order.customerInfo.phone}</p>
           <p><strong>Email:</strong> ${order.customerInfo.email}</p>
@@ -59,7 +59,7 @@ const Mail = {
         order.customerInfo.wards
       }, ${order.customerInfo.districts}, ${order.customerInfo.city}</p>
 
-          <h3 style="color: #4CAF50;">Chi tiết đơn hàng</h3>
+          <h3 style="color: #4CAF50; border-bottom: 2px solid #4CAF50; padding-bottom: 5px; margin-top: 20px;">Chi tiết đơn hàng</h3>
           <p><strong style="color: #FF5733;">Mã đơn hàng:</strong> ${
             order.orderNumber
           }</p>
@@ -67,25 +67,30 @@ const Mail = {
             ${order.items
               .map(
                 (item) => `
-                  <li style="margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
-                    <p><strong>Tên sản phẩm:</strong> ${item.name}</p>
-                    <p><strong>Số lượng:</strong> ${item.quantity}</p>
-                    <p><strong>Giá:</strong> <span style="color: #FF5733;">${item.price} VND</span></p>
-                    <p><strong>Giá:</strong> <span style="color: #FF5733;">${item.color} VND</span></p>
-                    <p><strong>Giá:</strong> <span style="color: #FF5733;">${item.size} VND</span></p>
-                    <p><strong>Ảnh:</strong> <img src="${item.image}" alt="${item.name}" width="100" height="100" style="border: 1px solid #ddd; padding: 5px;" /></p>
+                  <li style="display: flex; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
+                    <img src="${item.image}" alt="${item.name}" width="80" height="80" style="border: 1px solid #ddd; padding: 5px; margin-right: 15px; border-radius: 5px;" />
+                    <div>
+                      <p style="margin: 0;"><strong>Sản phẩm:</strong> ${item.name}</p>
+                      <p style="margin: 0;"><strong>Số lượng:</strong> ${item.quantity}</p>
+                      <p style="margin: 0;"><strong>Giá:</strong> <span style="color: #FF5733;">${item.price} VND</span></p>
+                      <p style="margin: 0;"><strong>Màu:</strong> ${item.color}</p>
+                      <p style="margin: 0;"><strong>Kích thước:</strong> ${item.size}</p>
+                    </div>
                   </li>
                 `
               )
               .join("")}
           </ul>
-          <p><strong style="font-size: 18px; color: #FF5733;">Tổng giá trị đơn hàng:</strong> <span style="color: #4CAF50; font-size: 18px;">${
+          <p style="font-size: 18px; font-weight: bold; color: #FF5733; margin-top: 20px;">Tổng giá trị đơn hàng: <span style="color: #4CAF50;">${
             order.totalPrice
           } VND</span></p>
 
-          <p style="margin-top: 20px; color: #555;">Chúng tôi sẽ liên hệ với bạn sớm để giao hàng.</p>
-          <p style="margin-top: 20px; color: #555;">Vui lòng theo dõi đơn hàng của bạn trên website để biết trạng thái đơn hàng của bạn!.</p>
-          <p style="margin-top: 20px; color: #555;">Shop Fashion Zone xin cảm ơn quý khách!.</p>
+          <div style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 8px; text-align: center;">
+            <p style="color: #555;">Chúng tôi sẽ liên hệ với bạn sớm để giao hàng.</p>
+            <p style="color: #555;">Vui lòng theo dõi đơn hàng của bạn trên website để biết trạng thái đơn hàng của bạn!</p>
+          </div>
+
+          <p style="text-align: center; margin-top: 30px; font-size: 14px; color: #555;">Shop Fashion Zone xin cảm ơn quý khách!</p>
         </div>
       `,
     });
