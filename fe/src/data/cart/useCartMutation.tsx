@@ -11,7 +11,7 @@ const useCartMutation = () => {
     mutationFn: (data: {
       userId: string;
       products: { productId: string; variantId: string; quantity: number }[];
-    }) => instance.post('/cart/add-to-cart', data), // Gọi API thêm sản phẩm vào giỏ hàng
+    }) => instance.post('/cart/add-to-cart', data),
 
     onSuccess: () => {
       toast.success('Đã thêm sản phẩm vào giỏ hàng', {
@@ -30,23 +30,24 @@ const useCartMutation = () => {
     },
   });
 
-  // Mutation để xóa sản phẩm khỏi giỏ hàng
+  // Mutation để xóa một sản phẩm khỏi giỏ hàng
   const deleteItemFromCart = useMutation({
     mutationFn: ({
       userId,
-      productId,
-      variantId,
+      productIds,
     }: {
       userId: string;
-      productId: string;
-      variantId: string;
+      productIds: string[];
     }) =>
-      instance.delete(`/cart/${userId}/product/${productId}`, {
-        data: { variantId },
+      instance.delete(`/cart/${userId}/product`, {
+        data: { productIds },
       }),
 
     onSuccess: () => {
-      
+      toast.success('Đã xóa sản phẩm khỏi giỏ hàng', {
+        description: 'Các sản phẩm đã được xóa khỏi giỏ hàng thành công!',
+        duration: 1000,
+      });
       queryClient.invalidateQueries({
         queryKey: ['cart'],
       });
@@ -59,6 +60,36 @@ const useCartMutation = () => {
     },
   });
 
+  // Mutation để xóa các sản phẩm đã chọn trong giỏ hàng
+  const deleteSelectedItemsFromCart = useMutation({
+    mutationFn: async ({ userId, selectedProductIds }) => {
+      try {
+        const response = await instance.delete(`/cart/${userId}/delete-selected-items`, {
+          data: { selectedProductIds },
+        });
+        return response.data; // Trả về dữ liệu từ response
+      } catch (error) {
+        throw new Error(error.response?.data?.message || 'Có lỗi xảy ra khi xóa sản phẩm'); // Xử lý lỗi
+      }
+    },
+    
+    onSuccess: (data) => {
+      toast.success('Đã xóa các sản phẩm đã chọn khỏi giỏ hàng', {
+        description: 'Các sản phẩm đã chọn đã được xóa khỏi giỏ hàng thành công!',
+        duration: 1000,
+      });
+      queryClient.invalidateQueries(['cart']); // Làm mới dữ liệu giỏ hàng
+    },
+  
+    onError: (error) => {
+      toast.error(`Có lỗi xảy ra: ${error.message}`, {
+        description: 'Không thể xóa các sản phẩm đã chọn khỏi giỏ hàng, vui lòng thử lại.',
+        duration: 2000,
+      });
+    },
+  });
+  
+
   // Mutation để cập nhật số lượng sản phẩm trong giỏ hàng
   const updateQuantity = useMutation({
     mutationFn: (data: {
@@ -66,7 +97,7 @@ const useCartMutation = () => {
       productId: string;
       variantId: string;
       quantity: number;
-    }) => instance.patch('/cart/update-quantity', data), // Gọi API cập nhật số lượng sản phẩm
+    }) => instance.patch('/cart/update-quantity', data),
 
     onSuccess: () => {
       toast.success('Cập nhật số lượng thành công', {
@@ -136,7 +167,14 @@ const useCartMutation = () => {
     },
   });
 
-  return { addItemToCart, deleteItemFromCart, updateQuantity, increaseQuantity, decreaseQuantity };
+  return {
+    addItemToCart,
+    deleteItemFromCart,
+    deleteSelectedItemsFromCart, 
+    updateQuantity,
+    increaseQuantity,
+    decreaseQuantity,
+  };
 };
 
 export default useCartMutation;

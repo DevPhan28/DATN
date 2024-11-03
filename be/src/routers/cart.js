@@ -8,6 +8,7 @@ const {
   removeFromCart,
   updateProductQuantity,
   updateQuantityCart,
+  deleteSelectedItemsFromCart
 } = require("../controllers/cart");
 const router = express.Router();
 
@@ -27,6 +28,8 @@ router.patch("/cart/decrease-quantity", decreaseProductQuantity);
 router.patch("/cart/update-quantity", updateProductQuantity);
 
 // Xóa item trong giỏ hàng
-router.delete("/cart/:userId/product/:productId", deleteItemFromCart);
+router.delete("/cart/:userId/product", deleteItemFromCart);
+
+router.delete("/cart/:userId/delete-selected-items", deleteSelectedItemsFromCart);
 
 module.exports = router;

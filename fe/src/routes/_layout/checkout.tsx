@@ -16,9 +16,12 @@ import {
 export const Route = createFileRoute('/_layout/checkout')({
   component: () => {
     const location = useLocation();
-    const selectedItems = location.state?.selectedItems || []; // Các sản phẩm đã chọn
-    console.log('san pham da select', selectedItems);
-    const { deleteItemFromCart } = useCartMutation();
+    const selectedItems = Array.isArray(location.state?.selectedItems)
+      ? location.state.selectedItems
+      : []; // Đảm bảo selectedItems luôn là mảng
+    console.log('Selected Items:', selectedItems);
+
+    const { deleteSelectedItemsFromCart } = useCartMutation();
     const queryClient = useQueryClient();
 
     // Địa chỉ
@@ -29,9 +32,8 @@ export const Route = createFileRoute('/_layout/checkout')({
     const [selectedDistrict, setSelectedDistrict] = useState(null);
     const [selectedWard, setSelectedWard] = useState(null);
 
-    const { createOrder } = useCheckoutMutation(); // Sử dụng hook `createOrder`
+    const { createOrder } = useCheckoutMutation();
 
-    // Tải dữ liệu địa chỉ
     useEffect(() => {
       const fetchData = async () => {
         try {
@@ -83,20 +85,25 @@ export const Route = createFileRoute('/_layout/checkout')({
         ?.Districts.find(district => district.Id === selectedDistrict)
         ?.Wards.find(ward => ward.Id === selectedWard)?.Name || '';
 
-    const handleSubmit = e => {
+    const handleSubmit = async (e) => {
       e.preventDefault();
       const userId = localStorage.getItem('userId');
 
+      // Đảm bảo selectedItems có giá trị là một mảng
+      const items = Array.isArray(selectedItems) ? selectedItems : [];
+
+      const productIds = items.map(item => item.productId);
+
       const formData = {
         userId,
-        items: selectedItems.map(item => ({
-          productId: item.productId, // Đảm bảo `productId` được truyền chính xác
+        items: items.map(item => ({
+          productId: item.productId,
           name: item.name,
           price: item.price,
           quantity: item.quantity,
           image: item.image,
-          color: item.variant?.color || item.color, // Lấy color từ variant hoặc item
-          size: item.variant?.size || item.size,
+          color: item.color,
+          size: item.size,
         })),
         customerInfo: {
           name: e.target.your_name.value,
@@ -110,30 +117,19 @@ export const Route = createFileRoute('/_layout/checkout')({
         totalPrice: totalAmount,
       };
 
-      console.log('Form Data:', formData); // Kiểm tra cấu trúc `formData` trước khi gửi
+      try {
+        await createOrder.mutateAsync(formData);
+        await deleteSelectedItemsFromCart.mutateAsync({
+          userId: userId || '',
+          selectedProductIds : productIds,
+        });
 
-      createOrder.mutate(formData, {
-        onSuccess: async () => {
-          // Lặp qua tất cả sản phẩm đã chọn và xóa
-          const deletePromises = selectedItems.map(item =>
-            deleteItemFromCart.mutateAsync({
-              userId: userId || '',
-              productId: item.productId,
-              variantId: item.variantId || '',
-            })
-          );
-
-          try {
-            await Promise.all(deletePromises); // Xóa tất cả sản phẩm
-            console.log('Sản phẩm đã xóa sau khi thanh toán:', selectedItems);
-            queryClient.invalidateQueries({
-              queryKey: ['cart'],
-            });
-          } catch (error) {
-            console.error('Lỗi khi xóa sản phẩm:', error);
-          }
-        },
-      });
+        toast.success('Đặt hàng và xóa các sản phẩm đã chọn khỏi giỏ hàng thành công');
+        queryClient.invalidateQueries({ queryKey: ['cart'] });
+      } catch (error) {
+        toast.error('Có lỗi xảy ra trong quá trình thanh toán');
+        console.error('Error during checkout process:', error);
+      }
     };
 
     return (

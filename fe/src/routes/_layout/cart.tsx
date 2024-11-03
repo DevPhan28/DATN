@@ -15,14 +15,10 @@ function Cart() {
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
   const { data: cartData, isLoading, error } = useFetchCart(userId);
-
-  const { deleteItemFromCart, increaseQuantity, decreaseQuantity } =
-    useCartMutation();
+  const { deleteItemFromCart, increaseQuantity, decreaseQuantity } = useCartMutation();
 
   const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
-  const [selectedProducts, setSelectedProducts] = useState<{
-    [key: number]: boolean;
-  }>({});
+  const [selectedProducts, setSelectedProducts] = useState<{ [key: number]: boolean }>({});
   const [selectAll, setSelectAll] = useState(false);
 
   if (isLoading) {
@@ -32,6 +28,7 @@ function Cart() {
   if (!userId) {
     return <LoginCart />;
   }
+
   if (!cartData || !cartData.products || cartData.products.length === 0) {
     return <ErrorCart />;
   }
@@ -45,8 +42,7 @@ function Cart() {
   };
 
   const incrementQuantity = (index: number) => {
-    const newQuantity =
-      (quantities[index] || cartData?.products[index].quantity) + 1;
+    const newQuantity = (quantities[index] || cartData?.products[index].quantity) + 1;
     setQuantities(prev => ({
       ...prev,
       [index]: newQuantity,
@@ -62,10 +58,7 @@ function Cart() {
   };
 
   const decrementQuantity = (index: number) => {
-    const newQuantity = Math.max(
-      (quantities[index] || cartData?.products[index].quantity) - 1,
-      0
-    );
+    const newQuantity = Math.max((quantities[index] || cartData?.products[index].quantity) - 1, 0);
     setQuantities(prev => ({
       ...prev,
       [index]: newQuantity,
@@ -88,29 +81,29 @@ function Cart() {
 
   // Handle delete for selected products
   const handleDeleteSelectedProducts = () => {
-    const selectedProductIndices = Object.keys(selectedProducts).filter(
-      index => selectedProducts[parseInt(index)]
-    );
-
-    if (selectedProductIndices.length === 0) {
+    const selectedProductIds = Object.keys(selectedProducts)
+      .filter(index => selectedProducts[parseInt(index)])
+      .map(index => cartData?.products[parseInt(index)].productId);
+  
+    if (selectedProductIds.length === 0) {
       toast.error('Vui lòng chọn ít nhất một sản phẩm để xóa.');
       return;
     }
-
-    selectedProductIndices.forEach(index => {
-      const product = cartData?.products[parseInt(index)];
-      if (product) {
-        deleteItemFromCart.mutate({
-          userId: userId || '',
-          productId: product.productId,
-          variantId: product.variantId,
-        });
-      }
+  
+    deleteItemFromCart.mutate({
+      userId: userId || '',
+      productIds: selectedProductIds,
+    }, {
+      onSuccess: () => {
+        // Clear selected products after deletion
+        setSelectedProducts({});
+        setSelectAll(false);
+        toast.success('Đã xóa các sản phẩm đã chọn khỏi giỏ hàng.');
+      },
+      onError: () => {
+        toast.error('Có lỗi xảy ra khi xóa sản phẩm. Vui lòng thử lại.');
+      },
     });
-
-    // Clear selected products after deletion
-    setSelectedProducts({});
-    setSelectAll(false);
   };
 
   const toggleSelectProduct = (index: number) => {
@@ -133,16 +126,12 @@ function Cart() {
     }
   };
 
-  const totalSelectedPrice = cartData?.products
-    .reduce((sum, product, index) => {
-      if (selectedProducts[index]) {
-        return (
-          sum + (quantities[index] || product.quantity) * productPrice(index)
-        );
-      }
-      return sum;
-    }, 0)
-    .toFixed(2);
+  const totalSelectedPrice = cartData?.products.reduce((sum, product, index) => {
+    if (selectedProducts[index]) {
+      return sum + (quantities[index] || product.quantity) * productPrice(index);
+    }
+    return sum;
+  }, 0).toFixed(2);
 
   const getSelectedItems = () => {
     return cartData.products.filter((_, index) => selectedProducts[index]);
@@ -159,6 +148,7 @@ function Cart() {
       state: { selectedItems },
     });
   };
+  
 
   return (
     <div className="">
@@ -253,11 +243,7 @@ function Cart() {
                       </div>
                     </td>
                     <td className="px-4 py-4 text-center">
-                      $
-                      {(
-                        (quantities[index] || product.quantity) *
-                        productPrice(index)
-                      ).toFixed(2)}
+                      ${((quantities[index] || product.quantity) * productPrice(index)).toFixed(2)}
                     </td>
                   </tr>
                 ))}

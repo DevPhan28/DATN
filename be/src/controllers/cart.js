@@ -1,7 +1,7 @@
 
 const Cart = require("../models/cart");
 const Product = require("../models/product"); // Model sản phẩm
-
+const { ObjectId } = require('mongodb');
 // Lấy giỏ hàng theo userId
 const getCartByUserId = async (req, res) => {
   const { userId } = req.params;
@@ -102,31 +102,71 @@ const addItemToCart = async (req, res) => {
   }
 };
 const deleteItemFromCart = async (req, res) => {
-  const { userId } = req.params; // Chỉ cần userId để xóa tất cả sản phẩm trong giỏ hàng
+  const { userId } = req.params;
+  const { productIds } = req.body;
+
+  console.log("Received userId:", userId);
+  console.log("Received productIds:", productIds);
+
   try {
-    // Tìm giỏ hàng của người dùng
     let cart = await Cart.findOne({ userId });
+
+    console.log("Cart found:", cart);
 
     if (!cart) {
       return res.status(404).json({ message: "Không tìm thấy giỏ hàng" });
     }
 
-    // Xóa tất cả sản phẩm trong giỏ hàng
-    cart.products = [];
+    // Lọc ra các sản phẩm không nằm trong danh sách xóa
+    cart.products = cart.products.filter(product => 
+      !productIds.map(id => new ObjectId(id).toString()).includes(product.productId.toString())
+  );
+    console.log("Updated cart products:", cart.products);
 
-    // Lưu lại thay đổi vào cơ sở dữ liệu
     await cart.save();
+    console.log("Cart saved successfully");
 
-    return res.status(200).json({ cart, message: "Đã xóa tất cả sản phẩm trong giỏ hàng" });
+    return res.status(200).json({ cart, message: "Đã xóa các sản phẩm đã chọn khỏi giỏ hàng" });
   } catch (error) {
-    // Xử lý lỗi
+    console.error("Error during deleting items from cart:", error);
     return res.status(500).json({ message: error.message });
   }
 };
 
+const deleteSelectedItemsFromCart = async (req, res) => {
+  const { userId } = req.params;
+  const { selectedProductIds } = req.body;
 
+  console.log("Received userId:", userId);
+  console.log("Received selectedProductIds:", selectedProductIds);
 
+  try {
+    // Tìm giỏ hàng của người dùng
+    let cart = await Cart.findOne({ userId });
+    console.log("Cart found:", cart);
 
+    if (!cart) {
+      console.log("Cart not found");
+      return res.status(404).json({ message: "Không tìm thấy giỏ hàng" });
+    }
+
+    // Lọc các sản phẩm không thuộc `selectedProductIds`
+    cart.products = cart.products.filter(product =>
+      !selectedProductIds.map(id => id.toString()).includes(product.productId.toString())
+    );
+
+    console.log("Updated cart products:", cart.products);
+
+    // Lưu lại giỏ hàng sau khi xóa các sản phẩm
+    await cart.save();
+    console.log("Cart saved successfully");
+
+    return res.status(200).json({ cart, message: "Đã xóa các sản phẩm đã chọn khỏi giỏ hàng" });
+  } catch (error) {
+    console.error("Error during deleting selected items from cart:", error);
+    return res.status(500).json({ message: error.message });
+  }
+};
 
 
 // Cập nhật số lượng sản phẩm trong giỏ hàng
@@ -282,4 +322,5 @@ module.exports = {
   decreaseProductQuantity,
   removeFromCart,
   updateProductQuantity,
+  deleteSelectedItemsFromCart
 };
