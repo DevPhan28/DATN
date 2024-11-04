@@ -121,11 +121,10 @@ export const Route = createFileRoute('/_layout/checkout')({
         await createOrder.mutateAsync(formData);
         await deleteSelectedItemsFromCart.mutateAsync({
           userId: userId || '',
-          selectedProductIds : productIds,
+          selectedProductIds: productIds,
         });
 
-        toast.success('Đặt hàng và xóa các sản phẩm đã chọn khỏi giỏ hàng thành công');
-        queryClient.invalidateQueries({ queryKey: ['cart'] });
+
       } catch (error) {
         toast.error('Có lỗi xảy ra trong quá trình thanh toán');
         console.error('Error during checkout process:', error);
@@ -134,7 +133,7 @@ export const Route = createFileRoute('/_layout/checkout')({
 
     return (
       <section className="">
-        <div className="bg-[#F7F4F0]">
+        <div className="">
           <div className="main-content flex h-48 w-full flex-col items-center justify-center">
             <div className="text-content">
               <div className="text-center text-4xl font-semibold">
@@ -153,7 +152,7 @@ export const Route = createFileRoute('/_layout/checkout')({
               </div>
             </div>
           </div>
-        </div>
+        </div >
         <form
           onSubmit={handleSubmit}
           className="w-full bg-[#F3F4F6] py-10 pt-10"
@@ -448,7 +447,7 @@ export const Route = createFileRoute('/_layout/checkout')({
             </div>
           </div>
         </form>
-      </section>
+      </section >
     );
   },
 });

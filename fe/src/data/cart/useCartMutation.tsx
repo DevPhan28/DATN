@@ -72,7 +72,7 @@ const useCartMutation = () => {
         throw new Error(error.response?.data?.message || 'Có lỗi xảy ra khi xóa sản phẩm'); // Xử lý lỗi
       }
     },
-    
+
     onSuccess: (data) => {
       toast.success('Đã xóa các sản phẩm đã chọn khỏi giỏ hàng', {
         description: 'Các sản phẩm đã chọn đã được xóa khỏi giỏ hàng thành công!',
@@ -80,7 +80,7 @@ const useCartMutation = () => {
       });
       queryClient.invalidateQueries(['cart']); // Làm mới dữ liệu giỏ hàng
     },
-  
+
     onError: (error) => {
       toast.error(`Có lỗi xảy ra: ${error.message}`, {
         description: 'Không thể xóa các sản phẩm đã chọn khỏi giỏ hàng, vui lòng thử lại.',
@@ -88,7 +88,7 @@ const useCartMutation = () => {
       });
     },
   });
-  
+
 
   // Mutation để cập nhật số lượng sản phẩm trong giỏ hàng
   const updateQuantity = useMutation({
@@ -126,18 +126,8 @@ const useCartMutation = () => {
     }) => instance.patch('/cart/increase-quantity', data),
 
     onSuccess: () => {
-      toast.success('Tăng số lượng thành công', {
-        description: 'Số lượng sản phẩm đã được tăng thành công!',
-        duration: 1000,
-      });
       queryClient.invalidateQueries({
         queryKey: ['cart'],
-      });
-    },
-    onError: error => {
-      toast.error(`Có lỗi xảy ra: ${error.message}`, {
-        description: 'Không thể tăng số lượng, vui lòng thử lại.',
-        duration: 2000,
       });
     },
   });
@@ -151,18 +141,8 @@ const useCartMutation = () => {
     }) => instance.patch('/cart/decrease-quantity', data),
 
     onSuccess: () => {
-      toast.success('Giảm số lượng thành công', {
-        description: 'Số lượng sản phẩm đã được giảm thành công!',
-        duration: 1000,
-      });
       queryClient.invalidateQueries({
         queryKey: ['cart'],
-      });
-    },
-    onError: error => {
-      toast.error(`Có lỗi xảy ra: ${error.message}`, {
-        description: 'Không thể giảm số lượng, vui lòng thử lại.',
-        duration: 2000,
       });
     },
   });
@@ -170,7 +150,7 @@ const useCartMutation = () => {
   return {
     addItemToCart,
     deleteItemFromCart,
-    deleteSelectedItemsFromCart, 
+    deleteSelectedItemsFromCart,
     updateQuantity,
     increaseQuantity,
     decreaseQuantity,

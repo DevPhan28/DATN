@@ -23,7 +23,7 @@ const useCheckoutMutation = () => {
       });
 
       void navigate({
-        to: '/',
+        to: '/thanks',
       });
 
       return result;
@@ -37,12 +37,12 @@ const useCheckoutMutation = () => {
   // Hàm cập nhật trạng thái đơn hàng
   const updateOrderStatus = useMutation({
     mutationFn: ({ orderId, status }) => instance.put(`/orders/${orderId}`, { status }),
-    
+
     onSuccess: () => {
       toast.success('Order status updated successfully');
       queryClient.invalidateQueries([QUERY_KEY.FETCH_ORDERS]); // Invalidates the orders list
     },
-    
+
     onError: (error) => {
       toast.error(`Failed to update status: ${error.message}`);
     },

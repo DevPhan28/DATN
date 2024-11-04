@@ -6,8 +6,11 @@ export const Route = createFileRoute('/_layout')({
   component: () => (
     <div>
       <Toaster position="top-right" className="mt-7" />
-      <Header />
-      <Outlet />
+
+      <div>
+        <Header />
+        <Outlet />
+      </div>
       <Footer />
     </div>
   ),

@@ -107,52 +107,56 @@ const ProductRecommendations = ({ categoryId }: { categoryId?: string }) => {
   };
 
   return (
-    <div className="max-w-6xl m-auto mt-5 p-5 xl:p-0 lg:p-5 md:p-5 sm:p-5 relative">
-      {/* Loading or Error State */}
-      {loading && <p>Loading products...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+    <div className='bg-gray-50 p-4'>
+      <div className="max-w-7xl m-auto mt-5  xl:p-0 lg:p-5 md:p-5 sm:p-5 relative bg-white">
+        {/* Loading or Error State */}
+        {loading && <p>Loading products...</p>}
+        {error && <p className="text-red-500">{error}</p>}
 
-      <h2 className="text-center text-2xl font-bold mb-5 relative">
-        {categoryId ? 'Products in Selected Category' : 'Featured Products'}
-      </h2>
+        <div className='p-4 shadow'>
+          <h2 className="uppercase text-2xl font-bold mb-5 relative">
+            {categoryId ? 'Products in Selected Category' : 'Featured Products'}
+          </h2>
 
-      {/* Slider to display products */}
-      {displayedProducts?.length > 0 ? (
-        <Slider {...settings}>
-          {displayedProducts.map((product: any) => (
-            <div
-              key={product._id}
-              className="product-card group relative overflow-hidden text-center p-2"
-            >
-              <img
-                src={product.image}
-                alt={product.name}
-                className="h-80 w-full transform transition-transform duration-500"
-              />
-              <Link
-                to={`/${product.slug ? product.slug : product._id}/quickviewProduct`}
-                className="quick-view duration-900 absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-full bg-white px-4 py-2 opacity-0 shadow transition-all hover:bg-black hover:text-white group-hover:translate-y-[-100px] group-hover:opacity-100"
-              >
-                Quick View
-              </Link>
-              <h2 className="mt-2 flex items-center justify-between text-gray-500">
-                {product.name}
-                <div className="flex space-x-2">
-                  <Link to={`/${product.slug ? product.slug : product._id}/detailproduct`}>
-                    <ShoppingCartSolid />
+          {/* Slider to display products */}
+          {displayedProducts?.length > 0 ? (
+            <Slider {...settings}>
+              {displayedProducts.map((product: any) => (
+                <div
+                  key={product._id}
+                  className="product-card group relative overflow-hidden text-center p-2"
+                >
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="h-80 w-full transform transition-transform duration-500"
+                  />
+                  <Link
+                    to={`/${product.slug ? product.slug : product._id}/quickviewProduct`}
+                    className="quick-view duration-900 absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-full bg-white px-4 py-2 opacity-0 shadow transition-all hover:bg-black hover:text-white group-hover:translate-y-[-100px] group-hover:opacity-100"
+                  >
+                    Quick View
                   </Link>
-                  <Heart />
+                  <h2 className="mt-2 flex items-center justify-between text-gray-500">
+                    {product.name}
+                    <div className="flex space-x-2">
+                      <Link to={`/${product.slug ? product.slug : product._id}/detailproduct`}>
+                        <ShoppingCartSolid />
+                      </Link>
+                      <Heart />
+                    </div>
+                  </h2>
+                  <p className="mt-2 flex justify-start text-gray-600">
+                    ${product.price}
+                  </p>
                 </div>
-              </h2>
-              <p className="mt-2 flex justify-start text-gray-600">
-                ${product.price}
-              </p>
-            </div>
-          ))}
-        </Slider>
-      ) : (
-        !loading && <p>No products found for this category.</p>
-      )}
+              ))}
+            </Slider>
+          ) : (
+            !loading && <p>No products found for this category.</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

@@ -64,7 +64,7 @@ const Header = () => {
 
   console.log('Đã lưu tên người dùng:', username);
   return (
-    <div className="bg-white">
+    <div className="bg-white sticky top-0 z-50"> {/* Added sticky and top-0 classes */}
       <div className="m-auto max-w-7xl p-5 sm:p-5 md:p-5 lg:p-5 xl:p-0">
         <nav className="relative">
           <div className="flex h-16 items-center justify-between">
@@ -77,7 +77,7 @@ const Header = () => {
                 />
               </div>
 
-              {/* Menu chính */}
+              {/* Main Menu */}
               <div className="hidden flex-wrap sm:flex sm:gap-1 sm:text-[10px] md:text-[14px] lg:gap-5 lg:text-[16px]">
                 <Link
                   to="/"
@@ -121,12 +121,12 @@ const Header = () => {
               </div>
             </div>
 
-            {/* Khu vực chứa các biểu tượng và biểu tượng menu */}
+            {/* Icons and menu toggle button */}
             <div className="flex items-center space-x-2 text-[19px]">
               <i className="fa-solid fa-magnifying-glass p-3 text-[20px] hover:text-blue-400"></i>
               <Link to="/cart" className="relative">
                 <i className="fa-solid fa-cart-shopping text-[20px] hover:text-blue-400"></i>
-                {/* Hiển thị tổng số lượng sản phẩm trong giỏ hàng */}
+                {/* Display total items in the cart */}
                 {!isLoading && totalItems > 0 && (
                   <span className="absolute -right-3 -top-3 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
                     {totalItems}
@@ -226,7 +226,7 @@ const Header = () => {
               </div>
             </div>
           </div>
-          {/* Danh sách menu ẩn */}
+          {/* Hidden menu for mobile view */}
           {isMenuOpen && (
             <div className="mt-2 flex flex-col space-y-2 sm:hidden">
               <a

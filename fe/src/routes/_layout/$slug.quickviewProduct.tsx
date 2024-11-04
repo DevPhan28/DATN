@@ -324,8 +324,78 @@ function DetailProduct() {
               </div>
             </div>
           </div>
+          <div className="bg-white p-4 shadow mt-10">
+            <div className="flex flex-col lg:flex-row gap-10">
+              {/* Left side - Customer Reviews lg:w-1/2*/}
+              <div className="mt-10 w-full ">
+                <div className='w-full mt-5 flex justify-between'>
+                  <h2 className='font-semibold text-[24px]'>Customer Reviews (500+)</h2>
+                  <div className='font-normal text-[18px] flex items-center text-[#666666]'>
+                    <div>See All</div>
+                    <ChevronRightMini />
+                  </div>
+                </div>
+
+                {/* Rating Section */}
+                <div className="flex gap-2 mt-6 border h-20 p-2 bg-gray-50">
+                  <h1 className='font-semibold text-[28px]'>4.8</h1>
+                  <div className='flex mt-2'>
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-200' />
+                  </div>
+                  <div className="flex gap-2 self-center">
+                    <button className='border p-2 bg-white'>ALL</button>
+                    <button className='border p-2 bg-white'>5 stars (99)</button>
+                    <button className='border p-2 bg-white'>4 stars (8)</button>
+                    <button className='border p-2 bg-white'>2 stars (2)</button>
+                    <button className='border p-2 bg-white'>1 stars (8)</button>
+                  </div>
+                </div>
+
+                {/* Review 1 */}
+                <div className='mt-5 border-b pb-5'>
+                  <h3 className='font-semibold'>Anh Thư <span className='text-[#767676] font-light'>14 Jun, 2024</span></h3>
+                  <div className='flex'>
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                  </div>
+                  <p className='mt-1'>Áo đẹp, chất lượng ổn áp, mình m72 nặng 58kg mặc size M nhe.</p>
+                  <div className="mt-10 flex gap-2 justify-end text-[#767676]">
+                    <ThumbUp className='text-black' />
+                    Hữu ích(2)
+                    <EllipsisHorizontal className='text-black' />
+                  </div>
+                </div>
+
+                {/* Review 2 */}
+                <div className='mt-5 border-b pb-5'>
+                  <h3 className='font-semibold'>Anh Thư <span className='text-[#767676] font-light'>14 Jun, 2024</span></h3>
+                  <div className='flex'>
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                  </div>
+                  <p className='mt-1'>Áo đẹp, chất lượng ổn áp, mình m72 nặng 58kg mặc size M nhe.</p>
+                  <div className="mt-10 flex gap-2 justify-end text-[#767676]">
+                    <ThumbUp className='text-black' />
+                    Hữu ích(2)
+                    <EllipsisHorizontal className='text-black' />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+
       <ProductRecommendations categoryId={categoryData?.category?._id || ''} />
     </div>
   );

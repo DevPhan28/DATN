@@ -1,5 +1,5 @@
-import banner1 from '../assets/images/banner-01.jpg';
-import banner2 from '../assets/images/banner-02.jpg';
+import banner1 from '../assets/images/banner-01.png';
+import banner2 from '../assets/images/banner-02.png';
 import banner3 from '../assets/images/banner-03.jpg';
 const Category = () => {
   return (
