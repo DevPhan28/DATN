@@ -15,7 +15,8 @@ import {
 } from '@medusajs/icons';
 import instance from '@/api/axiosIntance';
 import { toast } from '@medusajs/ui';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
+import ProductRecommendations from '@/components/ProductRecommendations';
 
 export const Route = createFileRoute('/_layout/$slug/quickviewProduct')({
   component: DetailProduct,
@@ -133,6 +134,17 @@ function DetailProduct() {
       ],
     });
   };
+
+  // Add this query
+  const { data: categoryData } = useQuery({
+    queryKey: ['category', product?.categoryId],
+    queryFn: async () => {
+      if (!product?.categoryId) return null;
+      const response = await instance.get(`/categories/${product.categoryId}`);
+      return response.data;
+    },
+    enabled: !!product?.categoryId
+  });
 
   // Display loading or error if any
   if (loading) return <div>Đang tải...</div>;
@@ -314,6 +326,7 @@ function DetailProduct() {
           </div>
         </div>
       </div>
+      <ProductRecommendations categoryId={categoryData?.category?._id || ''} />
     </div>
   );
 }
