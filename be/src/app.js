@@ -1,5 +1,6 @@
 const cors = require("cors");
 const dotenv = require("dotenv");
+require("./config/orderScheduler");
 const express = require("express");
 const morgan = require("morgan");
 
@@ -9,7 +10,7 @@ const morgan = require("morgan");
 // import morgan from "morgan";
 const { connectDB } = require("./config/db");
 // import orderRouter from "./routers/order";
-const cartRouter = require("./routers/cart") ;
+const cartRouter = require("./routers/cart");
 // import categoryRouter from "./routers/category";
 const productRouter = require("./routers/product");
 const categoryRouter = require("./routers/category");

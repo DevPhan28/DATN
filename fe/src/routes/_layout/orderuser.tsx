@@ -2,10 +2,11 @@ import instance from '@/api/axiosIntance';
 import { useFetchOrdersByUserId } from '@/data/oder/useOderList';
 import { ChevronRightMini } from '@medusajs/icons';
 import { toast } from '@medusajs/ui';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
+
 export const Route = createFileRoute('/_layout/orderuser')({
-  component: UserOder,
+  component: UserOrder,
 });
 
 const getStatusLabel = status => {
@@ -16,23 +17,83 @@ const getStatusLabel = status => {
       return 'Chờ lấy hàng';
     case 'shipped':
       return 'Chờ giao hàng';
-    case 'delivered':
-      return 'Chờ giao hàng';
     case 'received':
+      return 'Chờ giao hàng';
+    case 'delivered':
       return 'Đã giao';
     case 'canceled':
       return 'Đã hủy';
+    case 'returned':
+      return 'Đã hoàn trả';
+    case 'refund':
+      return 'Trả hàng hoàn tiền';
+    case 'exchange':
+      return 'Đổi trả hàng';
+    case 'return_completed':
+      return 'Đổi trả hàng thành công';
     default:
       return status;
   }
 };
 
-function UserOder() {
+function UserOrder() {
   const [userId, setUserId] = useState(null);
   const [selectedTab, setSelectedTab] = useState('all');
   const [orders, setOrders] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const [showComplaintModal, setShowComplaintModal] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [complaintType, setComplaintType] = useState('refund'); // Thêm trạng thái cho loại khiếu nại
+  const navigate = useNavigate();
+
+  const handleOpenComplaintModal = orderId => {
+    setSelectedOrderId(orderId);
+    setShowComplaintModal(true);
+  };
+
+  const handleSubmitComplaint = () => {
+    if (!selectedOrderId) {
+      toast.error('Vui lòng chọn một đơn hàng để khiếu nại.');
+      return;
+    }
+
+    // Chuyển hướng đến trang hoàn trả với loại khiếu nại đã chọn
+    navigate({
+      to: `/return/${userId}/${selectedOrderId}`,
+      state: { complaintType },
+    });
+
+    setShowComplaintModal(false);
+  };
+
+  const handleConfirmReceived = orderId => {
+    const order = orders.find(order => order._id === orderId);
+
+    // Kiểm tra trạng thái đơn hàng
+    if (order.status !== 'shipped' && order.status !== 'received') {
+      toast.error(
+        'Chỉ có đơn hàng đang ở trạng thái "Đang giao" hoặc "Đã nhận" mới có thể xác nhận.'
+      );
+      return;
+    }
+
+    // Gửi yêu cầu xác nhận đơn hàng đã nhận
+    instance
+      .put(`/orders/${orderId}/confirm-received`)
+      .then(response => {
+        toast.success('Đơn hàng đã được xác nhận.');
+        // Cập nhật trạng thái đơn hàng từ 'received' sang 'delivered'
+        const updatedOrders = orders.map(order =>
+          order._id === orderId ? { ...order, status: 'delivered' } : order
+        );
+        setOrders(updatedOrders);
+      })
+      .catch(error => {
+        toast.error('Có lỗi xảy ra, vui lòng thử lại.');
+        console.error('Error confirming order:', error);
+      });
+  };
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
@@ -43,6 +104,7 @@ function UserOder() {
 
   useEffect(() => {
     if (data) {
+      console.log('Orders data:', data); // Kiểm tra dữ liệu đơn hàng
       setOrders(data);
     }
   }, [data]);
@@ -55,30 +117,64 @@ function UserOder() {
     );
   }
 
-  if (isLoading)
+  if (isLoading) {
     return <div className="mt-10 text-center text-gray-500">Đang tải...</div>;
-  if (error)
+  }
+
+  if (error) {
     return (
       <div className="mt-10 text-center text-red-500">Lỗi: {error.message}</div>
     );
+  }
 
   const tabs = [
     { id: 'all', label: 'Tất cả' },
     { id: 'pending', label: 'Chờ xác nhận' },
     { id: 'confirmed', label: 'Chờ lấy hàng' },
     { id: 'shipped', label: 'Chờ giao hàng' },
-    { id: 'received', label: 'Đã giao' },
+    { id: 'delivered', label: 'Đã giao' },
     { id: 'canceled', label: 'Đã hủy' },
+    { id: 'refund', label: 'Trả hàng hoàn tiền' },
+    { id: 'exchange', label: 'Đổi trả hàng' },
   ];
 
-  const filteredOrders = orders?.filter(
-    order =>
-      selectedTab === 'all' ||
-      (selectedTab === 'shipped' &&
-        (order.status === 'shipped' || order.status === 'delivered')) ||
-      (selectedTab === 'received' && order.status === 'received') ||
-      order.status === selectedTab
-  );
+  const filteredOrders = orders?.filter(order => {
+    // Hiển thị tất cả đơn hàng cho tab "Tất cả"
+    if (selectedTab === 'all') {
+      return true;
+    }
+
+    // Logic cho các tab cụ thể
+    if (selectedTab === 'pending') {
+      return order.status === 'pending'; // Chỉ hiển thị đơn hàng chờ xác nhận
+    }
+
+    if (selectedTab === 'confirmed') {
+      return order.status === 'confirmed'; // Chỉ hiển thị đơn hàng chờ lấy hàng
+    }
+
+    if (selectedTab === 'shipped') {
+      return order.status === 'shipped' || order.status === 'received'; // Hiển thị đơn hàng chờ giao hàng
+    }
+
+    if (selectedTab === 'delivered') {
+      return order.status === 'delivered'; // Hiển thị đơn hàng đã giao
+    }
+
+    if (selectedTab === 'canceled') {
+      return order.status === 'canceled'; // Hiển thị đơn hàng đã hủy
+    }
+
+    if (selectedTab === 'refund') {
+      return order.status === 'refund' || order.status === 'return_completed'; // Hiển thị đơn hàng hoàn tiền và đổi trả thành công
+    }
+
+    if (selectedTab === 'exchange') {
+      return order.status === 'exchange' || order.status === 'return_completed'; // Hiển thị đơn hàng đổi trả và đổi trả thành công
+    }
+
+    return order.status === selectedTab; // Hiển thị cho các trạng thái khác
+  });
 
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -88,34 +184,8 @@ function UserOder() {
   );
 
   const handlePageChange = newPage => {
-    if (newPage > 0 && newPage <= totalPages) setCurrentPage(newPage);
-  };
-
-  const handleConfirmReceived = async orderId => {
-    try {
-      await instance.put(`/orders/${orderId}/confirm-received`);
-      setOrders(prevOrders =>
-        prevOrders.map(order =>
-          order._id === orderId ? { ...order, status: 'received' } : order
-        )
-      );
-      toast.success('Cảm ơn bạn đã xác nhận đã nhận hàng!');
-    } catch (error) {
-      toast.error('Có lỗi xảy ra khi xác nhận nhận hàng.');
-    }
-  };
-
-  const handleCancelOrder = async orderId => {
-    try {
-      await instance.put(`/orders/${orderId}/cancel`);
-      setOrders(prevOrders =>
-        prevOrders.map(order =>
-          order._id === orderId ? { ...order, status: 'canceled' } : order
-        )
-      );
-      toast.success('Đơn hàng của bạn đã được hủy thành công.');
-    } catch (error) {
-      toast.error('Có lỗi xảy ra khi hủy đơn hàng.');
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
     }
   };
 
@@ -124,14 +194,14 @@ function UserOder() {
   const emailuser = storedData?.user?.email || 'Không có tên người dùng';
 
   return (
-    <div className='bg-gray-50'>
-      <div className='bg-white'>
-        <div className="main-content w-full h-48 flex flex-col items-center justify-center ">
+    <div className="bg-gray-50">
+      <div className="bg-white">
+        <div className="main-content flex h-48 w-full flex-col items-center justify-center">
           <div className="text-content">
-            <div className="text-4xl font-semibold text-center">
+            <div className="text-center text-4xl font-semibold">
               Đơn hàng của tôi
             </div>
-            <div className="link flex items-center justify-center gap-1 caption1 mt-3">
+            <div className="link caption1 mt-3 flex items-center justify-center gap-1">
               <div className="flex items-center justify-center">
                 <a href="/">Home</a>
                 <ChevronRightMini />
@@ -140,15 +210,15 @@ function UserOder() {
                 <a href="/">User</a>
                 <ChevronRightMini />
               </div>
-              <div className="text-gray-500 capitalize">
+              <div className="capitalize text-gray-500">
                 <a href="#">Đơn mua</a>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div className="mx-auto flex max-w-7xl bg-gray-50 pt-10 py-10">
-        <div className="w-1/4 h-full rounded-lg bg-gray-100 p-6 shadow-md">
+      <div className="mx-auto flex max-w-7xl bg-gray-50 py-10 pt-10">
+        <div className="h-full w-1/4 rounded-lg bg-gray-100 p-6 shadow-md">
           <div className="flex flex-col items-center space-y-4">
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-300">
               <img
@@ -158,9 +228,12 @@ function UserOder() {
               />
             </div>
             <h2 className="text-lg font-semibold">{username}</h2>
-            <p className="text-gray-600 ">{emailuser}</p>
-            <div className="mt-4 ">
-              <a href="/my-account" className="block text-blue-600 hover:underline">
+            <p className="text-gray-600">{emailuser}</p>
+            <div className="mt-4">
+              <a
+                href="/my-account"
+                className="block text-blue-600 hover:underline"
+              >
                 Tài khoản của tôi
               </a>
               <a href="/orders" className="block text-red-600 hover:underline">
@@ -171,15 +244,16 @@ function UserOder() {
         </div>
 
         <div className="ml-6 w-3/4">
-          <div className="mb-2 flex flex-wrap justify-start  sm:space-x-6 border-b shadow bg-white">
+          <div className="mb-2 flex flex-wrap justify-start border-b bg-white shadow sm:space-x-0">
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setSelectedTab(tab.id)}
-                className={`px-2 sm:px-4 py-2 text-gray-700 ${selectedTab === tab.id
-                  ? 'border-b-2 border-red-500 text-red-600'
-                  : ''
-                  }`}
+                className={`px-2 py-2 text-gray-700 sm:px-4 ${
+                  selectedTab === tab.id
+                    ? 'border-b-2 border-red-500 text-red-600'
+                    : ''
+                }`}
               >
                 {tab.label}
               </button>
@@ -189,64 +263,118 @@ function UserOder() {
           {ordersToDisplay.length > 0 ? (
             <div className="space-y-4">
               {ordersToDisplay.map(order => {
-                const totalAmount = order.items.reduce((total, item) => total + item.price * item.quantity, 0);
+                const totalAmount = order.items.reduce(
+                  (total, item) => total + item.price * item.quantity,
+                  0
+                );
                 return (
-                  <div key={order._id} className="rounded-lg bg-white p-6 shadow-md">
+                  <div
+                    key={order._id}
+                    className="rounded-lg bg-white p-6 shadow-md"
+                  >
                     <div className="mb-4 flex items-center justify-between">
-                      <span className={`rounded-full px-4 py-1 text-sm font-medium ${order.status === 'canceled'
-                        ? 'bg-red-100 text-red-600'
-                        : order.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-600'
-                          : order.status === 'confirmed'
-                            ? 'bg-blue-100 text-blue-600'
-                            : order.status === 'shipped' || order.status === 'delivered'
-                              ? 'bg-indigo-100 text-indigo-600'
-                              : order.status === 'received'
-                                ? 'bg-green-100 text-green-600'
-                                : ''
-                        }`}>
+                      <span
+                        className={`rounded-full px-4 py-1 text-sm font-medium ${
+                          order.status === 'canceled'
+                            ? 'bg-red-100 text-red-600'
+                            : order.status === 'pending'
+                              ? 'bg-yellow-100 text-yellow-600'
+                              : order.status === 'confirmed'
+                                ? 'bg-blue-100 text-blue-600'
+                                : order.status === 'shipped' ||
+                                    order.status === 'received'
+                                  ? 'bg-indigo-100 text-indigo-600'
+                                  : order.status === 'delivered'
+                                    ? 'bg-green-100 text-green-600'
+                                    : order.status === 'returned'
+                                      ? 'bg-purple-100 text-purple-600'
+                                      : order.status === 'refund'
+                                        ? 'bg-yellow-500 text-white'
+                                        : order.status === 'exchange'
+                                          ? 'bg-blue-500 text-white'
+                                          : order.status === 'return_completed'
+                                            ? 'bg-black text-white'
+                                            : ''
+                        }`}
+                      >
                         {getStatusLabel(order.status)}
                       </span>
-                      <span className="text-sm text-gray-500">Mã đơn hàng: {order.orderNumber}</span>
+                      <span className="text-sm text-gray-500">
+                        Mã đơn hàng: {order.orderNumber}
+                      </span>
                     </div>
                     {order.items.map(item => (
-                      <div key={item.productId} className="mb-4 flex items-center space-x-4">
-                        <img src={item.image} alt={item.name} className="h-16 w-16 rounded-lg object-cover shadow-sm" />
+                      <div
+                        key={item.productId}
+                        className="mb-4 flex items-center space-x-4"
+                      >
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="h-16 w-16 rounded-lg object-cover shadow-sm"
+                        />
                         <div className="flex-1">
-                          <p className="text-xl font-semibold uppercase text-gray-800">{item.name}</p>
-                          <p className="text-sm text-gray-600">
-                            Phân loại hàng: {item.color ? `Màu: ${item.color}` : ''}{item.size ? `, Size: ${item.size}` : ''}
+                          <p className="text-xl font-semibold uppercase text-gray-800">
+                            {item.name}
                           </p>
-                          <p className="font-medium text-gray-800">x{item.quantity}</p>
+                          <p className="text-sm text-gray-600">
+                            Phân loại hàng: Màu: {item.color || ''}{' '}
+                            {item.size ? `, Size: ${item.size}` : ''}
+                          </p>
+                          <p className="font-medium text-gray-800">
+                            x{item.quantity}
+                          </p>
                         </div>
-                        <span className="text-base text-[#ee4d2d]">{item.price} đ</span>
+                        <span className="text-base text-[#ee4d2d]">
+                          {item.price} đ
+                        </span>
                       </div>
                     ))}
-                    <div className="border-t border-gray-200 border-dotted">
-                      <div className="p-4 flex items-center justify-end">
+                    <div className="border-t border-dotted border-gray-200">
+                      <div className="flex items-center justify-end p-4">
                         <div className="w-auto space-y-3">
                           <span className="flex items-center justify-between text-lg">
                             Giảm : <span className="ml-2">0&nbsp;₫</span>
                           </span>
                           <span className="flex items-center justify-between text-lg">
-                            Tổng tiền sản phẩm : <span className="ml-2">{totalAmount.toLocaleString()}&nbsp;₫</span>
+                            Tổng tiền sản phẩm :{' '}
+                            <span className="ml-2">
+                              {order.totalPrice.toLocaleString()}&nbsp;₫
+                            </span>
                           </span>
                           <p className="flex items-center justify-between text-lg">
-                            Thành tiền: <span className="text-2xl text-[#ee4d2d] ml-2">{totalAmount.toLocaleString()}&nbsp;₫</span>
+                            Thành tiền:{' '}
+                            <span className="ml-2 text-2xl text-[#ee4d2d]">
+                              {order.totalPrice.toLocaleString()}&nbsp;₫
+                            </span>
                           </p>
                         </div>
                       </div>
                     </div>
-                    <div className="mt-4 flex items-center justify-end ">
+                    <div className="mt-4 flex items-center justify-end">
                       {order.status === 'pending' && (
-                        <button onClick={() => handleCancelOrder(order._id)} className="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600">
+                        <button
+                          onClick={() => handleCancelOrder(order._id)}
+                          className="mr-2 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+                        >
                           Hủy đơn hàng
                         </button>
                       )}
-                      {order.status === 'delivered' && selectedTab === 'shipped' && (
-                        <button onClick={() => handleConfirmReceived(order._id)} className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600">
-                          Đã nhận được hàng
-                        </button>
+                      {order.status === 'received' && (
+                        <>
+                          <button
+                            onClick={() => handleConfirmReceived(order._id)}
+                            className="mr-2 rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+                          >
+                            Đã nhận được hàng
+                          </button>
+                          <button
+                            onClick={() => handleOpenComplaintModal(order._id)}
+                            className="rounded bg-purple-500 px-4 py-2 text-white hover:bg-purple-600"
+                          >
+                            Khiếu nại
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>
@@ -255,28 +383,88 @@ function UserOder() {
             </div>
           ) : (
             <div className="flex h-60 flex-col items-center justify-center">
-              <img src="./no-oder.png" className="h-24 w-24 object-cover" alt="No orders" />
+              <img
+                src="./no-oder.png"
+                className="h-24 w-24 object-cover"
+                alt="No orders"
+              />
               <span className="mt-4 text-gray-500">Chưa có đơn hàng</span>
             </div>
           )}
 
           <div className="mt-8 flex items-center justify-center space-x-2">
-            <button onClick={() => handlePageChange(currentPage - 1)} className="rounded-full bg-gray-200 px-3 py-1 text-gray-600 hover:bg-gray-300" disabled={currentPage === 1}>
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              className="rounded-full bg-gray-200 px-3 py-1 text-gray-600 hover:bg-gray-300"
+              disabled={currentPage === 1}
+            >
               Trước
             </button>
             {Array.from({ length: totalPages }, (_, index) => (
-              <button key={index + 1} onClick={() => handlePageChange(index + 1)} className={`rounded-full px-4 py-2 ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}>
+              <button
+                key={index + 1}
+                onClick={() => handlePageChange(index + 1)}
+                className={`rounded-full px-4 py-2 ${
+                  currentPage === index + 1
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
                 {index + 1}
               </button>
             ))}
-            <button onClick={() => handlePageChange(currentPage + 1)} className="rounded-full bg-gray-200 px-3 py-1 text-gray-600 hover:bg-gray-300" disabled={currentPage === totalPages}>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              className="rounded-full bg-gray-200 px-3 py-1 text-gray-600 hover:bg-gray-300"
+              disabled={currentPage === totalPages}
+            >
               Sau
             </button>
           </div>
         </div>
       </div>
+
+      {/* Complaint Modal */}
+      {showComplaintModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="rounded-lg bg-white p-6 shadow-md">
+            <h2 className="mb-4 text-lg font-semibold">
+              Tình huống bạn đang gặp?
+            </h2>
+            <div className="flex flex-col space-y-2">
+              <button
+                onClick={() => {
+                  setComplaintType('refund'); // Đặt loại khiếu nại là refund
+                  handleSubmitComplaint();
+                }}
+                className="w-full rounded bg-blue-500 p-2 text-white"
+              >
+                Tôi đã nhận hàng nhưng không còn nhu cầu/hàng có vấn đề (bể vỡ,
+                sai mẫu, lỗi, khác mô tả...)
+              </button>
+              <button
+                onClick={() => {
+                  setComplaintType('exchange'); // Đặt loại khiếu nại là exchange
+                  handleSubmitComplaint();
+                }}
+                className="mt-2 w-full rounded bg-blue-500 p-2 text-white"
+              >
+                Tôi chưa nhận hàng/nhận thiếu hàng
+              </button>
+            </div>
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setShowComplaintModal(false)}
+                className="ml-2 rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
+              >
+                Hủy
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-export default UserOder;
+export default UserOrder;

@@ -49,10 +49,20 @@ const OrderSchema = new mongoose.Schema(
         "received",
         "delivered",
         "canceled",
+        "refund", // Trả hàng hoàn tiền
+        "exchange", // Hoàn trả hàng
+        "return_completed",
       ],
       default: "pending",
     },
+    returnReason: {
+      // Thêm trường lý do hoàn trả
+      type: String,
+      required: false,
+    },
     statusHistory: { type: [String], default: [] },
+    receivedAt: { type: Date }, // Field to store the time when status is set to "received"
+    createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true, versionKey: false }
 );

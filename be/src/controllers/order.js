@@ -235,21 +235,130 @@ const confirmReceived = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // Only allow update if the status is 'delivered'
-    if (order.status !== "delivered") {
-      return res
-        .status(400)
-        .json({
-          message: "Only delivered orders can be confirmed as received",
-        });
+    // Only allow update if the status is 'received'
+    if (order.status !== "received") {
+      return res.status(400).json({
+        message: "Only received orders can be confirmed as delivered",
+      });
     }
 
-    order.status = "received";
+    order.status = "delivered"; // Cập nhật trạng thái từ 'received' sang 'delivered'
     await order.save();
 
-    res.json({ message: "Order status updated to received" });
+    res.json({ message: "Order status updated to delivered" });
   } catch (error) {
     res.status(500).json({ message: "Error confirming order received" });
+  }
+};
+
+const setDelivered = async (req, res) => {
+  const { orderId } = req.params;
+
+  try {
+    const order = await Order.findById(orderId);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // Nếu trạng thái là "received" và chưa có `receivedAt`, thiết lập thời gian hiện tại
+    if (order.status === "received" && !order.receivedAt) {
+      order.receivedAt = new Date();
+      console.log(
+        `Đặt receivedAt cho đơn hàng ${order._id} là ${order.receivedAt}`
+      );
+    }
+
+    // Cập nhật trạng thái thành "delivered" ngay khi người dùng xác nhận
+    order.status = "delivered";
+    await order.save();
+
+    res.status(200).json({
+      message: "Order status updated to delivered",
+      order,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error updating order to delivered", error });
+  }
+};
+const returnOrder = async (req, res) => {
+  const { orderId } = req.params;
+  const { reason, returnType } = req.body; // receive reason and returnType from request
+
+  try {
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({ message: "Đơn hàng không tồn tại" });
+    }
+
+    // Allow complaints if the order status is either 'delivered' or 'received'
+    if (order.status !== "delivered" && order.status !== "received") {
+      return res.status(400).json({
+        message: "Chỉ có thể hoàn trả đơn hàng đã giao hoặc đã nhận",
+      });
+    }
+
+    // Set status based on returnType
+    if (returnType === "refund") {
+      order.status = "refund"; // Set status to "refund" for refund requests
+    } else if (returnType === "exchange") {
+      order.status = "exchange"; // Set status to "exchange" for exchange requests
+    } else {
+      return res.status(400).json({
+        message: "Loại yêu cầu hoàn trả không hợp lệ",
+      });
+    }
+
+    order.returnReason = reason; // Save the return reason in the order
+    await order.save();
+
+    res.status(200).json({
+      message: `Đơn hàng đã được ${
+        returnType === "refund" ? "trả hàng hoàn tiền" : "đổi trả"
+      } thành công`,
+      order,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Có lỗi xảy ra khi hoàn trả đơn hàng", error });
+  }
+};
+const updateReturnReason = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { returnReason, status } = req.body;
+
+    // Kiểm tra xem lý do và trạng thái có hợp lệ không
+    if (!returnReason) {
+      return res.status(400).json({ message: "Return reason is required." });
+    }
+    if (!["refund", "exchange", "return_completed"].includes(status)) {
+      return res.status(400).json({ message: "Invalid status for return." });
+    }
+
+    // Tìm và cập nhật đơn hàng với lý do trả hàng và trạng thái
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found." });
+    }
+
+    // Cập nhật lý do và trạng thái trả hàng
+    order.returnReason = returnReason;
+    order.status = status;
+    order.statusHistory.push(status); // Lưu lịch sử trạng thái
+
+    await order.save();
+
+    res.status(200).json({
+      message: "Order updated with return reason and status.",
+      order,
+    });
+  } catch (error) {
+    console.error("Error updating return reason:", error);
+    res.status(500).json({ message: "Internal server error." });
   }
 };
 
@@ -262,4 +371,7 @@ module.exports = {
   createOrder,
   getOrdersByUserId,
   cancelOrder,
+  setDelivered,
+  returnOrder,
+  updateReturnReason,
 };

@@ -8,6 +8,9 @@ const {
   getOrdersByUserId,
   cancelOrder,
   confirmReceived,
+  setDelivered,
+  updateReturnReason,
+  returnOrder,
 } = require("../controllers/order");
 const router = express.Router();
 
@@ -23,5 +26,8 @@ router.put("/orders/:orderId", updateOrder);
 router.delete("/orders/:userId/:orderId", deleteOrder);
 router.put("/orders/:orderId/cancel", cancelOrder);
 router.put("/orders/:orderId/confirm-received", confirmReceived);
+router.put("/orders/:orderId/set-delivered", setDelivered);
+router.put("/orders/:orderId/return", returnOrder);
+router.post("/:id/return", updateReturnReason);
 
 module.exports = router;

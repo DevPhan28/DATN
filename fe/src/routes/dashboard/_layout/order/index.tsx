@@ -52,18 +52,20 @@ function OrderList() {
   };
 
   const handleStatusChange = (orderId, newStatus, currentStatus) => {
-    // Xác định thứ tự các trạng thái
     const statusOrder = [
       'pending',
       'confirmed',
       'shipped',
+      'received',
       'delivered',
       'canceled',
+      'refund',
+      'exchange',
+      'return_completed',
     ];
     const currentIndex = statusOrder.indexOf(currentStatus);
     const newIndex = statusOrder.indexOf(newStatus);
 
-    // Không cho phép quay lại trạng thái trước đó
     if (newIndex < currentIndex) {
       return;
     }
@@ -72,7 +74,7 @@ function OrderList() {
       { orderId, status: newStatus },
       {
         onSuccess: () => {
-          // Tải lại danh sách hoặc cập nhật trạng thái cục bộ để hiển thị thay đổi
+          // Reload list or update status locally to reflect change
         },
         onError: error => {
           console.error('Failed to update status:', error);
@@ -137,6 +139,9 @@ function OrderList() {
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
               Status
             </Table.HeaderCell>
+            <Table.HeaderCell className="font-semibold text-ui-fg-base">
+              Refund Reason
+            </Table.HeaderCell>
           </Table.Row>
           <Table.Body>
             {listOrder?.data?.length > 0 ? (
@@ -197,7 +202,9 @@ function OrderList() {
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     {order.items.map((product, index) => (
                       <span key={product._id || index}>
-                        <div className="">{product.name}</div>
+                        <div className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-ui-fg-base">
+                          {product.name}
+                        </div>
                       </span>
                     ))}
                   </Table.Cell>
@@ -217,7 +224,7 @@ function OrderList() {
                       disabled={
                         order.status === 'delivered' ||
                         order.status === 'canceled'
-                      } // Khóa toàn bộ select khi đã giao hoặc đã hủy
+                      }
                     >
                       <option
                         value="pending"
@@ -245,6 +252,15 @@ function OrderList() {
                         Shipped
                       </option>
                       <option
+                        value="received"
+                        disabled={
+                          order.status === 'canceled' ||
+                          order.status === 'delivered'
+                        }
+                      >
+                        Received
+                      </option>
+                      <option
                         value="delivered"
                         disabled={order.status === 'delivered'}
                       >
@@ -256,7 +272,50 @@ function OrderList() {
                       >
                         Canceled
                       </option>
+                      <option
+                        value="refund"
+                        disabled={
+                          order.status === 'delivered' ||
+                          order.status === 'canceled'
+                        }
+                      >
+                        Refund
+                      </option>
+                      <option
+                        value="exchange"
+                        disabled={
+                          order.status === 'delivered' ||
+                          order.status === 'canceled'
+                        }
+                      >
+                        Exchange
+                      </option>
+                      <option
+                        value="return_completed"
+                        disabled={
+                          order.status === 'delivered' ||
+                          order.status === 'canceled'
+                        }
+                      >
+                        Return Completed
+                      </option>
                     </select>
+                  </Table.Cell>
+
+                  <Table.Cell className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-ui-fg-base">
+                    <DropdownMenu>
+                      <DropdownMenu.Trigger asChild>
+                        <span className="cursor-pointer">
+                          {order.returnReason} {'N/A'}
+                        </span>
+                      </DropdownMenu.Trigger>
+                      <DropdownMenu.Content className="w-96 p-4">
+                        <div>
+                          <p className="font-semibold">Lý do chi tiết:</p>
+                          <p>{order.returnReason} </p>
+                        </div>
+                      </DropdownMenu.Content>
+                    </DropdownMenu>
                   </Table.Cell>
                 </Table.Row>
               ))
