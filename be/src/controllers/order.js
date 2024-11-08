@@ -17,7 +17,8 @@ const createOrder = async (req, res) => {
         quantity: item.quantity,
         image: item.image,
         color: item.variant?.color || item.color, // Lấy color từ variant hoặc item
-        size: item.variant?.size || item.size, // Lấy size từ variant hoặc item
+        size: item.variant?.size || item.size,
+        weight: item.variant?.weight || item.weight,
       })),
       totalPrice,
       customerInfo,

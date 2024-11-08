@@ -23,6 +23,7 @@ const getCartByUserId = async (req, res) => {
         return {
           productId: item.productId._id,
           name: item.productId.name,
+          weight: selectedVariant ? selectedVariant.weight : null,
           image: item.productId.image,
           price: selectedVariant ? selectedVariant.price : item.productId.price,
           quantity: item.quantity,

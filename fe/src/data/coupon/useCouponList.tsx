@@ -1,0 +1,74 @@
+import { useQuery } from '@tanstack/react-query';
+import { QUERY_KEY } from '../stores/key';
+import instance from '@/api/axiosIntance';
+
+// Hàm fetch danh sách mã giảm giá từ API
+export const fetchCoupons = async (params: CouponParams) => {
+  try {
+    console.log('Fetching coupons with params:', params);
+    const res = await instance.get<{ data: Coupon[]; meta: MetaData }>('/get-coupon', { params });
+
+    if (res.status !== 200 && res.status !== 201) {
+      throw new Error(`Error while fetching coupons - status code: ${res.status}`);
+    }
+
+    return res.data;
+  } catch (error: any) {
+    console.error('Error while fetching coupons:', error.message);
+    throw new Error('Error while fetching coupons');
+  }
+};
+
+// Hook `useFetchCoupons` để gọi API và lấy danh sách mã giảm giá
+export const useFetchCoupons = (params: CouponParams) => {
+  return useQuery({
+    queryKey: [QUERY_KEY.FETCH_COUPONS, params],
+    queryFn: () => fetchCoupons(params),
+    enabled: !!params,
+  });
+};
+
+// Hàm fetch chi tiết mã giảm giá bằng ID
+export const fetchCouponById = async (_id: string): Promise<Coupon> => {
+  try {
+    const res = await instance.get<{ data: Coupon }>(`/coupon/${_id}`);
+    if (res.status !== 200) {
+      throw new Error('Error while fetching coupon');
+    }
+    return res.data;
+  } catch (error) {
+    console.error('Error while fetching coupon:', error);
+    throw error;
+  }
+};
+
+// Hook `useFetchCouponById` để lấy chi tiết mã giảm giá
+export const useFetchCouponById = (_id: string) => {
+  return useQuery({
+    queryKey: [QUERY_KEY.FETCH_COUPON, _id],
+    queryFn: () => fetchCouponById(_id),
+    enabled: !!_id,
+  });
+};
+
+// Hàm fetch danh sách mã giảm giá hợp lệ từ API
+export const fetchAvailableCoupons = async (): Promise<Coupon[]> => {
+  try {
+    const res = await instance.get<{ data: Coupon[] }>('/available-coupon');
+    if (res.status !== 200) {
+      throw new Error('Error while fetching available coupons');
+    }
+    return res.data;
+  } catch (error) {
+    console.error('Error while fetching available coupons:', error);
+    throw error;
+  }
+};
+
+// Hook `useFetchAvailableCoupons` để lấy danh sách mã giảm giá hợp lệ
+export const useFetchAvailableCoupons = () => {
+  return useQuery({
+    queryKey: QUERY_KEY.FETCH_AVAILABLE_COUPONS,
+    queryFn: fetchAvailableCoupons,
+  });
+};

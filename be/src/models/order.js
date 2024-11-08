@@ -8,7 +8,8 @@ const OrderItemSchema = new Schema({
   price: { type: Number, required: true },
   image: { type: String, required: true },
   color: { type: String }, // Thêm thuộc tính màu
-  size: { type: String }, // Thêm thuộc tính kích thước
+  size: { type: String },
+  weight: { type: Number }, 
 });
 
 const OrderSchema = new mongoose.Schema(

@@ -1,5 +1,4 @@
 import { createFileRoute, useLocation } from '@tanstack/react-router';
-
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import useCheckoutMutation from '@/data/oder/useOderMutation';
@@ -11,18 +10,48 @@ import {
   DocumentTextSolid,
   MapPin,
   User,
+  ReceiptPercent
 } from '@medusajs/icons';
+import { toast } from '@medusajs/ui';
+import instance from '@/api/axiosIntance';
+import { useFetchAvailableCoupons } from '@/data/coupon/useCouponList';
+import VoucherModal from '@/components/VoucherModal';
 
 export const Route = createFileRoute('/_layout/checkout')({
   component: () => {
     const location = useLocation();
     const selectedItems = Array.isArray(location.state?.selectedItems)
       ? location.state.selectedItems
-      : []; // Đảm bảo selectedItems luôn là mảng
+      : [];
     console.log('Selected Items:', selectedItems);
 
     const { deleteSelectedItemsFromCart } = useCartMutation();
     const queryClient = useQueryClient();
+
+    const { shippingMessage, shippingFee, isFreeShipping } = location.state || {};
+    console.log(shippingMessage);
+
+    // Fetch available coupons
+    const { data: availableCoupons, error: couponError, isLoading: isCouponsLoading } = useFetchAvailableCoupons();
+    const [selectedCoupon, setSelectedCoupon] = useState(null);
+    const [discountAmount, setDiscountAmount] = useState(0);
+
+    const totalQuantity = selectedItems.reduce((acc, item) => acc + item.quantity, 0);
+    const totalAmount = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+    const calculateDiscountedTotal = () => {
+      if (selectedCoupon) {
+        const discount = (selectedCoupon.discount / 100) * totalAmount;
+        return totalAmount - discount;
+      }
+      return totalAmount;
+    };
+    const [isVoucherModalOpen, setVoucherModalOpen] = useState(false);
+
+    // Mở modal
+    const openVoucherModal = () => {
+      setVoucherModalOpen(true);
+    };
 
     // Địa chỉ
     const [cities, setCities] = useState([]);
@@ -31,6 +60,13 @@ export const Route = createFileRoute('/_layout/checkout')({
     const [selectedCity, setSelectedCity] = useState('');
     const [selectedDistrict, setSelectedDistrict] = useState(null);
     const [selectedWard, setSelectedWard] = useState(null);
+
+    // Tính phí ship
+    const [calculatedShippingFee, setCalculatedShippingFee] = useState(0);
+    const [shippingMessageDisplay, setShippingMessageDisplay] = useState('');
+    const [isCalculatedFreeShipping, setIsCalculatedFreeShipping] = useState(false);
+    const [isCouponFreeShipping, setIsCouponFreeShipping] = useState(false);
+
 
     const { createOrder } = useCheckoutMutation();
 
@@ -48,43 +84,80 @@ export const Route = createFileRoute('/_layout/checkout')({
       fetchData();
     }, []);
 
-    const handleCityChange = e => {
+    const handleCityChange = (e) => {
       const cityId = e.target.value;
       setSelectedCity(cityId);
       setSelectedDistrict('');
       setWards([]);
     };
 
-    const handleDistrictChange = e => {
+    const handleDistrictChange = (e) => {
       const districtId = e.target.value;
       setSelectedDistrict(districtId);
       const selectedDistrict = cities
-        .find(city => city.Id === selectedCity)
-        ?.Districts.find(district => district.Id === districtId);
+        .find((city) => city.Id === selectedCity)
+        ?.Districts.find((district) => district.Id === districtId);
       setWards(selectedDistrict ? selectedDistrict.Wards : []);
     };
 
-    const handleWardChange = e => {
+    const handleWardChange = (e) => {
       setSelectedWard(e.target.value);
     };
 
-    const totalAmount = selectedItems.reduce(
-      (acc, item) => acc + item.price * item.quantity,
-      0
-    );
+    const handleCouponChange = (coupon) => {
+      if (!coupon) {
+        setSelectedCoupon(null);
+        setDiscountAmount(0);
+        setIsCouponFreeShipping(false);
+        return;
+      }
 
-    const cityName = cities.find(city => city.Id === selectedCity)?.Name || '';
+      setSelectedCoupon(coupon);
+      setDiscountAmount((coupon.discount / 100) * totalAmount);
+      setIsCouponFreeShipping(coupon.isFreeShipping);
+    };
+
+    const cityName = cities.find((city) => city.Id === selectedCity)?.Name || '';
     const districtName =
       cities
-        .find(city => city.Id === selectedCity)
-        ?.Districts.find(district => district.Id === selectedDistrict)?.Name ||
+        .find((city) => city.Id === selectedCity)
+        ?.Districts.find((district) => district.Id === selectedDistrict)?.Name ||
       '';
     const wardName =
       cities
-        .find(city => city.Id === selectedCity)
-        ?.Districts.find(district => district.Id === selectedDistrict)
-        ?.Wards.find(ward => ward.Id === selectedWard)?.Name || '';
+        .find((city) => city.Id === selectedCity)
+        ?.Districts.find((district) => district.Id === selectedDistrict)
+        ?.Wards.find((ward) => ward.Id === selectedWard)?.Name || '';
 
+    // Hàm gọi API tính phí ship
+    const calculateShipping = async () => {
+      try {
+        const response = await instance.post('/calculate-shipping', {
+          weight: totalQuantity * 500,
+          address: {
+            district: districtName,
+          },
+          orderValue: totalAmount,
+        });
+        const fee = response.data.shippingFee;
+
+        setCalculatedShippingFee(isCouponFreeShipping ? 0 : fee);
+        setIsCalculatedFreeShipping(isCouponFreeShipping || fee === 0);
+        setShippingMessageDisplay(isCouponFreeShipping ? 'Miễn phí vận chuyển' : `$${fee}`);
+      } catch (error) {
+        console.error('Lỗi khi tính phí vận chuyển:', error);
+        setShippingMessageDisplay('Không thể tính phí vận chuyển');
+      }
+    };
+
+    useEffect(() => {
+      if (selectedDistrict) {
+        calculateShipping();
+      }
+    }, [selectedDistrict, totalAmount, isCouponFreeShipping]);
+
+
+    const totalWithDiscount = calculateDiscountedTotal() + (isCouponFreeShipping ? 0 : calculatedShippingFee);
     const handleSubmit = async (e) => {
       e.preventDefault();
       const userId = localStorage.getItem('userId');
@@ -92,11 +165,11 @@ export const Route = createFileRoute('/_layout/checkout')({
       // Đảm bảo selectedItems có giá trị là một mảng
       const items = Array.isArray(selectedItems) ? selectedItems : [];
 
-      const productIds = items.map(item => item.productId);
+      const productIds = items.map((item) => item.productId);
 
       const formData = {
         userId,
-        items: items.map(item => ({
+        items: items.map((item) => ({
           productId: item.productId,
           name: item.name,
           price: item.price,
@@ -114,7 +187,8 @@ export const Route = createFileRoute('/_layout/checkout')({
           wards: wardName,
           address: e.target['address-input'].value,
         },
-        totalPrice: totalAmount,
+        totalPrice: totalWithDiscount,
+        couponCode: selectedCoupon ? selectedCoupon.code : null,
       };
 
       try {
@@ -123,8 +197,7 @@ export const Route = createFileRoute('/_layout/checkout')({
           userId: userId || '',
           selectedProductIds: productIds,
         });
-
-
+        toast.success('Order placed successfully');
       } catch (error) {
         toast.error('Có lỗi xảy ra trong quá trình thanh toán');
         console.error('Error during checkout process:', error);
@@ -152,7 +225,7 @@ export const Route = createFileRoute('/_layout/checkout')({
               </div>
             </div>
           </div>
-        </div >
+        </div>
         <form
           onSubmit={handleSubmit}
           className="w-full bg-[#F3F4F6] py-10 pt-10"
@@ -160,7 +233,6 @@ export const Route = createFileRoute('/_layout/checkout')({
           <div className="m-auto max-w-7xl bg-white p-5">
             <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
               <div className="mt-6 sm:mt-8 lg:flex lg:items-start lg:gap-12 xl:gap-16">
-                {/* form nhap thong tin  */}
                 <div className="min-w-0 flex-1 space-y-8">
                   <div className="items-center space-y-4">
                     <div className="flex gap-2 text-red-500">
@@ -248,7 +320,7 @@ export const Route = createFileRoute('/_layout/checkout')({
                           className="block w-full rounded-lg border bg-gray-50 p-2.5 text-sm dark:bg-gray-700"
                         >
                           <option value="">Chọn tỉnh thành</option>
-                          {cities.map(city => (
+                          {cities.map((city) => (
                             <option key={city.Id} value={city.Id}>
                               {city.Name}
                             </option>
@@ -277,8 +349,8 @@ export const Route = createFileRoute('/_layout/checkout')({
                           <option value="">Chọn quận/huyện</option>
                           {selectedCity &&
                             cities
-                              .find(city => city.Id === selectedCity)
-                              ?.Districts.map(district => (
+                              .find((city) => city.Id === selectedCity)
+                              ?.Districts.map((district) => (
                                 <option key={district.Id} value={district.Id}>
                                   {district.Name}
                                 </option>
@@ -302,7 +374,7 @@ export const Route = createFileRoute('/_layout/checkout')({
                           className="block w-full rounded-lg border bg-gray-50 p-2.5 text-sm dark:bg-gray-700"
                         >
                           <option value="">Chọn phường/xã</option>
-                          {wards.map(ward => (
+                          {wards.map((ward) => (
                             <option key={ward.Id} value={ward.Id}>
                               {ward.Name}
                             </option>
@@ -345,12 +417,12 @@ export const Route = createFileRoute('/_layout/checkout')({
                       Quantity
                     </th>
                     <th className="h-12 px-4 pr-0 text-end align-middle font-medium text-[#0000008a]">
-                      Toal
+                      Total
                     </th>
                   </tr>
                   <tbody className="[&_tr:last-child]:border-0">
-                    {selectedItems.map(product => (
-                      <tr className="border-b transition-colors">
+                    {selectedItems.map((product) => (
+                      <tr className="border-b transition-colors" key={product.productId}>
                         <td className="flex items-center gap-3 p-4 pl-0 align-middle">
                           <div className="size-10 min-h-10 min-w-10">
                             <img
@@ -372,7 +444,7 @@ export const Route = createFileRoute('/_layout/checkout')({
                         <td className="p-4 align-middle">${product.price}</td>
                         <td className="p-4 align-middle">{product.quantity}</td>
                         <td className="p-4 pr-0 text-end align-middle">
-                          ${(product.price * product.quantity).toFixed(2)}
+                          ${(product.price * product.quantity)}
                         </td>
                       </tr>
                     ))}
@@ -395,13 +467,33 @@ export const Route = createFileRoute('/_layout/checkout')({
               </div>
               <div className="mt-5 flex justify-end">
                 <div className="flex items-center gap-2 text-xl font-semibold">
-                  Tổng số tiền (2 sản phẩm):{' '}
+                  Tổng số tiền ({totalQuantity} sản phẩm):{' '}
                   <span className="text-xl text-red-500">
-                    ${totalAmount.toFixed(2)}
+                    {totalAmount} VND
                   </span>
                 </div>
               </div>
             </div>
+          </div>
+          <div className="m-auto mt-5 max-w-7xl bg-white p-9">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-2">
+                <ReceiptPercent className="w-6 h-6 text-red-500" />
+                <span className="text-gray-800 font-medium">Fashion zone Voucher</span>
+              </div>
+              <button
+                onClick={openVoucherModal}
+                type='button'
+                className="text-blue-500 font-medium hover:underline"
+              >
+                Chọn Voucher
+              </button>
+            </div>
+            <VoucherModal
+              isOpen={isVoucherModalOpen}
+              onClose={() => setVoucherModalOpen(false)}
+              onApplyCoupon={handleCouponChange}
+            />
           </div>
           <div className="m-auto mt-5 max-w-7xl bg-white p-5 pt-10">
             <div className="flex flex-wrap items-center gap-2">
@@ -425,15 +517,19 @@ export const Route = createFileRoute('/_layout/checkout')({
               <div>
                 <div className="flex justify-between gap-24">
                   <h5 className="text-xl text-gray-500">Total product:</h5>
-                  <div className="text-right">${totalAmount.toFixed(2)}</div>
+                  <div className="text-right">{totalAmount} VND</div>
                 </div>
                 <div className="flex justify-between gap-24">
-                  <h5 className="text-xl text-gray-500">product discounts:</h5>
-                  <div className="text-right">$0</div>
+                  <h5 className="text-xl text-gray-500">Phí vận chuyển :</h5>
+                  <div className="text-right">{shippingMessageDisplay} VND</div>
+                </div>
+                <div className="flex justify-between gap-24">
+                  <h5 className="text-xl text-gray-500">Discount Amount:</h5>
+                  <div className="text-right">{discountAmount} VND</div>
                 </div>
                 <div className="flex justify-between gap-24">
                   <h5 className="text-xl text-gray-500">Total:</h5>
-                  <div className="text-right">${totalAmount.toFixed(2)}</div>
+                  <div className="text-right">{totalWithDiscount} VND</div>
                 </div>
               </div>
             </div>
@@ -447,7 +543,9 @@ export const Route = createFileRoute('/_layout/checkout')({
             </div>
           </div>
         </form>
-      </section >
+      </section>
     );
   },
 });
+//khôi phục đúng //khôi phục đúng //khôi phục đúng //khôi phục đúng 
+

@@ -202,7 +202,7 @@ function OrderList() {
                     ))}
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
-                    {order.totalPrice.toFixed(2)}
+                    {order.totalPrice}
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     <select

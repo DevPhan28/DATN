@@ -15,10 +15,10 @@ function Cart() {
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
   const { data: cartData, isLoading, error } = useFetchCart(userId);
-  const { deleteItemFromCart, increaseQuantity, decreaseQuantity } = useCartMutation();
+  const { deleteItemFromCart, increaseQuantity, decreaseQuantity, updateQuantity } = useCartMutation();
 
-  const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
-  const [selectedProducts, setSelectedProducts] = useState<{ [key: number]: boolean }>({});
+  const [quantities, setQuantities] = useState({});
+  const [selectedProducts, setSelectedProducts] = useState({});
   const [selectAll, setSelectAll] = useState(false);
 
   if (isLoading) {
@@ -33,15 +33,24 @@ function Cart() {
     return <ErrorCart />;
   }
 
-  const handleQuantityChange = (index: number, value: string) => {
+  const handleQuantityChange = (index, value) => {
     const quantity = Math.max(parseInt(value) || 0, 0);
     setQuantities(prev => ({
       ...prev,
       [index]: quantity,
     }));
+    const product = cartData?.products[index];
+    if (product) {
+      updateQuantity.mutate({
+        userId: userId || '',
+        productId: product.productId,
+        variantId: product.variantId,
+        quantity,
+      });
+    }
   };
 
-  const incrementQuantity = (index: number) => {
+  const incrementQuantity = (index) => {
     const newQuantity = (quantities[index] || cartData?.products[index].quantity) + 1;
     setQuantities(prev => ({
       ...prev,
@@ -57,7 +66,7 @@ function Cart() {
     }
   };
 
-  const decrementQuantity = (index: number) => {
+  const decrementQuantity = (index) => {
     const newQuantity = Math.max((quantities[index] || cartData?.products[index].quantity) - 1, 0);
     setQuantities(prev => ({
       ...prev,
@@ -73,29 +82,27 @@ function Cart() {
     }
   };
 
-  const productPrice = (index: number) => {
+  const productPrice = (index) => {
     const product = cartData?.products[index];
     const variantPrice = product?.priceAtTime ?? 0;
     return variantPrice > 0 ? variantPrice : product?.price;
   };
 
-  // Handle delete for selected products
   const handleDeleteSelectedProducts = () => {
     const selectedProductIds = Object.keys(selectedProducts)
       .filter(index => selectedProducts[parseInt(index)])
       .map(index => cartData?.products[parseInt(index)].productId);
-  
+
     if (selectedProductIds.length === 0) {
       toast.error('Vui lòng chọn ít nhất một sản phẩm để xóa.');
       return;
     }
-  
+
     deleteItemFromCart.mutate({
       userId: userId || '',
       productIds: selectedProductIds,
     }, {
       onSuccess: () => {
-        // Clear selected products after deletion
         setSelectedProducts({});
         setSelectAll(false);
         toast.success('Đã xóa các sản phẩm đã chọn khỏi giỏ hàng.');
@@ -106,7 +113,7 @@ function Cart() {
     });
   };
 
-  const toggleSelectProduct = (index: number) => {
+  const toggleSelectProduct = (index) => {
     setSelectedProducts(prev => ({
       ...prev,
       [index]: !prev[index],
@@ -131,7 +138,7 @@ function Cart() {
       return sum + (quantities[index] || product.quantity) * productPrice(index);
     }
     return sum;
-  }, 0).toFixed(2);
+  }, 0);
 
   const getSelectedItems = () => {
     return cartData.products.filter((_, index) => selectedProducts[index]);
@@ -148,7 +155,6 @@ function Cart() {
       state: { selectedItems },
     });
   };
-  
 
   return (
     <div className="">
@@ -215,7 +221,7 @@ function Cart() {
                       </div>
                     </td>
                     <td className="px-4 py-4 text-center">
-                      ${productPrice(index)}
+                      {productPrice(index)} VND
                     </td>
                     <td className="px-4 py-4 text-center">
                       <div className="flex items-center justify-center">
@@ -229,9 +235,7 @@ function Cart() {
                           type="text"
                           min="0"
                           value={quantities[index] || product.quantity}
-                          onChange={e =>
-                            handleQuantityChange(index, e.target.value)
-                          }
+                          onChange={e => handleQuantityChange(index, e.target.value)}
                           className="w-12 border text-center"
                         />
                         <button
@@ -243,7 +247,7 @@ function Cart() {
                       </div>
                     </td>
                     <td className="px-4 py-4 text-center">
-                      ${((quantities[index] || product.quantity) * productPrice(index)).toFixed(2)}
+                      {((quantities[index] || product.quantity) * productPrice(index))} VND
                     </td>
                   </tr>
                 ))}
@@ -276,7 +280,7 @@ function Cart() {
                 </div>
                 <div className="flex items-center gap-5">
                   <div>
-                    Tổng thanh toán: ${' '}
+                    Tổng thanh toán (VND): {' '} 
                     <span className="text-red-500">
                       {totalSelectedPrice || '0'}
                     </span>

@@ -100,11 +100,6 @@ const useCartMutation = () => {
     }) => instance.patch('/cart/update-quantity', data),
 
     onSuccess: () => {
-      toast.success('Cập nhật số lượng thành công', {
-        description:
-          'Số lượng sản phẩm trong giỏ hàng của bạn đã được cập nhật.',
-        duration: 1000,
-      });
       queryClient.invalidateQueries({
         queryKey: ['cart'],
       });

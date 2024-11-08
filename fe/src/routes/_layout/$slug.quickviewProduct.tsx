@@ -171,7 +171,7 @@ function DetailProduct() {
                 <ChevronRightMini />
               </div>
               <div className="capitalize text-gray-500">
-                <a href="#">Quick View</a>
+                <a href="#">View Detail</a>
               </div>
             </div>
           </div>

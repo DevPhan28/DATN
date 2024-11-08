@@ -479,6 +479,32 @@ function AddBrand() {
                     </div>
                     <div className="flex-1 space-y-3">
                       <label className="block text-sm font-medium text-ui-fg-base">
+                        <span className="text-ui-tag-red-text">*</span>{' '}
+                        Weight
+                      </label>
+                      <Input
+                        type="number"
+                        placeholder="e.g., 100"
+                        size="base"
+                        {...register(
+                          `variants.${index}.weight` as const,
+                          {
+                            required: 'weight is required',
+                            min: {
+                              value: 0,
+                              message: 'weight must be positive',
+                            },
+                          }
+                        )}
+                      />
+                      {errors.variants?.[index]?.countInStock && (
+                        <span className="text-xs text-red-500">
+                          {errors.variants[index].countInStock.message}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex-1 space-y-3">
+                      <label className="block text-sm font-medium text-ui-fg-base">
                         <span className="text-ui-tag-red-text">*</span> SKU
                       </label>
                       <Input
