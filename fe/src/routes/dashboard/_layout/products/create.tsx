@@ -1,12 +1,13 @@
 import instance from '@/api/axiosIntance';
 import Header from '@/components/layoutAdmin/header/header';
+import TextareaDescription from '@/components/textarea';
 import useProductMutation from '@/data/products/useProductMutation';
 import { ArrowDownTray, PlusMini, Trash, XMark } from '@medusajs/icons';
 import { Button, Input, Select, Textarea } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import axios from 'axios';
 import { useRef, useState } from 'react';
-import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 
 export const Route = createFileRoute('/dashboard/_layout/products/create')({
   loader: async () => {
@@ -26,6 +27,7 @@ function AddBrand() {
     handleSubmit,
     setValue,
     control,
+    watch,
     reset,
     formState: { errors },
   } = useForm<{
@@ -35,6 +37,7 @@ function AddBrand() {
     category: string;
     gallery?: string[];
     description: string;
+    detaildescription: string,
     totalCountInStock: number;
     discount: number;
     variants: Variant[];
@@ -103,7 +106,7 @@ function AddBrand() {
       console.log(typeof variant.countInStock);
       return total + Number(variant.countInStock);
     }, 0);
-
+    const plainText = data.detaildescription.replace(/<\/?[^>]+(>|$)/g, "").normalize("NFC");
     const formDataThumbnail = new FormData();
     const formDataGallery = new FormData();
     formDataThumbnail.append('image', selectedImage);
@@ -136,7 +139,11 @@ function AddBrand() {
       throw new Error('Failed to upload image');
     }
   };
-
+  // Để cập nhật giá trị khi nội dung thay đổi
+  const handleEditorChange = (content) => {
+    setValue('detaildescription', content);
+    trigger('detaildescription');
+  };
   return (
     <div className="h-screen overflow-y-auto">
       <Header title="Create New Products" pathname="/" />
@@ -388,6 +395,35 @@ function AddBrand() {
                     </div>
                   ))}
               </div>
+
+              <div className=" flex flex-col">
+                <label className="block text-sm font-medium text-ui-fg-base">
+                  <span className="text-ui-tag-red-text">*</span> Content
+                </label>
+                <div className="flex-1 flex flex-col mt-2">
+                  <Controller
+                    name="detaildescription"
+                    control={control}
+                    defaultValue=""
+                    rules={{ required: 'Description is required' }}
+                    render={({ field: { onChange, value } }) => (
+                      <TextareaDescription
+                        apiKey="vx5npguuuktlxhbv9tv6vvgjk1x5astnj8kznhujei9w6ech"
+                        value={value}
+                        onChange={(content) => handleEditorChange(content, onChange)}
+                        className="w-full h-full" // To make the text area take full space
+                      />
+                    )}
+                  />
+                  {errors.detaildescription && (
+                    <span className="text-xs text-red-500 mt-2">
+                      {errors.detaildescription.message}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+
             </div>
             {/* Variants */}
             <div>

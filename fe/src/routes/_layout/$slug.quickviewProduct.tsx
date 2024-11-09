@@ -324,6 +324,10 @@ function DetailProduct() {
               </div>
             </div>
           </div>
+          <div className="mx-auto mt-10 bg-white p-8 shadow-lg">
+            <h2 className='text-2xl font-semibold'>Mô tả chi tiết</h2>
+            <div className='mt-5' dangerouslySetInnerHTML={{ __html: product.detaildescription }} />
+          </div>
           <div className="bg-white p-4 shadow mt-10">
             <div className="flex flex-col lg:flex-row gap-10">
               {/* Left side - Customer Reviews lg:w-1/2*/}
