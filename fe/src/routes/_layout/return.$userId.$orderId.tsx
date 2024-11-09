@@ -26,7 +26,7 @@ function ReturnRequestPage() {
 
     if (!userId || !orderId) {
       console.error('userId hoặc orderId không tồn tại');
-      navigate('/error');
+
       return;
     }
 
@@ -36,7 +36,6 @@ function ReturnRequestPage() {
         setOrder(response.data);
       } catch (error) {
         console.error('Lỗi khi lấy thông tin đơn hàng:', error);
-        navigate('/error');
       }
     };
 

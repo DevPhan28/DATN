@@ -1,7 +1,7 @@
 import instance from '@/api/axiosIntance';
 import { useFetchOrdersByUserId } from '@/data/oder/useOderList';
 import { ChevronRightMini } from '@medusajs/icons';
-import { toast } from '@medusajs/ui';
+import { toast, usePrompt } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
@@ -9,7 +9,7 @@ export const Route = createFileRoute('/_layout/orderuser')({
   component: UserOrder,
 });
 
-const getStatusLabel = status => {
+const getStatusLabel = (status: string) => {
   switch (status) {
     case 'pending':
       return 'Chờ xác nhận';
@@ -46,6 +46,7 @@ function UserOrder() {
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [complaintType, setComplaintType] = useState('refund'); // Thêm trạng thái cho loại khiếu nại
   const navigate = useNavigate();
+  const dialog = usePrompt();
 
   const handleOpenComplaintModal = orderId => {
     setSelectedOrderId(orderId);
@@ -61,14 +62,38 @@ function UserOrder() {
     // Chuyển hướng đến trang hoàn trả với loại khiếu nại đã chọn
     navigate({
       to: `/return/${userId}/${selectedOrderId}`,
-      state: { complaintType },
     });
 
     setShowComplaintModal(false);
   };
+  const deleteEntity = async (orderId: string) => {
+    // Hiển thị hộp thoại xác nhận
+    const userHasConfirmed = await dialog({
+      title: 'Xác nhận hủy đơn hàng',
+      description: 'Bạn có chắc chắn muốn hủy đơn hàng này không?',
+    });
 
-  const handleConfirmReceived = orderId => {
-    const order = orders.find(order => order._id === orderId);
+    // Nếu người dùng xác nhận, tiến hành hủy đơn hàng
+    if (userHasConfirmed) {
+      try {
+        // Gọi API để hủy đơn hàng
+        const response = await instance.put(`/orders/${orderId}/cancel`);
+        toast.success('Đơn hàng đã được hủy thành công.');
+
+        // Cập nhật danh sách đơn hàng sau khi hủy
+        const updatedOrders = orders.map((order: Order) =>
+          order._id === orderId ? { ...order, status: 'canceled' } : order
+        );
+        setOrders(updatedOrders);
+      } catch (error) {
+        console.error('Error cancelling order:', error);
+        toast.error('Có lỗi xảy ra khi hủy đơn hàng, vui lòng thử lại.');
+      }
+    }
+  };
+
+  const handleConfirmReceived = (orderId: string) => {
+    const order = orders.find((order: Order) => order._id === orderId);
 
     // Kiểm tra trạng thái đơn hàng
     if (order.status !== 'shipped' && order.status !== 'received') {
@@ -84,7 +109,7 @@ function UserOrder() {
       .then(response => {
         toast.success('Đơn hàng đã được xác nhận.');
         // Cập nhật trạng thái đơn hàng từ 'received' sang 'delivered'
-        const updatedOrders = orders.map(order =>
+        const updatedOrders = orders.map((order: Order) =>
           order._id === orderId ? { ...order, status: 'delivered' } : order
         );
         setOrders(updatedOrders);
@@ -138,7 +163,7 @@ function UserOrder() {
     { id: 'exchange', label: 'Đổi trả hàng' },
   ];
 
-  const filteredOrders = orders?.filter(order => {
+  const filteredOrders = orders?.filter((order: Order) => {
     // Hiển thị tất cả đơn hàng cho tab "Tất cả"
     if (selectedTab === 'all') {
       return true;
@@ -183,7 +208,7 @@ function UserOrder() {
     startIndex + itemsPerPage
   );
 
-  const handlePageChange = newPage => {
+  const handlePageChange = (newPage: number) => {
     if (newPage > 0 && newPage <= totalPages) {
       setCurrentPage(newPage);
     }
@@ -262,7 +287,7 @@ function UserOrder() {
 
           {ordersToDisplay.length > 0 ? (
             <div className="space-y-4">
-              {ordersToDisplay.map(order => {
+              {ordersToDisplay.map((order: Order) => {
                 const totalAmount = order.items.reduce(
                   (total, item) => total + item.price * item.quantity,
                   0
@@ -354,7 +379,7 @@ function UserOrder() {
                     <div className="mt-4 flex items-center justify-end">
                       {order.status === 'pending' && (
                         <button
-                          onClick={() => handleCancelOrder(order._id)}
+                          onClick={() => deleteEntity(order._id)}
                           className="mr-2 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
                         >
                           Hủy đơn hàng

@@ -2,6 +2,7 @@ const Mail = require("../helpers/node-mailler");
 const Order = require("../models/order");
 const { StatusCodes } = require("http-status-codes");
 const Product = require("../models/product");
+const mongoose = require("mongoose");
 
 const createOrder = async (req, res) => {
   try {
@@ -200,6 +201,13 @@ const deleteOrder = async (req, res) => {
 const cancelOrder = async (req, res) => {
   const { orderId } = req.params;
 
+  // Kiểm tra nếu orderId không tồn tại hoặc không hợp lệ
+  if (!orderId || !mongoose.Types.ObjectId.isValid(orderId)) {
+    return res
+      .status(400)
+      .json({ message: "Thiếu hoặc sai định dạng orderId" });
+  }
+
   try {
     // Tìm đơn hàng theo ID
     const order = await Order.findById(orderId);
@@ -222,9 +230,13 @@ const cancelOrder = async (req, res) => {
 
     res.status(200).json({ message: "Đơn hàng đã được hủy thành công", order });
   } catch (error) {
-    res.status(500).json({ message: "Có lỗi xảy ra khi hủy đơn hàng", error });
+    res.status(500).json({
+      message: "Có lỗi xảy ra khi hủy đơn hàng",
+      error: error.message || error,
+    });
   }
 };
+
 // In your orders controller
 const confirmReceived = async (req, res) => {
   const { orderId } = req.params;
