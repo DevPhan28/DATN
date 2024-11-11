@@ -156,21 +156,39 @@ const updateOrder = async (req, res) => {
     const { orderId } = req.params;
     const { status } = req.body;
 
+    // Kiểm tra xem order có tồn tại không
+    console.log(`Updating order status for orderId: ${orderId} to status: ${status}`);
     const order = await Order.findById(orderId);
 
     if (!order) {
+      console.warn(`Order with id ${orderId} not found.`);
       return res
         .status(StatusCodes.NOT_FOUND)
         .json({ error: "Order not found" });
     }
+
+    // Cập nhật trạng thái nếu khác trạng thái hiện tại
     if (order.status !== status) {
+      console.log(`Current status: ${order.status}, New status: ${status}`);
       order.statusHistory.push(order.status);
       order.status = status;
       await order.save();
+      console.log("Order status updated and saved.");
+    } else {
+      console.log("Status is the same as the current status. No update necessary.");
+    }
+
+    // Gửi email thông báo nếu có email khách hàng
+    if (order.customerInfo && order.customerInfo.email) {
+      console.log(`Sending status update email to ${order.customerInfo.email}`);
+      await Mail.sendOrderStatusUpdate(order.customerInfo.email, order);
+    } else {
+      console.warn("Customer email not found. Skipping email notification.");
     }
 
     return res.status(StatusCodes.OK).json(order);
   } catch (error) {
+    console.error("Error updating order:", error);
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: error.message });
@@ -227,8 +245,13 @@ const cancelOrder = async (req, res) => {
     // Cập nhật trạng thái thành "canceled"
     order.status = "canceled";
     await order.save();
-
     res.status(200).json({ message: "Đơn hàng đã được hủy thành công", order });
+    if (order.customerInfo && order.customerInfo.email) {
+      console.log(`Sending status update email to ${order.customerInfo.email}`);
+      await Mail.sendOrderStatusUpdate(order.customerInfo.email, order);
+    } else {
+      console.warn("Customer email not found. Skipping email notification.");
+    }
   } catch (error) {
     res.status(500).json({
       message: "Có lỗi xảy ra khi hủy đơn hàng",
@@ -256,6 +279,13 @@ const confirmReceived = async (req, res) => {
 
     order.status = "delivered"; // Cập nhật trạng thái từ 'received' sang 'delivered'
     await order.save();
+
+    if (order.customerInfo && order.customerInfo.email) {
+      console.log(`Sending status update email to ${order.customerInfo.email}`);
+      await Mail.sendOrderStatusUpdate(order.customerInfo.email, order);
+    } else {
+      console.warn("Customer email not found. Skipping email notification.");
+    }
 
     res.json({ message: "Order status updated to delivered" });
   } catch (error) {
@@ -296,7 +326,7 @@ const setDelivered = async (req, res) => {
 };
 const returnOrder = async (req, res) => {
   const { orderId } = req.params;
-  const { reason, returnType } = req.body; // receive reason and returnType from request
+  const { reason, returnType } = req.body; 
 
   try {
     const order = await Order.findById(orderId);
@@ -305,25 +335,23 @@ const returnOrder = async (req, res) => {
       return res.status(404).json({ message: "Đơn hàng không tồn tại" });
     }
 
-    // Allow complaints if the order status is either 'delivered' or 'received'
     if (order.status !== "delivered" && order.status !== "received") {
       return res.status(400).json({
         message: "Chỉ có thể hoàn trả đơn hàng đã giao hoặc đã nhận",
       });
     }
 
-    // Set status based on returnType
     if (returnType === "refund") {
-      order.status = "refund"; // Set status to "refund" for refund requests
+      order.status = "refund"; 
     } else if (returnType === "exchange") {
-      order.status = "exchange"; // Set status to "exchange" for exchange requests
+      order.status = "exchange"; 
     } else {
       return res.status(400).json({
         message: "Loại yêu cầu hoàn trả không hợp lệ",
       });
     }
 
-    order.returnReason = reason; // Save the return reason in the order
+    order.returnReason = reason; 
     await order.save();
 
     res.status(200).json({

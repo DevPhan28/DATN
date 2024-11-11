@@ -55,35 +55,89 @@ const Mail = {
           <p><strong>Tên:</strong> ${order.customerInfo.name}</p>
           <p><strong>Số điện thoại:</strong> ${order.customerInfo.phone}</p>
           <p><strong>Email:</strong> ${order.customerInfo.email}</p>
-          <p><strong>Địa chỉ:</strong> ${order.customerInfo.address}, ${
-        order.customerInfo.wards
-      }, ${order.customerInfo.districts}, ${order.customerInfo.city}</p>
+          <p><strong>Địa chỉ:</strong> ${order.customerInfo.address}, ${order.customerInfo.wards}, ${order.customerInfo.districts}, ${order.customerInfo.city}</p>
 
           <h3 style="color: #4CAF50; border-bottom: 2px solid #4CAF50; padding-bottom: 5px; margin-top: 20px;">Chi tiết đơn hàng</h3>
-          <p><strong style="color: #FF5733;">Mã đơn hàng:</strong> ${
-            order.orderNumber
-          }</p>
+          <p><strong style="color: #FF5733;">Mã đơn hàng:</strong> ${order.orderNumber}</p>
           <ul style="list-style-type: none; padding: 0;">
-            ${order.items
-              .map(
-                (item) => `
-                  <li style="display: flex; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
-                    <img src="${item.image}" alt="${item.name}" width="80" height="80" style="border: 1px solid #ddd; padding: 5px; margin-right: 15px; border-radius: 5px;" />
-                    <div>
-                      <p style="margin: 0;"><strong>Sản phẩm:</strong> ${item.name}</p>
-                      <p style="margin: 0;"><strong>Số lượng:</strong> ${item.quantity}</p>
-                      <p style="margin: 0;"><strong>Giá:</strong> <span style="color: #FF5733;">${item.price} VND</span></p>
-                      <p style="margin: 0;"><strong>Màu:</strong> ${item.color}</p>
-                      <p style="margin: 0;"><strong>Kích thước:</strong> ${item.size}</p>
-                    </div>
-                  </li>
-                `
-              )
-              .join("")}
+            ${order.items.map((item) => `
+              <li style="display: flex; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
+                <img src="${item.image}" alt="${item.name}" width="80" height="80" style="border: 1px solid #ddd; padding: 5px; margin-right: 15px; border-radius: 5px;" />
+                <div>
+                  <p style="margin: 0;"><strong>Sản phẩm:</strong> ${item.name}</p>
+                  <p style="margin: 0;"><strong>Số lượng:</strong> ${item.quantity}</p>
+                  <p style="margin: 0;"><strong>Giá:</strong> <span style="color: #FF5733;">${item.price} VND</span></p>
+                  <p style="margin: 0;"><strong>Màu:</strong> ${item.color}</p>
+                  <p style="margin: 0;"><strong>Kích thước:</strong> ${item.size}</p>
+                </div>
+              </li>
+            `).join("")}
           </ul>
-          <p style="font-size: 18px; font-weight: bold; color: #FF5733; margin-top: 20px;">Tổng giá trị đơn hàng: <span style="color: #4CAF50;">${
-            order.totalPrice
-          } VND</span></p>
+          <p style="font-size: 18px; font-weight: bold; color: #FF5733; margin-top: 20px;">Tổng giá trị đơn hàng: <span style="color: #4CAF50;">${order.totalPrice} VND</span></p>
+
+          <div style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 8px; text-align: center;">
+            <p style="color: #555;">Chúng tôi sẽ liên hệ với bạn sớm để giao hàng.</p>
+            <p style="color: #555;">Vui lòng theo dõi đơn hàng của bạn trên website để biết trạng thái đơn hàng của bạn!</p>
+          </div>
+
+          <p style="text-align: center; margin-top: 30px; font-size: 14px; color: #555;">Shop Fashion Zone xin cảm ơn quý khách!</p>
+        </div>
+      `,
+    });
+
+    return info.messageId;
+  },
+
+  translateOrderStatus: (status) => {
+    const statusTranslations = {
+      pending: "Đang chờ xử lý",
+      confirmed: "Đã xác nhận",
+      shipped: "Đang giao hàng",
+      received: "Đã nhận hàng",
+      delivered: "Đã giao hàng",
+      canceled: "Đã hủy",
+      refund: "Hoàn tiền",
+      exchange: "Đổi hàng",
+      return_completed: "Hoàn trả hoàn tất"
+    };
+
+    return statusTranslations[status] || status;
+  },
+
+  sendOrderStatusUpdate: async (email, order) => {
+    const translatedStatus = Mail.translateOrderStatus(order.status);
+
+    const info = await transporter.sendMail({
+      from: '"Shop Fashion Zone" <admin@ethereal.email>',
+      to: email,
+      subject: `Cập nhật trạng thái đơn hàng: ${order.orderNumber}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px;">
+          <p>Đơn hàng của bạn với mã <strong>${order.orderNumber}</strong> hiện đang trong trạng thái: <strong style="color: #4CAF50;">${translatedStatus}</strong>.</p>
+
+          <h3 style="color: #4CAF50; border-bottom: 2px solid #4CAF50; padding-bottom: 5px;">Thông tin khách hàng</h3>
+          <p><strong>Tên:</strong> ${order.customerInfo.name}</p>
+          <p><strong>Số điện thoại:</strong> ${order.customerInfo.phone}</p>
+          <p><strong>Email:</strong> ${order.customerInfo.email}</p>
+          <p><strong>Địa chỉ:</strong> ${order.customerInfo.address}, ${order.customerInfo.wards}, ${order.customerInfo.districts}, ${order.customerInfo.city}</p>
+
+          <h3 style="color: #4CAF50; border-bottom: 2px solid #4CAF50; padding-bottom: 5px; margin-top: 20px;">Chi tiết đơn hàng</h3>
+          <p><strong style="color: #FF5733;">Mã đơn hàng:</strong> ${order.orderNumber}</p>
+          <ul style="list-style-type: none; padding: 0;">
+            ${order.items.map((item) => `
+              <li style="display: flex; margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 10px;">
+                <img src="${item.image}" alt="${item.name}" width="80" height="80" style="border: 1px solid #ddd; padding: 5px; margin-right: 15px; border-radius: 5px;" />
+                <div>
+                  <p style="margin: 0;"><strong>Sản phẩm:</strong> ${item.name}</p>
+                  <p style="margin: 0;"><strong>Số lượng:</strong> ${item.quantity}</p>
+                  <p style="margin: 0;"><strong>Giá:</strong> <span style="color: #FF5733;">${item.price} VND</span></p>
+                  <p style="margin: 0;"><strong>Màu:</strong> ${item.color}</p>
+                  <p style="margin: 0;"><strong>Kích thước:</strong> ${item.size}</p>
+                </div>
+              </li>
+            `).join("")}
+          </ul>
+          <p style="font-size: 18px; font-weight: bold; color: #FF5733; margin-top: 20px;">Tổng giá trị đơn hàng: <span style="color: #4CAF50;">${order.totalPrice} VND</span></p>
 
           <div style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 8px; text-align: center;">
             <p style="color: #555;">Chúng tôi sẽ liên hệ với bạn sớm để giao hàng.</p>

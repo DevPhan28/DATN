@@ -49,8 +49,8 @@ const OrderSchema = new mongoose.Schema(
         "received",
         "delivered",
         "canceled",
-        "refund", // Trả hàng hoàn tiền
-        "exchange", // Hoàn trả hàng
+        "refund", 
+        "exchange", 
         "return_completed",
       ],
       default: "pending",
