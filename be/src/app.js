@@ -18,6 +18,7 @@ const authRouter = require("./routers/auth.router");
 const orderRouter = require("./routers/order");
 const shippingRoutes = require("./routers/shipping");
 const couponRoutes = require("./routers/coupon");
+const commentRouter = require("./routers/comment");
 
 const app = express();
 // middleware
@@ -36,6 +37,8 @@ app.use("/api", cartRouter);
 app.use("/api", orderRouter);
 app.use("/api", shippingRoutes);
 app.use("/api", couponRoutes);
+app.use("/api", commentRouter);
+
 app.listen(8080, () => {
   console.log("server running...");
 });

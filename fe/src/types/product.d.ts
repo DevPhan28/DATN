@@ -28,6 +28,7 @@ type Product = {
   featured?: boolean;
   tags?: string[];
   variants: Variant[];
+  comments?: Comment[]; // Thêm danh sách bình luận cho sản phẩm
 };
 
 type ProductParams = {

@@ -12,11 +12,16 @@ import {
   CommandLine,
   RocketLaunch,
   ArrowUpRightOnBox,
+  PencilSquare,
+  Plus,
+  Trash,
 } from '@medusajs/icons';
+import { DropdownMenu, IconButton } from '@medusajs/ui';
 import instance from '@/api/axiosIntance';
 import { toast } from '@medusajs/ui';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import ProductRecommendations from '@/components/ProductRecommendations';
+import useCommentMutation from '@/data/Comment/useCommentMutation';
 
 export const Route = createFileRoute('/_layout/$slug/quickviewProduct')({
   component: DetailProduct,
@@ -32,6 +37,10 @@ function DetailProduct() {
   const [selectedColor, setSelectedColor] = useState('');
   const [availableColors, setAvailableColors] = useState([]);
   const [quantity, setQuantity] = useState(1);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
+  const { createComment, removeComment } = useCommentMutation();
+  const [rating, setRating] = useState(0); // State for product rating
 
   const { slug } = useParams({ from: '/_layout/$slug/quickviewProduct' });
   const navigate = useNavigate();
@@ -58,6 +67,50 @@ function DetailProduct() {
 
     fetchProduct();
   }, [slug]);
+  useEffect(() => {
+    if (product) {
+      const fetchComments = async () => {
+        try {
+          const response = await instance.get(
+            `/comments/product/${product._id}`
+          );
+          setComments(response.data);
+        } catch (err) {
+          toast.error('Không thể tải bình luận');
+        }
+      };
+      fetchComments();
+    }
+  }, [product]);
+ 
+  // console.log(localStorage.getItem('userId'));
+  const handleCommentSubmit = async () => {
+    if (!newComment.trim()) {
+      toast.error('Vui lòng nhập bình luận.');
+      return;
+    }
+
+    if (rating === 0) {
+      toast.error('Vui lòng chọn đánh giá sao.');
+      return;
+    }
+
+    try {
+      // Call createComment mutation with rating
+      createComment.mutate({
+        productId: product._id,
+        content: newComment,
+        userId: localStorage.getItem('userId') || '', // Ensure userId is available
+        rating: rating, // Pass the rating value
+      });
+
+      // Reset input and rating
+      setNewComment('');
+      setRating(0);
+    } catch (err) {
+      toast.error('Không thể gửi bình luận. Vui lòng thử lại.');
+    }
+  };
 
   // Mutation to add item to cart
   const addItemToCart = useMutation({
@@ -134,7 +187,12 @@ function DetailProduct() {
       ],
     });
   };
-
+  const handleDeleteComment = (commentId: string) => {
+    removeComment.mutate(commentId);
+  };
+  const handleRatingChange = (newRating: number) => {
+    setRating(newRating); // Update the rating value
+  };
   // Add this query
   const { data: categoryData } = useQuery({
     queryKey: ['category', product?.categoryId],
@@ -143,7 +201,7 @@ function DetailProduct() {
       const response = await instance.get(`/categories/${product.categoryId}`);
       return response.data;
     },
-    enabled: !!product?.categoryId
+    enabled: !!product?.categoryId,
   });
 
   // Display loading or error if any
@@ -178,6 +236,7 @@ function DetailProduct() {
         </div>
       </div>
       <div className="bg-gray-50 py-10">
+        
         <div className="m-auto max-w-7xl p-5 sm:p-5 md:p-5 lg:p-5 xl:p-0">
           <div className="mt-5 flex flex-col justify-between bg-white p-5 shadow md:gap-48 lg:flex-row">
             <div className="flex flex-col gap-5 lg:flex-row">
@@ -324,76 +383,172 @@ function DetailProduct() {
               </div>
             </div>
           </div>
-          <div className="mx-auto mt-10 bg-white p-8 shadow-lg">
+          <div className="mx-auto mt-10 bg-white p-8 shadow">
             <h2 className='text-2xl font-semibold'>Mô tả chi tiết</h2>
             <div className='mt-5' dangerouslySetInnerHTML={{ __html: product.detaildescription }} />
           </div>
-          <div className="bg-white p-4 shadow mt-10">
-            <div className="flex flex-col lg:flex-row gap-10">
+          <div className="mt-10 bg-white p-4 shadow">
+            <div className="flex flex-col gap-10 lg:flex-row">
               {/* Left side - Customer Reviews lg:w-1/2*/}
-              <div className="mt-10 w-full ">
-                <div className='w-full mt-5 flex justify-between'>
-                  <h2 className='font-semibold text-[24px]'>Customer Reviews (500+)</h2>
-                  <div className='font-normal text-[18px] flex items-center text-[#666666]'>
+              
+              <div className="mt-10 w-full">
+                
+                <div className="mt-5 flex w-full justify-between">
+                  <h2 className="text-[24px] font-semibold">
+                  Customer Reviews ({comments.length > 0 ? comments.length : 0})
+                  </h2>
+                  <div className="flex items-center text-[18px] font-normal text-[#666666]">
                     <div>See All</div>
                     <ChevronRightMini />
                   </div>
                 </div>
-
-                {/* Rating Section */}
-                <div className="flex gap-2 mt-6 border h-20 p-2 bg-gray-50">
-                  <h1 className='font-semibold text-[28px]'>4.8</h1>
-                  <div className='flex mt-2'>
-                    <StarSolid className='text-orange-300' />
-                    <StarSolid className='text-orange-300' />
-                    <StarSolid className='text-orange-300' />
-                    <StarSolid className='text-orange-300' />
-                    <StarSolid className='text-orange-200' />
+                
+                <div>
+                  <h2 className="text-2xl">Comments</h2>
+                  <textarea
+                    className="mt-5 w-full rounded border p-3"
+                    placeholder="Write a comment..."
+                    value={newComment}
+                    onChange={e => setNewComment(e.target.value)}
+                  />
+                  <div className="flex items-center gap-2">
+                    {[1, 2, 3, 4, 5].map(star => (
+                      <StarSolid
+                        key={star}
+                        className={`cursor-pointer ${rating >= star ? 'text-orange-300' : 'text-orange-200'}`}
+                        onClick={() => handleRatingChange(star)}
+                      />
+                    ))}
                   </div>
-                  <div className="flex gap-2 self-center">
-                    <button className='border p-2 bg-white'>ALL</button>
-                    <button className='border p-2 bg-white'>5 stars (99)</button>
-                    <button className='border p-2 bg-white'>4 stars (8)</button>
-                    <button className='border p-2 bg-white'>2 stars (2)</button>
-                    <button className='border p-2 bg-white'>1 stars (8)</button>
+                  <button
+                    onClick={handleCommentSubmit}
+                    className="mt-2 rounded bg-blue-500 px-4 py-2 text-white"
+                  >
+                    Submit Comment
+                  </button>
+                  <div className="mt-5  pb-5">
+                    {comments.length > 0 ? (
+                      comments.map(comment => (
+                        <div key={comment._id} className="mb-4">
+                          <div className="flex items-center gap-3">
+                            <img
+                              src={comment.userId?.avatar}
+                              alt="User Avatar"
+                              className="h-10 w-10 rounded-full"
+                            />
+                            <div>
+                              <h3 className="font-semibold">
+                                {comment.userId?.username}
+                              </h3>
+                              <div className="flex">
+                                {/* Đoạn này sẽ hiển thị sao dựa trên rating của comment */}
+                                {[1, 2, 3, 4, 5].map(star => (
+                                  <div key={star}>
+                                    {comment.rating >= star ? (
+                                      <StarSolid className="text-orange-300" />
+                                    ) : (
+                                      <StarSolid className="text-orange-200" />
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+
+                              <p className="mt-1">{comment.commentText}</p>
+                              <small>
+                                {new Date(comment.createdAt).toLocaleString(
+                                  'vi-VN',
+                                  {
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  }
+                                )}
+                              </small>
+                            </div>
+                          </div>
+                          <div className="mt-10 flex justify-end gap-2 text-[#767676]">
+                            <ThumbUp className="text-black" />
+                            Hữu ích
+                            <DropdownMenu>
+                              <DropdownMenu.Trigger asChild>
+                                <IconButton>
+                                  <EllipsisHorizontal />
+                                </IconButton>
+                              </DropdownMenu.Trigger>
+                              <DropdownMenu.Content>
+                                <DropdownMenu.Separator />
+                                <DropdownMenu.Item
+                                  className="gap-x-2"
+                                  onClick={() =>
+                                    handleDeleteComment(comment._id)
+                                  }
+                                >
+                                  <Trash className="text-ui-fg-subtle" />
+                                  Delete comment
+                                </DropdownMenu.Item>
+                              </DropdownMenu.Content>
+                            </DropdownMenu>
+                           
+                          </div>
+                          <div className="mt-5 border-b pb-5"></div>
+                        </div>
+                      ))
+                    ) : (
+                      <p>No comments yet.</p>
+                    )}
                   </div>
                 </div>
-
                 {/* Review 1 */}
-                <div className='mt-5 border-b pb-5'>
-                  <h3 className='font-semibold'>Anh Thư <span className='text-[#767676] font-light'>14 Jun, 2024</span></h3>
-                  <div className='flex'>
-                    <StarSolid className='text-orange-300' />
-                    <StarSolid className='text-orange-300' />
-                    <StarSolid className='text-orange-300' />
-                    <StarSolid className='text-orange-300' />
-                    <StarSolid className='text-orange-300' />
+                {/* <div className="mt-5 border-b pb-5">
+                  <h3 className="font-semibold">
+                    Anh Thư{' '}
+                    <span className="font-light text-[#767676]">
+                      14 Jun, 2024
+                    </span>
+                  </h3>
+                  <div className="flex">
+                    <StarSolid className="text-orange-300" />
+                    <StarSolid className="text-orange-300" />
+                    <StarSolid className="text-orange-300" />
+                    <StarSolid className="text-orange-300" />
+                    <StarSolid className="text-orange-300" />
                   </div>
-                  <p className='mt-1'>Áo đẹp, chất lượng ổn áp, mình m72 nặng 58kg mặc size M nhe.</p>
-                  <div className="mt-10 flex gap-2 justify-end text-[#767676]">
-                    <ThumbUp className='text-black' />
+                  <p className="mt-1">
+                    Áo đẹp, chất lượng ổn áp, mình m72 nặng 58kg mặc size M nhe.
+                  </p>
+                  <div className="mt-10 flex justify-end gap-2 text-[#767676]">
+                    <ThumbUp className="text-black" />
                     Hữu ích(2)
-                    <EllipsisHorizontal className='text-black' />
+                    <EllipsisHorizontal className="text-black" />
                   </div>
-                </div>
+                </div> */}
 
                 {/* Review 2 */}
-                <div className='mt-5 border-b pb-5'>
-                  <h3 className='font-semibold'>Anh Thư <span className='text-[#767676] font-light'>14 Jun, 2024</span></h3>
-                  <div className='flex'>
-                    <StarSolid className='text-orange-300' />
-                    <StarSolid className='text-orange-300' />
-                    <StarSolid className='text-orange-300' />
-                    <StarSolid className='text-orange-300' />
-                    <StarSolid className='text-orange-300' />
+                {/* <div className="mt-5 border-b pb-5">
+                  <h3 className="font-semibold">
+                    Anh Thư{' '}
+                    <span className="font-light text-[#767676]">
+                      14 Jun, 2024
+                    </span>
+                  </h3>
+                  <div className="flex">
+                    <StarSolid className="text-orange-300" />
+                    <StarSolid className="text-orange-300" />
+                    <StarSolid className="text-orange-300" />
+                    <StarSolid className="text-orange-300" />
+                    <StarSolid className="text-orange-300" />
                   </div>
-                  <p className='mt-1'>Áo đẹp, chất lượng ổn áp, mình m72 nặng 58kg mặc size M nhe.</p>
-                  <div className="mt-10 flex gap-2 justify-end text-[#767676]">
-                    <ThumbUp className='text-black' />
+                  <p className="mt-1">
+                    Áo đẹp, chất lượng ổn áp, mình m72 nặng 58kg mặc size M nhe.
+                  </p>
+                  <div className="mt-10 flex justify-end gap-2 text-[#767676]">
+                    <ThumbUp className="text-black" />
                     Hữu ích(2)
-                    <EllipsisHorizontal className='text-black' />
+                    <EllipsisHorizontal className="text-black" />
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
