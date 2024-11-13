@@ -2,7 +2,7 @@ import instance from '@/api/axiosIntance';
 import { useFetchOrdersByUserId } from '@/data/oder/useOderList';
 import { ChevronRightMini } from '@medusajs/icons';
 import { toast, usePrompt } from '@medusajs/ui';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
 export const Route = createFileRoute('/_layout/orderuser')({
@@ -29,7 +29,13 @@ const getStatusLabel = (status: string) => {
       return 'Trả hàng hoàn tiền';
     case 'exchange':
       return 'Đổi trả hàng';
-    case 'return_completed':
+    case 'refund_in_progress': // Đang hoàn trả hàng
+      return 'Đang hoàn trả hàng';
+    case 'exchange_in_progress': // Đang đổi trả hàng
+      return 'Đang đổi trả hàng';
+    case 'refund_completed':
+      return 'Hoàn trả hàng thành công';
+    case 'exchange_completed':
       return 'Đổi trả hàng thành công';
     default:
       return status;
@@ -53,19 +59,29 @@ function UserOrder() {
     setShowComplaintModal(true);
   };
 
-  const handleSubmitComplaint = () => {
-    if (!selectedOrderId) {
-      toast.error('Vui lòng chọn một đơn hàng để khiếu nại.');
-      return;
-    }
+  // const handleSubmitComplaint = () => {
+  //   if (!selectedOrderId) {
+  //     toast.error('Vui lòng chọn một đơn hàng để khiếu nại.');
+  //     return;
+  //   }
 
-    // Chuyển hướng đến trang hoàn trả với loại khiếu nại đã chọn
-    navigate({
-      to: `/return/${userId}/${selectedOrderId}`,
-    });
+  //   // Kiểm tra loại khiếu nại và điều hướng tới trang hoàn trả hoặc đổi trả
+  //   if (complaintType === 'refund') {
+  //     // Chuyển hướng đến trang yêu cầu hoàn trả
+  //     navigate({
+  //       to: `/refund/${userId}/${selectedOrderId}`, // Điều hướng đến trang Refund
+  //     });
+  //   } else if (complaintType === 'exchange') {
+  //     // Chuyển hướng đến trang yêu cầu đổi trả
+  //     navigate({
+  //       to: `/exchange/${userId}/${selectedOrderId}`, // Điều hướng đến trang Exchange
+  //     });
+  //   }
 
-    setShowComplaintModal(false);
-  };
+  //   // Đóng modal sau khi đã thực hiện xong điều hướng
+  //   setShowComplaintModal(false);
+  // };
+
   const deleteEntity = async (orderId: string) => {
     // Hiển thị hộp thoại xác nhận
     const userHasConfirmed = await dialog({
@@ -164,41 +180,59 @@ function UserOrder() {
   ];
 
   const filteredOrders = orders?.filter((order: Order) => {
-    // Hiển thị tất cả đơn hàng cho tab "Tất cả"
+    // Trạng thái "Hoàn trả hàng thành công" sẽ chuyển vào tab "Đã hủy"
+    if (selectedTab === 'canceled') {
+      return order.status === 'canceled' || order.status === 'refund_completed'; // refund_completed chuyển vào "Đã hủy"
+    }
+
+    // Trạng thái "Đổi trả hàng thành công" sẽ chuyển vào tab "Đã giao"
+    if (selectedTab === 'delivered') {
+      return (
+        order.status === 'delivered' || order.status === 'exchange_completed'
+      ); // exchange_completed chuyển vào "Đã giao"
+    }
+
     if (selectedTab === 'all') {
       return true;
     }
 
-    // Logic cho các tab cụ thể
     if (selectedTab === 'pending') {
-      return order.status === 'pending'; // Chỉ hiển thị đơn hàng chờ xác nhận
+      return order.status === 'pending';
     }
 
     if (selectedTab === 'confirmed') {
-      return order.status === 'confirmed'; // Chỉ hiển thị đơn hàng chờ lấy hàng
+      return order.status === 'confirmed';
     }
 
     if (selectedTab === 'shipped') {
-      return order.status === 'shipped' || order.status === 'received'; // Hiển thị đơn hàng chờ giao hàng
+      return order.status === 'shipped' || order.status === 'received';
     }
 
     if (selectedTab === 'delivered') {
-      return order.status === 'delivered'; // Hiển thị đơn hàng đã giao
+      return order.status === 'delivered';
     }
 
     if (selectedTab === 'canceled') {
-      return order.status === 'canceled'; // Hiển thị đơn hàng đã hủy
+      return order.status === 'canceled';
     }
 
     if (selectedTab === 'refund') {
-      return order.status === 'refund' || order.status === 'return_completed'; // Hiển thị đơn hàng hoàn tiền và đổi trả thành công
+      return (
+        order.status === 'refund' ||
+        order.status === 'refund_in_progress' ||
+        order.status === 'return_completed'
+      );
     }
 
     if (selectedTab === 'exchange') {
-      return order.status === 'exchange' || order.status === 'return_completed'; // Hiển thị đơn hàng đổi trả và đổi trả thành công
+      return (
+        order.status === 'exchange' ||
+        order.status === 'exchange_in_progress' ||
+        order.status === 'return_completed'
+      );
     }
 
-    return order.status === selectedTab; // Hiển thị cho các trạng thái khác
+    return order.status === selectedTab;
   });
 
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
@@ -301,29 +335,43 @@ function UserOrder() {
                       <span
                         className={`rounded-full px-4 py-1 text-sm font-medium ${
                           order.status === 'canceled'
-                            ? 'bg-red-100 text-red-600'
+                            ? 'bg-red-200 text-red-600'
                             : order.status === 'pending'
-                              ? 'bg-yellow-100 text-yellow-600'
+                              ? 'bg-yellow-200 text-yellow-700'
                               : order.status === 'confirmed'
-                                ? 'bg-blue-100 text-blue-600'
+                                ? 'bg-blue-200 text-blue-700'
                                 : order.status === 'shipped' ||
                                     order.status === 'received'
-                                  ? 'bg-indigo-100 text-indigo-600'
+                                  ? 'bg-indigo-200 text-indigo-700'
                                   : order.status === 'delivered'
-                                    ? 'bg-green-100 text-green-600'
+                                    ? 'bg-green-200 text-green-700'
                                     : order.status === 'returned'
-                                      ? 'bg-purple-100 text-purple-600'
+                                      ? 'bg-purple-200 text-purple-700'
                                       : order.status === 'refund'
-                                        ? 'bg-yellow-500 text-white'
+                                        ? 'bg-yellow-400 text-white'
                                         : order.status === 'exchange'
-                                          ? 'bg-blue-500 text-white'
-                                          : order.status === 'return_completed'
-                                            ? 'bg-black text-white'
-                                            : ''
+                                          ? 'bg-blue-400 text-white'
+                                          : order.status ===
+                                              'refund_in_progress'
+                                            ? 'bg-orange-200 text-orange-700'
+                                            : order.status ===
+                                                'exchange_in_progress'
+                                              ? 'bg-teal-200 text-teal-700'
+                                              : order.status ===
+                                                  'return_completed'
+                                                ? 'bg-gray-800 text-white'
+                                                : order.status ===
+                                                    'refund_completed' // Màu cho hoàn trả hàng hoàn thành
+                                                  ? 'bg-pink-200 text-pink-700'
+                                                  : order.status ===
+                                                      'exchange_completed' // Màu cho đổi trả hàng hoàn thành
+                                                    ? 'bg-teal-200 text-teal-700'
+                                                    : ''
                         }`}
                       >
                         {getStatusLabel(order.status)}
                       </span>
+
                       <span className="text-sm text-gray-500">
                         Mã đơn hàng: {order.orderNumber}
                       </span>
@@ -457,25 +505,19 @@ function UserOrder() {
               Tình huống bạn đang gặp?
             </h2>
             <div className="flex flex-col space-y-2">
-              <button
-                onClick={() => {
-                  setComplaintType('refund'); // Đặt loại khiếu nại là refund
-                  handleSubmitComplaint();
-                }}
+              <Link
+                to={`/refund/${userId}/${selectedOrderId}`}
                 className="w-full rounded bg-blue-500 p-2 text-white"
               >
                 Tôi đã nhận hàng nhưng không còn nhu cầu/hàng có vấn đề (bể vỡ,
                 sai mẫu, lỗi, khác mô tả...)
-              </button>
-              <button
-                onClick={() => {
-                  setComplaintType('exchange'); // Đặt loại khiếu nại là exchange
-                  handleSubmitComplaint();
-                }}
+              </Link>
+              <Link
+                to={`/exchange/${userId}/${selectedOrderId}`}
                 className="mt-2 w-full rounded bg-blue-500 p-2 text-white"
               >
                 Tôi chưa nhận hàng/nhận thiếu hàng
-              </button>
+              </Link>
             </div>
             <div className="mt-4 flex justify-end">
               <button

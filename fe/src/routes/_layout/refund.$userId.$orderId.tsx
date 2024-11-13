@@ -1,18 +1,18 @@
+import { toast } from '@medusajs/ui';
+import instance from '@/api/axiosIntance'; // Đảm bảo bạn đã import instance
 import {
   createFileRoute,
   useNavigate,
   useParams,
 } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
-import instance from '@/api/axiosIntance';
-import { toast } from '@medusajs/ui';
 
-export const Route = createFileRoute('/_layout/return/$userId/$orderId')({
-  component: ReturnRequestPage,
+export const Route = createFileRoute('/_layout/refund/$userId/$orderId')({
+  component: RefundRequestPage,
 });
 
-function ReturnRequestPage() {
-  const { orderId } = useParams({ from: '/_layout/return/$userId/$orderId' });
+function RefundRequestPage() {
+  const { orderId } = useParams({ from: '/_layout/refund/$userId/$orderId' });
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [reason, setReason] = useState('');
@@ -26,7 +26,6 @@ function ReturnRequestPage() {
 
     if (!userId || !orderId) {
       console.error('userId hoặc orderId không tồn tại');
-
       return;
     }
 
@@ -43,6 +42,12 @@ function ReturnRequestPage() {
   }, [orderId, navigate]);
 
   const handleSubmit = async () => {
+    // Kiểm tra trạng thái đơn hàng, chỉ cho phép hoàn trả nếu đơn hàng đã giao hoặc đã nhận
+    if (order.status !== 'delivered' && order.status !== 'received') {
+      toast.error('Chỉ có thể hoàn trả đơn hàng đã giao hoặc đã nhận.');
+      return;
+    }
+
     // Kiểm tra nếu lý do, mô tả, và email đều đã nhập
     if (!reason) {
       toast.error('Vui lòng chọn lý do hoàn trả.');
@@ -57,11 +62,17 @@ function ReturnRequestPage() {
       const storedUser = JSON.parse(localStorage.getItem('user'));
       const userId = storedUser?.user?._id;
 
+      if (!userId || !orderId) {
+        toast.error('Không tìm thấy thông tin người dùng hoặc đơn hàng.');
+        return;
+      }
+
+      // Gọi API để gửi yêu cầu hoàn trả
       await instance.put(`/orders/${orderId}/return`, {
         reason,
         description,
         email,
-        returnType, // Truyền loại hoàn trả
+        returnType, // Truyền loại hoàn trả (refund)
       });
 
       toast.success('Yêu cầu hoàn trả thành công');
@@ -125,24 +136,7 @@ function ReturnRequestPage() {
         </label>
         <select
           value={reason}
-          onChange={e => {
-            setReason(e.target.value);
-            // Cập nhật loại hoàn trả dựa trên lý do được chọn
-            if (
-              [
-                'Sản phẩm bị lỗi hoặc hỏng hóc',
-                'Sai sản phẩm hoặc giao nhầm',
-                'Chất lượng kém',
-                'Kích cỡ không đúng hoặc không vừa',
-                'Không giống hình ảnh quảng cáo',
-                'Không đúng như mô tả',
-              ].includes(e.target.value)
-            ) {
-              setReturnType('refund');
-            } else {
-              setReturnType('exchange');
-            }
-          }}
+          onChange={e => setReason(e.target.value)}
           className="mb-4 w-full rounded border p-2"
         >
           <option value="">Chọn Lý Do</option>
@@ -210,4 +204,4 @@ function ReturnRequestPage() {
   );
 }
 
-export default ReturnRequestPage;
+export default RefundRequestPage;

@@ -61,7 +61,10 @@ function OrderList() {
       'canceled',
       'refund',
       'exchange',
-      'return_completed',
+      'refund_in_progress', // Đang hoàn trả hàng
+      'exchange_in_progress', // Đang đổi trả hàng
+      'refund_completed', // Trạng thái hoàn trả hàng đã hoàn thành
+      'exchange_completed', // Trạng thái đổi trả hàng đã hoàn thành
     ];
     const currentIndex = statusOrder.indexOf(currentStatus);
     const newIndex = statusOrder.indexOf(newStatus);
@@ -230,7 +233,7 @@ function OrderList() {
                         value="pending"
                         disabled={order.status !== 'pending'}
                       >
-                        Pending
+                        Chờ xác nhận
                       </option>
                       <option
                         value="confirmed"
@@ -240,7 +243,7 @@ function OrderList() {
                           order.status === 'delivered'
                         }
                       >
-                        Confirmed
+                        Chờ lấy hàng
                       </option>
                       <option
                         value="shipped"
@@ -249,7 +252,7 @@ function OrderList() {
                           order.status === 'delivered'
                         }
                       >
-                        Shipped
+                        Chờ giao hàng
                       </option>
                       <option
                         value="received"
@@ -258,19 +261,19 @@ function OrderList() {
                           order.status === 'delivered'
                         }
                       >
-                        Received
+                        Đã nhận
                       </option>
                       <option
                         value="delivered"
                         disabled={order.status === 'delivered'}
                       >
-                        Delivered
+                        Đã giao
                       </option>
                       <option
                         value="canceled"
                         disabled={order.status !== 'pending'}
                       >
-                        Canceled
+                        Đã hủy
                       </option>
                       <option
                         value="refund"
@@ -279,7 +282,7 @@ function OrderList() {
                           order.status === 'canceled'
                         }
                       >
-                        Refund
+                        Hoàn trả hàng
                       </option>
                       <option
                         value="exchange"
@@ -288,16 +291,43 @@ function OrderList() {
                           order.status === 'canceled'
                         }
                       >
-                        Exchange
+                        Đổi trả hàng
                       </option>
                       <option
-                        value="return_completed"
+                        value="refund_in_progress"
                         disabled={
                           order.status === 'delivered' ||
                           order.status === 'canceled'
                         }
                       >
-                        Return Completed
+                        Đang hoàn trả hàng
+                      </option>
+                      <option
+                        value="exchange_in_progress"
+                        disabled={
+                          order.status === 'delivered' ||
+                          order.status === 'canceled'
+                        }
+                      >
+                        Đang đổi trả hàng
+                      </option>
+                      <option
+                        value="refund_completed"
+                        disabled={
+                          order.status === 'delivered' ||
+                          order.status === 'canceled'
+                        }
+                      >
+                        Hoàn trả hàng hoàn thành
+                      </option>
+                      <option
+                        value="exchange_completed"
+                        disabled={
+                          order.status === 'delivered' ||
+                          order.status === 'canceled'
+                        }
+                      >
+                        Đổi trả hàng hoàn thành
                       </option>
                     </select>
                   </Table.Cell>
@@ -306,13 +336,13 @@ function OrderList() {
                     <DropdownMenu>
                       <DropdownMenu.Trigger asChild>
                         <span className="cursor-pointer">
-                          {order.returnReason} {'N/A'}
+                          {order.returnReason || 'N/A'}
                         </span>
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Content className="w-96 p-4">
                         <div>
                           <p className="font-semibold">Lý do chi tiết:</p>
-                          <p>{order.returnReason} </p>
+                          <p>{order.returnReason || 'N/A'} </p>
                         </div>
                       </DropdownMenu.Content>
                     </DropdownMenu>

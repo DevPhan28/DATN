@@ -7,9 +7,9 @@ const OrderItemSchema = new Schema({
   quantity: { type: Number, required: true },
   price: { type: Number, required: true },
   image: { type: String, required: true },
-  color: { type: String }, // Thêm thuộc tính màu
+  color: { type: String },
   size: { type: String },
-  weight: { type: Number }, 
+  weight: { type: Number },
 });
 
 const OrderSchema = new mongoose.Schema(
@@ -19,7 +19,7 @@ const OrderSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    items: [OrderItemSchema], // Đơn hàng bao gồm các sản phẩm
+    items: [OrderItemSchema],
     orderNumber: {
       type: String,
       unique: true,
@@ -49,19 +49,21 @@ const OrderSchema = new mongoose.Schema(
         "received",
         "delivered",
         "canceled",
-        "refund", 
-        "exchange", 
-        "return_completed",
+        "refund",
+        "exchange",
+        "refund_in_progress", // Đang hoàn trả hàng
+        "exchange_in_progress", // Đang đổi trả hàng
+        "refund_completed",
+        "exchange_completed",
       ],
       default: "pending",
     },
     returnReason: {
-      // Thêm trường lý do hoàn trả
       type: String,
       required: false,
     },
     statusHistory: { type: [String], default: [] },
-    receivedAt: { type: Date }, // Field to store the time when status is set to "received"
+    receivedAt: { type: Date },
     createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true, versionKey: false }
@@ -91,9 +93,9 @@ OrderSchema.pre("save", async function (next) {
       orderNumber: this.orderNumber,
     });
     if (!existingOrder) {
-      success = true; // Không có đơn hàng trùng lặp, tiếp tục lưu
+      success = true;
     } else {
-      attempt++; // Tìm thấy đơn hàng trùng lặp, thử lại
+      attempt++;
     }
   }
 
