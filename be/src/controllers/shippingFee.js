@@ -1,4 +1,4 @@
-const calculateShippingFee = (weight, address, orderValue = 0, coupon = null) => { 
+const calculateShippingFee = (weight, address, orderValue = 0, coupon = null) => {
   let shippingFee = 0;
 
   const shippingZones = {
@@ -7,7 +7,8 @@ const calculateShippingFee = (weight, address, orderValue = 0, coupon = null) =>
         "Quận Ba Đình", "Quận Hoàn Kiếm", "Quận Đống Đa", "Quận Hai Bà Trưng",
         "Quận Tây Hồ", "Quận Cầu Giấy", "Quận Thanh Xuân", "Quận Hoàng Mai", "Quận Long Biên"
       ],
-      baseFee: 2000
+      baseFees: [10000, 10000, 12000, 14000, 16000, 18000], 
+      extraFeePer500g: 2000
     },
     suburban: {
       districts: [
@@ -16,11 +17,13 @@ const calculateShippingFee = (weight, address, orderValue = 0, coupon = null) =>
         "Huyện Đan Phượng", "Huyện Hoài Đức", "Huyện Chương Mỹ", "Huyện Thanh Oai", "Huyện Mỹ Đức",
         "Huyện Ứng Hòa"
       ],
-      baseFee: 3000 
+      baseFees: [15000, 19000, 20000, 26000, 29000, 30000],
+      extraFeePer500g: 3000
     },
     rural: {
-      districts: [],
-      baseFee: 5000 
+      districts: [], 
+      baseFees: [22000, 22000, 25000, 29000, 31000, 38000],
+      extraFeePer500g: 7000
     }
   };
 
@@ -31,13 +34,26 @@ const calculateShippingFee = (weight, address, orderValue = 0, coupon = null) =>
     zone = 'suburban';
   }
 
-  shippingFee = shippingZones[zone].baseFee;
-
-  if (weight > 1000) {
-    shippingFee += Math.ceil((weight - 1000) / 500) * 1000; 
+  const zoneData = shippingZones[zone];
+  
+  // Determine base fee by weight threshold
+  if (weight <= 500) {
+    shippingFee = zoneData.baseFees[0];
+  } else if (weight <= 1000) {
+    shippingFee = zoneData.baseFees[1];
+  } else if (weight <= 1500) {
+    shippingFee = zoneData.baseFees[2];
+  } else if (weight <= 2000) {
+    shippingFee = zoneData.baseFees[3];
+  } else if (weight <= 2500) {
+    shippingFee = zoneData.baseFees[4];
+  } else if (weight <= 3000) {
+    shippingFee = zoneData.baseFees[5];
+  } else {
+    shippingFee = zoneData.baseFees[5] + Math.ceil((weight - 3000) / 500) * zoneData.extraFeePer500g;
   }
 
-  // Kiểm tra điều kiện miễn phí vận chuyển
+  // Check for free shipping conditions
   if (coupon && coupon.isFreeShipping) {
     shippingFee = 0;
   } else if (orderValue > 250000) {

@@ -53,15 +53,34 @@ const createOrder = async (req, res) => {
   }
 };
 
+const countOrdersByStatus = async () => {
+  const orders = await Order.aggregate([
+    {
+      $group: {
+        _id: "$status",
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  const orderCounts = {};
+  orders.forEach((order) => {
+    orderCounts[order._id] = order.count;
+  });
+
+  return orderCounts;
+};
+
 const getOrders = async (req, res) => {
   try {
     const {
       page = 1,
-      limit = 10,
+      limit = 100,
       status,
       sortBy = "createdAt",
       order = "desc",
     } = req.query;
+
     const filter = {};
     if (status) {
       filter.status = status;
@@ -76,18 +95,17 @@ const getOrders = async (req, res) => {
 
     const totalOrders = await Order.countDocuments(filter);
 
-    // Trả về mảng trống nếu không có đơn hàng nào
-    if (totalOrders === 0) {
-      return res.status(StatusCodes.OK).json({
-        data: [],
-        meta: {
-          totalItems: 0,
-          totalPages: 0,
-          currentPage: Number(page),
-          pageSize: Number(limit),
-        },
-      });
-    }
+    const orderCounts = await countOrdersByStatus();
+
+    const totalDeliveredValue = await Order.aggregate([
+      { $match: { status: "delivered" } },
+      { $group: { _id: null, total: { $sum: "$totalPrice" } } },
+    ]);
+
+    const totalDeliveredAmount = totalDeliveredValue.length > 0 ? totalDeliveredValue[0].total : 0;
+
+    console.log("Total Delivered Value Aggregate Result:", totalDeliveredValue);
+    console.log("Calculated Total Delivered Amount:", totalDeliveredAmount);
 
     return res.status(StatusCodes.OK).json({
       data: orders,
@@ -97,13 +115,17 @@ const getOrders = async (req, res) => {
         currentPage: Number(page),
         pageSize: Number(limit),
       },
+      statusCounts: orderCounts,
+      totalDeliveredAmount,
     });
   } catch (error) {
+    console.error("Error in getOrders:", error);
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: error.message });
   }
 };
+
 
 const getOrderById = async (req, res) => {
   try {
@@ -411,6 +433,30 @@ const updateReturnReason = async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 };
+const countSuccessfulOrders = async (req, res) => {
+  try {
+    const successfulOrdersCount = await Order.countDocuments({ status: "delivered" });
+
+    const totalDeliveredAmountResult = await Order.aggregate([
+      { $match: { status: "delivered" } }, 
+      { $group: { _id: null, totalAmount: { $sum: "$totalPrice" } } } 
+    ]);
+
+    const totalDeliveredAmount = totalDeliveredAmountResult[0]?.totalAmount || 0;
+
+    return res.status(StatusCodes.OK).json({
+      message: "Số lượng và tổng tiền của đơn hàng thành công",
+      successfulOrders: successfulOrdersCount,
+      totalDeliveredAmount,
+    });
+  } catch (error) {
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
+
 
 module.exports = {
   getOrderById,
@@ -424,4 +470,5 @@ module.exports = {
   setDelivered,
   returnOrder,
   updateReturnReason,
+  countSuccessfulOrders,
 };

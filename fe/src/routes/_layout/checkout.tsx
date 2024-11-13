@@ -129,26 +129,35 @@ export const Route = createFileRoute('/_layout/checkout')({
         ?.Districts.find((district) => district.Id === selectedDistrict)
         ?.Wards.find((ward) => ward.Id === selectedWard)?.Name || '';
 
-    // Hàm gọi API tính phí ship
-    const calculateShipping = async () => {
-      try {
-        const response = await instance.post('/calculate-shipping', {
-          weight: totalQuantity * 500,
-          address: {
-            district: districtName,
-          },
-          orderValue: totalAmount,
-        });
-        const fee = response.data.shippingFee;
-
-        setCalculatedShippingFee(isCouponFreeShipping ? 0 : fee);
-        setIsCalculatedFreeShipping(isCouponFreeShipping || fee === 0);
-        setShippingMessageDisplay(isCouponFreeShipping ? 'Miễn phí vận chuyển' : `$${fee}`);
-      } catch (error) {
-        console.error('Lỗi khi tính phí vận chuyển:', error);
-        setShippingMessageDisplay('Không thể tính phí vận chuyển');
-      }
-    };
+        const calculateShipping = async () => {
+          try {
+            // Check the contents of selectedItems to ensure all items are included
+            console.log("Selected Items for Shipping Calculation:", selectedItems);
+        
+            // Calculate total weight based on selected items
+            const totalWeight = selectedItems.reduce((acc, item) => acc + item.weight * item.quantity, 0);
+            console.log("Calculated total weight:", totalWeight, "for district:", districtName);
+        
+            const response = await instance.post('/calculate-shipping', {
+              weight: totalWeight,
+              address: {
+                district: districtName,
+              },
+              orderValue: totalAmount,
+            });
+        
+            const fee = response.data.shippingFee;
+            console.log("Received shipping fee from API:", fee);
+        
+            setCalculatedShippingFee(isCouponFreeShipping ? 0 : fee);
+            setIsCalculatedFreeShipping(isCouponFreeShipping || fee === 0);
+            setShippingMessageDisplay(isCouponFreeShipping ? 'Miễn phí vận chuyển' : `${fee} VND`);
+          } catch (error) {
+            console.error('Error calculating shipping fee:', error);
+            setShippingMessageDisplay('Unable to calculate shipping fee');
+          }
+        };
+        
 
     useEffect(() => {
       if (selectedDistrict) {
@@ -521,7 +530,7 @@ export const Route = createFileRoute('/_layout/checkout')({
                 </div>
                 <div className="flex justify-between gap-24">
                   <h5 className="text-xl text-gray-500">Phí vận chuyển :</h5>
-                  <div className="text-right">{shippingMessageDisplay} VND</div>
+                  <div className="text-right">{shippingMessageDisplay}</div>
                 </div>
                 <div className="flex justify-between gap-24">
                   <h5 className="text-xl text-gray-500">Discount Amount:</h5>

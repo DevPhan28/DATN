@@ -7,7 +7,7 @@ const menuItems: MenuItem[] = [
     id: 1,
     icon: <IconHome />,
     name: 'Dashboard',
-    href: '/',
+    href: '/dashboard',
   },
   // {
   //     id: 2,

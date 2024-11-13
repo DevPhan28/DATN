@@ -1,5 +1,19 @@
+import Header from '@/components/layoutAdmin/header/header';
+import DashboardOverview from '@/components/layoutAdmin/statistics/Char';
+import ToDoList from '@/components/layoutAdmin/statistics/toDoList';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/dashboard/_layout/')({
-  component: () => <div>Hello /dashboard/settting!</div>,
+  component: ThongKe
 });
+
+function ThongKe () {
+  return(
+    <div>
+    <Header title="Order List" pathname="/" />
+    <ToDoList/>
+    <DashboardOverview/>
+  </div>
+  )
+  
+}

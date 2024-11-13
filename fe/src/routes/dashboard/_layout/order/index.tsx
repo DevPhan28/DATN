@@ -6,7 +6,7 @@ import { Button, DropdownMenu, Input, Table, Tooltip } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 
-const pageSize = 7;
+const pageSize = 10;
 
 export const Route = createFileRoute('/dashboard/_layout/order/')({
   component: OrderList,
@@ -14,6 +14,7 @@ export const Route = createFileRoute('/dashboard/_layout/order/')({
 
 function OrderList() {
   const [currentPage, setCurrentPage] = useState(0);
+  const [selectedTab, setSelectedTab] = useState('all'); // State for selected tab
   const navigate = useNavigate();
 
   const {
@@ -51,6 +52,7 @@ function OrderList() {
     }
   };
 
+  // Function to handle status updates
   const handleStatusChange = (orderId, newStatus, currentStatus) => {
     const statusOrder = [
       'pending',
@@ -77,7 +79,8 @@ function OrderList() {
       { orderId, status: newStatus },
       {
         onSuccess: () => {
-          // Reload list or update status locally to reflect change
+          // Optional: Reload list or update status locally to reflect change
+          console.log('Status updated successfully');
         },
         onError: error => {
           console.error('Failed to update status:', error);
@@ -86,12 +89,71 @@ function OrderList() {
     );
   };
 
+  // Tabs for filtering orders
+  const tabs = [
+    { id: 'all', label: 'Tất cả' },
+    { id: 'pending', label: 'Chờ xác nhận' },
+    { id: 'confirmed', label: 'Chờ lấy hàng' },
+    { id: 'shipped', label: 'Chờ giao hàng' },
+    { id: 'delivered', label: 'Đã giao' },
+    { id: 'canceled', label: 'Đã hủy' },
+    { id: 'refund', label: 'Trả hàng hoàn tiền' },
+    { id: 'exchange', label: 'Đổi trả hàng' },
+  ];
+
+  const filteredOrders = listOrder?.data?.filter(order => {
+    if (selectedTab === 'all') return true;
+    if (selectedTab === 'pending') {
+      return order.status === 'pending'; 
+    }
+  
+    if (selectedTab === 'confirmed') {
+      return order.status === 'confirmed';
+    }
+  
+    if (selectedTab === 'shipped') {
+      return order.status === 'shipped' || order.status === 'received'; 
+    }
+  
+    if (selectedTab === 'delivered') {
+      return order.status === 'delivered';
+    }
+  
+    if (selectedTab === 'canceled') {
+      return order.status === 'canceled'; 
+    }
+  
+    if (selectedTab === 'refund') {
+      return order.status === 'refund' || order.status === 'return_completed'; // Hiển thị đơn hàng hoàn tiền và đổi trả thành công
+    }
+  
+    if (selectedTab === 'exchange') {
+      return order.status === 'exchange' || order.status === 'return_completed'; // Hiển thị đơn hàng đổi trả và đổi trả thành công
+    }
+  
+    return order.status === selectedTab; 
+  });
+
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
 
   return (
     <div className="h-screen overflow-y-auto">
       <Header title="Order List" pathname="/" />
+      <div className="flex justify-start space-x-4 px-6 py-4 border-b">
+        {tabs.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setSelectedTab(tab.id)}
+            className={`text-gray-700 ${
+              selectedTab === tab.id ? 'border-b-2 border-red-500 text-red-600' : ''
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
       <div className="relative flex justify-between px-6 py-4">
         <div className="relative w-80">
           <Input
@@ -147,8 +209,8 @@ function OrderList() {
             </Table.HeaderCell>
           </Table.Row>
           <Table.Body>
-            {listOrder?.data?.length > 0 ? (
-              listOrder.data.map(order => (
+            {filteredOrders?.length > 0 ? (
+              filteredOrders.map(order => (
                 <Table.Row
                   key={order._id}
                   className="[&_td:last-child]:w-[10%] [&_td:last-child]:whitespace-nowrap"

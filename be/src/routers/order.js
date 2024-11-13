@@ -11,6 +11,7 @@ const {
   setDelivered,
   updateReturnReason,
   returnOrder,
+  countSuccessfulOrders,
 } = require("../controllers/order");
 const router = express.Router();
 
@@ -29,5 +30,6 @@ router.put("/orders/:orderId/confirm-received", confirmReceived);
 router.put("/orders/:orderId/set-delivered", setDelivered);
 router.put("/orders/:orderId/return", returnOrder);
 router.post("/:id/return", updateReturnReason);
+router.get("/count-successful-orders", countSuccessfulOrders);
 
 module.exports = router;
