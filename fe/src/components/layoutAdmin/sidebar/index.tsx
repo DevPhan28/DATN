@@ -1,5 +1,12 @@
-import { IconHome } from '@/components/icon.tsx';
-import { ArrowRightOnRectangle, CogSixTooth, Key, Tag } from '@medusajs/icons';
+import { IconHome, CategoriesIcon, StoreIcon } from '@/components/icon.tsx';
+import {
+  ArrowRightOnRectangle,
+  CogSixTooth,
+  Key,
+  ReceiptPercent,
+  Tag,
+  Users,
+} from '@medusajs/icons';
 import ItemSidebar from './item-sidebar';
 
 const menuItems: MenuItem[] = [
@@ -45,7 +52,7 @@ const menuProducts: MenuItem[] = [
   {
     id: 1,
     name: 'Product Category',
-    icon: <Tag />,
+    icon: <CategoriesIcon />,
     href: '/dashboard/category',
   },
 ];
@@ -54,7 +61,7 @@ const menuOders: MenuItem[] = [
   {
     id: 1,
     name: 'Order List',
-    icon: <Tag />,
+    icon: <StoreIcon />,
     href: '/dashboard/order',
   },
 ];
@@ -62,25 +69,25 @@ const menuCoupon: MenuItem[] = [
   {
     id: 1,
     name: 'Coupon List',
-    icon: <Tag />,
+    icon: <ReceiptPercent />,
     href: '/dashboard/coupon',
   },
 ];
 
-const menuUsers: MenuItem[] = [
-  {
-    id: 1,
-    name: 'Users List',
-    icon: <Tag />,
-    href: '/dashboard/users',
-  },
-];
+// const menuUsers: MenuItem[] = [
+//   {
+//     id: 1,
+//     name: 'Users ',
+//     icon: <Users />,
+//     href: '/dashboard/users',
+//   },
+// ];
 const menuAccount: MenuItem[] = [
   {
     id: 1,
     name: 'User Account',
     icon: <Key />,
-    href: '/user-account',
+    href: '/dashboard/users',
   },
   {
     id: 1,
@@ -138,7 +145,7 @@ const Sidebar = () => {
             ))}
           </div>
         </section>
-        <section className="space-y-1">
+        {/* <section className="space-y-1">
           <header className="py-1.5 pl-2 text-xs font-medium text-ui-fg-muted">
             Users List
           </header>
@@ -153,7 +160,7 @@ const Sidebar = () => {
               />
             ))}
           </div>
-        </section>
+        </section> */}
         <section className="space-y-1">
           <header className="py-1.5 pl-2 text-xs font-medium text-ui-fg-muted">
             Coupon

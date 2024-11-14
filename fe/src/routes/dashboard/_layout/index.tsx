@@ -4,16 +4,15 @@ import ToDoList from '@/components/layoutAdmin/statistics/toDoList';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/dashboard/_layout/')({
-  component: ThongKe
+  component: ThongKe,
 });
 
-function ThongKe () {
-  return(
+function ThongKe() {
+  return (
     <div>
-    <Header title="Order List" pathname="/" />
-    <ToDoList/>
-    <DashboardOverview/>
-  </div>
-  )
-  
+      <Header title="Dashboard" pathname="/" />
+      <ToDoList />
+      <DashboardOverview />
+    </div>
+  );
 }

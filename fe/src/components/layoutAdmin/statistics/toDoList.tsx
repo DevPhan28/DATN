@@ -1,17 +1,17 @@
 import { useFetchOrders } from '@/data/oder/useOderList';
 import { Link } from '@tanstack/react-router';
 
-const translateOrderStatus = (status) => {
+const translateOrderStatus = status => {
   const statusTranslations = {
-    pending: "Đang chờ xử lý",
-    confirmed: "Đã xác nhận",
-    shipped: "Đang giao hàng",
-    received: "Đã nhận hàng",
-    delivered: "Đã giao hàng",
-    canceled: "Đã hủy",
-    refund: "Hoàn tiền",
-    exchange: "Đổi hàng",
-    return_completed: "Hoàn trả hoàn tất",
+    pending: 'Đang chờ xử lý',
+    confirmed: 'Đã xác nhận',
+    shipped: 'Đang giao hàng',
+    received: 'Đã nhận hàng',
+    delivered: 'Đã giao hàng',
+    canceled: 'Đã hủy',
+    refund: 'Hoàn tiền',
+    exchange: 'Đổi hàng',
+    return_completed: 'Hoàn trả hoàn tất',
   };
 
   return statusTranslations[status] || status;
@@ -41,14 +41,19 @@ const ToDoList = () => {
   const orders = data?.orders || [];
 
   return (
-    <div className="bg-white p-6 m-5 rounded-lg shadow-md border">
-      <h2 className="text-xl font-semibold text-gray-700 mb-8">Danh sách cần làm</h2>
+    <div className="m-6 rounded-lg bg-white p-6">
+      <h2 className="mb-8 text-xl font-semibold">Danh sách cần làm</h2>
       <div className="grid grid-cols-4 gap-4">
-        {Object.keys(statusCounts).map((status) => (
+        {Object.keys(statusCounts).map(status => (
           <div key={status} className="text-center">
-            <Link to='/dashboard/order'>
-            <div className="text-3xl font-bold text-blue-500">{statusCounts[status]}</div>
-            <p className="text-sm text-gray-600">{translateOrderStatus(status)}</p></Link>
+            <Link to="/dashboard/order">
+              <div className="text-3xl font-bold text-blue-500">
+                {statusCounts[status]}
+              </div>
+              <p className="text-sm text-gray-600">
+                {translateOrderStatus(status)}
+              </p>
+            </Link>
           </div>
         ))}
       </div>

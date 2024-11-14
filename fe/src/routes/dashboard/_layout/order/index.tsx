@@ -104,34 +104,34 @@ function OrderList() {
   const filteredOrders = listOrder?.data?.filter(order => {
     if (selectedTab === 'all') return true;
     if (selectedTab === 'pending') {
-      return order.status === 'pending'; 
+      return order.status === 'pending';
     }
-  
+
     if (selectedTab === 'confirmed') {
       return order.status === 'confirmed';
     }
-  
+
     if (selectedTab === 'shipped') {
-      return order.status === 'shipped' || order.status === 'received'; 
+      return order.status === 'shipped' || order.status === 'received';
     }
-  
+
     if (selectedTab === 'delivered') {
       return order.status === 'delivered';
     }
-  
+
     if (selectedTab === 'canceled') {
-      return order.status === 'canceled'; 
+      return order.status === 'canceled';
     }
-  
+
     if (selectedTab === 'refund') {
       return order.status === 'refund' || order.status === 'return_completed'; // Hiển thị đơn hàng hoàn tiền và đổi trả thành công
     }
-  
+
     if (selectedTab === 'exchange') {
       return order.status === 'exchange' || order.status === 'return_completed'; // Hiển thị đơn hàng đổi trả và đổi trả thành công
     }
-  
-    return order.status === selectedTab; 
+
+    return order.status === selectedTab;
   });
 
   if (isLoading) return <p>Loading...</p>;
@@ -140,21 +140,7 @@ function OrderList() {
   return (
     <div className="h-screen overflow-y-auto">
       <Header title="Order List" pathname="/" />
-      <div className="flex justify-start space-x-4 px-6 py-4 border-b">
-        {tabs.map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setSelectedTab(tab.id)}
-            className={`text-gray-700 ${
-              selectedTab === tab.id ? 'border-b-2 border-red-500 text-red-600' : ''
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="relative flex justify-between px-6 py-4">
+      <div className="relative flex justify-between px-6 pt-4">
         <div className="relative w-80">
           <Input
             className="bg-ui-bg-base"
@@ -174,6 +160,21 @@ function OrderList() {
             Export list
           </Button>
         </div>
+      </div>
+      <div className="m-6 flex justify-start space-x-4 rounded-lg border bg-white px-6 py-4">
+        {tabs.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setSelectedTab(tab.id)}
+            className={`text-gray-700 ${
+              selectedTab === tab.id
+                ? 'border-b-2 border-red-500 text-red-600'
+                : ''
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       <div className="mx-6 flex flex-col gap-1 rounded-lg border border-gray-200 bg-ui-bg-base px-6 py-4">
