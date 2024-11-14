@@ -2,12 +2,12 @@ import ErrorCart from '@/components/errors/error-cart';
 import LoginCart from '@/components/errors/error-login-cart';
 import useCartMutation from '@/data/cart/useCartMutation';
 import { useFetchCart } from '@/data/cart/useFetchCart';
-import { ChevronRightMini, ReceiptPercent, Trash } from '@medusajs/icons';
+import { ChevronRightMini, ReceiptPercent } from '@medusajs/icons';
 import { toast } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 
-export const Route = createFileRoute('/_layout/cart')({
+export const Route = createFileRoute('/_layout/cart/')({
   component: Cart,
 });
 
@@ -15,7 +15,12 @@ function Cart() {
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
   const { data: cartData, isLoading, error } = useFetchCart(userId);
-  const { deleteItemFromCart, increaseQuantity, decreaseQuantity, updateQuantity } = useCartMutation();
+  const {
+    deleteItemFromCart,
+    increaseQuantity,
+    decreaseQuantity,
+    updateQuantity,
+  } = useCartMutation();
 
   const [quantities, setQuantities] = useState({});
   const [selectedProducts, setSelectedProducts] = useState({});
@@ -50,8 +55,9 @@ function Cart() {
     }
   };
 
-  const incrementQuantity = (index) => {
-    const newQuantity = (quantities[index] || cartData?.products[index].quantity) + 1;
+  const incrementQuantity = index => {
+    const newQuantity =
+      (quantities[index] || cartData?.products[index].quantity) + 1;
     setQuantities(prev => ({
       ...prev,
       [index]: newQuantity,
@@ -66,8 +72,11 @@ function Cart() {
     }
   };
 
-  const decrementQuantity = (index) => {
-    const newQuantity = Math.max((quantities[index] || cartData?.products[index].quantity) - 1, 0);
+  const decrementQuantity = index => {
+    const newQuantity = Math.max(
+      (quantities[index] || cartData?.products[index].quantity) - 1,
+      0
+    );
     setQuantities(prev => ({
       ...prev,
       [index]: newQuantity,
@@ -82,7 +91,7 @@ function Cart() {
     }
   };
 
-  const productPrice = (index) => {
+  const productPrice = index => {
     const product = cartData?.products[index];
     const variantPrice = product?.priceAtTime ?? 0;
     return variantPrice > 0 ? variantPrice : product?.price;
@@ -98,22 +107,25 @@ function Cart() {
       return;
     }
 
-    deleteItemFromCart.mutate({
-      userId: userId || '',
-      productIds: selectedProductIds,
-    }, {
-      onSuccess: () => {
-        setSelectedProducts({});
-        setSelectAll(false);
-        toast.success('Đã xóa các sản phẩm đã chọn khỏi giỏ hàng.');
+    deleteItemFromCart.mutate(
+      {
+        userId: userId || '',
+        productIds: selectedProductIds,
       },
-      onError: () => {
-        toast.error('Có lỗi xảy ra khi xóa sản phẩm. Vui lòng thử lại.');
-      },
-    });
+      {
+        onSuccess: () => {
+          setSelectedProducts({});
+          setSelectAll(false);
+          toast.success('Đã xóa các sản phẩm đã chọn khỏi giỏ hàng.');
+        },
+        onError: () => {
+          toast.error('Có lỗi xảy ra khi xóa sản phẩm. Vui lòng thử lại.');
+        },
+      }
+    );
   };
 
-  const toggleSelectProduct = (index) => {
+  const toggleSelectProduct = index => {
     setSelectedProducts(prev => ({
       ...prev,
       [index]: !prev[index],
@@ -133,12 +145,17 @@ function Cart() {
     }
   };
 
-  const totalSelectedPrice = cartData?.products.reduce((sum, product, index) => {
-    if (selectedProducts[index]) {
-      return sum + (quantities[index] || product.quantity) * productPrice(index);
-    }
-    return sum;
-  }, 0);
+  const totalSelectedPrice = cartData?.products.reduce(
+    (sum, product, index) => {
+      if (selectedProducts[index]) {
+        return (
+          sum + (quantities[index] || product.quantity) * productPrice(index)
+        );
+      }
+      return sum;
+    },
+    0
+  );
 
   const getSelectedItems = () => {
     return cartData.products.filter((_, index) => selectedProducts[index]);
@@ -235,7 +252,9 @@ function Cart() {
                           type="text"
                           min="0"
                           value={quantities[index] || product.quantity}
-                          onChange={e => handleQuantityChange(index, e.target.value)}
+                          onChange={e =>
+                            handleQuantityChange(index, e.target.value)
+                          }
                           className="w-12 border text-center"
                         />
                         <button
@@ -247,7 +266,9 @@ function Cart() {
                       </div>
                     </td>
                     <td className="px-4 py-4 text-center">
-                      {((quantities[index] || product.quantity) * productPrice(index))} VND
+                      {(quantities[index] || product.quantity) *
+                        productPrice(index)}{' '}
+                      VND
                     </td>
                   </tr>
                 ))}
@@ -280,7 +301,7 @@ function Cart() {
                 </div>
                 <div className="flex items-center gap-5">
                   <div>
-                    Tổng thanh toán (VND): {' '} 
+                    Tổng thanh toán (VND):{' '}
                     <span className="text-red-500">
                       {totalSelectedPrice || '0'}
                     </span>

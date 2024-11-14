@@ -5,7 +5,7 @@ import { toast, usePrompt } from '@medusajs/ui';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
-export const Route = createFileRoute('/_layout/orderuser')({
+export const Route = createFileRoute('/_layout/oderuser/')({
   component: UserOrder,
 });
 

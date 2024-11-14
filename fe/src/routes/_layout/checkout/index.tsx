@@ -10,34 +10,45 @@ import {
   DocumentTextSolid,
   MapPin,
   User,
-  ReceiptPercent
+  ReceiptPercent,
 } from '@medusajs/icons';
 import { toast } from '@medusajs/ui';
 import instance from '@/api/axiosIntance';
 import { useFetchAvailableCoupons } from '@/data/coupon/useCouponList';
 import VoucherModal from '@/components/VoucherModal';
 
-export const Route = createFileRoute('/_layout/checkout')({
+export const Route = createFileRoute('/_layout/checkout/')({
   component: () => {
     const location = useLocation();
     const selectedItems = Array.isArray(location.state?.selectedItems)
       ? location.state.selectedItems
       : [];
     console.log('Selected Items:', selectedItems);
-
+    const [paymentMethod, setPaymentMethod] = useState('cod');
     const { deleteSelectedItemsFromCart } = useCartMutation();
     const queryClient = useQueryClient();
 
-    const { shippingMessage, shippingFee, isFreeShipping } = location.state || {};
+    const { shippingMessage, shippingFee, isFreeShipping } =
+      location.state || {};
     console.log(shippingMessage);
 
     // Fetch available coupons
-    const { data: availableCoupons, error: couponError, isLoading: isCouponsLoading } = useFetchAvailableCoupons();
+    const {
+      data: availableCoupons,
+      error: couponError,
+      isLoading: isCouponsLoading,
+    } = useFetchAvailableCoupons();
     const [selectedCoupon, setSelectedCoupon] = useState(null);
     const [discountAmount, setDiscountAmount] = useState(0);
 
-    const totalQuantity = selectedItems.reduce((acc, item) => acc + item.quantity, 0);
-    const totalAmount = selectedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const totalQuantity = selectedItems.reduce(
+      (acc, item) => acc + item.quantity,
+      0
+    );
+    const totalAmount = selectedItems.reduce(
+      (acc, item) => acc + item.price * item.quantity,
+      0
+    );
 
     const calculateDiscountedTotal = () => {
       if (selectedCoupon) {
@@ -64,9 +75,9 @@ export const Route = createFileRoute('/_layout/checkout')({
     // Tính phí ship
     const [calculatedShippingFee, setCalculatedShippingFee] = useState(0);
     const [shippingMessageDisplay, setShippingMessageDisplay] = useState('');
-    const [isCalculatedFreeShipping, setIsCalculatedFreeShipping] = useState(false);
+    const [isCalculatedFreeShipping, setIsCalculatedFreeShipping] =
+      useState(false);
     const [isCouponFreeShipping, setIsCouponFreeShipping] = useState(false);
-
 
     const { createOrder } = useCheckoutMutation();
 
@@ -84,27 +95,27 @@ export const Route = createFileRoute('/_layout/checkout')({
       fetchData();
     }, []);
 
-    const handleCityChange = (e) => {
+    const handleCityChange = e => {
       const cityId = e.target.value;
       setSelectedCity(cityId);
       setSelectedDistrict('');
       setWards([]);
     };
 
-    const handleDistrictChange = (e) => {
+    const handleDistrictChange = e => {
       const districtId = e.target.value;
       setSelectedDistrict(districtId);
       const selectedDistrict = cities
-        .find((city) => city.Id === selectedCity)
-        ?.Districts.find((district) => district.Id === districtId);
+        .find(city => city.Id === selectedCity)
+        ?.Districts.find(district => district.Id === districtId);
       setWards(selectedDistrict ? selectedDistrict.Wards : []);
     };
 
-    const handleWardChange = (e) => {
+    const handleWardChange = e => {
       setSelectedWard(e.target.value);
     };
 
-    const handleCouponChange = (coupon) => {
+    const handleCouponChange = coupon => {
       if (!coupon) {
         setSelectedCoupon(null);
         setDiscountAmount(0);
@@ -117,27 +128,27 @@ export const Route = createFileRoute('/_layout/checkout')({
       setIsCouponFreeShipping(coupon.isFreeShipping);
     };
 
-    const cityName = cities.find((city) => city.Id === selectedCity)?.Name || '';
+    const cityName = cities.find(city => city.Id === selectedCity)?.Name || '';
     const districtName =
       cities
-        .find((city) => city.Id === selectedCity)
-        ?.Districts.find((district) => district.Id === selectedDistrict)?.Name ||
+        .find(city => city.Id === selectedCity)
+        ?.Districts.find(district => district.Id === selectedDistrict)?.Name ||
       '';
     const wardName =
       cities
-        .find((city) => city.Id === selectedCity)
-        ?.Districts.find((district) => district.Id === selectedDistrict)
-        ?.Wards.find((ward) => ward.Id === selectedWard)?.Name || '';
+        .find(city => city.Id === selectedCity)
+        ?.Districts.find(district => district.Id === selectedDistrict)
+        ?.Wards.find(ward => ward.Id === selectedWard)?.Name || '';
 
         const calculateShipping = async () => {
           try {
             // Check the contents of selectedItems to ensure all items are included
             console.log("Selected Items for Shipping Calculation:", selectedItems);
-        
+
             // Calculate total weight based on selected items
             const totalWeight = selectedItems.reduce((acc, item) => acc + item.weight * item.quantity, 0);
             console.log("Calculated total weight:", totalWeight, "for district:", districtName);
-        
+
             const response = await instance.post('/calculate-shipping', {
               weight: totalWeight,
               address: {
@@ -145,10 +156,10 @@ export const Route = createFileRoute('/_layout/checkout')({
               },
               orderValue: totalAmount,
             });
-        
+
             const fee = response.data.shippingFee;
             console.log("Received shipping fee from API:", fee);
-        
+
             setCalculatedShippingFee(isCouponFreeShipping ? 0 : fee);
             setIsCalculatedFreeShipping(isCouponFreeShipping || fee === 0);
             setShippingMessageDisplay(isCouponFreeShipping ? 'Miễn phí vận chuyển' : `${fee} VND`);
@@ -157,7 +168,7 @@ export const Route = createFileRoute('/_layout/checkout')({
             setShippingMessageDisplay('Unable to calculate shipping fee');
           }
         };
-        
+
 
     useEffect(() => {
       if (selectedDistrict) {
@@ -165,20 +176,21 @@ export const Route = createFileRoute('/_layout/checkout')({
       }
     }, [selectedDistrict, totalAmount, isCouponFreeShipping]);
 
-
-    const totalWithDiscount = calculateDiscountedTotal() + (isCouponFreeShipping ? 0 : calculatedShippingFee);
-    const handleSubmit = async (e) => {
+    const totalWithDiscount =
+      calculateDiscountedTotal() +
+      (isCouponFreeShipping ? 0 : calculatedShippingFee);
+    const handleSubmit = async (e: any) => {
       e.preventDefault();
       const userId = localStorage.getItem('userId');
 
       // Đảm bảo selectedItems có giá trị là một mảng
       const items = Array.isArray(selectedItems) ? selectedItems : [];
 
-      const productIds = items.map((item) => item.productId);
+      const productIds = items.map(item => item.productId);
 
       const formData = {
         userId,
-        items: items.map((item) => ({
+        items: items.map(item => ({
           productId: item.productId,
           name: item.name,
           price: item.price,
@@ -196,9 +208,14 @@ export const Route = createFileRoute('/_layout/checkout')({
           wards: wardName,
           address: e.target['address-input'].value,
         },
+        paymentMethod: paymentMethod,
+        paymentStatus: 'pending',
+        note: '',
         totalPrice: totalWithDiscount,
         couponCode: selectedCoupon ? selectedCoupon.code : null,
       };
+
+      console.log('form data', formData);
 
       try {
         await createOrder.mutateAsync(formData);
@@ -329,7 +346,7 @@ export const Route = createFileRoute('/_layout/checkout')({
                           className="block w-full rounded-lg border bg-gray-50 p-2.5 text-sm dark:bg-gray-700"
                         >
                           <option value="">Chọn tỉnh thành</option>
-                          {cities.map((city) => (
+                          {cities.map(city => (
                             <option key={city.Id} value={city.Id}>
                               {city.Name}
                             </option>
@@ -358,8 +375,8 @@ export const Route = createFileRoute('/_layout/checkout')({
                           <option value="">Chọn quận/huyện</option>
                           {selectedCity &&
                             cities
-                              .find((city) => city.Id === selectedCity)
-                              ?.Districts.map((district) => (
+                              .find(city => city.Id === selectedCity)
+                              ?.Districts.map(district => (
                                 <option key={district.Id} value={district.Id}>
                                   {district.Name}
                                 </option>
@@ -383,7 +400,7 @@ export const Route = createFileRoute('/_layout/checkout')({
                           className="block w-full rounded-lg border bg-gray-50 p-2.5 text-sm dark:bg-gray-700"
                         >
                           <option value="">Chọn phường/xã</option>
-                          {wards.map((ward) => (
+                          {wards.map(ward => (
                             <option key={ward.Id} value={ward.Id}>
                               {ward.Name}
                             </option>
@@ -430,8 +447,11 @@ export const Route = createFileRoute('/_layout/checkout')({
                     </th>
                   </tr>
                   <tbody className="[&_tr:last-child]:border-0">
-                    {selectedItems.map((product) => (
-                      <tr className="border-b transition-colors" key={product.productId}>
+                    {selectedItems.map(product => (
+                      <tr
+                        className="border-b transition-colors"
+                        key={product.productId}
+                      >
                         <td className="flex items-center gap-3 p-4 pl-0 align-middle">
                           <div className="size-10 min-h-10 min-w-10">
                             <img
@@ -453,7 +473,7 @@ export const Route = createFileRoute('/_layout/checkout')({
                         <td className="p-4 align-middle">${product.price}</td>
                         <td className="p-4 align-middle">{product.quantity}</td>
                         <td className="p-4 pr-0 text-end align-middle">
-                          ${(product.price * product.quantity)}
+                          ${product.price * product.quantity}
                         </td>
                       </tr>
                     ))}
@@ -485,15 +505,17 @@ export const Route = createFileRoute('/_layout/checkout')({
             </div>
           </div>
           <div className="m-auto mt-5 max-w-7xl bg-white p-9">
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <ReceiptPercent className="w-6 h-6 text-red-500" />
-                <span className="text-gray-800 font-medium">Fashion zone Voucher</span>
+                <ReceiptPercent className="h-6 w-6 text-red-500" />
+                <span className="font-medium text-gray-800">
+                  Fashion zone Voucher
+                </span>
               </div>
               <button
                 onClick={openVoucherModal}
-                type='button'
-                className="text-blue-500 font-medium hover:underline"
+                type="button"
+                className="font-medium text-blue-500 hover:underline"
               >
                 Chọn Voucher
               </button>
@@ -509,10 +531,17 @@ export const Route = createFileRoute('/_layout/checkout')({
               <CurrencyDollarSolid className="text-red-500" />
               <div className="text-xl">Payment method:</div>
               <div className="flex w-full gap-2 sm:w-auto">
-                <button className="w-full rounded-lg border p-3 focus:border-red-500 focus:outline-none active:border-red-500 sm:w-auto">
+                <button
+                  type="button"
+                  className="w-full rounded-lg border p-3 focus:border-red-500 focus:outline-none active:border-red-500 sm:w-auto"
+                >
                   Payment upon receipt
                 </button>
-                <button className="w-full rounded-lg border p-3 focus:border-red-500 focus:outline-none active:border-red-500 sm:w-auto">
+                <button
+                  type="button"
+                  onChange={() => setPaymentMethod('online')}
+                  className="w-full rounded-lg border p-3 focus:border-red-500 focus:outline-none active:border-red-500 sm:w-auto"
+                >
                   VNP payment
                 </button>
               </div>
@@ -556,5 +585,4 @@ export const Route = createFileRoute('/_layout/checkout')({
     );
   },
 });
-//khôi phục đúng //khôi phục đúng //khôi phục đúng //khôi phục đúng 
-
+//khôi phục đúng //khôi phục đúng //khôi phục đúng //khôi phục đúng

@@ -1,27 +1,23 @@
+import instance from '@/api/axiosIntance';
+import ProductRecommendations from '@/components/ProductRecommendations';
+import useCommentMutation from '@/data/Comment/useCommentMutation';
+import {
+  ArrowUpRightOnBox,
+  ChevronRightMini,
+  EllipsisHorizontal,
+  RocketLaunch,
+  StarSolid,
+  ThumbUp,
+  Trash,
+} from '@medusajs/icons';
+import { DropdownMenu, IconButton, toast } from '@medusajs/ui';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   createFileRoute,
   useNavigate,
   useParams,
 } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
-import {
-  ChevronRightMini,
-  StarSolid,
-  ThumbUp,
-  EllipsisHorizontal,
-  CommandLine,
-  RocketLaunch,
-  ArrowUpRightOnBox,
-  PencilSquare,
-  Plus,
-  Trash,
-} from '@medusajs/icons';
-import { DropdownMenu, IconButton } from '@medusajs/ui';
-import instance from '@/api/axiosIntance';
-import { toast } from '@medusajs/ui';
-import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
-import ProductRecommendations from '@/components/ProductRecommendations';
-import useCommentMutation from '@/data/Comment/useCommentMutation';
 
 export const Route = createFileRoute('/_layout/$slug/quickviewProduct')({
   component: DetailProduct,
@@ -29,7 +25,6 @@ export const Route = createFileRoute('/_layout/$slug/quickviewProduct')({
 
 function DetailProduct() {
   const [currentImage, setCurrentImage] = useState('');
-  const [images, setImages] = useState([]);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -43,7 +38,6 @@ function DetailProduct() {
   const [rating, setRating] = useState(0); // State for product rating
 
   const { slug } = useParams({ from: '/_layout/$slug/quickviewProduct' });
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   // Fetch product information from API
@@ -82,7 +76,7 @@ function DetailProduct() {
       fetchComments();
     }
   }, [product]);
- 
+
   // console.log(localStorage.getItem('userId'));
   const handleCommentSubmit = async () => {
     if (!newComment.trim()) {
@@ -236,7 +230,6 @@ function DetailProduct() {
         </div>
       </div>
       <div className="bg-gray-50 py-10">
-        
         <div className="m-auto max-w-7xl p-5 sm:p-5 md:p-5 lg:p-5 xl:p-0">
           <div className="mt-5 flex flex-col justify-between bg-white p-5 shadow md:gap-48 lg:flex-row">
             <div className="flex flex-col gap-5 lg:flex-row">
@@ -384,25 +377,28 @@ function DetailProduct() {
             </div>
           </div>
           <div className="mx-auto mt-10 bg-white p-8 shadow">
-            <h2 className='text-2xl font-semibold'>Mô tả chi tiết</h2>
-            <div className='mt-5' dangerouslySetInnerHTML={{ __html: product.detaildescription }} />
+            <h2 className="text-2xl font-semibold">Mô tả chi tiết</h2>
+            <div
+              className="mt-5"
+              dangerouslySetInnerHTML={{ __html: product.detaildescription }}
+            />
           </div>
           <div className="mt-10 bg-white p-4 shadow">
             <div className="flex flex-col gap-10 lg:flex-row">
               {/* Left side - Customer Reviews lg:w-1/2*/}
-              
-              <div className="mt-10 w-full">
-                
+
+              <div className="w-full">
                 <div className="mt-5 flex w-full justify-between">
                   <h2 className="text-[24px] font-semibold">
-                  Customer Reviews ({comments.length > 0 ? comments.length : 0})
+                    Đánh Giá Sản Phẩm (
+                    {comments.length > 0 ? comments.length : 0})
                   </h2>
                   <div className="flex items-center text-[18px] font-normal text-[#666666]">
                     <div>See All</div>
                     <ChevronRightMini />
                   </div>
                 </div>
-                
+
                 <div>
                   <h2 className="text-2xl">Comments</h2>
                   <textarea
@@ -426,7 +422,7 @@ function DetailProduct() {
                   >
                     Submit Comment
                   </button>
-                  <div className="mt-5  pb-5">
+                  <div className="mt-5 pb-5">
                     {comments.length > 0 ? (
                       comments.map(comment => (
                         <div key={comment._id} className="mb-4">
@@ -490,7 +486,6 @@ function DetailProduct() {
                                 </DropdownMenu.Item>
                               </DropdownMenu.Content>
                             </DropdownMenu>
-                           
                           </div>
                           <div className="mt-5 border-b pb-5"></div>
                         </div>
@@ -500,55 +495,6 @@ function DetailProduct() {
                     )}
                   </div>
                 </div>
-                {/* Review 1 */}
-                {/* <div className="mt-5 border-b pb-5">
-                  <h3 className="font-semibold">
-                    Anh Thư{' '}
-                    <span className="font-light text-[#767676]">
-                      14 Jun, 2024
-                    </span>
-                  </h3>
-                  <div className="flex">
-                    <StarSolid className="text-orange-300" />
-                    <StarSolid className="text-orange-300" />
-                    <StarSolid className="text-orange-300" />
-                    <StarSolid className="text-orange-300" />
-                    <StarSolid className="text-orange-300" />
-                  </div>
-                  <p className="mt-1">
-                    Áo đẹp, chất lượng ổn áp, mình m72 nặng 58kg mặc size M nhe.
-                  </p>
-                  <div className="mt-10 flex justify-end gap-2 text-[#767676]">
-                    <ThumbUp className="text-black" />
-                    Hữu ích(2)
-                    <EllipsisHorizontal className="text-black" />
-                  </div>
-                </div> */}
-
-                {/* Review 2 */}
-                {/* <div className="mt-5 border-b pb-5">
-                  <h3 className="font-semibold">
-                    Anh Thư{' '}
-                    <span className="font-light text-[#767676]">
-                      14 Jun, 2024
-                    </span>
-                  </h3>
-                  <div className="flex">
-                    <StarSolid className="text-orange-300" />
-                    <StarSolid className="text-orange-300" />
-                    <StarSolid className="text-orange-300" />
-                    <StarSolid className="text-orange-300" />
-                    <StarSolid className="text-orange-300" />
-                  </div>
-                  <p className="mt-1">
-                    Áo đẹp, chất lượng ổn áp, mình m72 nặng 58kg mặc size M nhe.
-                  </p>
-                  <div className="mt-10 flex justify-end gap-2 text-[#767676]">
-                    <ThumbUp className="text-black" />
-                    Hữu ích(2)
-                    <EllipsisHorizontal className="text-black" />
-                  </div>
-                </div> */}
               </div>
             </div>
           </div>

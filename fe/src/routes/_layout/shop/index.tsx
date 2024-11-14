@@ -14,7 +14,7 @@ import {
   ChevronRightMini,
 } from '@medusajs/icons';
 import FilterBar from '@/components/FilterBar';
-export const Route = createFileRoute('/_layout/shop')({
+export const Route = createFileRoute('/_layout/shop/')({
   component: Shop,
 });
 
