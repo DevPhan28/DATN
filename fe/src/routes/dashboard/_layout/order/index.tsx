@@ -211,7 +211,7 @@ function OrderList() {
           </Table.Row>
           <Table.Body>
             {filteredOrders?.length > 0 ? (
-              filteredOrders.map(order => (
+              filteredOrders.map((order) => (
                 <Table.Row
                   key={order._id}
                   className="[&_td:last-child]:w-[10%] [&_td:last-child]:whitespace-nowrap"
@@ -381,7 +381,7 @@ function OrderList() {
                           order.status === 'canceled'
                         }
                       >
-                        Hoàn trả hàng hoàn thành
+                        Hoàn trả hàng thành công
                       </option>
                       <option
                         value="exchange_completed"
@@ -390,7 +390,7 @@ function OrderList() {
                           order.status === 'canceled'
                         }
                       >
-                        Đổi trả hàng hoàn thành
+                        Đổi trả hàng thành công
                       </option>
                     </select>
                   </Table.Cell>

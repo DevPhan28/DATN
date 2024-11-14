@@ -51,8 +51,8 @@ const OrderSchema = new mongoose.Schema(
         "canceled",
         "refund",
         "exchange",
-        "refund_in_progress", // Đang hoàn trả hàng
-        "exchange_in_progress", // Đang đổi trả hàng
+        "refund_in_progress", 
+        "exchange_in_progress", 
         "refund_completed",
         "exchange_completed",
       ],

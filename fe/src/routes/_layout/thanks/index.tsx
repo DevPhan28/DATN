@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 
-export const Route = createFileRoute('/_layout/thank/')({
+export const Route = createFileRoute('/_layout/thanks/')({
   component: Thanks
 })
 

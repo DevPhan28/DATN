@@ -1,41 +1,70 @@
-// Kiểu dữ liệu cho OrderItem
-interface OrderItem {
-  productId: Types.ObjectId;
+type CustomerInfo = {
+  name: string;
+  phone: string;
+  email: string;
+  address: string;
+  wards: string;
+  districts: string;
+  city: string;
+};
+
+type Product = {
   name: string;
   quantity: number;
   price: number;
-}
+};
 
-// Kiểu dữ liệu cho CustomerInfo
-interface CustomerInfo {
-  name: string;
-  phone: number;
-  email: string;
-  city: string;
-  districts: string;
-  wards: string;
-}
-
-// Kiểu dữ liệu cho Order
-interface Order extends Document {
+type Order = {
   _id: string;
-
-  userId: Types.ObjectId;
-  items: OrderItem[];
   orderNumber: string;
   customerInfo: CustomerInfo;
+  products: Product[];
   totalPrice: number;
-  status:
-    | 'pending'
-    | 'confirmed'
-    | 'shipped'
-    | 'canceled'
-    | 'received'
-    | 'delivered'
-    | 'refund'
-    | 'return_completed'
-    | 'exchange'
-    | 'returned';
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+  status: OrderStatus;
+  refundReason?: string;
+};
+
+type OrderStatus =
+  | 'pending'
+  | 'confirmed'
+  | 'shipped'
+  | 'received'
+  | 'delivered'
+  | 'canceled'
+  | 'refund'
+  | 'exchange'
+  | 'refund_in_progress'
+  | 'exchange_in_progress'
+  | 'refund_completed'
+  | 'exchange_completed';
+
+type OrderMeta = {
+  totalItems: number;
+  totalPages: number;
+  pageSize: number;
+};
+
+type OrderListResponse = {
+  data: Order[];
+  meta: OrderMeta;
+};
+
+type UseFetchOrdersProps = {
+  limit: number;
+  page: number;
+};
+
+type UseCheckoutMutation = {
+  updateOrderStatus: (orderId: string, status: OrderStatus) => void;
+};
+
+type UseFetchOrders = (props: UseFetchOrdersProps) => {
+  data: OrderListResponse | undefined;
+  error: Error | null;
+  isLoading: boolean;
+};
+
+type UpdateOrderStatus = {
+  orderId: string;
+  status: OrderStatus;
+};

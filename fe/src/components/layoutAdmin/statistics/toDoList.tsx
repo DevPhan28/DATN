@@ -11,7 +11,11 @@ const translateOrderStatus = status => {
     canceled: 'Đã hủy',
     refund: 'Hoàn tiền',
     exchange: 'Đổi hàng',
-    return_completed: 'Hoàn trả hoàn tất',
+    refund_in_progress: 'Đang hoàn trả hàng',
+    refund_completed: 'Hoàn trả hàng thành công' ,
+    exchange_in_progress: 'Đang đổi trả hàng' ,
+    exchange_completed: 'Đổi trả hàng thàng công',
+    
   };
 
   return statusTranslations[status] || status;
@@ -33,7 +37,10 @@ const ToDoList = () => {
     canceled: 0,
     refund: 0,
     exchange: 0,
-    return_completed: 0,
+    refund_in_progress: 0,
+    refund_completed: 0 ,
+    exchange_in_progress: 0 ,
+    exchange_completed: 0,
   };
 
   const statusCounts = { ...defaultStatusCounts, ...data?.statusCounts };

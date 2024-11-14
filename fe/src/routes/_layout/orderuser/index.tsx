@@ -5,7 +5,7 @@ import { toast, usePrompt } from '@medusajs/ui';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
-export const Route = createFileRoute('/_layout/oderuser/')({
+export const Route = createFileRoute('/_layout/orderuser/')({
   component: UserOrder,
 });
 
@@ -29,9 +29,9 @@ const getStatusLabel = (status: string) => {
       return 'Trả hàng hoàn tiền';
     case 'exchange':
       return 'Đổi trả hàng';
-    case 'refund_in_progress': // Đang hoàn trả hàng
+    case 'refund_in_progress': 
       return 'Đang hoàn trả hàng';
-    case 'exchange_in_progress': // Đang đổi trả hàng
+    case 'exchange_in_progress': 
       return 'Đang đổi trả hàng';
     case 'refund_completed':
       return 'Hoàn trả hàng thành công';
