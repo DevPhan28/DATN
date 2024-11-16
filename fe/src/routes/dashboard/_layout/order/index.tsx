@@ -177,8 +177,8 @@ function OrderList() {
         ))}
       </div>
 
-      <div className="mx-6 flex flex-col gap-1 rounded-lg border border-gray-200 bg-ui-bg-base px-6 py-4">
-        <Table>
+      <div className="mx-6 flex flex-col gap-1 overflow-x-auto rounded-lg border border-gray-200 bg-ui-bg-base px-6 py-4">
+        <Table className="min-w-full">
           <Table.Row className="bg-ui-bg-base-hover">
             <Table.HeaderCell className="font-semibold text-ui-fg-base"></Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
@@ -201,6 +201,9 @@ function OrderList() {
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
               Total Price ($)
+            </Table.HeaderCell>
+            <Table.HeaderCell className="font-semibold text-ui-fg-base">
+              Status Payment
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
               Status
@@ -278,6 +281,18 @@ function OrderList() {
                     {order.totalPrice}
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
+                    {order.paymentMethod === 'online' ? (
+                      <img
+                        src="/zalo_pay.png"
+                        alt="Zalopay"
+                        className="h-12 w-12 object-contain"
+                      />
+                    ) : (
+                      order.paymentMethod
+                    )}
+                  </Table.Cell>
+
+                  <Table.Cell className="font-semibold text-ui-fg-base">
                     <select
                       value={order.status}
                       onChange={e =>
@@ -291,6 +306,7 @@ function OrderList() {
                         order.status === 'delivered' ||
                         order.status === 'canceled'
                       }
+                      className="w-full min-w-[150px] rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-gray-700 transition-all duration-200 hover:bg-gray-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-200 disabled:text-gray-500"
                     >
                       <option
                         value="pending"

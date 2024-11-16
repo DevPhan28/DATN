@@ -62,9 +62,10 @@ const Header = () => {
   // Truy xuất tên người dùng (username)
   const username = storedData?.user?.username || 'Không có tên người dùng';
 
-  console.log('Đã lưu tên người dùng:', username);
   return (
-    <div className="bg-white sticky top-0 z-50"> {/* Added sticky and top-0 classes */}
+    <div className="sticky top-0 z-50 bg-white">
+      {' '}
+      {/* Added sticky and top-0 classes */}
       <div className="m-auto max-w-7xl p-5 sm:p-5 md:p-5 lg:p-5 xl:p-0">
         <nav className="relative">
           <div className="flex h-16 items-center justify-between">

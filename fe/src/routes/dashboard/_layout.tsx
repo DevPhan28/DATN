@@ -27,7 +27,7 @@ export const Route = createFileRoute('/dashboard/_layout')({
     }
   },
   component: () => (
-    <div className="flex min-h-screen min-w-full flex-row">
+    <div className="flex min-h-screen min-w-full flex-row overflow-hidden">
       <Toaster position="top-right" className="mt-7" />
       <Sidebar />
       <div className="w-full overflow-hidden bg-ui-bg-subtle pb-6">

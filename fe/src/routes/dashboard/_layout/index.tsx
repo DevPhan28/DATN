@@ -5,25 +5,24 @@ import PieChartExample from '@/components/layoutAdmin/statistics/PiaChart';
 import ToDoList from '@/components/layoutAdmin/statistics/toDoList';
 import { createFileRoute } from '@tanstack/react-router';
 
-
 export const Route = createFileRoute('/dashboard/_layout/')({
   component: ThongKe,
 });
 
 function ThongKe() {
   return (
-    <div>
+    <div className="h-screen overflow-y-auto">
       <Header title="Dashboard" pathname="/" />
-      <ToDoList />
-      <DashboardOverview />
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-
-        <div style={{ flex: 1 }}>
-          <MyBarChart />
-        </div>
-
-        <div style={{ flex: 1}}>
-          <PieChartExample />
+      <div className="overflow-y-hidden">
+        <ToDoList />
+        <DashboardOverview />
+        <div className="flex justify-between overflow-y-hidden">
+          <div className="flex-1">
+            <MyBarChart />
+          </div>
+          <div className="flex-1">
+            <PieChartExample />
+          </div>
         </div>
       </div>
     </div>

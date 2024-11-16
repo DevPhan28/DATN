@@ -3,11 +3,16 @@ import Header from '@/components/layoutAdmin/header/header';
 import TextareaDescription from '@/components/textarea';
 import useProductMutation from '@/data/products/useProductMutation';
 import { ArrowDownTray, PlusMini, Trash, XMark } from '@medusajs/icons';
-import { Button, Input, Select, Textarea } from '@medusajs/ui';
+import { Button, Input, Select, Textarea, toast } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import axios from 'axios';
 import { useRef, useState } from 'react';
-import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import {
+  Controller,
+  SubmitHandler,
+  useFieldArray,
+  useForm,
+} from 'react-hook-form';
 
 export const Route = createFileRoute('/dashboard/_layout/products/create')({
   loader: async () => {
@@ -37,13 +42,13 @@ function AddBrand() {
     category: string;
     gallery?: string[];
     description: string;
-    detaildescription: string,
+    detaildescription: string;
     totalCountInStock: number;
     discount: number;
     variants: Variant[];
   }>({
     defaultValues: {
-      variants: [{ size: '', color: '', price: 0, countInStock: 0, sku: '' }],
+      variants: [{ size: '', color: '', price: 0, countInStock: 0 }],
     },
   });
 
@@ -57,12 +62,39 @@ function AddBrand() {
 
   const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let selectedGallery: File[] = [];
+    const maxSize = 800000; // 500KB
+    let errorMessage = ''; // Khởi tạo chuỗi lỗi
+
     if (e.target.files && e.target.files.length > 0) {
-      // const file = e.target.files[];
       for (let file of e.target.files) {
-        selectedGallery.push(file);
+        // Kiểm tra dung lượng file
+        if (file.size > maxSize) {
+          errorMessage += `File ${file.name} quá lớn, vui lòng chọn file nhỏ hơn 500KB.\n`; // Thêm thông báo vào chuỗi lỗi
+        }
+        // Kiểm tra định dạng file
+        else if (!['image/jpeg', 'image/png'].includes(file.type)) {
+          errorMessage += `File ${file.name} không phải định dạng .jpg hoặc .png.\n`; // Thêm thông báo vào chuỗi lỗi
+        } else {
+          // Nếu file hợp lệ, thêm vào danh sách
+          selectedGallery.push(file);
+        }
       }
-      setSelectedGallery(selectedGallery);
+
+      // Nếu có lỗi, hiển thị thông báo lỗi Toast
+      if (errorMessage) {
+        toast.error(errorMessage); // Hiển thị tất cả các thông báo lỗi
+      }
+
+      // Kiểm tra nếu không có file hợp lệ trong selectedGallery
+      if (selectedGallery.length === 0) {
+        toast.error('Vui lòng chọn ít nhất một ảnh hợp lệ.');
+      } else {
+        // Nếu có file hợp lệ, cập nhật state
+        setSelectedGallery(prev => [...prev, ...selectedGallery]);
+      }
+    } else {
+      // Nếu không có file nào được chọn
+      toast.error('Vui lòng chọn ít nhất một file.');
     }
   };
   const handleThumbnailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,7 +138,9 @@ function AddBrand() {
       console.log(typeof variant.countInStock);
       return total + Number(variant.countInStock);
     }, 0);
-    const plainText = data.detaildescription.replace(/<\/?[^>]+(>|$)/g, "").normalize("NFC");
+    const plainText = data.detaildescription
+      .replace(/<\/?[^>]+(>|$)/g, '')
+      .normalize('NFC');
     const formDataThumbnail = new FormData();
     const formDataGallery = new FormData();
     formDataThumbnail.append('image', selectedImage);
@@ -140,7 +174,7 @@ function AddBrand() {
     }
   };
   // Để cập nhật giá trị khi nội dung thay đổi
-  const handleEditorChange = (content) => {
+  const handleEditorChange = content => {
     setValue('detaildescription', content);
     trigger('detaildescription');
   };
@@ -396,11 +430,11 @@ function AddBrand() {
                   ))}
               </div>
 
-              <div className=" flex flex-col">
+              <div className="flex flex-col">
                 <label className="block text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Content
                 </label>
-                <div className="flex-1 flex flex-col mt-2">
+                <div className="mt-2 flex flex-1 flex-col">
                   <Controller
                     name="detaildescription"
                     control={control}
@@ -410,20 +444,20 @@ function AddBrand() {
                       <TextareaDescription
                         apiKey="vx5npguuuktlxhbv9tv6vvgjk1x5astnj8kznhujei9w6ech"
                         value={value}
-                        onChange={(content) => handleEditorChange(content, onChange)}
-                        className="w-full h-full" // To make the text area take full space
+                        onChange={content =>
+                          handleEditorChange(content, onChange)
+                        }
+                        className="h-full w-full" // To make the text area take full space
                       />
                     )}
                   />
                   {errors.detaildescription && (
-                    <span className="text-xs text-red-500 mt-2">
+                    <span className="mt-2 text-xs text-red-500">
                       {errors.detaildescription.message}
                     </span>
                   )}
                 </div>
               </div>
-
-
             </div>
             {/* Variants */}
             <div>
@@ -515,23 +549,19 @@ function AddBrand() {
                     </div>
                     <div className="flex-1 space-y-3">
                       <label className="block text-sm font-medium text-ui-fg-base">
-                        <span className="text-ui-tag-red-text">*</span>{' '}
-                        Weight
+                        <span className="text-ui-tag-red-text">*</span> Weight
                       </label>
                       <Input
                         type="number"
                         placeholder="e.g., 100"
                         size="base"
-                        {...register(
-                          `variants.${index}.weight` as const,
-                          {
-                            required: 'weight is required',
-                            min: {
-                              value: 0,
-                              message: 'weight must be positive',
-                            },
-                          }
-                        )}
+                        {...register(`variants.${index}.weight` as const, {
+                          required: 'weight is required',
+                          min: {
+                            value: 0,
+                            message: 'weight must be positive',
+                          },
+                        })}
                       />
                       {errors.variants?.[index]?.countInStock && (
                         <span className="text-xs text-red-500">
@@ -539,7 +569,7 @@ function AddBrand() {
                         </span>
                       )}
                     </div>
-                    <div className="flex-1 space-y-3">
+                    {/* <div className="flex-1 space-y-3">
                       <label className="block text-sm font-medium text-ui-fg-base">
                         <span className="text-ui-tag-red-text">*</span> SKU
                       </label>
@@ -548,7 +578,7 @@ function AddBrand() {
                         size="base"
                         {...register(`variants.${index}.sku` as const)}
                       />
-                    </div>
+                    </div> */}
                     <Trash
                       className="mt-9 cursor-pointer text-red-500"
                       onClick={() => remove(index)}

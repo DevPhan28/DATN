@@ -3,8 +3,7 @@ type Variant = {
   color: string;
   price: number;
   countInStock: number;
-  weight: number
-  sku: string;
+  weight: number;
 };
 
 type Category = {
