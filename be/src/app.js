@@ -4,14 +4,8 @@ require("./config/orderScheduler");
 const express = require("express");
 const morgan = require("morgan");
 
-// import cors from "cors";
-// import dotenv from "dotenv";
-// import express from "express";
-// import morgan from "morgan";
 const { connectDB } = require("./config/db");
-// import orderRouter from "./routers/order";
 const cartRouter = require("./routers/cart");
-// import categoryRouter from "./routers/category";
 const productRouter = require("./routers/product");
 const categoryRouter = require("./routers/category");
 const authRouter = require("./routers/auth.router");
@@ -19,6 +13,7 @@ const orderRouter = require("./routers/order");
 const shippingRoutes = require("./routers/shipping");
 const couponRoutes = require("./routers/coupon");
 const commentRouter = require("./routers/comment");
+const paymentRoutes = require("./routers/paymentRoutes");
 
 const app = express();
 // middleware
@@ -38,7 +33,7 @@ app.use("/api", orderRouter);
 app.use("/api", shippingRoutes);
 app.use("/api", couponRoutes);
 app.use("/api", commentRouter);
-
+app.use("/api", paymentRoutes);
 app.listen(8080, () => {
   console.log("server running...");
 });

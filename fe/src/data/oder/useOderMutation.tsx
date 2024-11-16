@@ -3,6 +3,7 @@ import { QUERY_KEY } from '@/data/stores/key.ts';
 import instance from '@/api/axiosIntance';
 import { useNavigate } from '@tanstack/react-router';
 import { toast } from '@medusajs/ui';
+import { AxiosResponse } from 'axios';
 
 const useCheckoutMutation = () => {
   const navigate = useNavigate();
@@ -10,9 +11,11 @@ const useCheckoutMutation = () => {
 
   // Hàm tạo đơn hàng
   const createOrder = useMutation({
-    mutationFn: (data) => instance.post('/orders', data), // Tạo đơn hàng
+    mutationFn: data => instance.post('/orders', data), // Tạo đơn hàng
 
-    onSuccess: async (result) => {
+    onSuccess: async (result: AxiosResponse<string>) => {
+      console.log('🚀 ===== result.data:', result.data);
+      location.href = result.data;
       toast.success('Checkout successful', {
         description: 'Order has been placed successfully!',
         duration: 1000,
@@ -25,25 +28,24 @@ const useCheckoutMutation = () => {
       void navigate({
         to: '/thanks',
       });
-
-      return result;
     },
 
-    onError: (error) => {
+    onError: error => {
       toast.error(`Checkout failed: ${error.message}`);
     },
   });
 
   // Hàm cập nhật trạng thái đơn hàng
   const updateOrderStatus = useMutation({
-    mutationFn: ({ orderId, status }) => instance.put(`/orders/${orderId}`, { status }),
+    mutationFn: ({ orderId, status }) =>
+      instance.put(`/orders/${orderId}`, { status }),
 
     onSuccess: () => {
       toast.success('Order status updated successfully');
       queryClient.invalidateQueries([QUERY_KEY.FETCH_ORDERS]); // Invalidates the orders list
     },
 
-    onError: (error) => {
+    onError: error => {
       toast.error(`Failed to update status: ${error.message}`);
     },
   });

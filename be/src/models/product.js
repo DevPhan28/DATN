@@ -27,9 +27,17 @@ const variantSchema = new mongoose.Schema({
   },
   sku: {
     type: String,
-    required: true,
     unique: true,
   },
+});
+
+// Middleware để tự động tạo SKU cho variant trước khi lưu
+variantSchema.pre("save", function (next) {
+  if (!this.sku) {
+    // Tạo SKU tự động nếu không có
+    this.sku = `${this.size}-${this.color}-${Date.now()}`;
+  }
+  next();
 });
 
 // Định nghĩa schema cho Product

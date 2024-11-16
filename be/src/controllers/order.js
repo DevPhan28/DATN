@@ -3,54 +3,119 @@ const Order = require("../models/order");
 const { StatusCodes } = require("http-status-codes");
 const Product = require("../models/product");
 const mongoose = require("mongoose");
+const CryptoJS = require("crypto-js");
+const moment = require("moment");
+const axios = require("axios");
+require("dotenv").config();
+const { config, order2 } = require("../zalo_pay/config");
+
+const ZALOPAY_ID_APP = process.env.ZALOPAY_ID_APP;
+console.log("🚀 =====  ZALOPAY_ID_APP:", ZALOPAY_ID_APP);
+const ZALOPAY_KEY1 = process.env.ZALOPAY_KEY1;
+console.log("🚀 =====  ZALOPAY_KEY1:", ZALOPAY_KEY1);
+const ZALOPAY_ENDPOINT = process.env.ZALOPAY_ENDPOINT;
+console.log("🚀 ===== ZALOPAY_ENDPOINT:", ZALOPAY_ENDPOINT);
 
 const createOrder = async (req, res) => {
-  try {
-    const { userId, items, totalPrice, customerInfo } = req.body;
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { userId, items, totalPrice, customerInfo, paymentMethod } =
+        req.body;
 
-    // Tạo đơn hàng mới với `color` và `size` trong từng `item`
-    const order = await Order.create({
-      userId,
-      items: items.map((item) => ({
-        productId: item.productId,
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        image: item.image,
-        color: item.variant?.color || item.color, // Lấy color từ variant hoặc item
-        size: item.variant?.size || item.size,
-        weight: item.variant?.weight || item.weight,
-      })),
-      totalPrice,
-      customerInfo,
-    });
+      // Tạo đơn hàng mới với `color` và `size` trong từng `item`
+      const order = await Order.create({
+        userId,
+        items: items.map((item) => ({
+          productId: item.productId,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image,
+          color: item.variant?.color || item.color, // Lấy color từ variant hoặc item
+          size: item.variant?.size || item.size,
+          weight: item.variant?.weight || item.weight,
+        })),
+        totalPrice,
+        customerInfo,
+        paymentMethod, // Lưu phương thức thanh toán
+        paymentStatus: "pending", // Mặc định là pending khi mới tạo đơn hàng
+      });
 
-    // Cập nhật `countInStock` cho mỗi sản phẩm
-    for (const item of items) {
-      await Product.findByIdAndUpdate(
-        item.productId,
-        { $inc: { countInStock: -item.quantity } },
-        { new: true }
-      );
+      console.log("==== order", order);
+
+      // Cập nhật `countInStock` cho mỗi sản phẩm
+      for (const item of items) {
+        await Product.findByIdAndUpdate(
+          item.productId,
+          { $inc: { countInStock: -item.quantity } },
+          { new: true }
+        );
+      }
+
+      //Gửi email xác nhận đơn hàng
+      Mail.sendOrderConfirmation(customerInfo.email, order);
+
+      if (paymentMethod === "online") {
+        const transID = Math.floor(Math.random() * 1000000);
+        const payment = {
+          app_id: ZALOPAY_ID_APP,
+          app_trans_id: `${moment().format("YYMMDD")}_${transID}`,
+          app_user: order._id,
+          app_time: Date.now(),
+          item: JSON.stringify(items),
+          embed_data: JSON.stringify({
+            redirecturl: "http://localhost:5173/thank",
+          }),
+          amount: +totalPrice,
+          description: `Pay for OrderId #${transID}`,
+          bank_code: "",
+          callback_url:
+            "https://b153-42-114-151-28.ngrok-free.app/api/callback",
+        };
+        // encode
+        // appid|app_trans_id|appuser|amount|apptime|embeddata|item
+        const dataEncode =
+          ZALOPAY_ID_APP +
+          "|" +
+          payment.app_trans_id +
+          "|" +
+          payment.app_user +
+          "|" +
+          payment.amount +
+          "|" +
+          payment.app_time +
+          "|" +
+          payment.embed_data +
+          "|" +
+          payment.item;
+        payment.mac = CryptoJS.HmacSHA256(dataEncode, ZALOPAY_KEY1).toString();
+        // send
+
+        const { data } = await axios.post(ZALOPAY_ENDPOINT, null, {
+          params: payment,
+        });
+        console.log("🚀 ===== data:", data);
+
+        if (!data?.order_url) throw new Error("Error when payment");
+        res.status(200).json(data.order_url);
+      }
+
+      return res.end();
+      // return res.status(201).json(order);
+    } catch (error) {
+      console.error("Error creating order:", error.message);
+
+      // if (error.name === "ValidationError") {
+      //   return res.status(400).json({ error: error.message });
+      // } else if (error.code === 11000) {
+      //   return res.status(409).json({ error: "Đơn hàng này đã tồn tại." });
+      // } else {
+      //   return res.status(500).json({ error: error.message });
+      // }
     }
-
-    // Gửi email xác nhận đơn hàng
-    await Mail.sendOrderConfirmation(customerInfo.email, order);
-
-    return res.status(StatusCodes.CREATED).json(order);
-  } catch (error) {
-    if (error.name === "ValidationError") {
-      return res.status(StatusCodes.BAD_REQUEST).json({ error: error.message });
-    } else if (error.code === 11000) {
-      return res
-        .status(StatusCodes.CONFLICT)
-        .json({ error: "Một đơn hàng với định danh này đã tồn tại." });
-    } else {
-      return res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ error: error.message });
-    }
-  }
+  });
+  console.log("🚀 ===== order:", order);
+  console.log("🚀 ===== order:", order);
 };
 
 const countOrdersByStatus = async () => {
@@ -102,7 +167,8 @@ const getOrders = async (req, res) => {
       { $group: { _id: null, total: { $sum: "$totalPrice" } } },
     ]);
 
-    const totalDeliveredAmount = totalDeliveredValue.length > 0 ? totalDeliveredValue[0].total : 0;
+    const totalDeliveredAmount =
+      totalDeliveredValue.length > 0 ? totalDeliveredValue[0].total : 0;
 
     console.log("Total Delivered Value Aggregate Result:", totalDeliveredValue);
     console.log("Calculated Total Delivered Amount:", totalDeliveredAmount);
@@ -125,7 +191,6 @@ const getOrders = async (req, res) => {
       .json({ error: error.message });
   }
 };
-
 
 const getOrderById = async (req, res) => {
   try {
@@ -435,14 +500,17 @@ const updateReturnReason = async (req, res) => {
 };
 const countSuccessfulOrders = async (req, res) => {
   try {
-    const successfulOrdersCount = await Order.countDocuments({ status: "delivered" });
+    const successfulOrdersCount = await Order.countDocuments({
+      status: "delivered",
+    });
 
     const totalDeliveredAmountResult = await Order.aggregate([
-      { $match: { status: "delivered" } }, 
-      { $group: { _id: null, totalAmount: { $sum: "$totalPrice" } } } 
+      { $match: { status: "delivered" } },
+      { $group: { _id: null, totalAmount: { $sum: "$totalPrice" } } },
     ]);
 
-    const totalDeliveredAmount = totalDeliveredAmountResult[0]?.totalAmount || 0;
+    const totalDeliveredAmount =
+      totalDeliveredAmountResult[0]?.totalAmount || 0;
 
     return res.status(StatusCodes.OK).json({
       message: "Số lượng và tổng tiền của đơn hàng thành công",
@@ -455,8 +523,6 @@ const countSuccessfulOrders = async (req, res) => {
       .json({ error: error.message });
   }
 };
-
-
 
 module.exports = {
   getOrderById,

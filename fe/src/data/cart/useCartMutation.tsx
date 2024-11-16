@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import instance from '@/api/axiosIntance'; // Import axios instance để gọi API
 import { toast } from '@medusajs/ui'; // Import thư viện toast để hiển thị thông báo
+import { QUERY_KEY } from '@/data/stores/key';
 
 // Hook để quản lý các mutation liên quan đến giỏ hàng
 const useCartMutation = () => {
@@ -44,12 +45,8 @@ const useCartMutation = () => {
       }),
 
     onSuccess: () => {
-      toast.success('Đã xóa sản phẩm khỏi giỏ hàng', {
-        description: 'Các sản phẩm đã được xóa khỏi giỏ hàng thành công!',
-        duration: 1000,
-      });
       queryClient.invalidateQueries({
-        queryKey: ['cart'],
+        queryKey: [QUERY_KEY.FETCH_CART],
       });
     },
     onError: error => {
@@ -64,31 +61,34 @@ const useCartMutation = () => {
   const deleteSelectedItemsFromCart = useMutation({
     mutationFn: async ({ userId, selectedProductIds }) => {
       try {
-        const response = await instance.delete(`/cart/${userId}/delete-selected-items`, {
-          data: { selectedProductIds },
-        });
+        const response = await instance.delete(
+          `/cart/${userId}/delete-selected-items`,
+          {
+            data: { selectedProductIds },
+          }
+        );
         return response.data; // Trả về dữ liệu từ response
-      } catch (error) {
-        throw new Error(error.response?.data?.message || 'Có lỗi xảy ra khi xóa sản phẩm'); // Xử lý lỗi
+      } catch (error: unknown) {
+        throw new Error(
+          error?.response?.data?.message || 'Có lỗi xảy ra khi xóa sản phẩm'
+        ); // Xử lý lỗi
       }
     },
 
-    onSuccess: (data) => {
-      toast.success('Đã xóa các sản phẩm đã chọn khỏi giỏ hàng', {
-        description: 'Các sản phẩm đã chọn đã được xóa khỏi giỏ hàng thành công!',
-        duration: 1000,
-      });
-      queryClient.invalidateQueries(['cart']); // Làm mới dữ liệu giỏ hàng
+    onSuccess: data => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEY.FETCH_CART],
+      }); // Làm mới dữ liệu giỏ hàng
     },
 
-    onError: (error) => {
+    onError: error => {
       toast.error(`Có lỗi xảy ra: ${error.message}`, {
-        description: 'Không thể xóa các sản phẩm đã chọn khỏi giỏ hàng, vui lòng thử lại.',
+        description:
+          'Không thể xóa các sản phẩm đã chọn khỏi giỏ hàng, vui lòng thử lại.',
         duration: 2000,
       });
     },
   });
-
 
   // Mutation để cập nhật số lượng sản phẩm trong giỏ hàng
   const updateQuantity = useMutation({

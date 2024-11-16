@@ -24,7 +24,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
       ? location.state.selectedItems
       : [];
     console.log('Selected Items:', selectedItems);
-    const [paymentMethod, setPaymentMethod] = useState('cod');
+    const [paymentMethod, setPaymentMethod] = useState('online');
     const { deleteSelectedItemsFromCart } = useCartMutation();
     const queryClient = useQueryClient();
 
@@ -49,6 +49,10 @@ export const Route = createFileRoute('/_layout/checkout/')({
       (acc, item) => acc + item.price * item.quantity,
       0
     );
+
+    const handlePaymentMethodChange = method => {
+      setPaymentMethod(method);
+    };
 
     const calculateDiscountedTotal = () => {
       if (selectedCoupon) {
@@ -140,35 +144,44 @@ export const Route = createFileRoute('/_layout/checkout/')({
         ?.Districts.find(district => district.Id === selectedDistrict)
         ?.Wards.find(ward => ward.Id === selectedWard)?.Name || '';
 
-        const calculateShipping = async () => {
-          try {
-            // Check the contents of selectedItems to ensure all items are included
-            console.log("Selected Items for Shipping Calculation:", selectedItems);
+    const calculateShipping = async () => {
+      try {
+        // Check the contents of selectedItems to ensure all items are included
+        console.log('Selected Items for Shipping Calculation:', selectedItems);
 
-            // Calculate total weight based on selected items
-            const totalWeight = selectedItems.reduce((acc, item) => acc + item.weight * item.quantity, 0);
-            console.log("Calculated total weight:", totalWeight, "for district:", districtName);
+        // Calculate total weight based on selected items
+        const totalWeight = selectedItems.reduce(
+          (acc, item) => acc + item.weight * item.quantity,
+          0
+        );
+        console.log(
+          'Calculated total weight:',
+          totalWeight,
+          'for district:',
+          districtName
+        );
 
-            const response = await instance.post('/calculate-shipping', {
-              weight: totalWeight,
-              address: {
-                district: districtName,
-              },
-              orderValue: totalAmount,
-            });
+        const response = await instance.post('/calculate-shipping', {
+          weight: totalWeight,
+          address: {
+            district: districtName,
+          },
+          orderValue: totalAmount,
+        });
 
-            const fee = response.data.shippingFee;
-            console.log("Received shipping fee from API:", fee);
+        const fee = response.data.shippingFee;
+        console.log('Received shipping fee from API:', fee);
 
-            setCalculatedShippingFee(isCouponFreeShipping ? 0 : fee);
-            setIsCalculatedFreeShipping(isCouponFreeShipping || fee === 0);
-            setShippingMessageDisplay(isCouponFreeShipping ? 'Miễn phí vận chuyển' : `${fee} VND`);
-          } catch (error) {
-            console.error('Error calculating shipping fee:', error);
-            setShippingMessageDisplay('Unable to calculate shipping fee');
-          }
-        };
-
+        setCalculatedShippingFee(isCouponFreeShipping ? 0 : fee);
+        setIsCalculatedFreeShipping(isCouponFreeShipping || fee === 0);
+        setShippingMessageDisplay(
+          isCouponFreeShipping ? 'Miễn phí vận chuyển' : `${fee} VND`
+        );
+      } catch (error) {
+        console.error('Error calculating shipping fee:', error);
+        setShippingMessageDisplay('Unable to calculate shipping fee');
+      }
+    };
 
     useEffect(() => {
       if (selectedDistrict) {
@@ -183,9 +196,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
       e.preventDefault();
       const userId = localStorage.getItem('userId');
 
-      // Đảm bảo selectedItems có giá trị là một mảng
       const items = Array.isArray(selectedItems) ? selectedItems : [];
-
       const productIds = items.map(item => item.productId);
 
       const formData = {
@@ -208,14 +219,15 @@ export const Route = createFileRoute('/_layout/checkout/')({
           wards: wardName,
           address: e.target['address-input'].value,
         },
-        paymentMethod: paymentMethod,
+        paymentMethod, // Đảm bảo rằng `paymentMethod` có giá trị đúng
         paymentStatus: 'pending',
         note: '',
         totalPrice: totalWithDiscount,
         couponCode: selectedCoupon ? selectedCoupon.code : null,
       };
 
-      console.log('form data', formData);
+      console.log('Payment Method:', paymentMethod); // Kiểm tra giá trị paymentMethod
+      console.log('Form data:', formData);
 
       try {
         await createOrder.mutateAsync(formData);
@@ -529,20 +541,22 @@ export const Route = createFileRoute('/_layout/checkout/')({
           <div className="m-auto mt-5 max-w-7xl bg-white p-5 pt-10">
             <div className="flex flex-wrap items-center gap-2">
               <CurrencyDollarSolid className="text-red-500" />
-              <div className="text-xl">Payment method:</div>
+              <div className="text-xl">Phương Thức Thanh Toán:</div>
               <div className="flex w-full gap-2 sm:w-auto">
                 <button
                   type="button"
-                  className="w-full rounded-lg border p-3 focus:border-red-500 focus:outline-none active:border-red-500 sm:w-auto"
+                  onClick={() => handlePaymentMethodChange('cod')}
+                  className={`w-full rounded-lg border p-3 ${paymentMethod === 'cod' ? 'border-red-500 bg-red-100' : ''} focus:outline-none sm:w-auto`}
                 >
-                  Payment upon receipt
+                  Thanh toán khi nhận hàng (COD)
                 </button>
                 <button
                   type="button"
-                  onChange={() => setPaymentMethod('online')}
-                  className="w-full rounded-lg border p-3 focus:border-red-500 focus:outline-none active:border-red-500 sm:w-auto"
+                  onClick={() => handlePaymentMethodChange('online')}
+                  className={`flex w-full rounded-lg border p-3 ${paymentMethod === 'online' ? 'border-red-500 bg-red-100' : ''} focus:outline-none sm:w-auto`}
                 >
-                  VNP payment
+                  Thanh toán qua{' '}
+                  <img className="ml-2 mt-1 w-14" src="./zalo_pay.png" alt="" />
                 </button>
               </div>
             </div>

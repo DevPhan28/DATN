@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
+// Định nghĩa Schema cho Order Item
 const OrderItemSchema = new Schema({
   productId: { type: Schema.Types.ObjectId, required: true, ref: "Product" },
   name: { type: String, required: true },
@@ -12,6 +13,7 @@ const OrderItemSchema = new Schema({
   weight: { type: Number },
 });
 
+// Định nghĩa Schema cho Order
 const OrderSchema = new mongoose.Schema(
   {
     userId: {
@@ -51,8 +53,8 @@ const OrderSchema = new mongoose.Schema(
         "canceled",
         "refund",
         "exchange",
-        "refund_in_progress", 
-        "exchange_in_progress", 
+        "refund_in_progress",
+        "exchange_in_progress",
         "refund_completed",
         "exchange_completed",
       ],
@@ -62,13 +64,38 @@ const OrderSchema = new mongoose.Schema(
       type: String,
       required: false,
     },
+    paymentCode: {
+      type: String,
+    },
+    paymentMethod: {
+      type: String,
+      enum: ["cod", "online"],
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid", "fail"],
+    },
+    transactionid: {
+      type: String,
+      require: false,
+    },
+    note: {
+      type: String,
+      require: false,
+    },
     statusHistory: { type: [String], default: [] },
     receivedAt: { type: Date },
     createdAt: { type: Date, default: Date.now },
+    // VNPay-specific fields
+    vnpayTransactionId: { type: String },
+    vnpayResponseCode: { type: String },
+    vnpayOrderInfo: { type: String },
+    vnpayAmount: { type: Number },
   },
   { timestamps: true, versionKey: false }
 );
 
+// Tạo orderNumber tự động
 OrderSchema.pre("save", async function (next) {
   if (!this.isNew || this.orderNumber) {
     return next();
@@ -108,4 +135,7 @@ OrderSchema.pre("save", async function (next) {
   next();
 });
 
-module.exports = mongoose.model("Order", OrderSchema);
+// Kiểm tra model đã tồn tại chưa, tránh overwrite model
+const Order = mongoose.models.Order || mongoose.model("Order", OrderSchema);
+
+module.exports = Order;
