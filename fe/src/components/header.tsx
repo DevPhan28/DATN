@@ -102,7 +102,7 @@ const Header = () => {
                   </span>
                 </a>
                 <a
-                  href="#"
+                  href="/blog"
                   className="px-2 py-2 font-medium hover:text-blue-400"
                 >
                   Blog

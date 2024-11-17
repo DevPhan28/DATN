@@ -28,6 +28,7 @@ import { Route as LayoutShopIndexImport } from './routes/_layout/shop/index'
 import { Route as LayoutOrderuserIndexImport } from './routes/_layout/orderuser/index'
 import { Route as LayoutCheckoutIndexImport } from './routes/_layout/checkout/index'
 import { Route as LayoutCartIndexImport } from './routes/_layout/cart/index'
+import { Route as LayoutBlogIndexImport } from './routes/_layout/blog/index'
 import { Route as LayoutAboutIndexImport } from './routes/_layout/about/index'
 import { Route as LayoutSlugQuickviewProductImport } from './routes/_layout/$slug.quickviewProduct'
 import { Route as LayoutSlugDetailproductImport } from './routes/_layout/$slug.detailproduct'
@@ -128,6 +129,11 @@ const LayoutCheckoutIndexRoute = LayoutCheckoutIndexImport.update({
 
 const LayoutCartIndexRoute = LayoutCartIndexImport.update({
   path: '/cart/',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutBlogIndexRoute = LayoutBlogIndexImport.update({
+  path: '/blog/',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -319,6 +325,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutAboutIndexImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/blog/': {
+      id: '/_layout/blog/'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof LayoutBlogIndexImport
+      parentRoute: typeof LayoutImport
+    }
     '/_layout/cart/': {
       id: '/_layout/cart/'
       path: '/cart'
@@ -462,6 +475,7 @@ interface LayoutRouteChildren {
   LayoutSlugDetailproductRoute: typeof LayoutSlugDetailproductRoute
   LayoutSlugQuickviewProductRoute: typeof LayoutSlugQuickviewProductRoute
   LayoutAboutIndexRoute: typeof LayoutAboutIndexRoute
+  LayoutBlogIndexRoute: typeof LayoutBlogIndexRoute
   LayoutCartIndexRoute: typeof LayoutCartIndexRoute
   LayoutCheckoutIndexRoute: typeof LayoutCheckoutIndexRoute
   LayoutOrderuserIndexRoute: typeof LayoutOrderuserIndexRoute
@@ -476,6 +490,7 @@ const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutSlugDetailproductRoute: LayoutSlugDetailproductRoute,
   LayoutSlugQuickviewProductRoute: LayoutSlugQuickviewProductRoute,
   LayoutAboutIndexRoute: LayoutAboutIndexRoute,
+  LayoutBlogIndexRoute: LayoutBlogIndexRoute,
   LayoutCartIndexRoute: LayoutCartIndexRoute,
   LayoutCheckoutIndexRoute: LayoutCheckoutIndexRoute,
   LayoutOrderuserIndexRoute: LayoutOrderuserIndexRoute,
@@ -549,6 +564,7 @@ export interface FileRoutesByFullPath {
   '/$slug/detailproduct': typeof LayoutSlugDetailproductRoute
   '/$slug/quickviewProduct': typeof LayoutSlugQuickviewProductRoute
   '/about': typeof LayoutAboutIndexRoute
+  '/blog': typeof LayoutBlogIndexRoute
   '/cart': typeof LayoutCartIndexRoute
   '/checkout': typeof LayoutCheckoutIndexRoute
   '/orderuser': typeof LayoutOrderuserIndexRoute
@@ -582,6 +598,7 @@ export interface FileRoutesByTo {
   '/$slug/detailproduct': typeof LayoutSlugDetailproductRoute
   '/$slug/quickviewProduct': typeof LayoutSlugQuickviewProductRoute
   '/about': typeof LayoutAboutIndexRoute
+  '/blog': typeof LayoutBlogIndexRoute
   '/cart': typeof LayoutCartIndexRoute
   '/checkout': typeof LayoutCheckoutIndexRoute
   '/orderuser': typeof LayoutOrderuserIndexRoute
@@ -617,6 +634,7 @@ export interface FileRoutesById {
   '/_layout/$slug/detailproduct': typeof LayoutSlugDetailproductRoute
   '/_layout/$slug/quickviewProduct': typeof LayoutSlugQuickviewProductRoute
   '/_layout/about/': typeof LayoutAboutIndexRoute
+  '/_layout/blog/': typeof LayoutBlogIndexRoute
   '/_layout/cart/': typeof LayoutCartIndexRoute
   '/_layout/checkout/': typeof LayoutCheckoutIndexRoute
   '/_layout/orderuser/': typeof LayoutOrderuserIndexRoute
@@ -653,6 +671,7 @@ export interface FileRouteTypes {
     | '/$slug/detailproduct'
     | '/$slug/quickviewProduct'
     | '/about'
+    | '/blog'
     | '/cart'
     | '/checkout'
     | '/orderuser'
@@ -685,6 +704,7 @@ export interface FileRouteTypes {
     | '/$slug/detailproduct'
     | '/$slug/quickviewProduct'
     | '/about'
+    | '/blog'
     | '/cart'
     | '/checkout'
     | '/orderuser'
@@ -718,6 +738,7 @@ export interface FileRouteTypes {
     | '/_layout/$slug/detailproduct'
     | '/_layout/$slug/quickviewProduct'
     | '/_layout/about/'
+    | '/_layout/blog/'
     | '/_layout/cart/'
     | '/_layout/checkout/'
     | '/_layout/orderuser/'
@@ -788,6 +809,7 @@ export const routeTree = rootRoute
         "/_layout/$slug/detailproduct",
         "/_layout/$slug/quickviewProduct",
         "/_layout/about/",
+        "/_layout/blog/",
         "/_layout/cart/",
         "/_layout/checkout/",
         "/_layout/orderuser/",
@@ -855,6 +877,10 @@ export const routeTree = rootRoute
     },
     "/_layout/about/": {
       "filePath": "_layout/about/index.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/blog/": {
+      "filePath": "_layout/blog/index.tsx",
       "parent": "/_layout"
     },
     "/_layout/cart/": {
