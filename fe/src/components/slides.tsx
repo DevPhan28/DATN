@@ -8,8 +8,8 @@ import slide2 from '../assets/images/banner-02.png';
 const Slides = () => {
     return (
         <div className=" slider-block style-one bg-linear xl:h-[500px] lg:h-[400px] md:h-[400px] sm:h-[250px] h-[250px] max-[420px]:h-[300px] w-full">
-            <div className="slider-main h-full w-full">
-                <div className="swiper swiper-slider h-full relative">
+            <div className="slider-main h-full w-full ">
+                <div className="swiper swiper-slider h-full relative ">
                     {/* <div className="swiper-wrapper"> */}
                     <Swiper
                         className={"swiper-wrapper"}

@@ -64,7 +64,7 @@ const createOrder = async (req, res) => {
           app_time: Date.now(),
           item: JSON.stringify(items),
           embed_data: JSON.stringify({
-            redirecturl: "http://localhost:5173/thank",
+            redirecturl: "http://localhost:5173/thanks",
           }),
           amount: +totalPrice,
           description: `Pay for OrderId #${transID}`,
@@ -450,9 +450,8 @@ const returnOrder = async (req, res) => {
 
     // Trả về phản hồi thành công
     res.status(200).json({
-      message: `Đơn hàng đã được ${
-        returnType === "refund" ? "trả hàng hoàn tiền" : "đổi trả"
-      } thành công`,
+      message: `Đơn hàng đã được ${returnType === "refund" ? "trả hàng hoàn tiền" : "đổi trả"
+        } thành công`,
       order, // Trả lại thông tin đơn hàng đã cập nhật
     });
   } catch (error) {

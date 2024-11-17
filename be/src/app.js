@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 require("./config/orderScheduler");
 const express = require("express");
 const morgan = require("morgan");
-
+const message = require("./routers/chatRoutes");
 const { connectDB } = require("./config/db");
 const cartRouter = require("./routers/cart");
 const productRouter = require("./routers/product");
@@ -34,6 +34,7 @@ app.use("/api", shippingRoutes);
 app.use("/api", couponRoutes);
 app.use("/api", commentRouter);
 app.use("/api", paymentRoutes);
+app.use("/api", message);
 app.listen(8080, () => {
   console.log("server running...");
 });
