@@ -2,6 +2,9 @@ const { default: mongoose } = require("mongoose");
 const Comment = require("../models/comment");
 const Product = require("../models/product");
 const User = require("../models/user");
+const Order = require("../models/order");
+
+// Thêm bình luận
 
 // Thêm bình luận
 const addComment = async (req, res) => {
@@ -19,6 +22,17 @@ const addComment = async (req, res) => {
 
     if (!product || !user) {
       return res.status(404).json({ message: 'Product or user not found' });
+    }
+
+    // Kiểm tra nếu người dùng đã mua sản phẩm này
+    const order = await Order.findOne({
+      userId,
+      "items.productId": productId,  // Kiểm tra nếu sản phẩm có trong đơn hàng của người dùng
+      status: { $in: ["delivered", "received"] }, // Đảm bảo rằng đơn hàng đã được giao hoặc đã nhận
+    });
+
+    if (!order) {
+      return res.status(400).json({ message: "You must purchase the product before commenting" });
     }
 
     // Tạo bình luận mới
@@ -43,19 +57,32 @@ const addComment = async (req, res) => {
 };
 
 
+
 // Lấy tất cả bình luận của một sản phẩm
 const getCommentsByProduct = async (req, res) => {
   const { productId } = req.params;
 
   try {
-    const comments = await Comment.find({ productId })
-      .populate("userId", "username avatar") // Lấy thông tin người dùng
-      .exec();
+    const { productId } = req.params;
 
-    return res.status(200).json(comments);
+    const comments = await Comment.find({ productId })
+      .populate({
+        path: "userId", // Populate thông tin từ mô hình User
+        select: "username email", // Chỉ lấy các trường cần thiết
+      });
+
+    if (!comments || comments.length === 0) {
+      return res.status(404).json({
+        message: "Không có bình luận nào cho sản phẩm này",
+      });
+    }
+
+    res.status(200).json(comments);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Server Error" });
+    res.status(500).json({
+      message: "Lỗi khi lấy danh sách bình luận",
+      error: error.message,
+    });
   }
 };
 
@@ -88,10 +115,28 @@ const deleteComment = async (req, res) => {
     return res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
+const deleteCommentByAdmin = async (req, res) => {
+  const { commentId } = req.params;
+  console.log("Comment ID received:", commentId); // Log commentId từ frontend
+
+  try {
+    const comment = await Comment.findById(commentId);
+    if (!comment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    await Comment.findByIdAndDelete(commentId);
+    return res.status(200).json({ message: "Comment deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting comment:", error);
+    return res.status(500).json({ message: "Server Error" });
+  }
+};
 
 
 module.exports = {
   addComment,
   getCommentsByProduct,
   deleteComment,
+  deleteCommentByAdmin
 };

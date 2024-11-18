@@ -1,6 +1,6 @@
 // routers/comment.js
 const express = require("express");
-const { addComment, getCommentsByProduct, deleteComment } = require("../controllers/comment");
+const { addComment, getCommentsByProduct, deleteComment, deleteCommentByAdmin } = require("../controllers/comment");
 const authMiddleware = require("../middleware/authComment");
 const router = express.Router();
 
@@ -12,5 +12,6 @@ router.get("/comments/product/:productId", getCommentsByProduct);
 
 // Xóa bình luận
 router.delete('/comments/:commentId', authMiddleware, deleteComment);
+router.delete('/comments/:commentId/admin', deleteCommentByAdmin);
 
 module.exports = router;

@@ -18,7 +18,14 @@ const useCommentMutation = () => {
     }) => instance.post('/comments', data),
 
     onSuccess: async (response) => {
-      const { productId } = response.data; // Truy cập productId từ dữ liệu phản hồi
+      const { productId } = response.data; // Lấy productId từ phản hồi
+
+      // Kiểm tra nếu productId không tồn tại trong phản hồi từ backend
+      if (!productId) {
+        toast.error('Product ID missing in response from server.');
+        return;
+      }
+
       toast.success('Comment added successfully!', {
         description: 'Your comment has been posted.',
         duration: 1000,
@@ -28,19 +35,27 @@ const useCommentMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: [QUERY_KEY.FETCH_COMMENT_BY_PRODUCT, productId],
       });
-      
-      // Optionally, refetch to ensure the latest data is fetched immediately after mutation
-      // queryClient.refetchQueries({
-      //   queryKey: [QUERY_KEY.FETCH_COMMENT_BY_PRODUCT, productId],
-      //   active: true,
-      // });
 
       return response;
     },
     onError: (error: any) => {
-      toast.error(`Error adding comment: ${error.message}`, {
-        description: 'Please try again later.',
-      });
+      // Xử lý lỗi từ backend
+      const errorMessage = error?.response?.data?.message || error.message || 'Unknown error occurred';
+      
+      // Kiểm tra các lỗi đặc biệt từ backend (khi người dùng chưa mua sản phẩm)
+      if (error?.response?.data?.message === "You must purchase the product before commenting") {
+        toast.error('You must purchase the product before commenting.', {
+          description: 'Please ensure that you have bought the product before leaving a comment.',
+        });
+      } else if (error?.response?.data?.message === "Missing required fields") {
+        toast.error('Missing required fields.', {
+          description: 'Please make sure all required fields are filled.',
+        });
+      } else {
+        toast.error(`Error adding comment: ${errorMessage}`, {
+          description: 'Please try again later.',
+        });
+      }
     },
   });
 
@@ -86,10 +101,43 @@ const useCommentMutation = () => {
       });
     },
   });
+  const removeCommentByAdmin = useMutation({
+    mutationFn: (commentId: string) => {
+      console.log("Comment ID to delete:", commentId); // Log ID trước khi gọi API
+      return instance.delete(`/comments/${commentId}/admin`);
+    },
+  
+    onSuccess: async (response) => {
+      const { productId } = response.data || {};
+      console.log("Response from server:", response.data); // Log phản hồi từ server
+  
+      if (productId) {
+        toast.success('Comment deleted successfully!', {
+          description: 'Your comment has been deleted.',
+          duration: 1000,
+        });
+  
+        // Refresh comments data cho sản phẩm
+        await queryClient.invalidateQueries({
+          queryKey: [QUERY_KEY.FETCH_COMMENT_BY_PRODUCT, productId],
+        });
+      } else {
+        console.warn("Product ID missing in response.");
+      }
+      return response;
+    },
+  
+    onError: (error: any) => {
+      console.error("Error deleting comment:", error); // Log lỗi nếu xảy ra
+      toast.error(`Error deleting comment: ${error.message}`, {
+        description: 'Please try again later.',
+      });
+    },
+  });
   
   
 
-  return { createComment, removeComment };
+  return { createComment, removeComment,removeCommentByAdmin };
 };
 
 export default useCommentMutation;

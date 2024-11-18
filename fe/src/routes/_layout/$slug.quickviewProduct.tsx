@@ -36,6 +36,7 @@ function DetailProduct() {
   const [newComment, setNewComment] = useState('');
   const { createComment, removeComment } = useCommentMutation();
   const [rating, setRating] = useState(0); // State for product rating
+  const [averageRating, setAverageRating] = useState(0);
 
   const { slug } = useParams({ from: '/_layout/$slug/quickviewProduct' });
   const queryClient = useQueryClient();
@@ -69,8 +70,14 @@ function DetailProduct() {
             `/comments/product/${product._id}`
           );
           setComments(response.data);
+          const totalRating = response.data.reduce(
+            (sum, comment) => sum + comment.rating,
+            0
+          );
+          const average = totalRating / response.data.length;
+          setAverageRating(average); // Cập nhật số sao trung bình
         } catch (err) {
-          toast.error('Không thể tải bình luận');
+          toast.error('chưa có bình luận nào');
         }
       };
       fetchComments();
@@ -230,6 +237,7 @@ function DetailProduct() {
         </div>
       </div>
       <div className="bg-gray-50 py-10">
+        <div>{/* Hiển thị số sao trung bình */}</div>
         <div className="m-auto max-w-7xl p-5 sm:p-5 md:p-5 lg:p-5 xl:p-0">
           <div className="mt-5 flex flex-col justify-between bg-white p-5 shadow md:gap-48 lg:flex-row">
             <div className="flex flex-col gap-5 lg:flex-row">
@@ -270,7 +278,22 @@ function DetailProduct() {
             <div className="mt-6 lg:mt-0">
               <h2 className="mb-4 w-96 text-xl font-bold sm:text-2xl lg:text-3xl">
                 {product.name}
-              </h2>
+              </h2>{' '}
+              <div className="rating">
+                
+                <div className="mt-1 flex items-center">
+                  {/* Hiển thị sao trung bình */}
+                  {[...Array(5)].map((_, index) => (
+                    <StarSolid
+                      key={index}
+                      className={`h-5 w-5 ${index < Math.floor(averageRating) ? 'text-yellow-400' : 'text-gray-300'}`}
+                    />
+                  ))}
+                  <span className="font-semibold">
+                  {averageRating.toFixed(1)} trên tổng {comments.length} comments
+                </span>
+                </div>
+              </div>
               <p className="mb-2 text-sm text-gray-600 sm:text-base">
                 SKU: {product.sku}
               </p>
@@ -283,7 +306,6 @@ function DetailProduct() {
               <div className="mb-4 text-lg sm:text-xl">
                 <p>{product.description}</p>
               </div>
-
               {/* Size dropdown with unique sizes */}
               <div className="mb-4 flex items-center">
                 <label className="w-20 text-gray-700">Size</label>
@@ -300,7 +322,6 @@ function DetailProduct() {
                   ))}
                 </select>
               </div>
-
               <div className="mb-4 flex items-center">
                 <label className="w-20 text-gray-700">Color</label>
                 <select
@@ -318,7 +339,6 @@ function DetailProduct() {
                     ))}
                 </select>
               </div>
-
               {/* Quantity and Add to Cart */}
               <div className="mb-4 flex items-center gap-5">
                 <div>Quantity</div>
@@ -344,7 +364,6 @@ function DetailProduct() {
                   </button>
                 </div>
               </div>
-
               {/* Add to cart button */}
               <button
                 className="mt-3 rounded-md bg-blue-500 px-5 py-2 text-sm text-white transition hover:bg-gray-800 sm:px-6 sm:py-3 sm:text-lg"
@@ -353,7 +372,6 @@ function DetailProduct() {
               >
                 {addItemToCart.isLoading ? 'Đang thêm...' : 'ADD TO CART'}
               </button>
-
               {/* Shipping and return info */}
               <div className="mt-4 w-full bg-[#EEEEEE] p-4">
                 <div className="flex gap-4">

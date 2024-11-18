@@ -8,6 +8,11 @@ const commentSchema = new mongoose.Schema(
       ref: "User", // Liên kết đến người dùng
       required: true,
     },
+    email: {
+      type: String,
+      required: false,  // Email có thể có hoặc không, tùy thuộc vào việc có gửi lên từ frontend hay không
+      select: false,    // Không trả về email khi query Comment
+    },
     productId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Product", // Liên kết đến sản phẩm

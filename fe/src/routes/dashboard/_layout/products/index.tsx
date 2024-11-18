@@ -170,6 +170,16 @@ function ProductList() {
                           className="gap-x-2"
                           onClick={() =>
                             void navigate({
+                              to: `/dashboard/comment/${product._id}/comment`,
+                            })
+                          }
+                        >
+                          view comment 
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Item
+                          className="gap-x-2"
+                          onClick={() =>
+                            void navigate({
                               to: `/dashboard/products/${product._id}/edit`,
                             })
                           }
