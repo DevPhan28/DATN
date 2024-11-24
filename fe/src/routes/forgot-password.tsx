@@ -98,7 +98,7 @@ function ForgotPasswordPage() {
           <p className="txt-compact-large mt-6 text-ui-fg-subtle">
             {' '}
             <Link className="text-blue-600 hover:underline" to="/login">
-              back to login page!
+              Back to login page!
             </Link>
           </p>
         </div>

@@ -9,9 +9,13 @@ type CustomerInfo = {
 };
 
 type Product = {
+  _id: string;
   name: string;
   quantity: number;
   price: number;
+  image: string;
+  description: string;
+  slug: string;
 };
 
 type Order = {
@@ -22,6 +26,16 @@ type Order = {
   totalPrice: number;
   status: OrderStatus;
   refundReason?: string;
+  items: Item[];
+};
+type Item = {
+  productId: number;
+  image: string;
+  name: string;
+  price: number;
+  quantity: number;
+  size: string;
+  color: string;
 };
 
 type OrderStatus =
@@ -33,10 +47,12 @@ type OrderStatus =
   | 'canceled'
   | 'refund'
   | 'exchange'
+  | 'returned'
   | 'refund_in_progress'
   | 'exchange_in_progress'
   | 'refund_completed'
-  | 'exchange_completed';
+  | 'exchange_completed'
+  | 'return_completed';
 
 type OrderMeta = {
   totalItems: number;

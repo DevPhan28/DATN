@@ -11,6 +11,7 @@ type Category = {
   status: number;
   _id: string;
   name: string;
+  slug: string;
 };
 
 type Product = {

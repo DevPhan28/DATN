@@ -32,7 +32,7 @@ function Register() {
       onError: (error: any) => {
         setRegisterError(
           error?.response?.data?.message ||
-          'Đăng ký thất bại. User hoặc email đã tồn tại'
+            'Đăng ký thất bại. User hoặc email đã tồn tại'
         );
       },
     });
@@ -68,7 +68,7 @@ function Register() {
           <img
             src="./fasion zone.png"
             alt="fashionzone-logo"
-            className='w-40 p-4'
+            className="w-40 p-4"
           />
 
           {/* Welcome message */}

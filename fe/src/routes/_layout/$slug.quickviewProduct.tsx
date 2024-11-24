@@ -12,11 +12,7 @@ import {
 } from '@medusajs/icons';
 import { DropdownMenu, IconButton, toast } from '@medusajs/ui';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  createFileRoute,
-  useNavigate,
-  useParams,
-} from '@tanstack/react-router';
+import { createFileRoute, useParams } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
 export const Route = createFileRoute('/_layout/$slug/quickviewProduct')({
@@ -280,7 +276,6 @@ function DetailProduct() {
                 {product.name}
               </h2>{' '}
               <div className="rating">
-                
                 <div className="mt-1 flex items-center">
                   {/* Hiển thị sao trung bình */}
                   {[...Array(5)].map((_, index) => (
@@ -290,8 +285,9 @@ function DetailProduct() {
                     />
                   ))}
                   <span className="font-semibold">
-                  {averageRating.toFixed(1)} trên tổng {comments.length} comments
-                </span>
+                    {averageRating.toFixed(1)} trên tổng {comments.length}{' '}
+                    comments
+                  </span>
                 </div>
               </div>
               <p className="mb-2 text-sm text-gray-600 sm:text-base">

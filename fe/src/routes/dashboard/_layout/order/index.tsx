@@ -2,8 +2,8 @@ import Header from '@/components/layoutAdmin/header/header';
 import { useFetchOrders } from '@/data/oder/useOderList';
 import useCheckoutMutation from '@/data/oder/useOderMutation';
 import { Adjustments, ArrowUpTray, EllipsisVertical } from '@medusajs/icons';
-import { Button, DropdownMenu, Input, Table, Tooltip } from '@medusajs/ui';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { Button, DropdownMenu, Input, Table, toast } from '@medusajs/ui';
+import { createFileRoute } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 
 const pageSize = 10;
@@ -15,7 +15,6 @@ export const Route = createFileRoute('/dashboard/_layout/order/')({
 function OrderList() {
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedTab, setSelectedTab] = useState('all'); // State for selected tab
-  const navigate = useNavigate();
 
   const {
     data: listOrder,
@@ -61,16 +60,38 @@ function OrderList() {
       'received',
       'delivered',
       'canceled',
-      'refund',
-      'exchange',
+      'complaint', // Thay cho refund và exchange
       'refund_in_progress', // Đang hoàn trả hàng
+      'refund_completed', // Hoàn trả hàng thành công
       'exchange_in_progress', // Đang đổi trả hàng
-      'refund_completed', // Trạng thái hoàn trả hàng đã hoàn thành
-      'exchange_completed', // Trạng thái đổi trả hàng đã hoàn thành
+      'exchange_completed', // Đổi trả hàng thành công
     ];
+
+    // Điều kiện đặc biệt cho trạng thái "Đang hoàn trả hàng" và "Đang đổi trả hàng"
+    if (
+      currentStatus === 'refund_in_progress' &&
+      newStatus !== 'refund_completed'
+    ) {
+      toast.error(
+        'Trạng thái "Đang hoàn trả hàng" chỉ có thể chuyển sang "Hoàn trả hàng thành công".'
+      );
+      return;
+    }
+
+    if (
+      currentStatus === 'exchange_in_progress' &&
+      newStatus !== 'exchange_completed'
+    ) {
+      toast.error(
+        'Trạng thái "Đang đổi trả hàng" chỉ có thể chuyển sang "Đổi trả hàng thành công".'
+      );
+      return;
+    }
+
     const currentIndex = statusOrder.indexOf(currentStatus);
     const newIndex = statusOrder.indexOf(newStatus);
 
+    // Chỉ cho phép cập nhật nếu trạng thái mới hợp lệ
     if (newIndex < currentIndex) {
       return;
     }
@@ -79,7 +100,6 @@ function OrderList() {
       { orderId, status: newStatus },
       {
         onSuccess: () => {
-          // Optional: Reload list or update status locally to reflect change
           console.log('Status updated successfully');
         },
         onError: error => {
@@ -97,8 +117,7 @@ function OrderList() {
     { id: 'shipped', label: 'Chờ giao hàng' },
     { id: 'delivered', label: 'Đã giao' },
     { id: 'canceled', label: 'Đã hủy' },
-    { id: 'refund', label: 'Trả hàng hoàn tiền' },
-    { id: 'exchange', label: 'Đổi trả hàng' },
+    { id: 'complaint', label: 'Đang khiếu nại' }, // Thay thế refund và exchange
   ];
 
   const filteredOrders = listOrder?.data?.filter(order => {
@@ -123,12 +142,10 @@ function OrderList() {
       return order.status === 'canceled';
     }
 
-    if (selectedTab === 'refund') {
-      return order.status === 'refund' || order.status === 'return_completed'; // Hiển thị đơn hàng hoàn tiền và đổi trả thành công
-    }
-
-    if (selectedTab === 'exchange') {
-      return order.status === 'exchange' || order.status === 'return_completed'; // Hiển thị đơn hàng đổi trả và đổi trả thành công
+    if (selectedTab === 'complaint') {
+      return (
+        order.status === 'complaint' || order.status === 'return_completed'
+      );
     }
 
     return order.status === selectedTab;
@@ -214,7 +231,7 @@ function OrderList() {
           </Table.Row>
           <Table.Body>
             {filteredOrders?.length > 0 ? (
-              filteredOrders.map((order) => (
+              filteredOrders.map(order => (
                 <Table.Row
                   key={order._id}
                   className="[&_td:last-child]:w-[10%] [&_td:last-child]:whitespace-nowrap"
@@ -302,110 +319,25 @@ function OrderList() {
                           order.status
                         )
                       }
-                      disabled={
-                        order.status === 'delivered' ||
-                        order.status === 'canceled'
-                      }
                       className="w-full min-w-[150px] rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-gray-700 transition-all duration-200 hover:bg-gray-100 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-200 disabled:text-gray-500"
                     >
-                      <option
-                        value="pending"
-                        disabled={order.status !== 'pending'}
-                      >
-                        Chờ xác nhận
-                      </option>
-                      <option
-                        value="confirmed"
-                        disabled={
-                          order.status === 'shipped' ||
-                          order.status === 'canceled' ||
-                          order.status === 'delivered'
-                        }
-                      >
-                        Chờ lấy hàng
-                      </option>
-                      <option
-                        value="shipped"
-                        disabled={
-                          order.status === 'canceled' ||
-                          order.status === 'delivered'
-                        }
-                      >
-                        Chờ giao hàng
-                      </option>
-                      <option
-                        value="received"
-                        disabled={
-                          order.status === 'canceled' ||
-                          order.status === 'delivered'
-                        }
-                      >
-                        Đã nhận
-                      </option>
-                      <option
-                        value="delivered"
-                        disabled={order.status === 'delivered'}
-                      >
-                        Đã giao
-                      </option>
-                      <option
-                        value="canceled"
-                        disabled={order.status !== 'pending'}
-                      >
-                        Đã hủy
-                      </option>
-                      <option
-                        value="refund"
-                        disabled={
-                          order.status === 'delivered' ||
-                          order.status === 'canceled'
-                        }
-                      >
-                        Hoàn trả hàng
-                      </option>
-                      <option
-                        value="exchange"
-                        disabled={
-                          order.status === 'delivered' ||
-                          order.status === 'canceled'
-                        }
-                      >
-                        Đổi trả hàng
-                      </option>
-                      <option
-                        value="refund_in_progress"
-                        disabled={
-                          order.status === 'delivered' ||
-                          order.status === 'canceled'
-                        }
-                      >
+                      <option value="pending">Chờ xác nhận</option>
+                      <option value="confirmed">Chờ lấy hàng</option>
+                      <option value="shipped">Chờ giao hàng</option>
+                      <option value="received">Đã nhận</option>
+                      <option value="delivered">Đã giao</option>
+                      <option value="canceled">Đã hủy</option>
+                      <option value="complaint">Đang khiếu nại</option>
+                      <option value="refund_in_progress">
                         Đang hoàn trả hàng
                       </option>
-                      <option
-                        value="exchange_in_progress"
-                        disabled={
-                          order.status === 'delivered' ||
-                          order.status === 'canceled'
-                        }
-                      >
+                      <option value="exchange_in_progress">
                         Đang đổi trả hàng
                       </option>
-                      <option
-                        value="refund_completed"
-                        disabled={
-                          order.status === 'delivered' ||
-                          order.status === 'canceled'
-                        }
-                      >
+                      <option value="refund_completed">
                         Hoàn trả hàng thành công
                       </option>
-                      <option
-                        value="exchange_completed"
-                        disabled={
-                          order.status === 'delivered' ||
-                          order.status === 'canceled'
-                        }
-                      >
+                      <option value="exchange_completed">
                         Đổi trả hàng thành công
                       </option>
                     </select>

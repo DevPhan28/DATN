@@ -31,6 +31,7 @@ export default function useRegisterMutation() {
     onSuccess: data => {
       toast.success('Đăng ký', {
         description: 'Đăng ký thành công',
+        duration: 2000, // Thời gian hiển thị (tính bằng mili giây)
       });
 
       // Tuỳ chọn: Lưu token nếu được cung cấp từ server
@@ -40,11 +41,12 @@ export default function useRegisterMutation() {
 
       setTimeout(() => {
         void navigate({ to: '/login' });
-      }, 3000);
+      }, 4000);
     },
     onError: (error: Error) => {
       toast.error('Đăng ký thất bại', {
         description: error.message || 'Đã xảy ra lỗi trong quá trình đăng ký',
+        duration: 2000, // Thời gian hiển thị (tính bằng mili giây)
       });
     },
   });

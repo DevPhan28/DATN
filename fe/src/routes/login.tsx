@@ -1,5 +1,5 @@
 import useLoginMutation from '@/data/auth/useLoginMutation';
-import { Button, Input, toast } from '@medusajs/ui';
+import { Button, Input } from '@medusajs/ui';
 import { createFileRoute, Link, redirect } from '@tanstack/react-router';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -19,10 +19,10 @@ function Login() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Iuser>();
+  } = useForm<Ilogin>();
   const { loginMutation } = useLoginMutation();
 
-  const onSubmit = (data: Iuser) => {
+  const onSubmit = (data: Ilogin) => {
     const userData = { ...data };
     setLoginError(null);
     loginMutation.mutate(userData, {

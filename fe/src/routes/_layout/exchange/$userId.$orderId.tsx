@@ -5,7 +5,19 @@ import {
 } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import instance from '@/api/axiosIntance';
-import { toast } from '@medusajs/ui';
+import { toast, usePrompt } from '@medusajs/ui';
+import { AxiosError } from 'axios';
+type Order = {
+  items: {
+    productId: string;
+    name: string;
+    color: string;
+    size: string;
+    quantity: number;
+    price: number;
+    image: string;
+  }[];
+};
 
 export const Route = createFileRoute('/_layout/exchange/$userId/$orderId')({
   component: ExchangeRequestPage,
@@ -14,15 +26,21 @@ export const Route = createFileRoute('/_layout/exchange/$userId/$orderId')({
 function ExchangeRequestPage() {
   const { orderId } = useParams({ from: '/_layout/exchange/$userId/$orderId' });
   const navigate = useNavigate();
-  const [order, setOrder] = useState(null);
+  const [order, setOrder] = useState<Order | null>(null);
   const [reason, setReason] = useState('');
   const [description, setDescription] = useState('');
   const [email, setEmail] = useState('');
-  const [returnType, setReturnType] = useState('exchange'); // Trạng thái cho loại hoàn trả
+  const [returnType] = useState('complaint');
+  const [loading, setLoading] = useState(false);
+  const dialog = usePrompt();
 
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem('user'));
+    const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
     const userId = storedUser?.user?._id;
+    const userEmail = storedUser?.user?.email;
+    if (userEmail) {
+      setEmail(userEmail);
+    }
 
     if (!userId || !orderId) {
       console.error('userId hoặc orderId không tồn tại');
@@ -30,11 +48,21 @@ function ExchangeRequestPage() {
     }
 
     const fetchOrder = async () => {
+      setLoading(true);
       try {
         const response = await instance.get(`/orders/${userId}/${orderId}`);
         setOrder(response.data);
       } catch (error) {
+        if (error instanceof AxiosError) {
+          toast.error(
+            `Lỗi: ${error.response?.data?.message || 'Không thể lấy dữ liệu.'}`
+          );
+        } else {
+          toast.error('Lỗi mạng, vui lòng thử lại.');
+        }
         console.error('Lỗi khi lấy thông tin đơn hàng:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -42,30 +70,47 @@ function ExchangeRequestPage() {
   }, [orderId, navigate]);
 
   const handleSubmit = async () => {
-    // Kiểm tra nếu lý do, mô tả, và email đều đã nhập
     if (!reason) {
-      toast.error('Vui lòng chọn lý do hoàn trả.');
+      toast.error('Vui lòng chọn lý do đổi trả!');
       return;
     }
     if (!description || !email) {
       toast.error('Vui lòng nhập đầy đủ thông tin mô tả và email.');
       return;
     }
+    const isValidEmail = (email: string) =>
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+    if (!isValidEmail(email)) {
+      toast.error('Vui lòng nhập email hợp lệ.');
+      return;
+    }
+    const userHasConfirmed = await dialog({
+      title: 'Khiếu nại đơn hàng',
+      description: 'Bạn có chắc chắn muốn khiếu nại đơn hàng này không?',
+    });
+
+    if (!userHasConfirmed) {
+      return;
+    }
 
     try {
-      const storedUser = JSON.parse(localStorage.getItem('user'));
+      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
       const userId = storedUser?.user?._id;
+      if (!userId || !orderId) {
+        toast.error('Không tìm thấy thông tin người dùng hoặc đơn hàng.');
+        return;
+      }
 
-      // Gọi API để yêu cầu hoàn trả (cả đổi trả và hoàn tiền đều gọi API này)
       await instance.put(`/orders/${orderId}/return`, {
         reason,
         description,
         email,
-        returnType, // Loại yêu cầu (exchange)
+        returnType,
       });
 
       toast.success('Yêu cầu đổi trả thành công');
-      navigate({ to: '/orderuser' }); // Điều hướng lại trang đơn hàng của người dùng sau khi hoàn thành
+      navigate({ to: '/orderuser' });
     } catch (error) {
       console.error('Lỗi khi gửi yêu cầu đổi trả:', error);
       toast.error(
@@ -74,14 +119,21 @@ function ExchangeRequestPage() {
     }
   };
 
-  if (!order) {
+  if (loading) {
     return <div>Đang tải thông tin đơn hàng...</div>;
+  }
+
+  if (!order) {
+    return <div>Không tìm thấy thông tin đơn hàng.</div>;
   }
 
   const totalRefundAmount = order.items.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
+  if (!order || !order.items || order.items.length === 0) {
+    return <div className="text-center">Đơn hàng không có sản phẩm nào.</div>;
+  }
 
   return (
     <div className="mx-auto mt-8 max-w-3xl bg-white p-6 shadow-md">
@@ -114,23 +166,19 @@ function ExchangeRequestPage() {
       </div>
 
       <div className="mb-6">
-        <h3 className="mb-2 text-lg font-semibold">
-          Chọn sản phẩm cần Trả hàng và Hoàn tiền
-        </h3>
+        <h3 className="mb-2 text-lg font-semibold">Chọn lý do đổi trả</h3>
         <label className="mb-2 block text-sm font-medium text-gray-700">
           Lý do:
         </label>
         <select
           value={reason}
-          onChange={e => {
-            setReason(e.target.value);
-            setReturnType('exchange'); // Đảm bảo rằng returnType luôn là 'exchange' vì chỉ dùng lý do đổi trả
-          }}
+          onChange={e => setReason(e.target.value)}
           className="mb-4 w-full rounded border p-2"
         >
           <option value="">Chọn Lý Do</option>
-          <option value="Không nhận được hàng">Không nhận được hàng</option>
-          <option value="Nhận thiếu hàng">Nhận thiếu hàng</option>
+          <option value="Chưa nhận được hàng">Chưa nhận được hàng</option>
+          <option value="Thiếu hàng">Thiếu hàng</option>
+          <option value="Thùng hàng rỗng">Thùng hàng rỗng</option>
         </select>
 
         <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -166,6 +214,12 @@ function ExchangeRequestPage() {
       </div>
 
       <div className="text-right">
+        <button
+          onClick={() => navigate({ to: '/orderuser' })}
+          className="mr-4 rounded bg-gray-500 px-6 py-2 font-semibold text-white hover:bg-gray-600"
+        >
+          Hủy
+        </button>
         <button
           onClick={handleSubmit}
           className="rounded bg-orange-500 px-6 py-2 font-semibold text-white hover:bg-orange-600"

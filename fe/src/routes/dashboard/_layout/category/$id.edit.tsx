@@ -1,10 +1,12 @@
 import instance from '@/api/axiosIntance';
 import Header from '@/components/layoutAdmin/header/header';
-import { useFetchCategoryById } from '@/data/category/useCategoryList';
 import useCategoryMutation from '@/data/category/useCategoryMutation';
-import { useFetchCategory } from '@/data/products/useProductList';
 import { Button, Input } from '@medusajs/ui';
-import { createFileRoute, useNavigate, useParams } from '@tanstack/react-router';
+import {
+  createFileRoute,
+  useNavigate,
+  useParams,
+} from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
@@ -25,7 +27,7 @@ export const Route = createFileRoute('/dashboard/_layout/category/$id/edit')({
       throw new Response('Failed to fetch category', { status: 500 });
     }
   },
-  component: EditCategory
+  component: EditCategory,
 });
 
 function EditCategory() {
@@ -41,11 +43,11 @@ function EditCategory() {
     register,
     handleSubmit,
     setValue,
-    formState: { errors }
+    formState: { errors },
   } = useForm<Category>({
     defaultValues: {
-      name: '' // Default value for the category name
-    }
+      name: '', // Default value for the category name
+    },
   });
 
   // Populate the form with the fetched category data
@@ -56,7 +58,7 @@ function EditCategory() {
     }
   }, [categories, setValue]);
 
-  const onUpdateCategory: SubmitHandler<Category> = async (data) => {
+  const onUpdateCategory: SubmitHandler<Category> = async data => {
     try {
       // Call API to update category
       await updateCategory.mutateAsync({ id, data });
@@ -92,7 +94,11 @@ function EditCategory() {
             </button>
           </div>
           <div className="flex gap-2">
-            <Button variant="secondary" type="button" onClick={() => navigate({ to: '/dashboard/category' })}>
+            <Button
+              variant="secondary"
+              type="button"
+              onClick={() => navigate({ to: '/dashboard/category' })}
+            >
               Cancel
             </Button>
             <Button variant="primary" type="submit">
@@ -105,7 +111,7 @@ function EditCategory() {
           <h1 className="text-2xl font-medium text-ui-fg-base">
             General Information
           </h1>
-          <p className="text-sm mb-4 font-normal text-ui-fg-subtle">
+          <p className="mb-4 text-sm font-normal text-ui-fg-subtle">
             Update the category name.
           </p>
 
@@ -119,10 +125,14 @@ function EditCategory() {
                 <Input
                   placeholder="Type here"
                   size="base"
-                  {...register('name', { required: 'Category name is required' })}
+                  {...register('name', {
+                    required: 'Category name is required',
+                  })}
                 />
                 {errors.name && (
-                  <span className="text-red-500 text-xs">{errors.name.message}</span>
+                  <span className="text-xs text-red-500">
+                    {errors.name.message}
+                  </span>
                 )}
               </div>
             </div>
