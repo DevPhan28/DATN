@@ -417,7 +417,7 @@ const setDelivered = async (req, res) => {
 };
 const returnOrder = async (req, res) => {
   const { orderId } = req.params; // Lấy orderId từ params
-  const { reason, returnType } = req.body; // Lấy lý do và loại hoàn trả từ body
+  const { reason } = req.body; // Lấy lý do từ body (loại hoàn trả không cần thiết nữa)
 
   try {
     const order = await Order.findById(orderId); // Tìm đơn hàng theo orderId
@@ -427,38 +427,29 @@ const returnOrder = async (req, res) => {
       return res.status(404).json({ message: "Đơn hàng không tồn tại" });
     }
 
-    // Kiểm tra trạng thái của đơn hàng, chỉ cho phép hoàn trả nếu đã giao hoặc đã nhận
+    // Kiểm tra trạng thái của đơn hàng, chỉ cho phép khiếu nại nếu đã giao hoặc đã nhận
     if (order.status !== "delivered" && order.status !== "received") {
       return res.status(400).json({
-        message: "Chỉ có thể hoàn trả đơn hàng đã giao hoặc đã nhận",
+        message: "Chỉ có thể khiếu nại đơn hàng đã giao hoặc đã nhận",
       });
     }
 
-    // Kiểm tra loại yêu cầu hoàn trả (refund hoặc exchange)
-    if (returnType === "refund") {
-      order.status = "refund"; // Cập nhật trạng thái đơn hàng thành refund
-    } else if (returnType === "exchange") {
-      order.status = "exchange"; // Cập nhật trạng thái đơn hàng thành exchange
-    } else {
-      return res.status(400).json({
-        message: "Loại yêu cầu hoàn trả không hợp lệ", // Trả về lỗi nếu loại không hợp lệ
-      });
-    }
+    // Cập nhật trạng thái đơn hàng thành "complaint"
+    order.status = "complaint";
+    order.returnReason = reason; // Lưu lý do khiếu nại vào đơn hàng
 
-    order.returnReason = reason; // Lưu lý do hoàn trả vào đơn hàng
     await order.save(); // Lưu lại thay đổi vào cơ sở dữ liệu
 
     // Trả về phản hồi thành công
     res.status(200).json({
-      message: `Đơn hàng đã được ${returnType === "refund" ? "trả hàng hoàn tiền" : "đổi trả"
-        } thành công`,
+      message: "Đơn hàng đã được xử lý với trạng thái khiếu nại thành công",
       order, // Trả lại thông tin đơn hàng đã cập nhật
     });
   } catch (error) {
     // Nếu có lỗi xảy ra
     res
       .status(500)
-      .json({ message: "Có lỗi xảy ra khi hoàn trả đơn hàng", error });
+      .json({ message: "Có lỗi xảy ra khi xử lý khiếu nại đơn hàng", error });
   }
 };
 
@@ -471,7 +462,7 @@ const updateReturnReason = async (req, res) => {
     if (!returnReason) {
       return res.status(400).json({ message: "Return reason is required." });
     }
-    if (!["refund", "exchange", "return_completed"].includes(status)) {
+    if (!["complaint", "return_completed"].includes(status)) {
       return res.status(400).json({ message: "Invalid status for return." });
     }
 
@@ -497,6 +488,7 @@ const updateReturnReason = async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 };
+
 const countSuccessfulOrders = async (req, res) => {
   try {
     const successfulOrdersCount = await Order.countDocuments({
