@@ -1,12 +1,9 @@
 import ErrorCart from '@/components/errors/error-cart';
 import LoginCart from '@/components/errors/error-login-cart';
-import useCartMutation from '@/data/cart/useCartMutation';
-import { useFetchCart } from '@/data/cart/useFetchCart';
+import { useCart } from '@/data/cart/useCartLogic';
 import { ChevronRightMini, ReceiptPercent } from '@medusajs/icons';
 import { toast } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useState } from 'react';
-
 export const Route = createFileRoute('/_layout/cart/')({
   component: Cart,
 });
@@ -14,165 +11,47 @@ export const Route = createFileRoute('/_layout/cart/')({
 function Cart() {
   const navigate = useNavigate();
   const userId = localStorage.getItem('userId');
-  const { data: cartData, isLoading, error } = useFetchCart(userId);
-  const {
-    deleteItemFromCart,
-    increaseQuantity,
-    decreaseQuantity,
-    updateQuantity,
-  } = useCartMutation();
-
-  const [quantities, setQuantities] = useState({});
-  const [selectedProducts, setSelectedProducts] = useState({});
-  const [selectAll, setSelectAll] = useState(false);
-
-  if (isLoading) {
-    return <div>Đang tải...</div>;
-  }
 
   if (!userId) {
     return <LoginCart />;
+  }
+
+  const {
+    cartData,
+    isLoading,
+    quantities,
+    selectedProducts,
+    selectAll,
+    handleQuantityChange,
+    incrementQuantity,
+    decrementQuantity,
+    productPrice,
+    handleDeleteSelectedProducts,
+    toggleSelectProduct,
+    toggleSelectAll,
+    totalSelectedPrice,
+    getSelectedItems,
+  } = useCart(userId);
+
+  if (isLoading) {
+    return <div>Đang tải...</div>;
   }
 
   if (!cartData || !cartData.products || cartData.products.length === 0) {
     return <ErrorCart />;
   }
 
-  const handleQuantityChange = (index, value) => {
-    const quantity = Math.max(parseInt(value) || 0, 0);
-    setQuantities(prev => ({
-      ...prev,
-      [index]: quantity,
-    }));
-    const product = cartData?.products[index];
-    if (product) {
-      updateQuantity.mutate({
-        userId: userId || '',
-        productId: product.productId,
-        variantId: product.variantId,
-        quantity,
-      });
-    }
-  };
-
-  const incrementQuantity = index => {
-    const newQuantity =
-      (quantities[index] || cartData?.products[index].quantity) + 1;
-    setQuantities(prev => ({
-      ...prev,
-      [index]: newQuantity,
-    }));
-    const product = cartData?.products[index];
-    if (product) {
-      increaseQuantity.mutate({
-        userId: userId || '',
-        productId: product.productId,
-        variantId: product.variantId,
-      });
-    }
-  };
-
-  const decrementQuantity = index => {
-    const newQuantity = Math.max(
-      (quantities[index] || cartData?.products[index].quantity) - 1,
-      0
-    );
-    setQuantities(prev => ({
-      ...prev,
-      [index]: newQuantity,
-    }));
-    const product = cartData?.products[index];
-    if (product && newQuantity > 0) {
-      decreaseQuantity.mutate({
-        userId: userId || '',
-        productId: product.productId,
-        variantId: product.variantId,
-      });
-    }
-  };
-
-  const productPrice = index => {
-    const product = cartData?.products[index];
-    const variantPrice = product?.priceAtTime ?? 0;
-    return variantPrice > 0 ? variantPrice : product?.price;
-  };
-
-  const handleDeleteSelectedProducts = () => {
-    const selectedProductIds = Object.keys(selectedProducts)
-      .filter(index => selectedProducts[parseInt(index)])
-      .map(index => cartData?.products[parseInt(index)].productId);
-
-    if (selectedProductIds.length === 0) {
-      toast.error('Vui lòng chọn ít nhất một sản phẩm để xóa.');
-      return;
-    }
-
-    deleteItemFromCart.mutate(
-      {
-        userId: userId || '',
-        productIds: selectedProductIds,
-      },
-      {
-        onSuccess: () => {
-          setSelectedProducts({});
-          setSelectAll(false);
-          toast.success('Đã xóa các sản phẩm đã chọn khỏi giỏ hàng.');
-        },
-        onError: () => {
-          toast.error('Có lỗi xảy ra khi xóa sản phẩm. Vui lòng thử lại.');
-        },
-      }
-    );
-  };
-
-  const toggleSelectProduct = index => {
-    setSelectedProducts(prev => ({
-      ...prev,
-      [index]: !prev[index],
-    }));
-  };
-
-  const toggleSelectAll = () => {
-    const newSelectAll = !selectAll;
-    setSelectAll(newSelectAll);
-    if (newSelectAll) {
-      const allSelected = Object.fromEntries(
-        cartData?.products.map((_, index) => [index, true]) || []
-      );
-      setSelectedProducts(allSelected);
-    } else {
-      setSelectedProducts({});
-    }
-  };
-
-  const totalSelectedPrice = cartData?.products.reduce(
-    (sum, product, index) => {
-      if (selectedProducts[index]) {
-        return (
-          sum + (quantities[index] || product.quantity) * productPrice(index)
-        );
-      }
-      return sum;
-    },
-    0
-  );
-
-  const getSelectedItems = () => {
-    return cartData.products.filter((_, index) => selectedProducts[index]);
-  };
-
   const handleCheckout = () => {
-    const selectedItems = getSelectedItems();
+    const selectedItems = getSelectedItems() || [];
     if (selectedItems.length === 0) {
       toast.error('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
       return;
     }
     navigate({
       to: '/checkout',
-      state: { selectedItems },
+      state: { selectedItems } as any ,
     });
   };
-
   return (
     <div className="">
       <div className="main-content flex h-48 w-full flex-col items-center justify-center">

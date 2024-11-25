@@ -220,7 +220,10 @@ function OrderList() {
               Total Price ($)
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Status Payment
+               Payment Method
+            </Table.HeaderCell>
+            <Table.HeaderCell className="font-semibold text-ui-fg-base">
+              Payment Status
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
               Status
@@ -306,6 +309,15 @@ function OrderList() {
                       />
                     ) : (
                       order.paymentMethod
+                    )}
+                  </Table.Cell>
+                  <Table.Cell className="font-semibold text-ui-fg-base">
+                    {order.paymentStatus === 'pending' ? (
+                      <span>Đã thanh toán</span>
+                    ) : order.paymentStatus === 'failed' ? (
+                      <span>Chờ thanh toán</span>
+                    ) : (
+                      order.paymentStatus
                     )}
                   </Table.Cell>
 

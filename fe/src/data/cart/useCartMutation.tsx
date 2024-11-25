@@ -1,13 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import instance from '@/api/axiosIntance'; // Import axios instance để gọi API
-import { toast } from '@medusajs/ui'; // Import thư viện toast để hiển thị thông báo
+import instance from '@/api/axiosIntance';  
+import { toast } from '@medusajs/ui';  
 import { QUERY_KEY } from '@/data/stores/key';
 
-// Hook để quản lý các mutation liên quan đến giỏ hàng
 const useCartMutation = () => {
-  const queryClient = useQueryClient(); // Sử dụng queryClient để invalidate dữ liệu khi cần
-
-  // Mutation để thêm sản phẩm vào giỏ hàng (bao gồm cả biến thể)
+  const queryClient = useQueryClient(); 
   const addItemToCart = useMutation({
     mutationFn: (data: {
       userId: string;
@@ -19,19 +16,16 @@ const useCartMutation = () => {
         description: 'Sản phẩm của bạn đã được thêm vào giỏ hàng thành công!',
         duration: 1000,
       });
-      queryClient.invalidateQueries({
-        queryKey: ['cart'],
-      });
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
-    onError: error => {
+    onError: (error: any) => {
       toast.error(`Có lỗi xảy ra: ${error.message}`, {
         description: 'Không thể thêm sản phẩm vào giỏ hàng, vui lòng thử lại.',
         duration: 2000,
       });
     },
   });
-
-  // Mutation để xóa một sản phẩm khỏi giỏ hàng
+ 
   const deleteItemFromCart = useMutation({
     mutationFn: ({
       userId,
@@ -43,23 +37,25 @@ const useCartMutation = () => {
       instance.delete(`/cart/${userId}/product`, {
         data: { productIds },
       }),
-
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEY.FETCH_CART],
-      });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY.FETCH_CART] });
     },
-    onError: error => {
+    onError: (error: any) => {
       toast.error(`Có lỗi xảy ra: ${error.message}`, {
         description: 'Không thể xóa sản phẩm khỏi giỏ hàng, vui lòng thử lại.',
         duration: 2000,
       });
     },
   });
-
-  // Mutation để xóa các sản phẩm đã chọn trong giỏ hàng
+ 
   const deleteSelectedItemsFromCart = useMutation({
-    mutationFn: async ({ userId, selectedProductIds }) => {
+    mutationFn: async ({
+      userId,
+      selectedProductIds,
+    }: {
+      userId: string;
+      selectedProductIds: string[];
+    }) => {
       try {
         const response = await instance.delete(
           `/cart/${userId}/delete-selected-items`,
@@ -67,21 +63,18 @@ const useCartMutation = () => {
             data: { selectedProductIds },
           }
         );
-        return response.data; // Trả về dữ liệu từ response
-      } catch (error: unknown) {
+        return response.data;  
+      } catch (error: any) {
         throw new Error(
           error?.response?.data?.message || 'Có lỗi xảy ra khi xóa sản phẩm'
-        ); // Xử lý lỗi
+        );
       }
     },
 
-    onSuccess: data => {
-      queryClient.invalidateQueries({
-        queryKey: [QUERY_KEY.FETCH_CART],
-      }); // Làm mới dữ liệu giỏ hàng
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEY.FETCH_CART] });
     },
-
-    onError: error => {
+    onError: (error: any) => {
       toast.error(`Có lỗi xảy ra: ${error.message}`, {
         description:
           'Không thể xóa các sản phẩm đã chọn khỏi giỏ hàng, vui lòng thử lại.',
@@ -89,8 +82,7 @@ const useCartMutation = () => {
       });
     },
   });
-
-  // Mutation để cập nhật số lượng sản phẩm trong giỏ hàng
+ 
   const updateQuantity = useMutation({
     mutationFn: (data: {
       userId: string;
@@ -100,19 +92,16 @@ const useCartMutation = () => {
     }) => instance.patch('/cart/update-quantity', data),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['cart'],
-      });
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
-    onError: error => {
+    onError: (error: any) => {
       toast.error(`Có lỗi xảy ra: ${error.message}`, {
         description: 'Không thể cập nhật số lượng, vui lòng thử lại.',
         duration: 2000,
       });
     },
   });
-
-  // Mutation để tăng số lượng sản phẩm trong giỏ hàng
+ 
   const increaseQuantity = useMutation({
     mutationFn: (data: {
       userId: string;
@@ -121,13 +110,10 @@ const useCartMutation = () => {
     }) => instance.patch('/cart/increase-quantity', data),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['cart'],
-      });
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
   });
-
-  // Mutation để giảm số lượng sản phẩm trong giỏ hàng
+ 
   const decreaseQuantity = useMutation({
     mutationFn: (data: {
       userId: string;
@@ -136,9 +122,7 @@ const useCartMutation = () => {
     }) => instance.patch('/cart/decrease-quantity', data),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['cart'],
-      });
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
   });
 

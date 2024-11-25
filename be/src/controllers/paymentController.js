@@ -48,6 +48,47 @@ const callback = async (req, res) => {
   res.json(result); // Gửi kết quả về cho ZaloPay server
 };
 
+const updatePaymentStatusOnFailure = async (req, res) => {
+  const { status, orderId } = req.body; // Dữ liệu từ body thay vì query
+
+  if (status === "failed") {
+    try {
+      if (!orderId) {
+        return res.status(400).json({ message: "Order ID is required" });
+      }
+
+      const order = await Order.findById(orderId);
+
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      if (order.paymentStatus === "pending") {
+        const updatedOrder = await Order.findByIdAndUpdate(
+          orderId,
+          { paymentStatus: status },
+          { new: true }
+        );
+
+        return res.status(200).json({
+          message: `Order ${updatedOrder._id} payment status updated to "failed"`,
+          order: updatedOrder,
+        });
+      }
+
+      return res.status(200).json({
+        message: "Order already processed or payment status is not pending",
+        order,
+      });
+    } catch (error) {
+      console.error("Error updating payment status:", error);
+      return res.status(500).json({ message: "Error updating payment status" });
+    }
+  } else {
+    return res.status(400).json({ message: "Invalid status parameter" });
+  }
+};
 module.exports = {
+  updatePaymentStatusOnFailure,
   callback,
 };

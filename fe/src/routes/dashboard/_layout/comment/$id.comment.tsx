@@ -14,29 +14,23 @@ function CommentList() {
   const [product, setProduct] = useState(null);
   const dialog = usePrompt();
 
-  // Fetch comments dựa trên productId
   useEffect(() => {
     const fetchComments = async () => {   
       if (product) {
         toast.error('Không tìm thấy ID sản phẩm');
         return;
       }
-      console.log('Fetching comments for product ID:', id); // Log productId để kiểm tra
-  
       try {
         const response = await instance.get(`/comments/product/${id}`);
-        console.log('Fetched comments:', response.data); // Log dữ liệu bình luận trả về
         setComments(response.data);
       } catch (err) {
-        console.error('Error fetching comments:', err.response?.data || err.message);
-        toast.error('Không thể tải bình luận');
+       
       }
     };
   
     fetchComments();
   }, [product]);
 
-  // Xóa một bình luận
   const deleteEntity = async (_id: string) => {
     const userHasConfirmed = await dialog({
       title: 'Xóa bình luận',
@@ -45,13 +39,12 @@ function CommentList() {
   
     if (userHasConfirmed) {
       try {
-        console.log('Deleting comment with ID:', _id); // Log ID của bình luận bị xóa
-        await instance.delete(`/comments/${_id}/admin`); // Sử dụng đúng comment ID
-        setComments(prevComments => prevComments.filter(comment => comment._id !== _id)); // Cập nhật state
+        console.log('Deleting comment with ID:', _id); 
+        await instance.delete(`/comments/${_id}/admin`); 
+        setComments(prevComments => prevComments.filter(comment => comment._id !== _id)); 
         toast.success('Đã xóa bình luận');
       } catch (err) {
         
-        toast.error(err.response?.data?.message || 'Không thể xóa bình luận');
       }
     }
   };

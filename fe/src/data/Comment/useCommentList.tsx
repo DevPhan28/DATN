@@ -14,7 +14,6 @@ export const fetchComments = async (productId: string) => {
 
     return res.data; // Dữ liệu bao gồm cả bình luận và thông tin người dùng
   } catch (error: any) {
-    console.error('Error fetching comments:', error);
     throw new Error('Error fetching comments');
   }
 };
