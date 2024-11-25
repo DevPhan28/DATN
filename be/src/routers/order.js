@@ -12,12 +12,14 @@ const {
   updateReturnReason,
   returnOrder,
   countSuccessfulOrders,
+  getOrderByIdAdmin,
 } = require("../controllers/order");
 const router = express.Router();
 
 router.post("/orders", createOrder);
 
 router.get("/orders", getOrders);
+router.get("/orders/:orderId", getOrderByIdAdmin);
 
 router.get("/orders/:userId/:orderId", getOrderById);
 

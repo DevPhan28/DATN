@@ -454,6 +454,22 @@ const countSuccessfulOrders = async (req, res) => {
       .json({ error: error.message });
   }
 };
+const getOrderByIdAdmin = async (req, res) => {
+  try {
+    const {  orderId } = req.params;
+    const order = await Order.findOne({  _id: orderId });
+    if (!order) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ error: "Order not found" });
+    }
+    return res.status(StatusCodes.OK).json(order);
+  } catch (error) {
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
 
 module.exports = {
   getOrderById,
@@ -468,4 +484,5 @@ module.exports = {
   returnOrder,
   updateReturnReason,
   countSuccessfulOrders,
+  getOrderByIdAdmin
 };

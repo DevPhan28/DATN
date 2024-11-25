@@ -3,7 +3,7 @@ import { useFetchOrders } from '@/data/oder/useOderList';
 import useCheckoutMutation from '@/data/oder/useOderMutation';
 import { Adjustments, ArrowUpTray, EllipsisVertical } from '@medusajs/icons';
 import { Button, DropdownMenu, Input, Table, toast } from '@medusajs/ui';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 
 const pageSize = 10;
@@ -15,6 +15,7 @@ export const Route = createFileRoute('/dashboard/_layout/order/')({
 function OrderList() {
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedTab, setSelectedTab] = useState('all'); // State for selected tab
+  const navigate = useNavigate();
 
   const {
     data: listOrder,
@@ -247,7 +248,12 @@ function OrderList() {
                         </button>
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Content className="space-y-2">
-                        <DropdownMenu.Item className="p-2 text-ui-tag-neutral-text hover:text-ui-code-bg-base">
+                        <DropdownMenu.Item className="p-2 text-ui-tag-neutral-text hover:text-ui-code-bg-base"
+                         onClick={() =>
+                          void navigate({
+                            to: `/dashboard/detailorder/${order._id}/detailorder`,
+                          })
+                        }>
                           View Details
                         </DropdownMenu.Item>
                       </DropdownMenu.Content>
