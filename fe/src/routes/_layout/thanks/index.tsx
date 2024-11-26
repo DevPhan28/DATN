@@ -28,7 +28,7 @@ export const Route = createFileRoute('/_layout/thanks/')({
 function ReturnPage() {
   const navigate = useNavigate();
   const { status, apptransid } = useSearch({ from: '/_layout/thanks/' });
-  const orderId = apptransid.split('_')[2].trim();
+  const orderId = apptransid.split('_')[1].trim();
   const isSuccess = status === '1'; 
   const message = isSuccess
     ? 'Thanh toán thành công! Cảm ơn bạn đã đặt hàng.'

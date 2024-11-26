@@ -18,7 +18,7 @@ function OrderDetail() {
     const fetchOrderDetail = async () => {
       try {
         setLoading(true);
-        const response = await instance.get(`/orders/${id}`);
+        const response = await instance.get(`/orders/${id}/admin`);
         setOrderDetail(response.data);
       } catch (err) {
         console.error('Failed to fetch order:', err);

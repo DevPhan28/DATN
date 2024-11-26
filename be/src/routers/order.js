@@ -19,7 +19,7 @@ const router = express.Router();
 router.post("/orders", createOrder);
 
 router.get("/orders", getOrders);
-router.get("/orders/:orderId", getOrderByIdAdmin);
+router.get("/orders/:orderId/admin", getOrderByIdAdmin);
 
 router.get("/orders/:userId/:orderId", getOrderById);
 
