@@ -10,58 +10,66 @@ interface Order {
 }
 
 interface MetaData {
-  totalItems: number;
-  totalPages: number;
-  currentPage: number;
-  pageSize: number;
+  totalItems: number; 
+  totalPages: number; 
+  currentPage: number; 
+  pageSize: number; 
 }
 
 interface OrdersResponse {
   data: Order[];
-  meta: MetaData;
-  statusCounts: Record<string, number>; 
-  totalDeliveredAmount: number; 
+  meta: MetaData; 
+  statusCounts: Record<string, number>;
+  totalDeliveredAmount: number;
 }
 
-// Hàm lấy tất cả đơn hàng với các tham số
-export const fetchOrders = async (params: any): Promise<OrdersResponse> => {
+export const fetchOrders = async (params: { page?: number; limit?: number; status?: string; sortBy?: string; order?: string }): Promise<OrdersResponse> => {
   try {
-    console.log('Fetching orders with params:', params);
     const res = await instance.get<OrdersResponse>('/orders', { params });
 
-    if (res.status !== 200 && res.status !== 201) {
-      console.error('Unexpected status code:', res.status, res.statusText);
+    if (res.status < 200 || res.status >= 300) {
       throw new Error(`Error while fetching orders - status code: ${res.status}`);
     }
 
-    console.log('Response from server:', res.data);
     return res.data;
   } catch (error: any) {
-    if (error.response) {
-      console.error('Response error:', error.response.data);
-    } else {
-      console.error('Request error:', error.message);
-    }
-    throw new Error('Error while fetching orders');
+    console.error('Error while fetching orders:', error.response?.data || error.message);
+    throw error;
   }
 };
 
 // Hook lấy đơn hàng với tham số từ query
-export const useFetchOrders = (params: any) => {
-  const query = useQuery({
-    queryKey: [QUERY_KEY.FETCH_ORDERS, params],
+export const useFetchOrders = (params: FetchOrdersParams) => {
+  const query = useQuery<OrdersResponse>({
+    queryKey: ['orders', params],
+    queryFn: () => fetchOrders(params),
+    enabled: !!params, // Chỉ kích hoạt query nếu params không rỗng
+  });
+
+  return {
+    ...query,
+    totalDeliveredAmount: query.data?.totalDeliveredAmount || 0, // Tổng giá trị đã giao hàng
+    statusCounts: query.data?.statusCounts || {}, // Đếm trạng thái đơn hàng
+  };
+};
+
+// Hook thứ hai: Dành cho danh sách đơn hàng với meta (có phân trang)
+export const useFetchOrdersStatus = (params: FetchOrdersParams) => {
+  const query = useQuery<OrdersResponse>({
+    queryKey: ['orders', params],
     queryFn: () => fetchOrders(params),
     enabled: !!params,
   });
 
   return {
     ...query,
-    totalDeliveredAmount: query.data?.totalDeliveredAmount || 0, 
-    statusCounts: query.data?.statusCounts || {},  // Sửa lại để trả về toàn bộ statusCounts
+    data: query.data?.data || [], // Dữ liệu đơn hàng
+    meta: query.data?.meta || { totalItems: 0, totalPages: 0, currentPage: 0, pageSize: 10 }, // Phân trang mặc định
+    totalDeliveredAmount: query.data?.totalDeliveredAmount || 0, // Tổng giá trị đã giao hàng
+    statusCounts: query.data?.statusCounts || {}, // Đếm trạng thái đơn hàng
   };
 };
 
-// Hook lấy số lượng đơn hàng thành công
 export const useFetchSuccessfulOrderCount = () => {
   return useQuery({
     queryKey: ["successfulOrderCount"],

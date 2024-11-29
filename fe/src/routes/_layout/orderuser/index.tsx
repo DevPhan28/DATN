@@ -1,5 +1,6 @@
 import instance from '@/api/axiosIntance';
 import { useFetchOrdersByUserId } from '@/data/oder/useOderList';
+import { retryPayment } from '@/data/oder/usePayment';
 import { ChevronRightMini } from '@medusajs/icons';
 import { toast, usePrompt } from '@medusajs/ui';
 import { createFileRoute, Link } from '@tanstack/react-router';
@@ -22,6 +23,8 @@ type Order = {
 
 const getStatusLabel = (status: string) => {
   switch (status) {
+    case 'pendingPayment':
+      return 'Chờ thanh toán';
     case 'pending':
       return 'Chờ xác nhận';
     case 'confirmed':
@@ -162,6 +165,7 @@ function UserOrder() {
 
   const tabs = [
     { id: 'all', label: 'Tất cả' },
+    { id: 'pendingPayment', label: 'Chờ thanh toán' },
     { id: 'pending', label: 'Chờ xác nhận' },
     { id: 'confirmed', label: 'Chờ lấy hàng' },
     { id: 'shipped', label: 'Chờ giao hàng' },
@@ -186,11 +190,13 @@ function UserOrder() {
     if (selectedTab === 'all') {
       return true;
     }
-
+    if (selectedTab === 'pendingPayment') {
+      return order.status === 'pendingPayment';
+    }
     if (selectedTab === 'pending') {
       return order.status === 'pending';
     }
-
+    
     if (selectedTab === 'confirmed') {
       return order.status === 'confirmed';
     }
@@ -306,10 +312,6 @@ function UserOrder() {
           {ordersToDisplay.length > 0 ? (
             <div className="space-y-4">
               {ordersToDisplay.map((order: Order) => {
-                // const totalAmount = order.items.reduce(
-                //   (total, item) => total + item.price * item.quantity,
-                //   0
-                // );
                 return (
                   <div
                     key={order._id}
@@ -321,26 +323,23 @@ function UserOrder() {
                           order.status === 'canceled'
                             ? 'bg-red-200 text-red-600'
                             : order.status === 'pending'
-                              ? 'bg-yellow-200 text-yellow-700'
-                              : order.status === 'confirmed'
-                                ? 'bg-blue-200 text-blue-700'
-                                : order.status === 'shipped' ||
-                                    order.status === 'received'
-                                  ? 'bg-indigo-200 text-indigo-700'
-                                  : order.status === 'delivered'
-                                    ? 'bg-green-200 text-green-700'
-                                    : order.status === 'complaint'
-                                      ? 'bg-purple-500 text-white'
-                                      : order.status === 'refund_in_progress' ||
-                                          order.status ===
-                                            'exchange_in_progress'
-                                        ? 'bg-orange-200 text-orange-700'
-                                        : order.status === 'refund_completed' ||
-                                            order.status ===
-                                              'exchange_completed'
-                                          ? 'bg-teal-200 text-teal-700'
-                                          : ''
-                        }`}
+                            ? 'bg-yellow-200 text-yellow-700'
+                            : order.status === 'confirmed'
+                            ? 'bg-blue-200 text-blue-700'
+                            : order.status === 'shipped' || order.status === 'received'
+                            ? 'bg-indigo-200 text-indigo-700'
+                            : order.status === 'delivered'
+                            ? 'bg-green-200 text-green-700'
+                            : order.status === 'complaint'
+                            ? 'bg-purple-500 text-white'
+                            : order.status === 'refund_in_progress' || order.status === 'exchange_in_progress'
+                            ? 'bg-orange-200 text-orange-700'
+                            : order.status === 'refund_completed' || order.status === 'exchange_completed'
+                            ? 'bg-teal-200 text-teal-700'
+                            : order.status === 'pendingPayment' // Thêm trạng thái pendingPayment
+                            ? 'bg-gray-200 text-gray-700' // Màu cho pendingPayment
+                            : ''
+                        }`}                        
                       >
                         {getStatusLabel(order.status)}
                       </span>
@@ -398,6 +397,14 @@ function UserOrder() {
                       </div>
                     </div>
                     <div className="mt-4 flex items-center justify-end">
+                    {order.status === 'pendingPayment' && (
+                        <button
+                          onClick={() => retryPayment(order._id)}
+                          className="mr-2 rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+                        >
+                          Thanh Toán Lại
+                        </button>
+                      )}
                       {order.status === 'pending' && (
                         <button
                           onClick={() => deleteEntity(order._id)}

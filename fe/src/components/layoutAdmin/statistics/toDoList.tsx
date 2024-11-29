@@ -3,14 +3,14 @@ import { Link } from '@tanstack/react-router';
 
 const translateOrderStatus = status => {
   const statusTranslations = {
+    pendingPayment: 'Đang chờ thanh toán',
     pending: 'Đang chờ xử lý',
     confirmed: 'Đã xác nhận',
     shipped: 'Đang giao hàng',
     received: 'Đã nhận hàng',
     delivered: 'Đã giao hàng',
-    canceled: 'Đã hủy',
-    refund: 'Hoàn tiền',
-    exchange: 'Đổi hàng',
+    canceled: 'Đơn bị hủy',
+    complaint: 'Khiếu nại',
     refund_in_progress: 'Đang hoàn trả hàng',
     refund_completed: 'Hoàn trả hàng thành công' ,
     exchange_in_progress: 'Đang đổi trả hàng' ,
@@ -35,8 +35,7 @@ const ToDoList = () => {
     received: 0,
     delivered: 0,
     canceled: 0,
-    refund: 0,
-    exchange: 0,
+    complaint: 0,
     refund_in_progress: 0,
     refund_completed: 0 ,
     exchange_in_progress: 0 ,

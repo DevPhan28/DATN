@@ -11,7 +11,7 @@ export const fetchCategory = async (params: CategoryParams) => {
       meta: MetaData;
     }>('/categories', { params });
 
-    console.log('Response from server:', res); // Log chi tiết response từ server
+    console.log('Response from server:', res); 
 
     if (res.status !== 200 && res.status !== 201) {
       console.error('Unexpected status code:', res.status, res.statusText);

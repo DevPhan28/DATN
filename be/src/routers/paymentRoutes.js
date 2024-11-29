@@ -8,5 +8,5 @@ router.post(
     "/update-payment-status",
     paymentController.updatePaymentStatusOnFailure
   );
-
+router.post("/retry-payment", paymentController.retryPayment);
 module.exports = router;
