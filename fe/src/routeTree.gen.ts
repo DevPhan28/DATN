@@ -43,6 +43,7 @@ import { Route as DashboardLayoutCouponCreateImport } from './routes/dashboard/_
 import { Route as DashboardLayoutCategoryCreateImport } from './routes/dashboard/_layout/category/create'
 import { Route as LayoutRefundUserIdOrderIdImport } from './routes/_layout/refund/$userId.$orderId'
 import { Route as LayoutExchangeUserIdOrderIdImport } from './routes/_layout/exchange/$userId.$orderId'
+import { Route as DashboardLayoutProductsSlugViewdetailImport } from './routes/dashboard/_layout/products/$slug.viewdetail'
 import { Route as DashboardLayoutProductsIdEditImport } from './routes/dashboard/_layout/products/$id.edit'
 import { Route as DashboardLayoutDetailorderIdDetailorderImport } from './routes/dashboard/_layout/detailorder/$id.detailorder'
 import { Route as DashboardLayoutCouponIdEditImport } from './routes/dashboard/_layout/coupon/$id.edit'
@@ -218,6 +219,12 @@ const LayoutExchangeUserIdOrderIdRoute =
   LayoutExchangeUserIdOrderIdImport.update({
     path: '/exchange/$userId/$orderId',
     getParentRoute: () => LayoutRoute,
+  } as any)
+
+const DashboardLayoutProductsSlugViewdetailRoute =
+  DashboardLayoutProductsSlugViewdetailImport.update({
+    path: '/products/$slug/viewdetail',
+    getParentRoute: () => DashboardLayoutRoute,
   } as any)
 
 const DashboardLayoutProductsIdEditRoute =
@@ -506,6 +513,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLayoutProductsIdEditImport
       parentRoute: typeof DashboardLayoutImport
     }
+    '/dashboard/_layout/products/$slug/viewdetail': {
+      id: '/dashboard/_layout/products/$slug/viewdetail'
+      path: '/products/$slug/viewdetail'
+      fullPath: '/dashboard/products/$slug/viewdetail'
+      preLoaderRoute: typeof DashboardLayoutProductsSlugViewdetailImport
+      parentRoute: typeof DashboardLayoutImport
+    }
   }
 }
 
@@ -561,6 +575,7 @@ interface DashboardLayoutRouteChildren {
   DashboardLayoutCouponIdEditRoute: typeof DashboardLayoutCouponIdEditRoute
   DashboardLayoutDetailorderIdDetailorderRoute: typeof DashboardLayoutDetailorderIdDetailorderRoute
   DashboardLayoutProductsIdEditRoute: typeof DashboardLayoutProductsIdEditRoute
+  DashboardLayoutProductsSlugViewdetailRoute: typeof DashboardLayoutProductsSlugViewdetailRoute
 }
 
 const DashboardLayoutRouteChildren: DashboardLayoutRouteChildren = {
@@ -579,6 +594,8 @@ const DashboardLayoutRouteChildren: DashboardLayoutRouteChildren = {
   DashboardLayoutDetailorderIdDetailorderRoute:
     DashboardLayoutDetailorderIdDetailorderRoute,
   DashboardLayoutProductsIdEditRoute: DashboardLayoutProductsIdEditRoute,
+  DashboardLayoutProductsSlugViewdetailRoute:
+    DashboardLayoutProductsSlugViewdetailRoute,
 }
 
 const DashboardLayoutRouteWithChildren = DashboardLayoutRoute._addFileChildren(
@@ -635,6 +652,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/coupon/$id/edit': typeof DashboardLayoutCouponIdEditRoute
   '/dashboard/detailorder/$id/detailorder': typeof DashboardLayoutDetailorderIdDetailorderRoute
   '/dashboard/products/$id/edit': typeof DashboardLayoutProductsIdEditRoute
+  '/dashboard/products/$slug/viewdetail': typeof DashboardLayoutProductsSlugViewdetailRoute
 }
 
 export interface FileRoutesByTo {
@@ -671,6 +689,7 @@ export interface FileRoutesByTo {
   '/dashboard/coupon/$id/edit': typeof DashboardLayoutCouponIdEditRoute
   '/dashboard/detailorder/$id/detailorder': typeof DashboardLayoutDetailorderIdDetailorderRoute
   '/dashboard/products/$id/edit': typeof DashboardLayoutProductsIdEditRoute
+  '/dashboard/products/$slug/viewdetail': typeof DashboardLayoutProductsSlugViewdetailRoute
 }
 
 export interface FileRoutesById {
@@ -711,6 +730,7 @@ export interface FileRoutesById {
   '/dashboard/_layout/coupon/$id/edit': typeof DashboardLayoutCouponIdEditRoute
   '/dashboard/_layout/detailorder/$id/detailorder': typeof DashboardLayoutDetailorderIdDetailorderRoute
   '/dashboard/_layout/products/$id/edit': typeof DashboardLayoutProductsIdEditRoute
+  '/dashboard/_layout/products/$slug/viewdetail': typeof DashboardLayoutProductsSlugViewdetailRoute
 }
 
 export interface FileRouteTypes {
@@ -751,6 +771,7 @@ export interface FileRouteTypes {
     | '/dashboard/coupon/$id/edit'
     | '/dashboard/detailorder/$id/detailorder'
     | '/dashboard/products/$id/edit'
+    | '/dashboard/products/$slug/viewdetail'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/forgot-password'
@@ -786,6 +807,7 @@ export interface FileRouteTypes {
     | '/dashboard/coupon/$id/edit'
     | '/dashboard/detailorder/$id/detailorder'
     | '/dashboard/products/$id/edit'
+    | '/dashboard/products/$slug/viewdetail'
   id:
     | '__root__'
     | '/_layout'
@@ -824,6 +846,7 @@ export interface FileRouteTypes {
     | '/dashboard/_layout/coupon/$id/edit'
     | '/dashboard/_layout/detailorder/$id/detailorder'
     | '/dashboard/_layout/products/$id/edit'
+    | '/dashboard/_layout/products/$slug/viewdetail'
   fileRoutesById: FileRoutesById
 }
 
@@ -925,7 +948,8 @@ export const routeTree = rootRoute
         "/dashboard/_layout/comment/$id/comment",
         "/dashboard/_layout/coupon/$id/edit",
         "/dashboard/_layout/detailorder/$id/detailorder",
-        "/dashboard/_layout/products/$id/edit"
+        "/dashboard/_layout/products/$id/edit",
+        "/dashboard/_layout/products/$slug/viewdetail"
       ]
     },
     "/dashboard/settting": {
@@ -1038,6 +1062,10 @@ export const routeTree = rootRoute
     },
     "/dashboard/_layout/products/$id/edit": {
       "filePath": "dashboard/_layout/products/$id.edit.tsx",
+      "parent": "/dashboard/_layout"
+    },
+    "/dashboard/_layout/products/$slug/viewdetail": {
+      "filePath": "dashboard/_layout/products/$slug.viewdetail.tsx",
       "parent": "/dashboard/_layout"
     }
   }

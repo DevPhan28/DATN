@@ -1,0 +1,112 @@
+import instance from '@/api/axiosIntance';
+import Header from '@/components/layoutAdmin/header/header';
+import { useQuery } from '@tanstack/react-query';
+import { createFileRoute, useParams } from '@tanstack/react-router';
+
+export const Route = createFileRoute('/dashboard/_layout/products/$slug/viewdetail')({
+  component: DetailProduct,
+});
+
+function DetailProduct() {
+  const { slug } = useParams({ from: '/dashboard/_layout/products/$slug/viewdetail' });
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['product', slug],
+    queryFn: async () => {
+      try {
+        const response = await instance.get(`/products/slug/${slug}`);
+        return response.data;
+      } catch (error) {
+        throw new Error('Call API thất bại');
+      }
+    },
+    enabled: !!slug, // Đảm bảo query chỉ chạy khi `slug` tồn tại
+  });
+
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-screen text-gray-500">Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500">Error: {error.message}</div>;
+  }
+
+  return (
+    <div className="h-screen overflow-y-auto">
+      <Header title="Create New Products" pathname="/" />
+      <div className="bg-white shadow-md rounded-lg overflow-hidden m-8">
+        <div className="max-w-6xl grid grid-cols-3">
+          {/* Product Image */}
+          <div className="p-4 flex items-center">
+            <img
+              src={data.product.image}
+              alt={data.product.name}
+              className="rounded-lg object-cover"
+            />
+          </div>
+
+          {/* Product Details */}
+          <div className="p-6 space-y-4">
+            <h1 className="text-2xl font-bold text-gray-800 uppercase">{data.product.name}</h1>
+            <p className="text-black font-semibold">
+              Mô tả: <span className="text-gray-600 font-sans">{data.product.description}</span>
+            </p>
+            <div className="text-black font-semibold">
+              Giá: <span className="text-xl font-semibold text-red-600">{data.product.price}VND</span>
+            </div>
+            <div className="text-black font-semibold">
+              Giảm giá: <span className="text-xl font-semibold text-gray-600">{data.product.discount}%</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Gallery Section */}
+        <div className="p-8">
+          <h2 className="text-lg font-bold text-gray-800">Gallery</h2>
+          {data.product.gallery.length > 0 ? (
+            <div className="grid grid-cols-4 gap-4 mt-4">
+              {data.product.gallery.map((image: string, index: number) => (
+                <img
+                  key={index}
+                  src={image}
+                  alt={`Gallery Image ${index + 1}`}
+                  className="w-full h-48 object-cover rounded shadow"
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-600">No images available in the gallery.</p>
+          )}
+        </div>
+
+        {/* Variants Section */}
+        <div className="p-8">
+          <h2 className="text-lg font-bold text-gray-800">Variants</h2>
+          {data.product.variants.length > 0 ? (
+            <div className="grid grid-cols-1 gap-4 mt-4">
+              {data.product.variants.map((variant: any, index: number) => (
+                <div
+                  key={variant._id || index}
+                  className="flex justify-between items-center border rounded p-4 shadow-sm"
+                >
+                  <p className="text-black font-medium">Size: {variant.size}</p>
+                  <p className="text-black font-medium">Color: {variant.color}</p>
+                  <p className="text-black font-medium">Price: {variant.price}VND</p>
+                  <p className="text-black font-medium">Sku: {variant.sku}</p>
+                  <p className="text-black font-medium">
+                    Count In Stock: {variant.countInStock}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-600">No variants available.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+}
+
+export default DetailProduct;

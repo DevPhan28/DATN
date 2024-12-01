@@ -8,7 +8,7 @@ import {
   Plus,
 } from '@medusajs/icons';
 import { Button, DropdownMenu, Input, Table, usePrompt } from '@medusajs/ui';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 
 const pageSize = 7;
@@ -75,9 +75,9 @@ function ProductList() {
           product.countInStock !== undefined
             ? product.countInStock
             : product.variants?.reduce(
-                (total, variant) => total + (variant.countInStock || 0),
-                0
-              ) || 0,
+              (total, variant) => total + (variant.countInStock || 0),
+              0
+            ) || 0,
       })) ?? []
     );
   }, [listproduct]);
@@ -158,8 +158,13 @@ function ProductList() {
                         </button>
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Content className="space-y-2">
-                        <DropdownMenu.Item className="p-2 text-ui-tag-neutral-text hover:text-ui-code-bg-base">
-                          View Details
+                        <DropdownMenu.Item className="p-2 text-ui-tag-neutral-text hover:text-ui-code-bg-base" asChild>
+                          {/* <Link to={`/dashboard/products/${product.id}/viewdetail`}>View Details</Link> */}
+                          <span onClick={() =>
+                            void navigate({
+                              to: `/dashboard/products/${product.slug}/viewdetail`,
+                            })
+                          }>View Details</span>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item className="gap-x-2" asChild>
                           <span onClick={async () => deleteEntity(product._id)}>
@@ -174,7 +179,7 @@ function ProductList() {
                             })
                           }
                         >
-                          view comment 
+                          view comment
                         </DropdownMenu.Item>
                         <DropdownMenu.Item
                           className="gap-x-2"

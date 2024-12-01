@@ -11,9 +11,19 @@ export default {
       fontFamily: {
         poppins: ['Poppins', 'sans-serif'],
       },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        },
+      },
+      animation: {
+        marquee: 'marquee 30s linear infinite',
+      },
     },
   },
 
   presets: [require('@medusajs/ui-preset')],
   plugins: [],
+
 };

@@ -1,3 +1,4 @@
+import Banertime from '@/components/Banertime';
 import ChatBot from '@/components/ChatBot';
 import Footer from '@/components/footer';
 import Header from '@/components/header';
@@ -9,11 +10,11 @@ export const Route = createFileRoute('/_layout')({
       <Toaster position="top-right" className="mt-7" />
 
       <div>
+        <Banertime />
         <Header />
         <Outlet />
       </div>
       <div>
-        <h2>ChatBot</h2>
         <ChatBot />
       </div>
       <Footer />
