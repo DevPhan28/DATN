@@ -12,52 +12,31 @@ export const Route = createFileRoute('/dashboard/_layout/category/')({
 });
 
 function CategoryList() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const [currentPage, setCurrentPage] = useState(0)
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
-    null
-  )
+  const [currentPage, setCurrentPage] = useState(0);
+  const [searchTerm, setSearchTerm] = useState(''); // State for search input
 
-  const { data: listCategory } = useFetchCategory()
+  const { data: listCategory } = useFetchCategory();
 
-  // const { deleteCategory } = useCategoryMutation()
+  const filteredCategories = useMemo(() => {
+    if (!listCategory || !searchTerm) return listCategory;
+    return listCategory.filter((category: any) =>
+      category.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [listCategory, searchTerm]);
 
-  // const pageCount = Math.ceil(listCategory?.meta.totalItems ?? 0 / pageSize)
+  const canPreviousPage = useMemo(() => currentPage - 1 >= 0, [currentPage]);
 
-  // const canNextPage = useMemo(
-  //   () => currentPage < pageCount - 1,
-  //   [currentPage, pageCount]
-  // )
-
-  const canPreviousPage = useMemo(() => currentPage - 1 >= 0, [currentPage])
-
-  // const nextPage = () => {
-  //   if (canNextPage) {
-  //     setCurrentPage(currentPage + 1)
-  //   }
-  // }
   const previousPage = () => {
     if (canPreviousPage) {
-      setCurrentPage(currentPage - 1)
+      setCurrentPage(currentPage - 1);
     }
-  }
-  // const handleDelete = () => {
-  //   if (selectedCategoryId) {
-  //     deleteCategory.mutate(selectedCategoryId)
-  //     setSelectedCategoryId(null)
-  //   }
-  // }
-  // const openDeletePrompt = (categoryId: string) => {
-  //   setSelectedCategoryId(categoryId)
-  // }
-  // const closeDeletePrompt = () => {
-  //   setSelectedCategoryId(null)
-  // }
+  };
 
   return (
     <div className="h-screen overflow-y-auto">
-      <Header title='Category' pathname='' />
+      <Header title="Category" pathname="" />
       <div className="relative flex justify-between px-6 py-4">
         <div className="relative w-80">
           <Input
@@ -66,6 +45,8 @@ function CategoryList() {
             id="search-input"
             size="small"
             type="search"
+            value={searchTerm} // Bind input to searchTerm
+            onChange={(e) => setSearchTerm(e.target.value)} // Update searchTerm on input change
           />
         </div>
         <div className="flex items-center gap-2">
@@ -100,9 +81,8 @@ function CategoryList() {
             </Table.HeaderCell>
           </Table.Row>
           <Table.Body>
-            {listCategory?.map((category) => {
-              // const badgeColor = category.status === 'SHOW' ? 'green' : 'red'
-              return (
+            {filteredCategories?.length > 0 ? (
+              filteredCategories.map((category: any) => (
                 <Table.Row
                   key={category._id}
                   className="[&_td:last-child]:w-[5%] [&_td:last-child]:whitespace-nowrap"
@@ -128,52 +108,20 @@ function CategoryList() {
                       >
                         Edit
                       </Button>
-                      {/* <Prompt>
-                        <Prompt.Trigger asChild>
-                          <Button
-                            variant="secondary"
-                            onClick={() => openDeletePrompt(category.id)}
-                          >
-                            Delete
-                          </Button>
-                        </Prompt.Trigger>
-                        <Prompt.Content>
-                          <Prompt.Header>
-                            <Prompt.Title>Delete Category</Prompt.Title>
-                            <Prompt.Description>
-                              Are you sure you want to delete this category?
-                              This action cannot be undone.
-                            </Prompt.Description>
-                          </Prompt.Header>
-                          <Prompt.Footer>
-                            <Prompt.Cancel onClick={closeDeletePrompt}>
-                              Cancel
-                            </Prompt.Cancel>
-                            <Prompt.Action onClick={handleDelete}>
-                              Delete
-                            </Prompt.Action>
-                          </Prompt.Footer>
-                        </Prompt.Content>
-                      </Prompt> */}
                     </div>
                   </Table.Cell>
                 </Table.Row>
-              )
-            })}
+              ))
+            ) : (
+              <Table.Row>
+                <Table.Cell className="text-center" colSpan={3}>
+                  No categories found
+                </Table.Cell>
+              </Table.Row>
+            )}
           </Table.Body>
         </Table>
-        {/* <Table.Pagination
-          count={listCategory?.meta.totalItems ?? 0}
-          pageSize={pageSize}
-          pageIndex={currentPage}
-          pageCount={pageCount}
-          canPreviousPage={canPreviousPage}
-          canNextPage={canNextPage}
-          previousPage={previousPage}
-          nextPage={nextPage}
-        /> */}
       </div>
     </div>
-  )
+  );
 }
-

@@ -19,6 +19,7 @@ export const Route = createFileRoute('/dashboard/_layout/products/')({
 
 function ProductList() {
   const [currentPage, setCurrentPage] = useState(0);
+  const [searchTerm, setSearchTerm] = useState(''); // State lưu giá trị tìm kiếm
   const navigate = useNavigate();
 
   const dialog = usePrompt();
@@ -46,7 +47,7 @@ function ProductList() {
 
   const nextPage = () => {
     if (canNextPage) {
-      setCurrentPage(prev => prev + 1);
+      setCurrentPage((prev) => prev + 1);
     }
   };
 
@@ -63,13 +64,22 @@ function ProductList() {
 
   const previousPage = () => {
     if (canPreviousPage) {
-      setCurrentPage(prev => prev - 1);
+      setCurrentPage((prev) => prev - 1);
     }
   };
+  // search
+  const filteredProducts = useMemo(() => {
+    if (!searchTerm) return listproduct?.data ?? [];
+    return (
+      listproduct?.data?.filter((product) =>
+        product.name.toLowerCase().includes(searchTerm.toLowerCase())
+      ) ?? []
+    );
+  }, [listproduct, searchTerm]);
 
   const currentProducts = useMemo(() => {
     return (
-      listproduct?.data?.map(product => ({
+      filteredProducts.map((product) => ({
         ...product,
         totalCountInStock:
           product.countInStock !== undefined
@@ -80,7 +90,7 @@ function ProductList() {
             ) || 0,
       })) ?? []
     );
-  }, [listproduct]);
+  }, [filteredProducts]);
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -96,6 +106,8 @@ function ProductList() {
             id="search-input"
             size="small"
             type="search"
+            value={searchTerm} // Liên kết giá trị input
+            onChange={(e) => setSearchTerm(e.target.value)} // Cập nhật giá trị tìm kiếm
           />
         </div>
         <div className="flex items-center gap-2">
@@ -145,7 +157,7 @@ function ProductList() {
           </Table.Row>
           <Table.Body>
             {currentProducts.length > 0 ? (
-              currentProducts.map(product => (
+              currentProducts.map((product) => (
                 <Table.Row
                   key={product._id}
                   className="[&_td:last-child]:w-[10%] [&_td:last-child]:whitespace-nowrap"

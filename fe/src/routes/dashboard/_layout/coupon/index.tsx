@@ -14,6 +14,7 @@ export const Route = createFileRoute('/dashboard/_layout/coupon/')({
 
 function CouponList() {
   const [currentPage, setCurrentPage] = useState(0);
+  const [searchQuery, setSearchQuery] = useState(''); // State for search query
   const navigate = useNavigate();
   const dialog = usePrompt();
 
@@ -52,10 +53,14 @@ function CouponList() {
     }
   };
 
-  // Kiểm tra xem `listCoupon` có phải là mảng không và sử dụng trực tiếp nếu cần
-  const currentCoupons = useMemo(() => {
-    return Array.isArray(listCoupon) ? listCoupon : [];
-  }, [listCoupon]);
+  // Filter coupons based on the search query
+  const filteredCoupons = useMemo(() => {
+    return Array.isArray(listCoupon)
+      ? listCoupon.filter(coupon => 
+          coupon.code.toLowerCase().includes(searchQuery.toLowerCase()) // Filter by coupon code
+        )
+      : [];
+  }, [listCoupon, searchQuery]);
 
   if (isLoading) return <p>Loading coupons...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -65,7 +70,16 @@ function CouponList() {
       <Header title="Coupon List" pathname="/" />
       <div className="relative flex justify-between px-6 py-4">
         <div className="relative w-80">
-          <Input className="bg-ui-bg-base" placeholder="Find Something" id="search-input" size="small" type="search" />
+          {/* Search input */}
+          <Input
+            className="bg-ui-bg-base"
+            placeholder="Find Something"
+            id="search-input"
+            size="small"
+            type="search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)} // Update the search query on input change
+          />
         </div>
         <div className="flex items-center gap-2">
           <Button variant="secondary">
@@ -96,8 +110,8 @@ function CouponList() {
             </Table.Row>
           </thead>
           <tbody>
-            {currentCoupons.length > 0 ? (
-              currentCoupons.map((coupon) => (
+            {filteredCoupons.length > 0 ? (
+              filteredCoupons.map((coupon) => (
                 <Table.Row key={coupon._id} className="[&_td:last-child]:w-[10%] [&_td:last-child]:whitespace-nowrap">
                   <Table.Cell>
                     <DropdownMenu>
@@ -115,8 +129,7 @@ function CouponList() {
                         </DropdownMenu.Item>
                         <DropdownMenu.Item
                           className="gap-x-2"
-                          onClick={() => void navigate({ to: `/dashboard/coupon/${coupon._id}/edit` })}
-                        >
+                          onClick={() => void navigate({ to: `/dashboard/coupon/${coupon._id}/edit` })}>
                           Edit
                         </DropdownMenu.Item>
                       </DropdownMenu.Content>

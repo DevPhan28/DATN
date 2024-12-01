@@ -25,6 +25,7 @@ import { Route as DashboardLayoutImport } from './routes/dashboard/_layout'
 import { Route as DashboardLayoutIndexImport } from './routes/dashboard/_layout/index'
 import { Route as LayoutThanksIndexImport } from './routes/_layout/thanks/index'
 import { Route as LayoutShopIndexImport } from './routes/_layout/shop/index'
+import { Route as LayoutSearchListIndexImport } from './routes/_layout/searchList/index'
 import { Route as LayoutOrderuserIndexImport } from './routes/_layout/orderuser/index'
 import { Route as LayoutCheckoutIndexImport } from './routes/_layout/checkout/index'
 import { Route as LayoutCartIndexImport } from './routes/_layout/cart/index'
@@ -118,6 +119,11 @@ const LayoutThanksIndexRoute = LayoutThanksIndexImport.update({
 
 const LayoutShopIndexRoute = LayoutShopIndexImport.update({
   path: '/shop/',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutSearchListIndexRoute = LayoutSearchListIndexImport.update({
+  path: '/searchList/',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -387,6 +393,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutOrderuserIndexImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/searchList/': {
+      id: '/_layout/searchList/'
+      path: '/searchList'
+      fullPath: '/searchList'
+      preLoaderRoute: typeof LayoutSearchListIndexImport
+      parentRoute: typeof LayoutImport
+    }
     '/_layout/shop/': {
       id: '/_layout/shop/'
       path: '/shop'
@@ -535,6 +548,7 @@ interface LayoutRouteChildren {
   LayoutCartIndexRoute: typeof LayoutCartIndexRoute
   LayoutCheckoutIndexRoute: typeof LayoutCheckoutIndexRoute
   LayoutOrderuserIndexRoute: typeof LayoutOrderuserIndexRoute
+  LayoutSearchListIndexRoute: typeof LayoutSearchListIndexRoute
   LayoutShopIndexRoute: typeof LayoutShopIndexRoute
   LayoutThanksIndexRoute: typeof LayoutThanksIndexRoute
   LayoutExchangeUserIdOrderIdRoute: typeof LayoutExchangeUserIdOrderIdRoute
@@ -551,6 +565,7 @@ const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutCartIndexRoute: LayoutCartIndexRoute,
   LayoutCheckoutIndexRoute: LayoutCheckoutIndexRoute,
   LayoutOrderuserIndexRoute: LayoutOrderuserIndexRoute,
+  LayoutSearchListIndexRoute: LayoutSearchListIndexRoute,
   LayoutShopIndexRoute: LayoutShopIndexRoute,
   LayoutThanksIndexRoute: LayoutThanksIndexRoute,
   LayoutExchangeUserIdOrderIdRoute: LayoutExchangeUserIdOrderIdRoute,
@@ -634,6 +649,7 @@ export interface FileRoutesByFullPath {
   '/cart': typeof LayoutCartIndexRoute
   '/checkout': typeof LayoutCheckoutIndexRoute
   '/orderuser': typeof LayoutOrderuserIndexRoute
+  '/searchList': typeof LayoutSearchListIndexRoute
   '/shop': typeof LayoutShopIndexRoute
   '/thanks': typeof LayoutThanksIndexRoute
   '/dashboard/': typeof DashboardLayoutIndexRoute
@@ -672,6 +688,7 @@ export interface FileRoutesByTo {
   '/cart': typeof LayoutCartIndexRoute
   '/checkout': typeof LayoutCheckoutIndexRoute
   '/orderuser': typeof LayoutOrderuserIndexRoute
+  '/searchList': typeof LayoutSearchListIndexRoute
   '/shop': typeof LayoutShopIndexRoute
   '/thanks': typeof LayoutThanksIndexRoute
   '/exchange/$userId/$orderId': typeof LayoutExchangeUserIdOrderIdRoute
@@ -712,6 +729,7 @@ export interface FileRoutesById {
   '/_layout/cart/': typeof LayoutCartIndexRoute
   '/_layout/checkout/': typeof LayoutCheckoutIndexRoute
   '/_layout/orderuser/': typeof LayoutOrderuserIndexRoute
+  '/_layout/searchList/': typeof LayoutSearchListIndexRoute
   '/_layout/shop/': typeof LayoutShopIndexRoute
   '/_layout/thanks/': typeof LayoutThanksIndexRoute
   '/dashboard/_layout/': typeof DashboardLayoutIndexRoute
@@ -753,6 +771,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/orderuser'
+    | '/searchList'
     | '/shop'
     | '/thanks'
     | '/dashboard/'
@@ -790,6 +809,7 @@ export interface FileRouteTypes {
     | '/cart'
     | '/checkout'
     | '/orderuser'
+    | '/searchList'
     | '/shop'
     | '/thanks'
     | '/exchange/$userId/$orderId'
@@ -828,6 +848,7 @@ export interface FileRouteTypes {
     | '/_layout/cart/'
     | '/_layout/checkout/'
     | '/_layout/orderuser/'
+    | '/_layout/searchList/'
     | '/_layout/shop/'
     | '/_layout/thanks/'
     | '/dashboard/_layout/'
@@ -903,6 +924,7 @@ export const routeTree = rootRoute
         "/_layout/cart/",
         "/_layout/checkout/",
         "/_layout/orderuser/",
+        "/_layout/searchList/",
         "/_layout/shop/",
         "/_layout/thanks/",
         "/_layout/exchange/$userId/$orderId",
@@ -990,6 +1012,10 @@ export const routeTree = rootRoute
     },
     "/_layout/orderuser/": {
       "filePath": "_layout/orderuser/index.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/searchList/": {
+      "filePath": "_layout/searchList/index.tsx",
       "parent": "/_layout"
     },
     "/_layout/shop/": {

@@ -8,8 +8,8 @@ import { Link, useNavigate } from '@tanstack/react-router';
 import {
   Funnel,
   MagnifyingGlass,
-  Heart,
   ShoppingCartSolid,
+  Heart as HeartIcon, // Renaming Heart to avoid name conflict
 } from '@medusajs/icons';
 import FilterBar from './FilterBar';
 
@@ -26,15 +26,14 @@ type Product = {
 
 const CardProduct: React.FC = () => {
   const [isFavorite, setIsFavorite] = useState(false);
-  //click trái tim thành color red
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite);
-  };
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null); // Thêm trạng thái để theo dõi danh mục được chọn
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showFilter, setShowFilter] = useState<boolean>(false);
   const [showSearch, setShowSearch] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>(''); // Trạng thái cho từ khóa tìm kiếm
+
   const { addItemToCart } = useCartMutation();
   const navigate = useNavigate();
+
   const toggleFilter = () => {
     setShowFilter(!showFilter);
     if (!showFilter) {
@@ -50,13 +49,13 @@ const CardProduct: React.FC = () => {
   };
 
   const { listProduct, loading, error } = useFetchProductAll();
-  const { data: categories } = useFetchCategory(); // Lấy danh mục từ API
+  const { data: categories } = useFetchCategory();
 
   const handleAddToCart = (product: Product) => {
-    const userId = localStorage.getItem('userId') ?? ''; // Xử lý userId có thể là null
+    const userId = localStorage.getItem('userId') ?? '';
     if (!userId) {
       console.error('User ID is missing');
-      return; // Ngăn hành động nếu không có userId
+      return;
     }
 
     addItemToCart.mutate({
@@ -67,17 +66,27 @@ const CardProduct: React.FC = () => {
           variantId: product.variantId ?? '',
           quantity: 1,
         },
-      ], // variantId được thêm nếu có
+      ],
     });
   };
 
+  // Lọc sản phẩm theo danh mục
   const filteredProducts = selectedCategory
     ? listProduct.filter(product => product?.category?._id === selectedCategory)
-    : listProduct; // Hiển thị tất cả sản phẩm nếu không chọn danh mục nào
+    : listProduct;
 
-  const displayedProducts = filteredProducts
-    ? filteredProducts.slice(0, 8)
-    : [];
+  // Lọc thêm theo từ khóa tìm kiếm
+  const searchFilteredProducts = filteredProducts.filter(product =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const displayedProducts = searchFilteredProducts.slice(0, 8);
+
+  // Toggle favorite function
+  const toggleFavorite = (productId: string) => {
+    setIsFavorite(prevState => !prevState);
+    // You can add additional logic here, such as saving the favorite status in the backend or localStorage
+  };
 
   return (
     <div className="m-auto mt-10 max-w-7xl p-5 sm:p-5 md:p-5 lg:p-5 xl:p-0">
@@ -98,7 +107,7 @@ const CardProduct: React.FC = () => {
               key={category._id}
               onClick={e => {
                 e.preventDefault();
-                setSelectedCategory(category._id); // Gọi hàm để cập nhật danh mục
+                setSelectedCategory(category._id);
               }}
               className={`border-gray-900 text-gray-600 hover:border-b-2 ${selectedCategory === category._id ? 'border-b-2' : ''}`}
             >
@@ -131,34 +140,30 @@ const CardProduct: React.FC = () => {
             <input
               type="text"
               placeholder="Search"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="search-input w-full border-none bg-white focus:outline-none"
             />
           </div>
         </div>
       )}
 
-      {/* Thanh lọc */}
       {showFilter && <FilterBar />}
 
-      {/* Hiển thị trạng thái Loading hoặc Error */}
       {loading && <p>Loading products...</p>}
       {error && <p className="text-red-500">{error}</p>}
 
-      {/* Hiển thị danh sách sản phẩm */}
       {displayedProducts.length > 0 ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-8 md:grid-cols-3 lg:grid-cols-4">
           {displayedProducts.map((product: Product) => (
-            <div
-              key={product._id}
-              className="product-card group relative overflow-hidden text-center"
-            >
+            <div key={product._id} className="product-card group relative overflow-hidden text-center">
               <img
                 src={product.image}
                 alt={product.name}
                 className="h-80 w-full transform transition-transform duration-500"
               />
               <Link
-                to={`${product.slug ? product.slug : product._id}/quickviewProduct`} // Sử dụng slug nếu có
+                to={`${product.slug ? product.slug : product._id}/quickviewProduct`}
                 className="quick-view duration-900 absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-full bg-white px-4 py-2 opacity-0 shadow transition-all hover:bg-black hover:text-white group-hover:translate-y-[-100px] group-hover:opacity-100"
               >
                 View Details
@@ -172,13 +177,12 @@ const CardProduct: React.FC = () => {
                   >
                     <ShoppingCartSolid />
                   </Link>
-                  <i
-                    onClick={toggleFavorite}
-                    className={`cursor-pointer text-[18px] ${isFavorite
-                      ? 'fa-solid fa-heart text-red-500'
-                      : 'fa-regular fa-heart hover:text-blue-300'
-                      }`}
-                  ></i>
+                  <button
+                    onClick={() => toggleFavorite(product._id)}
+                    className={`transition-colors ${isFavorite ? 'text-red-500' : 'text-gray-500'}`}
+                  >
+                    <HeartIcon />
+                  </button>
                 </div>
               </h2>
               <p className="mt-2 flex justify-start text-gray-600">
@@ -190,9 +194,10 @@ const CardProduct: React.FC = () => {
       ) : (
         !loading && <p>No products found.</p>
       )}
+
       <div className="m-auto max-w-6xl p-10 text-center">
         <button
-          onClick={() => navigate({ to: '/shop' })} // Điều hướng đến trang đăng nhập
+          onClick={() => navigate({ to: '/shop' })}
           className="rounded-2xl border border-gray-300 bg-blue-500 px-6 py-2 hover:bg-black text-white"
         >
           Xem thêm

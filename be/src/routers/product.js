@@ -19,6 +19,7 @@ const {
   deleteProduct,
   getProductAll,
   getProductBySlug,
+  searchProduct,
 } = require("../controllers/product");
 
 const router = express.Router();
@@ -48,4 +49,6 @@ router.put(`/products/:id`, updateProduct);
 
 router.delete(`/products/:id`, deleteProduct);
 router.get("/product", getProductAll);
+router.get('/search', searchProduct);
+
 module.exports = router;
