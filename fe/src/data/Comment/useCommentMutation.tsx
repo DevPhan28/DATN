@@ -52,7 +52,7 @@ const useCommentMutation = () => {
           description: 'Please make sure all required fields are filled.',
         });
       } else {
-        toast.error(`Error adding comment: ${errorMessage}`, {
+        toast.error(` ${errorMessage}`, {
           description: 'Please try again later.',
         });
       }

@@ -256,7 +256,65 @@ const searchProduct = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
+  
 };
+const filterProducts = async (req, res) => {
+  try {
+    const { color, size, minPrice, maxPrice, limit = 10, page = 1 } = req.query;
+    const skip = (page - 1) * limit;
+
+    // Tạo query động dựa trên các tham số lọc
+    const query = {};
+
+    if (color) {
+      query["variants.color"] = { $regex: color, $options: "i" }; // Lọc theo màu (không phân biệt chữ hoa/thường)
+    }
+    if (size) {
+      query["variants.size"] = { $regex: size, $options: "i" }; // Lọc theo size (không phân biệt chữ hoa/thường)
+    }
+    if (minPrice) {
+      query["variants.price"] = { $gte: Number(minPrice) }; // Lọc giá tối thiểu
+    }
+    if (maxPrice) {
+      query["variants.price"] = query["variants.price"]
+        ? { ...query["variants.price"], $lte: Number(maxPrice) }
+        : { $lte: Number(maxPrice) }; // Lọc giá tối đa
+    }
+
+    // Lấy danh sách sản phẩm dựa trên query
+    const products = await Product.find(query)
+      .limit(Number(limit))
+      .skip(Number(skip))
+      .populate("category", "name");
+
+    const totalItems = await Product.countDocuments(query);
+
+    if (products.length === 0) {
+      return res.status(200).json({
+        meta: {
+          totalItems: 0,
+          totalPages: 0,
+          currentPage: Number(page),
+          limit: Number(limit),
+        },
+        data: [],
+      });
+    }
+
+    return res.status(200).json({
+      meta: {
+        totalItems,
+        totalPages: Math.ceil(totalItems / limit),
+        currentPage: Number(page),
+        limit: Number(limit),
+      },
+      data: products,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
 
 module.exports = {
@@ -270,5 +328,6 @@ module.exports = {
   uploadGallery,
   getProductAll,
   getProductBySlug,
-  searchProduct
+  searchProduct,
+  filterProducts
 };

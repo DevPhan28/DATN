@@ -73,7 +73,7 @@ function DetailProduct() {
           const average = totalRating / response.data.length;
           setAverageRating(average); // Cập nhật số sao trung bình
         } catch (err) {
-          toast.error('chưa có bình luận nào');
+          
         }
       };
       fetchComments();

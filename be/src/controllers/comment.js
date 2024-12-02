@@ -9,6 +9,10 @@ const addComment = async (req, res) => {
   if (!productId || !content || !userId) {
     return res.status(400).json({ message: "Thiếu các trường bắt buộc" });
   }
+  const existingComment = await Comment.findOne({ userId, productId });
+  if (existingComment) {
+    return res.status(400).json({ message: 'Bạn đã bình luận sản phẩm này rồi' });
+  }
 
   try {
     const product = await Product.findById(productId);

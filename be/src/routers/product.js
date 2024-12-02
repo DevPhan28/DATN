@@ -20,13 +20,16 @@ const {
   getProductAll,
   getProductBySlug,
   searchProduct,
+  filterProducts,
 } = require("../controllers/product");
 
 const router = express.Router();
 router.get(`/products`, getProduct);
 router.get(`/products/slug/:slug`, getProductBySlug);
+router.get(`/products/filter`, filterProducts);
 router.get(`/products/:id`, getProductById);
 router.get(`/product`, getProductAll);
+
 
 // router.get(`/products/:categoryId/related`, relatedProduct);
 router.post(`/products`, addProduct);
