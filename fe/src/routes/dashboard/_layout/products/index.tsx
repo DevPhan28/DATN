@@ -1,5 +1,8 @@
 import Header from '@/components/layoutAdmin/header/header';
-import { useFetchProducts } from '@/data/products/useProductList';
+import {
+  useFetchCategory,
+  useFetchProducts,
+} from '@/data/products/useProductList';
 import useProductMutation from '@/data/products/useProductMutation';
 import {
   Adjustments,
@@ -7,7 +10,14 @@ import {
   EllipsisVertical,
   Plus,
 } from '@medusajs/icons';
-import { Button, DropdownMenu, Input, Table, usePrompt } from '@medusajs/ui';
+import {
+  Button,
+  Checkbox,
+  DropdownMenu,
+  Input,
+  Table,
+  usePrompt,
+} from '@medusajs/ui';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 
@@ -21,6 +31,8 @@ function ProductList() {
   const [currentPage, setCurrentPage] = useState(0);
   const [searchTerm, setSearchTerm] = useState(''); // State lưu giá trị tìm kiếm
   const navigate = useNavigate();
+  const { data: categories } = useFetchCategory(); // Lấy danh mục từ API
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]); // State cho danh sách các category đã chọn
 
   const dialog = usePrompt();
 
@@ -47,7 +59,7 @@ function ProductList() {
 
   const nextPage = () => {
     if (canNextPage) {
-      setCurrentPage((prev) => prev + 1);
+      setCurrentPage(prev => prev + 1);
     }
   };
 
@@ -64,36 +76,56 @@ function ProductList() {
 
   const previousPage = () => {
     if (canPreviousPage) {
-      setCurrentPage((prev) => prev - 1);
+      setCurrentPage(prev => prev - 1);
     }
   };
-  // search
+
+  // Filter products based on search term and selected categories
   const filteredProducts = useMemo(() => {
-    if (!searchTerm) return listproduct?.data ?? [];
-    return (
-      listproduct?.data?.filter((product) =>
+    let filtered = listproduct?.data ?? [];
+    
+    if (searchTerm) {
+      filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
-      ) ?? []
-    );
-  }, [listproduct, searchTerm]);
+      );
+    }
+    
+    if (selectedCategories.length > 0) {
+      filtered = filtered.filter(product =>
+        selectedCategories.includes(product.category?.name ?? '')
+      );
+    }
+    
+    return filtered;
+  }, [listproduct, searchTerm, selectedCategories]);
 
   const currentProducts = useMemo(() => {
     return (
-      filteredProducts.map((product) => ({
+      filteredProducts.map(product => ({
         ...product,
         totalCountInStock:
           product.countInStock !== undefined
             ? product.countInStock
             : product.variants?.reduce(
-              (total, variant) => total + (variant.countInStock || 0),
-              0
-            ) || 0,
+                (total, variant) => total + (variant.countInStock || 0),
+                0
+              ) || 0,
       })) ?? []
     );
   }, [filteredProducts]);
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
+
+  const toggleCategorySelection = (category: string) => {
+    setSelectedCategories(prev => {
+      if (prev.includes(category)) {
+        return prev.filter(c => c !== category); // Remove category if it's already selected
+      } else {
+        return [...prev, category]; // Add category to selection
+      }
+    });
+  };
 
   return (
     <div className="h-screen overflow-y-auto">
@@ -107,14 +139,45 @@ function ProductList() {
             size="small"
             type="search"
             value={searchTerm} // Liên kết giá trị input
-            onChange={(e) => setSearchTerm(e.target.value)} // Cập nhật giá trị tìm kiếm
+            onChange={e => setSearchTerm(e.target.value)} // Cập nhật giá trị tìm kiếm
           />
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="secondary">
-            <Adjustments className="text-black" />
-            Filter
-          </Button>
+          <DropdownMenu>
+            <DropdownMenu.Trigger asChild>
+              <Button variant="secondary">
+                <Adjustments className="text-black" />
+                Filter
+              </Button>
+            </DropdownMenu.Trigger>
+
+            <DropdownMenu.Content className="space-y-2 rounded-md border bg-white p-4 shadow-lg">
+              <DropdownMenu.Item
+                className="flex items-center gap-2"
+                onSelect={e => {
+                  e.preventDefault();
+                  setSelectedCategories([]); // Reset selection when "All Categories" is selected
+                }}
+              >
+                <Checkbox checked={selectedCategories.length === 0} />
+                <label>All Categories</label>
+              </DropdownMenu.Item>
+
+              {categories?.map(category => (
+                <DropdownMenu.Item
+                  key={category.id}
+                  className="flex items-center gap-2"
+                  onSelect={e => {
+                    e.preventDefault(); // Ngăn đóng DropdownMenu
+                    toggleCategorySelection(category.name); // Toggle category selection
+                  }}
+                >
+                  <Checkbox checked={selectedCategories.includes(category.name)} />
+                  <label>{category.name}</label>
+                </DropdownMenu.Item>
+              ))}
+            </DropdownMenu.Content>
+          </DropdownMenu>
           <Button variant="secondary">
             <ArrowUpTray className="text-black" />
             Export list
@@ -157,7 +220,7 @@ function ProductList() {
           </Table.Row>
           <Table.Body>
             {currentProducts.length > 0 ? (
-              currentProducts.map((product) => (
+              currentProducts.map(product => (
                 <Table.Row
                   key={product._id}
                   className="[&_td:last-child]:w-[10%] [&_td:last-child]:whitespace-nowrap"
@@ -170,13 +233,19 @@ function ProductList() {
                         </button>
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Content className="space-y-2">
-                        <DropdownMenu.Item className="p-2 text-ui-tag-neutral-text hover:text-ui-code-bg-base" asChild>
-                          {/* <Link to={`/dashboard/products/${product.id}/viewdetail`}>View Details</Link> */}
-                          <span onClick={() =>
-                            void navigate({
-                              to: `/dashboard/products/${product.slug}/viewdetail`,
-                            })
-                          }>View Details</span>
+                        <DropdownMenu.Item
+                          className="p-2 text-ui-tag-neutral-text hover:text-ui-code-bg-base"
+                          asChild
+                        >
+                          <span
+                            onClick={() =>
+                              void navigate({
+                                to: `/dashboard/products/${product.slug}/viewdetail`,
+                              })
+                            }
+                          >
+                            View Details
+                          </span>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item className="gap-x-2" asChild>
                           <span onClick={async () => deleteEntity(product._id)}>
@@ -222,7 +291,7 @@ function ProductList() {
                     {product.price.toFixed(2)}
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
-                    <div className='className="text-xs w-fit rounded-md border border-ui-tag-blue-border bg-ui-tag-blue-bg p-1 text-ui-tag-blue-text'>
+                    <div className='text-xs w-fit rounded-md border border-ui-tag-blue-border bg-ui-tag-blue-bg p-1 text-ui-tag-blue-text'>
                       {product.category?.name}
                     </div>
                   </Table.Cell>

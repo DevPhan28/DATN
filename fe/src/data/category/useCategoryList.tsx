@@ -5,7 +5,7 @@ import { QUERY_KEY } from '../stores/key';
 // Hàm fetch danh mục từ API
 export const fetchCategory = async (params: CategoryParams) => {
   try {
-    console.log('Fetching categories with params:', params); // Log các tham số request
+    console.log('Fetching categories with params:', params); 
     const res = await instance.get<{
       data: Category[];
       meta: MetaData;
@@ -31,7 +31,7 @@ export const fetchCategory = async (params: CategoryParams) => {
   }
 };
 
-// Hook `useFetchCategories` sử dụng `useQuery` để gọi API
+
 export const useFetchCategories = (params: CategoryParams) => {
   return useQuery({
     queryKey: [QUERY_KEY.FETCH_CATEGORIES, params],
