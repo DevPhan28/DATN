@@ -79,7 +79,23 @@ function DetailProduct() {
       fetchComments();
     }
   }, [product]);
+  useEffect(() => {
+    if (window.location.hash === '#comments-section') {
+      const commentsSection = document.getElementById('comments-section');
+      if (commentsSection) {
+        commentsSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [slug]); // Ensure this effect runs when the component mounts
 
+  useEffect(() => {
+    if (window.location.hash === '#comments-section') {
+      const commentTextarea = document.querySelector('textarea');
+      if (commentTextarea) {
+        commentTextarea.focus(); // Focus the textarea
+      }
+    }
+  }, [product]); // Trigger when product data is available
   // console.log(localStorage.getItem('userId'));
   const handleCommentSubmit = async () => {
     if (!newComment.trim()) {
@@ -413,7 +429,7 @@ function DetailProduct() {
                   </div>
                 </div>
 
-                <div>
+                <div id='comments-section'>
                   <h2 className="text-2xl">Comments</h2>
                   <textarea
                     className="mt-5 w-full rounded border p-3"

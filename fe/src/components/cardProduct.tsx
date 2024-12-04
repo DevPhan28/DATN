@@ -1,19 +1,12 @@
-import React, { useState } from 'react';
-import {
-  useFetchCategory,
-  useFetchProductAll,
-} from '@/data/products/useProductList';
+import React, { useState, useEffect } from 'react';
+import { useFetchCategory, useFetchProductAll } from '@/data/products/useProductList';
 import useCartMutation from '@/data/cart/useCartMutation';
 import { Link, useNavigate } from '@tanstack/react-router';
-import {
-  Funnel,
-  MagnifyingGlass,
-  ShoppingCartSolid,
-  Heart as HeartIcon, // Renaming Heart to avoid name conflict
-} from '@medusajs/icons';
+import { Funnel, MagnifyingGlass, ShoppingCartSolid, Heart as HeartIcon } from '@medusajs/icons';
 import FilterBar from './FilterBar';
+import { toast } from '@medusajs/ui'; 
 
-// Định nghĩa kiểu dữ liệu cho sản phẩm
+
 type Product = {
   slug: string;
   _id: string;
@@ -29,7 +22,8 @@ const CardProduct: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showFilter, setShowFilter] = useState<boolean>(false);
   const [showSearch, setShowSearch] = useState<boolean>(false);
-  const [searchTerm, setSearchTerm] = useState<string>(''); // Trạng thái cho từ khóa tìm kiếm
+  const [searchTerm, setSearchTerm] = useState<string>(''); 
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]); 
 
   const { addItemToCart } = useCartMutation();
   const navigate = useNavigate();
@@ -37,14 +31,14 @@ const CardProduct: React.FC = () => {
   const toggleFilter = () => {
     setShowFilter(!showFilter);
     if (!showFilter) {
-      setShowSearch(false); // Tắt Search khi Filter bật
+      setShowSearch(false); 
     }
   };
 
   const toggleSearch = () => {
     setShowSearch(!showSearch);
     if (!showSearch) {
-      setShowFilter(false); // Tắt Filter khi Search bật
+      setShowFilter(false); 
     }
   };
 
@@ -70,22 +64,45 @@ const CardProduct: React.FC = () => {
     });
   };
 
-  // Lọc sản phẩm theo danh mục
-  const filteredProducts = selectedCategory
-    ? listProduct.filter(product => product?.category?._id === selectedCategory)
-    : listProduct;
+  
+  useEffect(() => {
+    const filterProducts = () => {
+      let filtered = listProduct;
 
-  // Lọc thêm theo từ khóa tìm kiếm
-  const searchFilteredProducts = filteredProducts.filter(product =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+      // Lọc theo danh mục nếu có
+      if (selectedCategory) {
+        filtered = filtered.filter(product => product?.category?._id === selectedCategory);
+      }
 
-  const displayedProducts = searchFilteredProducts.slice(0, 8);
+     
+      if (searchTerm) {
+        filtered = filtered.filter(product =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
 
-  // Toggle favorite function
+      setFilteredProducts(filtered);
+    };
+
+    filterProducts();
+  }, [selectedCategory, searchTerm, listProduct]); 
+
+  
+  const displayedProducts = filteredProducts.length > 0 ? filteredProducts.slice(0, 8) : listProduct.slice(0, 8);
+
+ 
+  const handleFilterChange = (filtered: Product[]) => {
+    setFilteredProducts(filtered);
+    if (filtered.length > 0) {
+      toast.success("Sản phẩm đã được lọc thành công!");  
+    } else {
+      toast.error("Không tìm thấy sản phẩm phù hợp!");  
+    }
+  };
+
+  
   const toggleFavorite = (productId: string) => {
     setIsFavorite(prevState => !prevState);
-    // You can add additional logic here, such as saving the favorite status in the backend or localStorage
   };
 
   return (
@@ -148,7 +165,7 @@ const CardProduct: React.FC = () => {
         </div>
       )}
 
-      {showFilter && <FilterBar />}
+      {showFilter && <FilterBar onFilterChange={handleFilterChange} />}
 
       {loading && <p>Loading products...</p>}
       {error && <p className="text-red-500">{error}</p>}
@@ -186,7 +203,7 @@ const CardProduct: React.FC = () => {
                 </div>
               </h2>
               <p className="mt-2 flex justify-start text-gray-600">
-                ${product.price}
+                {product.price}₫
               </p>
             </div>
           ))}

@@ -196,7 +196,7 @@ function UserOrder() {
     if (selectedTab === 'pending') {
       return order.status === 'pending';
     }
-    
+
     if (selectedTab === 'confirmed') {
       return order.status === 'confirmed';
     }
@@ -323,23 +323,28 @@ function UserOrder() {
                           order.status === 'canceled'
                             ? 'bg-red-200 text-red-600'
                             : order.status === 'pending'
-                            ? 'bg-yellow-200 text-yellow-700'
-                            : order.status === 'confirmed'
-                            ? 'bg-blue-200 text-blue-700'
-                            : order.status === 'shipped' || order.status === 'received'
-                            ? 'bg-indigo-200 text-indigo-700'
-                            : order.status === 'delivered'
-                            ? 'bg-green-200 text-green-700'
-                            : order.status === 'complaint'
-                            ? 'bg-purple-500 text-white'
-                            : order.status === 'refund_in_progress' || order.status === 'exchange_in_progress'
-                            ? 'bg-orange-200 text-orange-700'
-                            : order.status === 'refund_completed' || order.status === 'exchange_completed'
-                            ? 'bg-teal-200 text-teal-700'
-                            : order.status === 'pendingPayment' // Thêm trạng thái pendingPayment
-                            ? 'bg-gray-200 text-gray-700' // Màu cho pendingPayment
-                            : ''
-                        }`}                        
+                              ? 'bg-yellow-200 text-yellow-700'
+                              : order.status === 'confirmed'
+                                ? 'bg-blue-200 text-blue-700'
+                                : order.status === 'shipped' ||
+                                    order.status === 'received'
+                                  ? 'bg-indigo-200 text-indigo-700'
+                                  : order.status === 'delivered'
+                                    ? 'bg-green-200 text-green-700'
+                                    : order.status === 'complaint'
+                                      ? 'bg-purple-500 text-white'
+                                      : order.status === 'refund_in_progress' ||
+                                          order.status ===
+                                            'exchange_in_progress'
+                                        ? 'bg-orange-200 text-orange-700'
+                                        : order.status === 'refund_completed' ||
+                                            order.status ===
+                                              'exchange_completed'
+                                          ? 'bg-teal-200 text-teal-700'
+                                          : order.status === 'pendingPayment' // Thêm trạng thái pendingPayment
+                                            ? 'bg-gray-200 text-gray-700' // Màu cho pendingPayment
+                                            : ''
+                        }`}
                       >
                         {getStatusLabel(order.status)}
                       </span>
@@ -397,7 +402,7 @@ function UserOrder() {
                       </div>
                     </div>
                     <div className="mt-4 flex items-center justify-end">
-                    {order.status === 'pendingPayment' && (
+                      {order.status === 'pendingPayment' && (
                         <button
                           onClick={() => retryPayment(order._id)}
                           className="mr-2 rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
@@ -405,6 +410,16 @@ function UserOrder() {
                           Thanh Toán Lại
                         </button>
                       )}
+                      {order.status === 'delivered' &&
+                        order.items.map(item => (
+                          <Link
+                            key={item.productId}
+                            to={`/${item.slug ? item.slug : item.productId}/quickviewProduct#comments-section`} // Sử dụng slug nếu có
+                            className="mr-2 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+                          >
+                            Đánh giá sản phẩm
+                          </Link>
+                        ))}
                       {order.status === 'pending' && (
                         <button
                           onClick={() => deleteEntity(order._id)}
