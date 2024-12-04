@@ -1,9 +1,6 @@
-import { updatePaymentStatus } from '@/data/oder/usePayment';
-import {
-  createFileRoute,
-  Link,
-  useSearch,
-} from '@tanstack/react-router';
+import { retryPayment, updatePaymentStatus } from '@/data/oder/usePayment';
+import { Button } from '@medusajs/ui';
+import { createFileRoute, Link, useSearch } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import * as z from 'zod';
 
@@ -18,40 +15,48 @@ export const Route = createFileRoute('/_layout/thanks/')({
     .transform(query => ({
       ...query,
       status: query.status?.toString(),
-      apptransid: query.apptransid?.toString(), 
-    }))
-    .parse,
+      apptransid: query.apptransid?.toString(),
+    })).parse,
 });
 
 function ReturnPage() {
-  const { status, apptransid } = useSearch({ from: "/_layout/thanks/" });
+  const { status, apptransid } = useSearch({ from: '/_layout/thanks/' });
 
-  const isCOD = !apptransid || apptransid.startsWith("cod"); 
-  const isSuccess = status === "1";
+  const isCOD = !apptransid || apptransid.startsWith('cod');
+  const isSuccess = status === '1';
 
-  let orderId = "";
-  if (!isCOD && apptransid?.includes("_")) {
-    orderId = apptransid.split("_")[1]?.trim();
+  let orderId = '';
+  if (!isCOD && apptransid?.includes('_')) {
+    const appTransIdReturn = apptransid.split('_')[1]?.trim().toString();
+
+    if (appTransIdReturn[appTransIdReturn.length - 1] === 'r') {
+      orderId = appTransIdReturn.slice(0, length - 1);
+    } else {
+      orderId = appTransIdReturn;
+      ``;
+    }
   } else if (isCOD) {
-    orderId = apptransid || "cod_order";
+    orderId = apptransid || 'cod_order';
   }
 
+  console.log('orderId', orderId);
+
   const message = isSuccess
-    ? "Thanh toán thành công! Cảm ơn bạn đã đặt hàng."
-    : "Thanh toán đã bị hủy. Vui lòng thử lại.";
+    ? 'Thanh toán thành công! Cảm ơn bạn đã đặt hàng.'
+    : 'Thanh toán đã bị hủy. Vui lòng thử lại.';
 
   const subMessage = isCOD
-    ? "Đơn hàng của bạn đã được xác nhận. Cảm ơn bạn!"
+    ? 'Đơn hàng của bạn đã được xác nhận. Cảm ơn bạn!'
     : isSuccess
-    ? 'Bạn có thể kiểm tra thông tin đơn hàng trong "Đơn mua".'
-    : "Nếu bạn cần hỗ trợ, vui lòng liên hệ bộ phận chăm sóc khách hàng.";
+      ? 'Bạn có thể kiểm tra thông tin đơn hàng trong "Đơn mua".'
+      : 'Nếu bạn cần hỗ trợ, vui lòng liên hệ bộ phận chăm sóc khách hàng.';
 
   const handlePaymentUpdate = async () => {
     try {
-      const paymentStatus = isSuccess ? "pending" : "failed";
+      const paymentStatus = isSuccess ? 'pending' : 'failed';
       await updatePaymentStatus(orderId, paymentStatus);
     } catch (error) {
-      console.error("Error updating payment status:", error.message);
+      console.error('Error updating payment status:', error.message);
     }
   };
 
@@ -65,7 +70,7 @@ function ReturnPage() {
         <div className="mb-4 flex items-center justify-center">
           <div
             className={`${
-              isSuccess ? "bg-blue-500" : "bg-red-500"
+              isSuccess ? 'bg-blue-500' : 'bg-red-500'
             } rounded-full p-4`}
           >
             {isSuccess ? (
@@ -129,12 +134,12 @@ function ReturnPage() {
             </Link>
           ) : (
             <>
-              <Link
-                to="/checkout"
+              <Button
                 className="rounded-md bg-green-500 px-6 py-2 text-white hover:bg-black"
+                onClick={() => retryPayment(orderId)}
               >
                 THANH TOÁN LẠI
-              </Link>
+              </Button>
               <Link
                 to="/"
                 className="rounded-md bg-gray-500 px-6 py-2 text-white hover:bg-black"

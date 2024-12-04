@@ -9,6 +9,7 @@ require("dotenv").config();
 
 const callback = async (req, res) => {
   const { data, mac } = req.body;
+console.log("Testt");
 
   const appKey = process.env.ZALOPAY_KEY2; 
   const dataJson = JSON.parse(data); 
@@ -49,8 +50,11 @@ const callback = async (req, res) => {
 };
 
 const updatePaymentStatusOnFailure = async (req, res) => {
-  const { orderId, paymentStatus } = req.body;
+  let { orderId, paymentStatus } = req.body;
 
+
+  orderId = new mongoose.Types.ObjectId(orderId);
+  console.log("orderId", orderId)
   try {
 
     if (!orderId) {
@@ -90,7 +94,9 @@ const updatePaymentStatusOnFailure = async (req, res) => {
 
 const retryPayment = async (req, res) => {
   const { orderId } = req.body;
-
+  const  ZALOPAY_ID_APP = process.env.ZALOPAY_ID_APP
+  const ZALOPAY_KEY1 = process.env.ZALOPAY_KEY1
+  // const  ZALOPAY_KEY2 = process.env.ZALOPAY_KEY2
   try {
     console.log("Received orderId:", orderId);
 
@@ -108,36 +114,26 @@ const retryPayment = async (req, res) => {
     }
 
     // Tạo `app_trans_id` mới
-    const newAppTransId = `${moment().format("YYMMDD")}_${order._id}_${Date.now()}`;
-
+    const transID = Math.floor(Math.random() * 10000000);
     const payment = {
-      app_id: process.env.ZALOPAY_ID_APP,
-      app_trans_id: newAppTransId,
-      app_user: order._id.toString(),
+      app_id: ZALOPAY_ID_APP,
+      app_trans_id: `${moment().format("YYMMDD")}_${order._id}r`,
+      app_user: order._id,
       app_time: Date.now(),
-      item: JSON.stringify(
-        order.items.map((item) => ({
-          productId: item.productId,
-          name: item.name,
-          quantity: item.quantity,
-          price: item.price,
-          image: item.image,
-          color: item.color || "",
-          size: item.size || "",
-        }))
-      ),
+      item: JSON.stringify(order.items),
       embed_data: JSON.stringify({
         redirecturl: "http://localhost:5173/thanks",
       }),
-      amount: order.totalPrice,
-      description: `Retry payment for OrderId ${order._id}`,
+      amount: +order.totalPrice,
+      description: `Pay for OrderId #${transID}`,
       bank_code: "",
-      callback_url: process.env.ZALOPAY_CALLBACK_URL,
+      callback_url: "https://b153-42-114-151-28.ngrok-free.app/api/callback",
     };
+    console.log("payment", payment);
+    
 
-    // Tạo chữ ký (MAC)
     const dataEncode =
-    process.env.ZALOPAY_ID_APP +
+      ZALOPAY_ID_APP +
       "|" +
       payment.app_trans_id +
       "|" +
@@ -150,8 +146,9 @@ const retryPayment = async (req, res) => {
       payment.embed_data +
       "|" +
       payment.item;
-    payment.mac = CryptoJS.HmacSHA256(dataEncode, process.env.ZALOPAY_KEY1).toString();
+    payment.mac = CryptoJS.HmacSHA256(dataEncode, ZALOPAY_KEY1).toString();
 
+    // Tạo chữ ký (MAC)
     console.log("Payment payload:", payment);
 
     const { data } = await axios.post(process.env.ZALOPAY_ENDPOINT, null, {
@@ -165,7 +162,6 @@ const retryPayment = async (req, res) => {
     }
 
     // Lưu `transactionid` mới
-    order.transactionid = newAppTransId;
     order.paymentStatus = "pending";
     await order.save();
 
