@@ -128,13 +128,16 @@ const Header = () => {
             {/* Icons and menu toggle button */}
             <div className="flex items-center space-x-2 text-[19px]">
               {/* Icon search */}
+              
+              <a href="/searchList">
               <i
                 className="fa-solid fa-magnifying-glass cursor-pointer p-3 text-[20px] hover:text-blue-400"
                 onClick={toggleSearch}
               ></i>
+              </a>
 
               {/* Form tìm kiếm */}
-              {isSearchOpen && (
+              {/* {isSearchOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                   <div className="relative w-full max-w-md rounded-lg bg-white p-4 shadow-lg">
                     <button
@@ -160,7 +163,7 @@ const Header = () => {
                     </form>
                   </div>
                 </div>
-              )}
+              )} */}
               {/* <SearchBar /> */}
               <Link to="/cart" className="relative">
                 <i className="fa-solid fa-cart-shopping text-[20px] hover:text-blue-400"></i>
