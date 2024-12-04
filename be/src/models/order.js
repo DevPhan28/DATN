@@ -4,12 +4,11 @@ const { Schema } = mongoose;
 // Định nghĩa Schema cho Order Item
 const OrderItemSchema = new Schema({
   productId: { type: Schema.Types.ObjectId, required: true, ref: "Product" },
-  
+
   slug: {
     type: String,
     unique: true,
     lowercase: true,
-    required: true,
   },
   name: { type: String, required: true },
   quantity: { type: Number, required: true },
@@ -77,7 +76,7 @@ const OrderSchema = new mongoose.Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ["pending", "paid", "failed", "processing", "cod"], 
+      enum: ["pending", "paid", "failed", "processing", "cod"],
       default: "pending",
     },
     transactionid: { type: String }, // Mã giao dịch ZaloPay
@@ -92,7 +91,6 @@ const OrderSchema = new mongoose.Schema(
   },
   { timestamps: true, versionKey: false }
 );
-
 
 // Tạo orderNumber tự động
 OrderSchema.pre("save", async function (next) {

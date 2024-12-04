@@ -1,9 +1,8 @@
 import { useFetchCart } from '@/data/cart/useFetchCart';
-import { ArrowRightOnRectangle, BarsThree, XMark } from '@medusajs/icons';
+import { BarsThree, XMark } from '@medusajs/icons';
 import { toast } from '@medusajs/ui';
 import { Link } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
-import SearchBar from './searchBar';
 
 const Header = () => {
   // Trạng thái hiển thị của menu
@@ -128,28 +127,28 @@ const Header = () => {
 
             {/* Icons and menu toggle button */}
             <div className="flex items-center space-x-2 text-[19px]">
-          {/* Icon search */}
-          <i
-                className="fa-solid fa-magnifying-glass p-3 text-[20px] hover:text-blue-400 cursor-pointer"
+              {/* Icon search */}
+              <i
+                className="fa-solid fa-magnifying-glass cursor-pointer p-3 text-[20px] hover:text-blue-400"
                 onClick={toggleSearch}
               ></i>
 
               {/* Form tìm kiếm */}
               {isSearchOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                  <div className="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                  <div className="relative w-full max-w-md rounded-lg bg-white p-4 shadow-lg">
                     <button
-                      className="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-200 transition"
+                      className="absolute right-2 top-2 rounded-full p-2 transition hover:bg-gray-200"
                       onClick={toggleSearch}
                     >
                       <img
                         src="https://themewagon.github.io/cozastore/images/icons/icon-close2.png"
                         alt="Close"
-                        className="w-5 h-5"
+                        className="h-5 w-5"
                       />
                     </button>
-                    <form className="flex items-center space-x-3 p-3 border border-gray-300 rounded-md shadow-sm">
-                      <button className="p-2 text-gray-500 hover:text-gray-700 transition">
+                    <form className="flex items-center space-x-3 rounded-md border border-gray-300 p-3 shadow-sm">
+                      <button className="p-2 text-gray-500 transition hover:text-gray-700">
                         <i className="fa-solid fa-magnifying-glass text-[20px]"></i>
                       </button>
                       <input
@@ -216,9 +215,9 @@ const Header = () => {
                           </a>
                         </li>
                         <li className="custom-cursor-on-hover p-1 px-3 hover:bg-white hover:text-blue-400">
-                          <a className="block w-full" href="#">
+                          <Link to="/account" className="block w-full" href="#">
                             Tài khoản của tôi
-                          </a>
+                          </Link>
                         </li>
                         <li className="custom-cursor-on-hover p-1 px-3 hover:bg-white hover:text-blue-400">
                           <Link

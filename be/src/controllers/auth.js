@@ -3,6 +3,7 @@ const { registerSchema, signinSchema } = require("../schemas/auth");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const Mail = require("../helpers/node-mailler");
+const mongoose = require("mongoose");
 
 const signup = async (req, res) => {
   try {
@@ -192,6 +193,196 @@ const getAllUsers = async (req, res) => {
     });
   }
 };
+const getUserInfo = async (req, res) => {
+  // Lấy userId từ header (ví dụ: từ 'user-id' header)
+  const userId = req.headers["user-id"];
+
+  if (!userId) {
+    return res.status(400).json({
+      message: "userId is required in header",
+    });
+  }
+
+  // Kiểm tra xem userId có phải là ObjectId hợp lệ không
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({
+      message: "Invalid userId format",
+    });
+  }
+
+  try {
+    // Tìm người dùng trong database
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    // Không trả về password để bảo mật
+    user.password = undefined;
+
+    return res.status(200).json({
+      message: "User information fetched successfully",
+      user,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Error fetching user information",
+      error: error.message,
+    });
+  }
+};
+const updateAccount = async (req, res) => {
+  const { userId } = req.params; // Lấy userId từ URL params
+  const { username, email, avatar, oldPassword, newPassword, confirmPassword } =
+    req.body;
+
+  try {
+    // Kiểm tra xem username hoặc email có tồn tại trong hệ thống không
+    const existUserByUsername = await User.findOne({ username });
+    if (existUserByUsername && existUserByUsername._id.toString() !== userId) {
+      return res.status(400).json({
+        message: "Username already exists",
+      });
+    }
+
+    const existUserByEmail = await User.findOne({ email });
+    if (existUserByEmail && existUserByEmail._id.toString() !== userId) {
+      return res.status(400).json({
+        message: "Email already exists",
+      });
+    }
+
+    // Tìm người dùng trong database
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    // Kiểm tra định dạng email (tuỳ chọn)
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (email && !emailRegex.test(email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+
+    // Kiểm tra mật khẩu (nếu có) phải có độ dài tối thiểu (tuỳ chọn)
+    if (newPassword && newPassword.length < 6) {
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters long" });
+    }
+
+    // Kiểm tra nếu không có thay đổi
+    if (
+      user.username === username &&
+      user.email === email &&
+      user.avatar === avatar &&
+      !newPassword // Kiểm tra nếu không có thay đổi mật khẩu
+    ) {
+      return res.status(400).json({ message: "No changes detected" });
+    }
+
+    // Nếu có thay đổi mật khẩu, kiểm tra mật khẩu cũ
+    if (newPassword) {
+      // Kiểm tra mật khẩu cũ
+      if (!oldPassword) {
+        return res.status(400).json({
+          message: "Old password is required to change password", // Nếu mật khẩu cũ không có, thông báo lỗi
+        });
+      }
+
+      const isOldPasswordValid = await bcryptjs.compare(
+        oldPassword,
+        user.password
+      );
+      if (!isOldPasswordValid) {
+        return res.status(400).json({
+          message: "Mật khẩu cũ không đúng", // Thông báo khi mật khẩu cũ không đúng
+        });
+      }
+
+      // Kiểm tra mật khẩu mới và mật khẩu xác nhận phải giống nhau
+      if (newPassword !== confirmPassword) {
+        return res.status(400).json({
+          message: "Mật khẩu mới và xác nhận không khớp",
+        });
+      }
+
+      // Mã hóa mật khẩu mới
+      const hashedPassword = await bcryptjs.hash(newPassword, 10);
+      user.password = hashedPassword;
+    }
+
+    // Cập nhật thông tin người dùng
+    user.username = username || user.username;
+    user.email = email || user.email;
+    user.avatar = avatar || user.avatar;
+
+    // Lưu lại thông tin cập nhật vào database
+    await user.save();
+
+    // Trả về thông tin người dùng sau khi cập nhật (không bao gồm password)
+    user.password = undefined;
+
+    return res.status(200).json({
+      message: "Account updated successfully",
+      user,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Error updating account",
+      error: error.message,
+    });
+  }
+};
+
+const verifyOldPassword = async (req, res) => {
+  const { userId, oldPassword } = req.body;
+
+  if (!userId || !oldPassword) {
+    return res.status(400).json({
+      message: "userId và oldPassword là bắt buộc",
+    });
+  }
+
+  try {
+    // Tìm người dùng trong cơ sở dữ liệu
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Người dùng không tồn tại",
+      });
+    }
+
+    // So sánh mật khẩu cũ với mật khẩu trong cơ sở dữ liệu
+    const isMatch = await bcryptjs.compare(oldPassword, user.password);
+
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Mật khẩu cũ không chính xác",
+      });
+    }
+
+    // Nếu mật khẩu cũ chính xác
+    return res.status(200).json({
+      message: "Mật khẩu cũ chính xác",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      message: "Có lỗi xảy ra khi xác minh mật khẩu cũ",
+      error: error.message,
+    });
+  }
+};
 
 module.exports = {
   signin,
@@ -199,5 +390,8 @@ module.exports = {
   requestResetPassword,
   processResetPassword,
   updatePassword,
-  getAllUsers, 
+  getAllUsers,
+  getUserInfo,
+  updateAccount,
+  verifyOldPassword,
 };
