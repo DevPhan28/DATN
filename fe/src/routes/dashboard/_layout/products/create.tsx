@@ -531,7 +531,7 @@ function AddBrand() {
                         placeholder="e.g., 100"
                         size="base"
                         {...register(
-                          `variants.${index}.countInStock` as const,
+                          `variants.${index}.countInStock_varinant` as const,
                           {
                             required: 'CountInStock is required',
                             min: {
@@ -541,9 +541,9 @@ function AddBrand() {
                           }
                         )}
                       />
-                      {errors.variants?.[index]?.countInStock && (
+                      {errors.variants?.[index]?.countInStock_varinant && (
                         <span className="text-xs text-red-500">
-                          {errors.variants[index].countInStock.message}
+                          {errors.variants[index].countInStock_varinant.message}
                         </span>
                       )}
                     </div>
@@ -563,9 +563,9 @@ function AddBrand() {
                           },
                         })}
                       />
-                      {errors.variants?.[index]?.countInStock && (
+                      {errors.variants?.[index]?.countInStock_varinant && (
                         <span className="text-xs text-red-500">
-                          {errors.variants[index].countInStock.message}
+                          {errors.variants[index].countInStock_varinant.message}
                         </span>
                       )}
                     </div>
@@ -592,7 +592,7 @@ function AddBrand() {
                       size: '',
                       color: '',
                       price: 0,
-                      countInStock: 0,
+                      countInStock_varinant: 0,
                       sku: '',
                     })
                   }

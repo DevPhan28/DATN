@@ -15,7 +15,7 @@ const variantSchema = new mongoose.Schema({
     required: true,
     default: 0,
   },
-  countInStock: {
+  countInStock_varinant: {
     type: Number,
     required: true,
     default: 0,

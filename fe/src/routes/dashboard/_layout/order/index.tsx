@@ -1,5 +1,5 @@
 import Header from '@/components/layoutAdmin/header/header';
-import { useFetchOrders, useFetchOrdersStatus } from '@/data/oder/useOderList';
+import { useFetchOrdersStatus } from '@/data/oder/useOderList';
 import useCheckoutMutation from '@/data/oder/useOderMutation';
 import { Adjustments, ArrowUpTray, EllipsisVertical } from '@medusajs/icons';
 import { Button, DropdownMenu, Input, Table, toast } from '@medusajs/ui';
@@ -57,22 +57,24 @@ function OrderList() {
   };
 
   const deliveryTabs = [
-    { id: 'all', label: 'Tất cả' },
+    { id: 'all-delivery', label: 'Tất cả' },
     { id: 'pendingPayment', label: 'Chờ thanh toán' },
     { id: 'pending', label: 'Chờ xác nhận' },
     { id: 'confirmed', label: 'Chờ lấy hàng' },
-    { id: 'shipped', label: 'Chờ giao hàng' },
+    { id: 'shipped', label: 'Đang vận chuyển' },
+    { id: 'received', label: 'Chờ giao hàng' },
     { id: 'delivered', label: 'Đã giao' },
     { id: 'canceled', label: 'Đã hủy' },
   ];
 
   const complaintTabs = [
-    { id: 'all', label: 'Tất cả' },
+    { id: 'all-complaint', label: 'Tất cả' },
     { id: 'complaint', label: 'Đang khiếu nại' },
     { id: 'refund_in_progress', label: 'Đang hoàn trả hàng' },
     { id: 'refund_completed', label: 'Hoàn trả thành công' },
     { id: 'exchange_in_progress', label: 'Đang đổi trả hàng' },
     { id: 'exchange_completed', label: 'Đổi trả thành công' },
+    { id: "canceled_complaint", label: 'Hủy khiếu nại' },
   ];
 
 
@@ -80,7 +82,8 @@ function OrderList() {
     { value: 'pendingPayment', label: 'Chờ thanh toán' },
     { value: 'pending', label: 'Chờ xác nhận' },
     { value: 'confirmed', label: 'Chờ lấy hàng' },
-    { value: 'shipped', label: 'Chờ giao hàng' },
+    { value: 'shipped', label: 'Đang vận chuyển' },
+    { value: 'received', label: 'Chờ giao hàng' },
     { value: 'delivered', label: 'Đã giao' },
     { value: 'canceled', label: 'Đã hủy' },
   ];
@@ -91,6 +94,7 @@ function OrderList() {
     { value: 'refund_completed', label: 'Hoàn trả thành công' },
     { value: 'exchange_in_progress', label: 'Đang đổi trả hàng' },
     { value: 'exchange_completed', label: 'Đổi trả thành công' },
+    { value: "canceled_complaint", label: 'Hủy khiếu nại' },
   ];
 
   const handleStatusChange = (orderId, newStatus, currentStatus) => {
@@ -104,7 +108,16 @@ function OrderList() {
       return;
     }
 
-    
+    if (
+      (currentStatus === 'refund_in_progress' && newStatus !== 'refund_completed') ||
+      (currentStatus === 'refund_completed' && newStatus !== 'refund_in_progress') ||
+      (currentStatus === 'exchange_in_progress' && newStatus !== 'exchange_completed') ||
+      (currentStatus === 'exchange_completed' && newStatus !== 'exchange_in_progress')
+    ) {
+      toast.error('Trạng thái không hợp lệ trong quá trình hoàn trả/đổi trả.');
+      return;
+    }
+
     updateOrderStatus.mutate(
       { orderId, status: newStatus },
       {
@@ -118,25 +131,25 @@ function OrderList() {
     );
   };
   const isNextDeliveryStatusValid = (currentStatus, nextStatus) => {
-    const deliveryOrder = ['pending', 'confirmed', 'shipped', 'delivered'];
+    const deliveryOrder = ['pending', 'confirmed', 'shipped','received','delivered ',];
     const currentIndex = deliveryOrder.indexOf(currentStatus);
     const nextIndex = deliveryOrder.indexOf(nextStatus);
-  
+
     // Chỉ cho phép chuyển sang trạng thái tiếp theo
     return nextIndex === currentIndex + 1;
   };
   const filteredOrders = listOrder?.filter((order) => {
-    if (selectedTab === 'all') {
+    if (selectedTab === 'all-delivery') {
       if (selectedGroup === 'delivery') {
-        // Chỉ hiển thị đơn hàng đang giao (pending, confirmed, shipped)
-        return ['pending', 'confirmed', 'shipped', 'canceled', 'delivered', 'pendingPayment',].includes(order.status);
+        return ['pending', 'confirmed', 'shipped', 'canceled', 'delivered', 'pendingPayment','received',].includes(order.status);
       }
+    }
+    else if (selectedTab === 'all-complaint') {
       if (selectedGroup === 'complaint') {
-        // Hiển thị tất cả đơn bị khiếu nại
-        return ['complaint', 'refund_in_progress', 'refund_completed', 'exchange_in_progress', 'exchange_completed'].includes(order.status);
+        return ['complaint', 'refund_in_progress', 'refund_completed', 'exchange_in_progress', 'exchange_completed', 'canceled_complaint'].includes(order.status);
       }
-    } else {
-      // Lọc theo tab cụ thể
+    }
+    else {
       return order.status === selectedTab;
     }
     return false;
@@ -325,11 +338,13 @@ function OrderList() {
                       <span>Đã thanh toán</span>
                     ) : order.paymentStatus === 'failed' ? (
                       <span>Chờ thanh toán</span>
-                    ) : (
+                    ) : 
+                    order.paymentStatus === 'cod' ? (
+                      <span>Thanh toán khi nhận được hàng</span>
+                    ) :(
                       order.paymentStatus
                     )}
                   </Table.Cell>
-
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     <select
                       value={order.status}
@@ -338,11 +353,15 @@ function OrderList() {
                     >
                       {(selectedGroup === 'delivery' ? deliveryStatuses : complaintStatuses).map((status) => {
                         const isDisabled =
-                          order.status === 'pendingPayment' || // Chặn tất cả nếu trạng thái hiện tại là "pendingPayment"
-                          order.status === 'canceled' || // Chặn tất cả nếu trạng thái hiện tại là "canceled"
+                          order.status === 'pendingPayment' || 
+                          order.status === 'canceled' || 
+                          order.status === 'canceled_complaint' ||
                           (selectedGroup === 'delivery' &&
-                            !isNextDeliveryStatusValid(order.status, status.value)); // Chặn nếu không phải trạng thái tuần tự tiếp theo trong giao hàng
-
+                            !isNextDeliveryStatusValid(order.status, status.value)) || 
+                          (order.status === 'refund_in_progress' && status.value !== 'refund_completed') || 
+                          (order.status === 'refund_completed' && status.value !== 'refund_in_progress') || 
+                          (order.status === 'exchange_in_progress' && status.value !== 'exchange_completed') ||
+                          (order.status === 'exchange_completed' && status.value !== 'exchange_in_progress');
                         return (
                           <option key={status.value} value={status.value} disabled={isDisabled}>
                             {status.label}
@@ -351,7 +370,6 @@ function OrderList() {
                       })}
                     </select>
                   </Table.Cell>
-
                   <Table.Cell className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-ui-fg-base">
                     <DropdownMenu>
                       <DropdownMenu.Trigger asChild>

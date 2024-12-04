@@ -1,48 +1,51 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { QUERY_KEY } from '@/data/stores/key.ts';
 import instance from '@/api/axiosIntance';
 import { useNavigate } from '@tanstack/react-router';
 import { toast } from '@medusajs/ui';
-import { AxiosResponse } from 'axios';
+import { updatePaymentStatus } from './usePayment';
 
 const useCheckoutMutation = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  // Hàm tạo đơn hàng
   const createOrder = useMutation({
-    mutationFn: data => instance.post('/orders', data), // Tạo đơn hàng
+    mutationFn: (data) => instance.post("/orders", data),
 
-    onSuccess: async (result: AxiosResponse<string>) => {
-      console.log('🚀 ===== result.data:', result.data);
-      location.href = result.data;
-      toast.success('Checkout successful', {
-        description: 'Order has been placed successfully!',
-        duration: 1000,
-      });
+    onSuccess: async (result) => {
+      const { data } = result;
 
-      await queryClient.invalidateQueries({
-        queryKey: [QUERY_KEY.FETCH_CART],
-      });
-
-      void navigate({
-        to: '/thanks',
-      });
+      if (typeof data === "string" && data.includes("http")) {
+        location.href = data; 
+      } else {
+        const { orderId } = data; 
+        if (!orderId) {
+          console.error("Order ID is missing in the response.");
+          return;
+        }
+        await queryClient.invalidateQueries({ queryKey: ['cart'] });
+        navigate({
+          to: "/thanks",
+          search: {
+            status: "1",
+            apptransid: `${orderId}-thanks`,
+          },
+        });
+      }
     },
 
-    onError: error => {
+    onError: (error) => {
       toast.error(`Checkout failed: ${error.message}`);
     },
   });
 
-  // Hàm cập nhật trạng thái đơn hàng
+
   const updateOrderStatus = useMutation({
     mutationFn: ({ orderId, status }) =>
       instance.put(`/orders/${orderId}`, { status }),
 
     onSuccess: () => {
       toast.success('Order status updated successfully');
-      queryClient.invalidateQueries([QUERY_KEY.FETCH_ORDERS]); // Invalidates the orders list
+      queryClient.invalidateQueries({ queryKey: ['order'] });
     },
 
     onError: error => {
@@ -50,7 +53,7 @@ const useCheckoutMutation = () => {
     },
   });
 
-  return { createOrder, updateOrderStatus }; // Đảm bảo trả về updateOrderStatus
+  return { createOrder, updateOrderStatus };
 };
 
 export default useCheckoutMutation;

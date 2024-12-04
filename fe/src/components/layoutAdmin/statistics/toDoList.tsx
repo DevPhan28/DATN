@@ -12,10 +12,9 @@ const translateOrderStatus = status => {
     canceled: 'Đơn bị hủy',
     complaint: 'Khiếu nại',
     refund_in_progress: 'Đang hoàn trả hàng',
-    refund_completed: 'Hoàn trả hàng thành công' ,
-    exchange_in_progress: 'Đang đổi trả hàng' ,
-    exchange_completed: 'Đổi trả hàng thàng công',
-    
+    refund_completed: 'Hoàn trả hàng thành công',
+    exchange_in_progress: 'Đang đổi trả hàng',
+    exchange_completed: 'Đổi trả hàng thành công',
   };
 
   return statusTranslations[status] || status;
@@ -37,8 +36,8 @@ const ToDoList = () => {
     canceled: 0,
     complaint: 0,
     refund_in_progress: 0,
-    refund_completed: 0 ,
-    exchange_in_progress: 0 ,
+    refund_completed: 0,
+    exchange_in_progress: 0,
     exchange_completed: 0,
   };
 
@@ -52,7 +51,7 @@ const ToDoList = () => {
       <div className="grid grid-cols-4 gap-4">
         {Object.keys(statusCounts).map(status => (
           <div key={status} className="text-center">
-            <Link to="/dashboard/order">
+            <Link to={`/dashboard/order?page=1&limit=10&status=${status}`}>
               <div className="text-3xl font-bold text-blue-500">
                 {statusCounts[status]}
               </div>

@@ -1,12 +1,9 @@
-import instance from '@/api/axiosIntance';
 import { updatePaymentStatus } from '@/data/oder/usePayment';
 import {
   createFileRoute,
   Link,
-  useNavigate,
   useSearch,
 } from '@tanstack/react-router';
-import { AxiosError } from 'axios';
 import { useEffect } from 'react';
 import * as z from 'zod';
 
@@ -16,42 +13,51 @@ export const Route = createFileRoute('/_layout/thanks/')({
   validateSearch: z
     .object({
       status: z.union([z.string(), z.number()]).optional(),
-      apptransid: z.union([z.string(), z.number()]), // Chấp nhận cả string và number
-      // Chấp nhận cả string và number
+      apptransid: z.union([z.string(), z.number()]).optional(), // Chấp nhận cả string và number
     })
     .transform(query => ({
       ...query,
       status: query.status?.toString(),
-      apptransid: query.apptransid?.toString(), // Chuyển về chuỗi sau khi validate
-      // Chuyển về chuỗi sau khi validate
-    })).parse,
+      apptransid: query.apptransid?.toString(), 
+    }))
+    .parse,
 });
 
 function ReturnPage() {
-  const navigate = useNavigate();
   const { status, apptransid } = useSearch({ from: "/_layout/thanks/" });
 
-  const orderId = apptransid.split("_")[1].trim();
-  const isSuccess = status === "1"; // Kiểm tra trạng thái thanh toán
+  const isCOD = !apptransid || apptransid.startsWith("cod"); 
+  const isSuccess = status === "1";
+
+  let orderId = "";
+  if (!isCOD && apptransid?.includes("_")) {
+    orderId = apptransid.split("_")[1]?.trim();
+  } else if (isCOD) {
+    orderId = apptransid || "cod_order";
+  }
+
   const message = isSuccess
     ? "Thanh toán thành công! Cảm ơn bạn đã đặt hàng."
     : "Thanh toán đã bị hủy. Vui lòng thử lại.";
 
-  const subMessage = isSuccess
+  const subMessage = isCOD
+    ? "Đơn hàng của bạn đã được xác nhận. Cảm ơn bạn!"
+    : isSuccess
     ? 'Bạn có thể kiểm tra thông tin đơn hàng trong "Đơn mua".'
     : "Nếu bạn cần hỗ trợ, vui lòng liên hệ bộ phận chăm sóc khách hàng.";
 
-    const handlePaymentUpdate = async () => {
-      try {
-        const paymentStatus = isSuccess ? "pending" : "failed"; 
-        await updatePaymentStatus(orderId, paymentStatus);
-      } catch (error) {
-        console.error("Error updating payment status:", error.message);
-      }
-    };
-    useEffect(() => {
-      handlePaymentUpdate();
-    }, [isSuccess]);
+  const handlePaymentUpdate = async () => {
+    try {
+      const paymentStatus = isSuccess ? "pending" : "failed";
+      await updatePaymentStatus(orderId, paymentStatus);
+    } catch (error) {
+      console.error("Error updating payment status:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    handlePaymentUpdate();
+  }, [isSuccess]);
 
   return (
     <div className="flex h-screen items-center justify-center bg-gray-100">
@@ -114,6 +120,13 @@ function ReturnPage() {
                 TIẾP TỤC MUA SẮM
               </Link>
             </>
+          ) : isCOD ? (
+            <Link
+              to="/"
+              className="rounded-md bg-gray-500 px-6 py-2 text-white hover:bg-black"
+            >
+              VỀ TRANG CHỦ
+            </Link>
           ) : (
             <>
               <Link

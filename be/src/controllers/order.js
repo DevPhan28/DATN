@@ -19,8 +19,9 @@ console.log("🚀 ===== ZALOPAY_ENDPOINT:", ZALOPAY_ENDPOINT);
 const createOrder = async (req, res) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { userId, items, totalPrice, customerInfo, paymentMethod } =
-        req.body;
+      const { userId, items, totalPrice, customerInfo, paymentMethod } = req.body;
+
+      // Tạo đơn hàng chung
       const order = await Order.create({
         userId,
         items: items.map((item) => ({
@@ -32,12 +33,15 @@ const createOrder = async (req, res) => {
           color: item.variant?.color || item.color,
           size: item.variant?.size || item.size,
           weight: item.variant?.weight || item.weight,
+          countInStock: item.variant?.countInStock || item.countInStock,
         })),
         totalPrice,
         customerInfo,
         paymentMethod,
         status: "pending", 
+        paymentStatus: "cod", 
       });
+
 
       for (const item of items) {
         await Product.findByIdAndUpdate(
@@ -49,6 +53,12 @@ const createOrder = async (req, res) => {
 
       Mail.sendOrderConfirmation(customerInfo.email, order);
 
+      if (paymentMethod === "cod") {
+        return res.status(200).json({ 
+          message: "Order created successfully", 
+          orderId: order._id ,          
+        });
+      }
       if (paymentMethod === "online") {
         const transID = Math.floor(Math.random() * 1000000);
         const payment = {
@@ -65,7 +75,7 @@ const createOrder = async (req, res) => {
           bank_code: "",
           callback_url: "https://b153-42-114-151-28.ngrok-free.app/api/callback",
         };
-      
+
         const dataEncode =
           ZALOPAY_ID_APP +
           "|" +
@@ -81,7 +91,7 @@ const createOrder = async (req, res) => {
           "|" +
           payment.item;
         payment.mac = CryptoJS.HmacSHA256(dataEncode, ZALOPAY_KEY1).toString();
-      
+
         try {
           const { data } = await axios.post(ZALOPAY_ENDPOINT, null, {
             params: payment,
@@ -102,6 +112,7 @@ const createOrder = async (req, res) => {
       return res.end();
     } catch (error) {
       console.error("Error creating order:", error.message);
+      return res.status(500).json({ error: error.message });
     }
   });
 };
@@ -135,6 +146,8 @@ const getOrders = async (req, res) => {
     } = req.query;
 
     const validStatuses = [
+      'all-delivery', 
+      'all-complaint',
       "pending",
       "pendingPayment",
       "confirmed",
@@ -147,14 +160,21 @@ const getOrders = async (req, res) => {
       "exchange_in_progress",
       "refund_completed",
       "exchange_completed",
+      "canceled_complaint",
     ];
 
     const filter = {};
 
     if (status) {
-      const statusArray = status.split(",").filter((s) => validStatuses.includes(s));
+      const statusArray = status.split(",").map(s => s.trim()).filter(s => validStatuses.includes(s));
       if (statusArray.length > 0) {
-        filter.status = { $in: statusArray };
+        if (statusArray.includes('all-delivery')) {
+          filter.status = { $in: ["pending","pendingPayment",'shipped', 'delivered', 'received', "confirmed","canceled",] };
+        } else if (statusArray.includes('all-complaint')) {
+          filter.status = { $in: ['complaint', 'refund_in_progress', 'exchange_in_progress',"refund_completed","exchange_completed","canceled_complaint"] };
+        } else {
+          filter.status = { $in: statusArray };
+        }
       }
     }
 
@@ -174,8 +194,7 @@ const getOrders = async (req, res) => {
       { $group: { _id: null, total: { $sum: "$totalPrice" } } },
     ]);
 
-    const totalDeliveredAmount =
-      totalDeliveredValue.length > 0 ? totalDeliveredValue[0].total : 0;
+    const totalDeliveredAmount = totalDeliveredValue.length > 0 ? totalDeliveredValue[0].total : 0;
 
     return res.status(StatusCodes.OK).json({
       data: orders,
@@ -195,6 +214,7 @@ const getOrders = async (req, res) => {
       .json({ error: error.message });
   }
 };
+
 
 const getOrderById = async (req, res) => {
   try {
@@ -345,7 +365,6 @@ const cancelOrder = async (req, res) => {
   }
 };
 
-// In your orders controller
 const confirmReceived = async (req, res) => {
   const { orderId } = req.params;
 
@@ -469,7 +488,7 @@ const updateReturnReason = async (req, res) => {
     // Cập nhật lý do và trạng thái trả hàng
     order.returnReason = returnReason;
     order.status = status;
-    order.statusHistory.push(status); // Lưu lịch sử trạng thái
+    order.statusHistory.push(status); 
 
     await order.save();
 

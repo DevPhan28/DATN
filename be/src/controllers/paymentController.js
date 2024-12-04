@@ -10,8 +10,8 @@ require("dotenv").config();
 const callback = async (req, res) => {
   const { data, mac } = req.body;
 
-  const appKey = process.env.ZALOPAY_KEY2; // Key để xác minh callback
-  const dataJson = JSON.parse(data); // Dữ liệu từ ZaloPay
+  const appKey = process.env.ZALOPAY_KEY2; 
+  const dataJson = JSON.parse(data); 
   const transactionId = dataJson.app_trans_id;
   const orderId = dataJson.app_user;
 

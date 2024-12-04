@@ -38,7 +38,7 @@ const useCartMutation = () => {
         data: { productIds },
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEY.FETCH_CART] });
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
     onError: (error: any) => {
       toast.error(`Có lỗi xảy ra: ${error.message}`, {

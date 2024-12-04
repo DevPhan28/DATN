@@ -1,22 +1,26 @@
 import instance from "@/api/axiosIntance";
 
-export const updatePaymentStatus = async (orderId, paymentStatus) => {
+export const updatePaymentStatus = async (orderId, paymentStatus, paymentMethod) => {
   try {
+    // Gửi yêu cầu đến API
     const response = await instance.post("/update-payment-status", {
       orderId,
-      paymentStatus, 
+      paymentStatus,
+      paymentMethod, 
     });
+
 
     if (response.status !== 200) {
       throw new Error("Failed to update payment status");
     }
 
-    return response.data;
+    return response.data; 
   } catch (error) {
     console.error("Error during API call:", error.message);
-    throw error;
+    throw error; 
   }
 };
+
 export const retryPayment = async (orderId) => {
     try {
       const response = await instance.post("/retry-payment", { orderId });

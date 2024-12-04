@@ -2,7 +2,7 @@ type Variant = {
   size: string;
   color: string;
   price: number;
-  countInStock: number;
+  countInStock_varinant: number;
   weight: number;
 };
 

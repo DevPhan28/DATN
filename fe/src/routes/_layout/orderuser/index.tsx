@@ -30,7 +30,7 @@ const getStatusLabel = (status: string) => {
     case 'confirmed':
       return 'Chờ lấy hàng';
     case 'shipped':
-      return 'Chờ giao hàng';
+      return 'Đang vận chuyển';
     case 'received':
       return 'Chờ giao hàng';
     case 'delivered':
@@ -49,6 +49,8 @@ const getStatusLabel = (status: string) => {
       return 'Đang đổi trả hàng';
     case 'exchange_completed':
       return 'Đổi trả hàng thành công';
+    case 'canceled_complaint':
+      return 'Hủy khiếu nại';
     default:
       return status;
   }
@@ -217,7 +219,10 @@ function UserOrder() {
       return (
         order.status === 'complaint' ||
         order.status === 'refund_in_progress' ||
-        order.status === 'exchange_in_progress'
+        order.status === 'refund_completed' ||
+        order.status === 'exchange_in_progress' ||
+        order.status === 'exchange_completed' ||
+        order.status === 'canceled_complaint' 
       );
     }
 
@@ -320,31 +325,26 @@ function UserOrder() {
                     <div className="mb-4 flex items-center justify-between">
                       <span
                         className={`rounded-full px-4 py-1 text-sm font-medium ${
-                          order.status === 'canceled'
+                          order.status === 'canceled' || order.status === 'canceled_complaint'
                             ? 'bg-red-200 text-red-600'
                             : order.status === 'pending'
-                              ? 'bg-yellow-200 text-yellow-700'
-                              : order.status === 'confirmed'
-                                ? 'bg-blue-200 text-blue-700'
-                                : order.status === 'shipped' ||
-                                    order.status === 'received'
-                                  ? 'bg-indigo-200 text-indigo-700'
-                                  : order.status === 'delivered'
-                                    ? 'bg-green-200 text-green-700'
-                                    : order.status === 'complaint'
-                                      ? 'bg-purple-500 text-white'
-                                      : order.status === 'refund_in_progress' ||
-                                          order.status ===
-                                            'exchange_in_progress'
-                                        ? 'bg-orange-200 text-orange-700'
-                                        : order.status === 'refund_completed' ||
-                                            order.status ===
-                                              'exchange_completed'
-                                          ? 'bg-teal-200 text-teal-700'
-                                          : order.status === 'pendingPayment' // Thêm trạng thái pendingPayment
-                                            ? 'bg-gray-200 text-gray-700' // Màu cho pendingPayment
-                                            : ''
-                        }`}
+                            ? 'bg-yellow-200 text-yellow-700'
+                            : order.status === 'confirmed'
+                            ? 'bg-blue-200 text-blue-700'
+                            : order.status === 'shipped' || order.status === 'received'
+                            ? 'bg-indigo-200 text-indigo-700'
+                            : order.status === 'delivered'
+                            ? 'bg-green-200 text-green-700'
+                            : order.status === 'complaint'
+                            ? 'bg-purple-500 text-white'
+                            : order.status === 'refund_in_progress' || order.status === 'exchange_in_progress' 
+                            ? 'bg-orange-200 text-orange-700'
+                            : order.status === 'refund_completed' || order.status === 'exchange_completed' 
+                            ? 'bg-teal-200 text-teal-700'
+                            : order.status === 'pendingPayment'
+                            ? 'bg-gray-200 text-gray-700' 
+                            : ''
+                        }`}                        
                       >
                         {getStatusLabel(order.status)}
                       </span>

@@ -64,6 +64,7 @@ const OrderSchema = new mongoose.Schema(
         "exchange_in_progress",
         "refund_completed",
         "exchange_completed",
+        "canceled_complaint",
       ],
       default: "pending",
     },
@@ -76,7 +77,7 @@ const OrderSchema = new mongoose.Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ["pending", "paid", "failed", "processing"], 
+      enum: ["pending", "paid", "failed", "processing", "cod"], 
       default: "pending",
     },
     transactionid: { type: String }, // Mã giao dịch ZaloPay
