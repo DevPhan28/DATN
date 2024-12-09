@@ -26,7 +26,7 @@ const createOrder = async (req, res) => {
         userId,
         items: items.map((item) => ({
           productId: item.productId,
-          slug: item.slug || `product-${item.productId}`,
+          slug: item.slug || `product-${item.productId}`,  
           name: item.name,
           price: item.price,
           quantity: item.quantity,

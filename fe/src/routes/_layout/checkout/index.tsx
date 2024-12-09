@@ -16,6 +16,7 @@ import { toast } from '@medusajs/ui';
 import instance from '@/api/axiosIntance';
 import { useFetchAvailableCoupons } from '@/data/coupon/useCouponList';
 import VoucherModal from '@/components/VoucherModal';
+import CurrencyVND from '@/components/config/vnd';
 
 export const Route = createFileRoute('/_layout/checkout/')({
   component: () => {
@@ -482,10 +483,14 @@ export const Route = createFileRoute('/_layout/checkout/')({
                             </span>
                           </div>
                         </td>
-                        <td className="p-4 align-middle">${product.price}</td>
+                        <td className="p-4 align-middle">
+                          <CurrencyVND amount={product.price} />{' '}
+                        </td>
                         <td className="p-4 align-middle">{product.quantity}</td>
                         <td className="p-4 pr-0 text-end align-middle">
-                          ${product.price * product.quantity}
+                          <CurrencyVND
+                            amount={product.price * product.quantity}
+                          />
                         </td>
                       </tr>
                     ))}
@@ -510,7 +515,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
                 <div className="flex items-center gap-2 text-xl font-semibold">
                   Tổng số tiền ({totalQuantity} sản phẩm):{' '}
                   <span className="text-xl text-red-500">
-                    {totalAmount} VND
+                    <CurrencyVND amount={totalAmount} />
                   </span>
                 </div>
               </div>
@@ -569,7 +574,9 @@ export const Route = createFileRoute('/_layout/checkout/')({
               <div>
                 <div className="flex justify-between gap-24">
                   <h5 className="text-xl text-gray-500">Total product:</h5>
-                  <div className="text-right">{totalAmount} VND</div>
+                  <div className="text-right">
+                    <CurrencyVND amount={totalAmount} />
+                  </div>
                 </div>
                 <div className="flex justify-between gap-24">
                   <h5 className="text-xl text-gray-500">Phí vận chuyển :</h5>
@@ -577,11 +584,15 @@ export const Route = createFileRoute('/_layout/checkout/')({
                 </div>
                 <div className="flex justify-between gap-24">
                   <h5 className="text-xl text-gray-500">Discount Amount:</h5>
-                  <div className="text-right">{discountAmount} VND</div>
+                  <div className="text-right">
+                    <CurrencyVND amount={discountAmount} />
+                  </div>
                 </div>
                 <div className="flex justify-between gap-24">
                   <h5 className="text-xl text-gray-500">Total:</h5>
-                  <div className="text-right">{totalWithDiscount} VND</div>
+                  <div className="text-right">
+                    <CurrencyVND amount={totalWithDiscount} />
+                  </div>
                 </div>
               </div>
             </div>
@@ -599,4 +610,3 @@ export const Route = createFileRoute('/_layout/checkout/')({
     );
   },
 });
-

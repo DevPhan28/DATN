@@ -52,30 +52,32 @@ console.log("Testt");
 const updatePaymentStatusOnFailure = async (req, res) => {
   let { orderId, paymentStatus } = req.body;
 
+  
+  // Kiểm tra giá trị orderId
+  if (!orderId || !mongoose.Types.ObjectId.isValid(orderId)) {
+    return res.status(400).json({ message: "Invalid or missing Order ID" });
+  }   
 
   orderId = new mongoose.Types.ObjectId(orderId);
-  console.log("orderId", orderId)
+  console.log("oderId", orderId);
+  // Kiểm tra giá trị paymentStatus
+  if (!["paid", "pending", "failed", "pendingPayment"].includes(paymentStatus)) {
+    return res.status(400).json({ message: "Invalid paymentStatus value" });
+  }
+
   try {
-
-    if (!orderId) {
-      return res.status(400).json({ message: "Order ID is required" });
-    }
-
-    if (!["paid", "pending", "failed", "pendingPayment"].includes(paymentStatus)) {
-      return res.status(400).json({ message: "Invalid paymentStatus value" });
-    }
-
     const order = await Order.findById(orderId);
+
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
+    // Cập nhật paymentStatus
     order.paymentStatus = paymentStatus;
 
+    // Cập nhật status dựa trên paymentStatus
     if (paymentStatus === "pending") {
       order.status = "confirmed";
-      order.paymentStatus = "pending";
-      await order.save();
     } else if (paymentStatus === "failed") {
       order.status = "pendingPayment";
     }
@@ -92,11 +94,11 @@ const updatePaymentStatusOnFailure = async (req, res) => {
   }
 };
 
+
 const retryPayment = async (req, res) => {
   const { orderId } = req.body;
-  const  ZALOPAY_ID_APP = process.env.ZALOPAY_ID_APP
-  const ZALOPAY_KEY1 = process.env.ZALOPAY_KEY1
-  // const  ZALOPAY_KEY2 = process.env.ZALOPAY_KEY2
+  const ZALOPAY_ID_APP = process.env.ZALOPAY_ID_APP;
+  const ZALOPAY_KEY1 = process.env.ZALOPAY_KEY1;
   try {
     console.log("Received orderId:", orderId);
 
@@ -113,11 +115,16 @@ const retryPayment = async (req, res) => {
       return res.status(400).json({ message: "Order is already paid" });
     }
 
-    // Tạo `app_trans_id` mới
+    const generateRandomChar = () => {
+      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      return chars.charAt(Math.floor(Math.random() * chars.length));
+    };
+
+
     const transID = Math.floor(Math.random() * 10000000);
     const payment = {
       app_id: ZALOPAY_ID_APP,
-      app_trans_id: `${moment().format("YYMMDD")}_${order._id}r`,
+      app_trans_id: `${moment().format("YYMMDD")}_${order._id}${generateRandomChar()}`, 
       app_user: order._id,
       app_time: Date.now(),
       item: JSON.stringify(order.items),
@@ -130,7 +137,6 @@ const retryPayment = async (req, res) => {
       callback_url: "https://b153-42-114-151-28.ngrok-free.app/api/callback",
     };
     console.log("payment", payment);
-    
 
     const dataEncode =
       ZALOPAY_ID_APP +
@@ -148,7 +154,6 @@ const retryPayment = async (req, res) => {
       payment.item;
     payment.mac = CryptoJS.HmacSHA256(dataEncode, ZALOPAY_KEY1).toString();
 
-    // Tạo chữ ký (MAC)
     console.log("Payment payload:", payment);
 
     const { data } = await axios.post(process.env.ZALOPAY_ENDPOINT, null, {
@@ -161,7 +166,6 @@ const retryPayment = async (req, res) => {
       throw new Error(data.return_message || "Error when retrying payment");
     }
 
-    // Lưu `transactionid` mới
     order.paymentStatus = "pending";
     await order.save();
 
@@ -171,6 +175,7 @@ const retryPayment = async (req, res) => {
     return res.status(500).json({ message: error.message || "Internal server error" });
   }
 };
+
 
 module.exports = {
   updatePaymentStatusOnFailure,

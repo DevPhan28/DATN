@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { useSearch } from "@/data/products/useSearch";
+import React, { useState, useEffect } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
+import { useSearch } from '@/data/products/useSearch';
 import { ShoppingCartSolid, Heart } from '@medusajs/icons';
 import useCartMutation from '@/data/cart/useCartMutation';
 import { Link } from '@tanstack/react-router';
 
-export const Route = createFileRoute("/_layout/searchList/")({
+export const Route = createFileRoute('/_layout/searchList/')({
   component: SearchList,
 });
 
 function SearchList() {
-  const [searchTerm, setSearchTerm] = useState(""); // Holds the input value
-  const [submittedSearchTerm, setSubmittedSearchTerm] = useState(""); // For actual search
+  const [searchTerm, setSearchTerm] = useState(''); // Holds the input value
+  const [submittedSearchTerm, setSubmittedSearchTerm] = useState(''); // For actual search
   const [page, setPage] = useState(1); // Current page number
   const { addItemToCart } = useCartMutation();
 
@@ -33,7 +33,7 @@ function SearchList() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchTerm.trim().length < 2) {
-      alert("Please enter at least 2 characters to search.");
+      alert('Please enter at least 2 characters to search.');
       return;
     }
     setSubmittedSearchTerm(searchTerm); // Update search term
@@ -61,39 +61,43 @@ function SearchList() {
           variantId: product.variantId ?? '',
           quantity: 1,
         },
-      ], 
+      ],
     });
   };
 
   return (
-    <div className="search-container max-w-7xl mx-auto p-5 sm:p-5 md:p-5 lg:p-10">
+    <div className="search-container mx-auto max-w-7xl p-5 sm:p-5 md:p-5 lg:p-10">
       {/* Search Form */}
-      <form onSubmit={handleSearch} className="flex items-center space-x-3 mb-6">
-  <input
-    type="text"
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    placeholder="Search now..."
-    className="border p-3 w-full text-sm placeholder-gray-400 rounded-md focus:outline-none focus:ring focus:ring-blue-500"
-  />
-  <button
-    type="submit"
-    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 transition duration-300"
-  >
-    Search
-  </button>
-</form>
-
+      <form
+        onSubmit={handleSearch}
+        className="mb-6 flex items-center space-x-3"
+      >
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+          placeholder="Search now..."
+          className="w-full rounded-md border p-3 text-sm placeholder-gray-400 focus:outline-none focus:ring focus:ring-blue-500"
+        />
+        <button
+          type="submit"
+          className="rounded-md bg-blue-500 px-4 py-2 text-white transition duration-300 hover:bg-blue-600 focus:ring-2 focus:ring-blue-500"
+        >
+          Search
+        </button>
+      </form>
 
       {isLoading || isFetching ? <p>Đang tải dữ liệu...</p> : null}
 
-      {isError && <p className="text-red-500">Đã có lỗi xảy ra khi tìm kiếm.</p>}
+      {isError && (
+        <p className="text-red-500">Đã có lỗi xảy ra khi tìm kiếm.</p>
+      )}
 
       {submittedSearchTerm && (
         <>
           {isSuccess && data?.data.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {data.data.map((product : any) => (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {data.data.map((product: any) => (
                 <div
                   key={product._id}
                   className="product-card group relative overflow-hidden text-center"
@@ -112,7 +116,9 @@ function SearchList() {
                   <h2 className="mt-2 flex items-center justify-between text-gray-500">
                     {product.name}
                     <div className="flex space-x-2">
-                      <Link to={`/${product.slug ? product.slug : product._id}/detailproduct`}>
+                      <Link
+                        to={`/${product.slug ? product.slug : product._id}/detailproduct`}
+                      >
                         <ShoppingCartSolid />
                       </Link>
                       <Heart />
