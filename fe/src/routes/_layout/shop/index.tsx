@@ -74,15 +74,15 @@ function Shop() {
         <div className="main-content w-full h-48 flex flex-col items-center justify-center ">
           <div className="text-content">
             <div className="text-4xl font-semibold text-center">
-              Shop
+              Cửa hàng
             </div>
             <div className="link flex items-center justify-center gap-1 caption1 mt-3">
               <div className="flex items-center justify-center">
-                <a href="/">Home</a>
+                <a href="/">Trang chủ</a>
                 <ChevronRightMini />
               </div>
               <div className="text-gray-500 capitalize">
-                <a href="#">Shop</a>
+                <a href="#">Cửa hàng</a>
               </div>
             </div>
           </div>
@@ -96,7 +96,7 @@ function Shop() {
                 onClick={() => setSelectedCategory(null)}
                 className="border-b-2 border-gray-900 text-gray-900"
               >
-                All Products
+               Tất cả sản phẩm
               </button>
               {categories?.map((category: { _id: string; name: string }) => (
                 <a
@@ -167,7 +167,7 @@ function Shop() {
                     to={`/${product.slug ? product.slug : product._id}/quickviewProduct`}
                     className="quick-view duration-900 absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-full bg-white px-4 py-2 opacity-0 shadow transition-all hover:bg-black hover:text-white group-hover:translate-y-[-100px] group-hover:opacity-100"
                   >
-                    Quick View
+                   Xem nhanh
                   </Link>
                   <h2 className="mt-2 flex items-center justify-between text-gray-500">
                     {product.name}

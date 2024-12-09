@@ -53,32 +53,32 @@ function AddCoupon() {
           </div>
           <div className="flex gap-2">
             <Button variant="secondary" type="button" onClick={() => navigate({ to: '/dashboard/coupon' })}>
-              Cancel
+              Hủy
             </Button>
             <Button variant="primary" type="submit">
-              Create Coupon
+              Tạo phiếu giảm giá
             </Button>
           </div>
         </div>
         
         <div className="rounded-lg border bg-ui-bg-base p-7">
-          <h1 className="text-2xl font-medium text-ui-fg-base">Coupon Information</h1>
+          <h1 className="text-2xl font-medium text-ui-fg-base">Thông tin phiếu giảm giá</h1>
           <p className="mb-4 text-sm font-normal text-ui-fg-subtle">
-            Enter the coupon details such as code, discount, expiration date, and status.
+          Nhập chi tiết phiếu giảm giá như mã, giảm giá, ngày hết hạn và trạng thái.
           </p>
 
           <div className="space-y-4">
-            {/* Coupon Code */}
+            {/* Phiếu giảm giá */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Coupon Code
+                  <span className="text-ui-tag-red-text">*</span> Phiếu giảm giá
                 </label>
                 <Input
                   placeholder="e.g., FREESHIP"
                   size="base"
                   {...register('code', {
-                    required: 'Coupon code is required',
+                    required: 'Phiếu giảm giá is required',
                   })}
                 />
                 {errors.code && (
@@ -91,7 +91,7 @@ function AddCoupon() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Discount (%)
+                  <span className="text-ui-tag-red-text">*</span> Giảm giá (%)
                 </label>
                 <Input
                   type="number"
@@ -111,7 +111,7 @@ function AddCoupon() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Min Order
+                  <span className="text-ui-tag-red-text">*</span> Đơn hàng tối thiểu
                 </label>
                 <Input
                   type="number"
@@ -133,18 +133,18 @@ function AddCoupon() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Free Shipping
+                  <span className="text-ui-tag-red-text">*</span> Miễn phí vận chuyển
                 </label>
                 <Select
                   onValueChange={(value) => setValue('isFreeShipping', value === 'true')}
                   defaultValue="false"
                 >
                   <Select.Trigger>
-                    <Select.Value placeholder="Select an option" />
+                    <Select.Value placeholder="Lựa chọn" />
                   </Select.Trigger>
                   <Select.Content>
-                    <Select.Item value="true">Yes</Select.Item>
-                    <Select.Item value="false">No</Select.Item>
+                    <Select.Item value="true">Có</Select.Item>
+                    <Select.Item value="false">Không</Select.Item>
                   </Select.Content>
                 </Select>
               </div>
@@ -154,7 +154,7 @@ function AddCoupon() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Expiration Date
+                  <span className="text-ui-tag-red-text">*</span> Ngày hết hạn
                 </label>
                 <DatePicker
                   placeholder="Select expiration date"
@@ -163,22 +163,22 @@ function AddCoupon() {
               </div>
             </div>
 
-            {/* Active Status */}
+            {/* Active Trạng thái */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Status
+                  <span className="text-ui-tag-red-text">*</span> Trạng thái
                 </label>
                 <Select
                   onValueChange={(value) => setValue('isActive', value === 'true')}
                   defaultValue="true"
                 >
                   <Select.Trigger>
-                    <Select.Value placeholder="Select status" />
+                    <Select.Value placeholder="Select Trạng thái" />
                   </Select.Trigger>
                   <Select.Content>
-                    <Select.Item value="true">Active</Select.Item>
-                    <Select.Item value="false">Inactive</Select.Item>
+                    <Select.Item value="true">Áp dụng</Select.Item>
+                    <Select.Item value="false">Hủy áp dụng</Select.Item>
                   </Select.Content>
                 </Select>
               </div>

@@ -56,7 +56,7 @@ const Category = () => {
                     className="absolute bottom-4 left-4"
                   >
                     <span className="text-base font-bold text-white">
-                      Shop Now
+                     Mua sắm ngay
                     </span>
                     <div className="mt-1 h-[2px] w-16 bg-white"></div>
                   </Link>

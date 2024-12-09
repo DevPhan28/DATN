@@ -174,7 +174,7 @@ function AccountUser() {
               htmlFor="username"
               className="text-lg font-medium text-gray-700"
             >
-              Username
+              Tên người dùng
             </label>
             <Input
               type="text"

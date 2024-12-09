@@ -51,7 +51,7 @@ function UserList() {
         <div className="relative w-80">
           <Input
             className="bg-ui-bg-base"
-            placeholder="Find Something"
+            placeholder="Tìm kiếm"
             id="search-input"
             size="small"
             type="search"
@@ -60,11 +60,11 @@ function UserList() {
         <div className="flex items-center gap-2">
           <Button variant="secondary">
             <Adjustments className="text-black" />
-            Filter
+            Lọc
           </Button>
           <Button variant="secondary">
             <ArrowUpTray className="text-black" />
-            Export list
+            Tải lên
           </Button>
         </div>
       </div>
@@ -80,14 +80,14 @@ function UserList() {
           <Table className="w-full">
             <Table.Row className="bg-gray-200 font-semibold text-gray-700">
               <Table.HeaderCell className="px-4 py-3">
-                Username
+                Tên người dùng
               </Table.HeaderCell>
-              <Table.HeaderCell className="px-4 py-3">Image</Table.HeaderCell>
+              <Table.HeaderCell className="px-4 py-3">Ảnh</Table.HeaderCell>
               <Table.HeaderCell className="px-4 py-3">Email</Table.HeaderCell>
-              <Table.HeaderCell className="px-4 py-3">Role</Table.HeaderCell>
-              <Table.HeaderCell className="px-4 py-3">Status</Table.HeaderCell>
+              <Table.HeaderCell className="px-4 py-3">Vai trò</Table.HeaderCell>
+              <Table.HeaderCell className="px-4 py-3">Trạng thái</Table.HeaderCell>
               <Table.HeaderCell className="px-4 py-3 text-center">
-                Action
+                Hành động
               </Table.HeaderCell>
             </Table.Row>
             <Table.Body>
@@ -143,5 +143,6 @@ function UserList() {
     </div>
   );
 }
+
 
 export default UserList;

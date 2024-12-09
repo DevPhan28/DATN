@@ -14,7 +14,7 @@ const Header = ({ title, pathname }: HeaderProps) => {
                 {pathname === '/' && (
                     <div className="w-[240px]">
                         <Input
-                            placeholder="Find something..."
+                            placeholder="Tìm kiếm"
                             id="search-input"
                             type="search"
                             className="rounded-md bg-ui-bg-field"

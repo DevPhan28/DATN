@@ -47,13 +47,13 @@ function AddCategory() {
               className="text-sm font-medium text-ui-fg-subtle hover:cursor-pointer"
               onClick={() => navigate({ to: '/dashboard/category' })}
             >
-              Category List
+             Danh sách danh mục
             </button>
             <button
               type="submit"
               className="text-sm font-medium text-ui-fg-subtle"
             >
-              Create New
+              Tạo mới
             </button>
           </div>
           <div className="flex gap-2">
@@ -62,20 +62,21 @@ function AddCategory() {
               type="button"
               onClick={() => navigate({ to: '/dashboard/category' })}
             >
-              Cancel
+             Hủy
             </Button>
             <Button variant="primary" type="submit">
-              Create Category
+             Tạo danh mục
             </Button>
           </div>
         </div>
 
         <div className="rounded-lg border bg-ui-bg-base p-7">
           <h1 className="text-2xl font-medium text-ui-fg-base">
-            General Information
+          Thông tin chung
+
           </h1>
           <p className="mb-4 text-sm font-normal text-ui-fg-subtle">
-            Provide the category name.
+          Cung cấp tên danh mục.
           </p>
 
           <div className="space-y-4">
@@ -83,7 +84,7 @@ function AddCategory() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Category Name
+                  <span className="text-ui-tag-red-text">*</span> Tên danh mục
                 </label>
                 <Input
                   placeholder="Type here"

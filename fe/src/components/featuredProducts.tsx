@@ -108,7 +108,7 @@ const FeaturedProducts = () => {
     <div className=" xl:p-0 lg:p-5 md:p-5 sm:p-5 relative">
       <div className="max-w-7xl m-auto">
         <h2 className="text-left text-4xl uppercase font-bold mb-5 relative">
-          Featured Product
+          Sản phẩm nổi bật 
         </h2>
       </div>
       {loading && <p>Loading products...</p>}
@@ -130,7 +130,7 @@ const FeaturedProducts = () => {
                 to={`/${product.slug ? product.slug : product._id}/quickviewProduct`}
                 className="quick-view duration-900 absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-full bg-blue-400 px-4 py-2 opacity-0 shadow transition-all hover:bg-black hover:text-white group-hover:translate-y-[-100px] group-hover:opacity-100"
               >
-                Quick View
+                Xem nhanh
               </Link>
             </div>
           ))}

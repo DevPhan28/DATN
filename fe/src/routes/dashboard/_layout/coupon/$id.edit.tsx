@@ -81,17 +81,18 @@ function EditCoupon() {
             type="button"
             onClick={() => navigate({ to: '/dashboard/coupon' })}
           >
-            Cancel
+            Hủy
           </Button>
           <Button variant="primary" type="submit">
-            Save Changes
+            Lưu thay đổi
           </Button>
         </div>
 
         <div className="rounded-lg border bg-ui-bg-base p-7">
-          <h1 className="text-2xl font-medium text-ui-fg-base">Coupon Information</h1>
+          <h1 className="text-2xl font-medium text-ui-fg-base">Thông tin phiếu giảm giá</h1>
           <p className="mb-4 text-sm font-normal text-ui-fg-subtle">
-            Update the coupon details such as code, discount, expiration date, and status.
+           
+Cập nhật chi tiết phiếu giảm giá như mã, giảm giá, ngày hết hạn và trạng thái.
           </p>
 
           <div className="space-y-4">
@@ -99,13 +100,13 @@ function EditCoupon() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  Coupon Code
+                  Phiếu giảm giá
                 </label>
                 <Input
                   placeholder="e.g., FREESHIP"
                   size="base"
                   {...register('code', {
-                    required: 'Coupon code is required',
+                    required: 'Cần phiếu giảm giá',
                   })}
                 />
                 {errors.code && (
@@ -118,7 +119,7 @@ function EditCoupon() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  Discount (%)
+                  Giảm giá (%)
                 </label>
                 <Input
                   type="number"
@@ -160,7 +161,7 @@ function EditCoupon() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  Free Shipping
+                 free ship
                 </label>
                 <Select
                   defaultValue={String(couponData.isFreeShipping)}
@@ -181,7 +182,7 @@ function EditCoupon() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  Expiration Date
+                Ngày hết hạn
                 </label>
                 <DatePicker
                   selectedDate={new Date(couponData.expirationDate)}
@@ -194,7 +195,7 @@ function EditCoupon() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  Status
+                  Trạng thái
                 </label>
                 <Select
                   defaultValue={String(couponData.isActive)}
@@ -204,8 +205,8 @@ function EditCoupon() {
                     <Select.Value placeholder="Select status" />
                   </Select.Trigger>
                   <Select.Content>
-                    <Select.Item value="true">Active</Select.Item>
-                    <Select.Item value="false">Inactive</Select.Item>
+                    <Select.Item value="true">Áp dụng</Select.Item>
+                    <Select.Item value="false">Hủy áp dụng</Select.Item>
                   </Select.Content>
                 </Select>
               </div>

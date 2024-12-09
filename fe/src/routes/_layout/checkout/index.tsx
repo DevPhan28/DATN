@@ -249,18 +249,18 @@ export const Route = createFileRoute('/_layout/checkout/')({
           <div className="main-content flex h-48 w-full flex-col items-center justify-center">
             <div className="text-content">
               <div className="text-center text-4xl font-semibold">
-                Check out
+                Thanh toán
               </div>
               <div className="link caption1 mt-3 flex items-center justify-center gap-1">
                 <div className="flex items-center justify-center">
-                  <a href="/">Home</a>
+                  <a href="/">Trang chủ</a>
                   <ChevronRightMini />
                 </div>
                 <div className="flex items-center justify-center">
-                  <a href="#">Cart</a>
+                  <a href="#">Giỏ hàng</a>
                   <ChevronRightMini />
                 </div>
-                <div className="capitalize text-gray-500">Check out</div>
+                <div className="capitalize text-gray-500">Thanh toán</div>
               </div>
             </div>
           </div>
@@ -277,7 +277,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
                     <div className="flex gap-2 text-red-500">
                       <User className="mt-1" />
                       <h2 className="font-semibol text-xl uppercase">
-                        Delivery Information
+                        Thông tin giao hàng
                       </h2>
                     </div>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -287,7 +287,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
                           className="mb-2 block text-sm font-medium text-gray-900"
                         >
                           {' '}
-                          Your name{' '}
+                          Tên{' '}
                         </label>
                         <input
                           type="text"
@@ -303,7 +303,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
                           className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
                         >
                           {' '}
-                          Phone Number<span className="text-red-500"> *</span>
+                          Số điện thoại<span className="text-red-500"> *</span>
                         </label>
                         <div className="flex items-center">
                           <div className="relative w-full">
@@ -336,7 +336,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
                     <div className="flex gap-2 text-red-500">
                       <MapPin className="mt-1" />
                       <h2 className="font-semibol text-xl uppercase">
-                        Delivery address
+                        Địa chỉ giao hàng
                       </h2>
                     </div>
                     <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -447,16 +447,16 @@ export const Route = createFileRoute('/_layout/checkout/')({
                 <table className="w-full caption-bottom text-sm">
                   <tr className="border-b transition-colors">
                     <th className="h-12 min-w-48 px-4 pl-0 text-left align-middle text-lg font-normal text-[#222]">
-                      Product
+                      Sản phẩm
                     </th>
                     <th className="h-12 px-4 text-left align-middle font-medium text-[#0000008a]">
-                      Price
+                      Giá
                     </th>
                     <th className="h-12 px-4 text-left align-middle font-medium text-[#0000008a]">
-                      Quantity
+                      Số lượng
                     </th>
                     <th className="h-12 px-4 pr-0 text-end align-middle font-medium text-[#0000008a]">
-                      Total
+                      Tổng
                     </th>
                   </tr>
                   <tbody className="[&_tr:last-child]:border-0">
@@ -502,7 +502,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
                   htmlFor=""
                   className="custom-cursor-default-hover text-nowrap"
                 >
-                  Message:
+                  Tin nhắn:
                 </label>
                 <input
                   name="noteMessage"
@@ -569,11 +569,11 @@ export const Route = createFileRoute('/_layout/checkout/')({
             <div className="flex flex-col items-start justify-between gap-5 border-t border-gray-200 py-5 md:flex-row">
               <h2 className="flex items-center gap-2 text-xl">
                 <DocumentTextSolid className="text-red-500" />
-                Payment details:
+                Chi tiết thanh toán:
               </h2>
               <div>
                 <div className="flex justify-between gap-24">
-                  <h5 className="text-xl text-gray-500">Total product:</h5>
+                  <h5 className="text-xl text-gray-500">Tổng sản phẩm:</h5>
                   <div className="text-right">
                     <CurrencyVND amount={totalAmount} />
                   </div>
@@ -583,13 +583,13 @@ export const Route = createFileRoute('/_layout/checkout/')({
                   <div className="text-right">{shippingMessageDisplay}</div>
                 </div>
                 <div className="flex justify-between gap-24">
-                  <h5 className="text-xl text-gray-500">Discount Amount:</h5>
+                  <h5 className="text-xl text-gray-500">Số tiền giảm:</h5>
                   <div className="text-right">
                     <CurrencyVND amount={discountAmount} />
                   </div>
                 </div>
                 <div className="flex justify-between gap-24">
-                  <h5 className="text-xl text-gray-500">Total:</h5>
+                  <h5 className="text-xl text-gray-500">Tổng:</h5>
                   <div className="text-right">
                     <CurrencyVND amount={totalWithDiscount} />
                   </div>

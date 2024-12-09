@@ -14,7 +14,7 @@ export const Route = createFileRoute('/dashboard/_layout/coupon/')({
 
 function CouponList() {
   const [currentPage, setCurrentPage] = useState(0);
-  const [searchQuery, setSearchQuery] = useState(''); // State for search query
+  const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const dialog = usePrompt();
 
@@ -45,54 +45,52 @@ function CouponList() {
   const { deleteCoupon } = useCouponMutation();
   const deleteEntity = async (_id: string) => {
     const userHasConfirmed = await dialog({
-      title: 'Delete coupon',
-      description: 'Are you sure you want to delete this coupon?',
+      title: 'Xóa phiếu giảm giá',
+      description: 'Bạn có chắc chắn muốn xóa phiếu giảm giá này?',
     });
     if (userHasConfirmed) {
       deleteCoupon.mutate(_id);
     }
   };
 
-  // Filter coupons based on the search query
   const filteredCoupons = useMemo(() => {
     return Array.isArray(listCoupon)
-      ? listCoupon.filter(coupon => 
-          coupon.code.toLowerCase().includes(searchQuery.toLowerCase()) // Filter by coupon code
+      ? listCoupon.filter((coupon) =>
+          coupon.code.toLowerCase().includes(searchQuery.toLowerCase())
         )
       : [];
   }, [listCoupon, searchQuery]);
 
-  if (isLoading) return <p>Loading coupons...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  if (isLoading) return <p>Đang tải phiếu giảm giá...</p>;
+  if (error) return <p>Lỗi: {error.message}</p>;
 
   return (
     <div className="h-screen overflow-y-auto">
-      <Header title="Coupon List" pathname="/" />
+      <Header title="Danh sách phiếu giảm giá" pathname="/" />
       <div className="relative flex justify-between px-6 py-4">
         <div className="relative w-80">
-          {/* Search input */}
           <Input
             className="bg-ui-bg-base"
-            placeholder="Find Something"
+            placeholder="Tìm kiếm"
             id="search-input"
             size="small"
             type="search"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)} // Update the search query on input change
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         <div className="flex items-center gap-2">
           <Button variant="secondary">
             <Adjustments className="text-black" />
-            Filter
+            Lọc
           </Button>
           <Button variant="secondary">
             <ArrowUpTray className="text-black" />
-            Export list
+            Tải lên
           </Button>
           <Button variant="primary" onClick={() => navigate({ to: '/dashboard/coupon/create' })}>
             <Plus />
-            Create Coupon
+            Tạo phiếu giảm giá
           </Button>
         </div>
       </div>
@@ -102,11 +100,11 @@ function CouponList() {
           <thead>
             <Table.Row className="bg-ui-bg-base-hover">
               <Table.HeaderCell className="font-semibold text-ui-fg-base"></Table.HeaderCell>
-              <Table.HeaderCell className="font-semibold text-ui-fg-base">Coupon Code</Table.HeaderCell>
-              <Table.HeaderCell className="font-semibold text-ui-fg-base">Discount</Table.HeaderCell>
-              <Table.HeaderCell className="font-semibold text-ui-fg-base">Free Shipping</Table.HeaderCell>
-              <Table.HeaderCell className="font-semibold text-ui-fg-base">Expiration Date</Table.HeaderCell>
-              <Table.HeaderCell className="font-semibold text-ui-fg-base">Status</Table.HeaderCell>
+              <Table.HeaderCell className="font-semibold text-ui-fg-base">Mã phiếu giảm giá</Table.HeaderCell>
+              <Table.HeaderCell className="font-semibold text-ui-fg-base">Giảm giá</Table.HeaderCell>
+              <Table.HeaderCell className="font-semibold text-ui-fg-base">Miễn phí vận chuyển</Table.HeaderCell>
+              <Table.HeaderCell className="font-semibold text-ui-fg-base">Ngày hết hạn</Table.HeaderCell>
+              <Table.HeaderCell className="font-semibold text-ui-fg-base">Trạng thái</Table.HeaderCell>
             </Table.Row>
           </thead>
           <tbody>
@@ -122,35 +120,37 @@ function CouponList() {
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Content className="space-y-2">
                         <DropdownMenu.Item className="p-2 text-ui-tag-neutral-text hover:text-ui-code-bg-base">
-                          View Details
+                          Xem chi tiết
                         </DropdownMenu.Item>
                         <DropdownMenu.Item className="gap-x-2" asChild>
-                          <span onClick={async () => deleteEntity(coupon._id)}>Delete</span>
+                          <span onClick={async () => deleteEntity(coupon._id)}>Xóa</span>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item
                           className="gap-x-2"
                           onClick={() => void navigate({ to: `/dashboard/coupon/${coupon._id}/edit` })}>
-                          Edit
+                          Chỉnh sửa
                         </DropdownMenu.Item>
                       </DropdownMenu.Content>
                     </DropdownMenu>
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">{coupon.code}</Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
-                    {coupon.isFreeShipping ? 'N/A' : `${coupon.discount} VND`}
+                    {coupon.isFreeShipping ? 'Không áp dụng' : `${coupon.discount} VND`}
                   </Table.Cell>
-                  <Table.Cell className="font-semibold text-ui-fg-base">{coupon.isFreeShipping ? 'Yes' : 'No'}</Table.Cell>
+                  <Table.Cell className="font-semibold text-ui-fg-base">{coupon.isFreeShipping ? 'Có' : 'Không'}</Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     {new Date(coupon.expirationDate).toLocaleDateString()}
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
-                    {coupon.isActive ? 'Active' : 'Inactive'}
+                    {coupon.isActive ? 'Hoạt động' : 'Không hoạt động'}
                   </Table.Cell>
                 </Table.Row>
               ))
             ) : (
               <Table.Row>
-                <Table.Cell className="text-center" colSpan={6}>No coupons available</Table.Cell>
+                <Table.Cell className="text-center" colSpan={6}>
+                  Không có phiếu giảm giá nào
+                </Table.Cell>
               </Table.Row>
             )}
           </tbody>

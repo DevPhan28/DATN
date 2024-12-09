@@ -67,7 +67,7 @@ function ProductList() {
   const deleteEntity = async (_id: string) => {
     const userHasConfirmed = await dialog({
       title: 'Delete products',
-      description: 'Are you sure you want to delete?',
+      description: 'bạn có muốn xóa không ?',
     });
     if (userHasConfirmed) {
       deleteProduct.mutate(_id);
@@ -129,12 +129,12 @@ function ProductList() {
 
   return (
     <div className="h-screen overflow-y-auto">
-      <Header title="Product List" pathname="/" />
+      <Header title="Danh sách sản phẩm " pathname="/" />
       <div className="relative flex justify-between px-6 py-4">
         <div className="relative w-80">
           <Input
             className="bg-ui-bg-base"
-            placeholder="Find Something"
+            placeholder="Tìm kiếm"
             id="search-input"
             size="small"
             type="search"
@@ -147,7 +147,7 @@ function ProductList() {
             <DropdownMenu.Trigger asChild>
               <Button variant="secondary">
                 <Adjustments className="text-black" />
-                Filter
+                Lọc
               </Button>
             </DropdownMenu.Trigger>
 
@@ -160,7 +160,7 @@ function ProductList() {
                 }}
               >
                 <Checkbox checked={selectedCategories.length === 0} />
-                <label>All Categories</label>
+                <label>Tất cả danh mục</label>
               </DropdownMenu.Item>
 
               {categories?.map(category => (
@@ -180,14 +180,14 @@ function ProductList() {
           </DropdownMenu>
           <Button variant="secondary">
             <ArrowUpTray className="text-black" />
-            Export list
+            Tải lên 
           </Button>
           <Button
             variant="primary"
             onClick={() => navigate({ to: '/dashboard/products/create' })}
           >
             <Plus />
-            Create Product
+            Thêm sản phẩm
           </Button>
         </div>
       </div>
@@ -197,25 +197,25 @@ function ProductList() {
           <Table.Row className="bg-ui-bg-base-hover">
             <Table.HeaderCell className="font-semibold text-ui-fg-base"></Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Product Name
+              Tên sản phẩm
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Image
+              Ảnh
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Price ($)
+              Giá (VND)
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Category
+              Danh mục
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Discount (%)
+              Giảm giá (%)
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Count In Stock
+              Số lượng còn lại trong kho 
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Description
+              Mô tả
             </Table.HeaderCell>
           </Table.Row>
           <Table.Body>
@@ -244,12 +244,12 @@ function ProductList() {
                               })
                             }
                           >
-                            View Details
+                            Chi tiết sản phẩm
                           </span>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item className="gap-x-2" asChild>
                           <span onClick={async () => deleteEntity(product._id)}>
-                            Delete
+                            Xóa
                           </span>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item
@@ -260,7 +260,7 @@ function ProductList() {
                             })
                           }
                         >
-                          view comment
+                          Xem bình luận
                         </DropdownMenu.Item>
                         <DropdownMenu.Item
                           className="gap-x-2"
@@ -270,7 +270,7 @@ function ProductList() {
                             })
                           }
                         >
-                          Edit
+                          Sửa sản phẩm
                         </DropdownMenu.Item>
                       </DropdownMenu.Content>
                     </DropdownMenu>
@@ -288,7 +288,7 @@ function ProductList() {
                     )}
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
-                    {product.price.toFixed(2)}
+                    {product.price.toFixed(2)} VND
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     <div className='text-xs w-fit rounded-md border border-ui-tag-blue-border bg-ui-tag-blue-bg p-1 text-ui-tag-blue-text'>
@@ -299,7 +299,7 @@ function ProductList() {
                     {product.discount} %
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
-                    {product.totalCountInStock} items
+                    {product.totalCountInStock} Sản phẩm
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     {product.description}

@@ -10,21 +10,18 @@ import {
 import { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-// Define the Route with corrected loader
 export const Route = createFileRoute('/dashboard/_layout/category/$id/edit')({
   loader: async ({ params }) => {
     const { id } = params;
-    console.log('Loader called with id:', id); // Debug
     if (!id) {
-      throw new Error('Category ID is missing');
+      throw new Error('ID danh mục bị thiếu');
     }
     try {
-      const response = await instance.get(`categorys/${id}`); // Ensure correct endpoint
-      console.log('Loader response data:', response.data); // Debug
-      return response.data as Category; // Return single Category
+      const response = await instance.get(`categorys/${id}`);
+      return response.data as Category;
     } catch (error) {
-      console.error('Error fetching category:', error);
-      throw new Response('Failed to fetch category', { status: 500 });
+      console.error('Lỗi khi lấy thông tin danh mục:', error);
+      throw new Response('Không thể tải thông tin danh mục', { status: 500 });
     }
   },
   component: EditCategory,
@@ -32,11 +29,10 @@ export const Route = createFileRoute('/dashboard/_layout/category/$id/edit')({
 
 function EditCategory() {
   const navigate = useNavigate();
-  const { id } = useParams({ from: '/dashboard/_layout/category/$id/edit' }); // Get ID from URL params
+  const { id } = useParams({ from: '/dashboard/_layout/category/$id/edit' });
 
   const { updateCategory } = useCategoryMutation();
 
-  // Access loader data using useRouteLoaderData
   const categories = Route.useLoaderData();
 
   const {
@@ -46,36 +42,30 @@ function EditCategory() {
     formState: { errors },
   } = useForm<Category>({
     defaultValues: {
-      name: '', // Default value for the category name
+      name: '',
     },
   });
 
-  // Populate the form with the fetched category data
   useEffect(() => {
     if (categories) {
-      // Use setValue to update individual fields in the form
       setValue('name', categories.name);
     }
   }, [categories, setValue]);
 
-  const onUpdateCategory: SubmitHandler<Category> = async data => {
+  const onUpdateCategory: SubmitHandler<Category> = async (data) => {
     try {
-      // Call API to update category
       await updateCategory.mutateAsync({ id, data });
-      // Navigate back to the category list after updating
       navigate({ to: '/dashboard/category' });
     } catch (error) {
-      console.error('Failed to update category:', error);
-      // Optionally, display an error message to the user
+      console.error('Cập nhật danh mục thất bại:', error);
     }
   };
 
-  // Handle cases where category data might not be available
-  if (!categories) return <div>Loading...</div>;
+  if (!categories) return <div>Đang tải thông tin danh mục...</div>;
 
   return (
     <div className="h-screen overflow-y-auto">
-      <Header title="Edit Category" pathname="/" />
+      <Header title="Chỉnh sửa danh mục" pathname="/" />
       <form onSubmit={handleSubmit(onUpdateCategory)} className="m-8">
         <div className="my-3 flex justify-between">
           <div className="flex gap-3 pt-2">
@@ -84,13 +74,13 @@ function EditCategory() {
               className="text-sm font-medium text-ui-fg-subtle hover:cursor-pointer"
               onClick={() => navigate({ to: '/dashboard/category' })}
             >
-              Category List
+              Danh sách danh mục
             </button>
             <button
               type="submit"
               className="text-sm font-medium text-ui-fg-subtle"
             >
-              Save Changes
+              Lưu thay đổi
             </button>
           </div>
           <div className="flex gap-2">
@@ -99,34 +89,33 @@ function EditCategory() {
               type="button"
               onClick={() => navigate({ to: '/dashboard/category' })}
             >
-              Cancel
+              Hủy bỏ
             </Button>
             <Button variant="primary" type="submit">
-              Update Category
+              Cập nhật danh mục
             </Button>
           </div>
         </div>
 
         <div className="rounded-lg border bg-ui-bg-base p-7">
           <h1 className="text-2xl font-medium text-ui-fg-base">
-            General Information
+            Thông tin chung
           </h1>
           <p className="mb-4 text-sm font-normal text-ui-fg-subtle">
-            Update the category name.
+            Cập nhật tên danh mục.
           </p>
 
           <div className="space-y-4">
-            {/* Category Name Input */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Category Name
+                  <span className="text-ui-tag-red-text">*</span> Tên danh mục
                 </label>
                 <Input
-                  placeholder="Type here"
+                  placeholder="Nhập tên danh mục"
                   size="base"
                   {...register('name', {
-                    required: 'Category name is required',
+                    required: 'Tên danh mục là bắt buộc',
                   })}
                 />
                 {errors.name && (

@@ -87,19 +87,19 @@ const Header = () => {
                   to="/"
                   className="px-2 py-2 font-medium hover:text-blue-400"
                 >
-                  Home
+                  Trang chủ
                 </Link>
                 <Link
                   to="/shop"
                   className="px-2 py-2 font-medium hover:text-blue-400"
                 >
-                  Shop
+                  Cửa hàng
                 </Link>
                 <a
                   href="/featuredProducts"
                   className="relative px-2 py-2 font-medium hover:text-blue-400"
                 >
-                  Features
+                  Nổi bật 
                   <span className="absolute left-14 mt-[-8px] w-9 rounded-xl bg-red-400 text-center text-xs uppercase text-white">
                     Hot
                   </span>
@@ -114,13 +114,13 @@ const Header = () => {
                   href="#"
                   className="px-2 py-2 font-medium hover:text-blue-400"
                 >
-                  About
+                  Về chúng tôi
                 </a>
                 <a
                   href="#"
                   className="px-2 py-2 font-medium hover:text-blue-400"
                 >
-                  Contact
+                  Liên hệ 
                 </a>
               </div>
             </div>
@@ -274,19 +274,19 @@ const Header = () => {
                 href="#"
                 className="block px-3 py-2 font-medium hover:text-blue-400"
               >
-                Home
+                Trang chủ
               </a>
               <a
                 href="#"
                 className="block px-3 py-2 font-medium hover:text-blue-400"
               >
-                Shop
+                Cửa hàng
               </a>
               <a
                 href="#"
                 className="block px-3 py-2 font-medium hover:text-blue-400"
               >
-                Features
+                Nổi bật
               </a>
               <a
                 href="#"
@@ -298,13 +298,13 @@ const Header = () => {
                 href="#"
                 className="block px-3 py-2 font-medium hover:text-blue-400"
               >
-                About
+                Về chúng tôi 
               </a>
               <a
                 href="#"
                 className="block px-3 py-2 font-medium hover:text-blue-400"
               >
-                Contact
+                Liên hệ
               </a>
             </div>
           )}

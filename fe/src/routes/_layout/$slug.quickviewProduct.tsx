@@ -231,18 +231,18 @@ function DetailProduct() {
       <div className="">
         <div className="main-content flex h-48 w-full flex-col items-center justify-center">
           <div className="text-content">
-            <div className="text-center text-4xl font-semibold">Shop</div>
+            <div className="text-center text-4xl font-semibold">Cửa hàng</div>
             <div className="link caption1 mt-3 flex items-center justify-center gap-1">
               <div className="flex items-center justify-center">
-                <a href="/">Home</a>
+                <a href="/">Trang chủ</a>
                 <ChevronRightMini />
               </div>
               <div className="flex items-center justify-center">
-                <a href="/">Shop</a>
+                <a href="/">Cửa hàng</a>
                 <ChevronRightMini />
               </div>
               <div className="capitalize text-gray-500">
-                <a href="#">View Detail</a>
+                <a href="#">Chi tiết</a>
               </div>
             </div>
           </div>
@@ -302,17 +302,17 @@ function DetailProduct() {
                   ))}
                   <span className="font-semibold">
                     {averageRating.toFixed(1)} trên tổng {comments.length}{' '}
-                    comments
+                    Bình luận
                   </span>
                 </div>
               </div>
               <p className="mb-2 text-sm text-gray-600 sm:text-base">
-                SKU: {product.sku}
+                Mã sản phẩm: {product.sku}
               </p>
               <div className="mb-4 text-lg font-semibold text-red-600 sm:text-xl lg:text-2xl">
-                ${product.price}
+                {product.price} VND
                 <span className="text-sm text-gray-400 line-through sm:text-base lg:text-lg">
-                  $1199
+                  1199 VND
                 </span>
               </div>
               <div className="mb-4 text-lg sm:text-xl">
@@ -320,7 +320,7 @@ function DetailProduct() {
               </div>
               {/* Size dropdown with unique sizes */}
               <div className="mb-4 flex items-center">
-                <label className="w-20 text-gray-700">Size</label>
+                <label className="w-20 text-gray-700">Kích cỡ</label>
                 <select
                   className="flex-1 rounded border border-gray-300 p-2"
                   value={selectedSize}
@@ -335,7 +335,7 @@ function DetailProduct() {
                 </select>
               </div>
               <div className="mb-4 flex items-center">
-                <label className="w-20 text-gray-700">Color</label>
+                <label className="w-20 text-gray-700">Màu</label>
                 <select
                   className="flex-1 rounded border border-gray-300 p-2"
                   value={selectedColor}
@@ -382,7 +382,7 @@ function DetailProduct() {
                 onClick={handleAddToCart}
                 disabled={addItemToCart.isLoading}
               >
-                {addItemToCart.isLoading ? 'Đang thêm...' : 'ADD TO CART'}
+                {addItemToCart.isLoading ? 'Đang thêm...' : 'Thêm vào giỏ hàng'}
               </button>
               {/* Shipping and return info */}
               <div className="mt-4 w-full bg-[#EEEEEE] p-4">
@@ -392,15 +392,15 @@ function DetailProduct() {
                     <div className="text-lg font-semibold">Free ship</div>
                     <div className="text-sm">Free standard ship</div>
                     <div className="text-sm">
-                      Estimated delivery is October 30, 2024 - October 31, 2024.
+                    Thời gian giao hàng dự kiến ​​là từ ngày 30 tháng 10 năm 2024 - ngày 31 tháng 10 năm 2024.
                     </div>
                   </div>
                 </div>
                 <div className="mt-3 flex gap-4">
                   <ArrowUpRightOnBox className="mt-1.5 text-xl text-green-700" />
                   <div>
-                    <div className="text-lg font-semibold">Return Policy</div>
-                    <div className="text-sm">Learn more</div>
+                    <div className="text-lg font-semibold">Chính sách hoàn trả</div>
+                    <div className="text-sm">Tìm hiểu thêm</div>
                   </div>
                 </div>
               </div>
@@ -430,7 +430,7 @@ function DetailProduct() {
                 </div>
 
                 <div id='comments-section'>
-                  <h2 className="text-2xl">Comments</h2>
+                  <h2 className="text-2xl">Bình luận</h2>
                   <textarea
                     className="mt-5 w-full rounded border p-3"
                     placeholder="Write a comment..."
@@ -450,7 +450,7 @@ function DetailProduct() {
                     onClick={handleCommentSubmit}
                     className="mt-2 rounded bg-blue-500 px-4 py-2 text-white"
                   >
-                    Submit Comment
+                   Đăng bình luận
                   </button>
                   <div className="mt-5 pb-5">
                     {comments.length > 0 ? (
@@ -512,7 +512,7 @@ function DetailProduct() {
                                   }
                                 >
                                   <Trash className="text-ui-fg-subtle" />
-                                  Delete comment
+                                 Xóa bình luận
                                 </DropdownMenu.Item>
                               </DropdownMenu.Content>
                             </DropdownMenu>
@@ -521,7 +521,7 @@ function DetailProduct() {
                         </div>
                       ))
                     ) : (
-                      <p>No comments yet.</p>
+                      <p>Chưa có bình luận nào</p>
                     )}
                   </div>
                 </div>

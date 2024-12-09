@@ -59,11 +59,11 @@ function Cart() {
           <div className="text-center text-4xl font-semibold">Cart</div>
           <div className="link caption1 mt-3 flex items-center justify-center gap-1">
             <div className="flex items-center justify-center">
-              <a href="/">Home</a>
+              <a href="/">Trang chủ</a>
               <ChevronRightMini />
             </div>
             <div className="capitalize text-gray-500">
-              <a href="#">cart</a>
+              <a href="#">Giỏ hàng</a>
             </div>
           </div>
         </div>
@@ -189,7 +189,7 @@ function Cart() {
                     onClick={handleCheckout}
                     className="rounded-md bg-blue-500 px-6 py-3 text-white hover:bg-black"
                   >
-                    Proceed to Checkout
+                    Thanh toán
                   </button>
                 </div>
               </div>

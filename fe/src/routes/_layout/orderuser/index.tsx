@@ -257,7 +257,7 @@ function UserOrder() {
             </div>
             <div className="link caption1 mt-3 flex items-center justify-center gap-1">
               <div className="flex items-center justify-center">
-                <a href="/">Home</a>
+                <a href="/">Trang chủ</a>
                 <ChevronRightMini />
               </div>
               <div className="flex items-center justify-center">

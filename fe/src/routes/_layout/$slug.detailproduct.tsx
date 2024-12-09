@@ -189,7 +189,7 @@ export const Route = createFileRoute('/_layout/$slug/detailproduct')({
               {/* Size dropdown with unique sizes */}
               <div className="mt-6">
                 <div className="mb-4 flex items-center">
-                  <label className="w-20 text-gray-700">Size</label>
+                  <label className="w-20 text-gray-700">Kích cỡ</label>
                   <select
                     className="flex-1 rounded border border-gray-300 p-2"
                     value={selectedSize}
@@ -206,7 +206,7 @@ export const Route = createFileRoute('/_layout/$slug/detailproduct')({
 
                 {/* Color dropdown */}
                 <div className="mb-4 flex items-center">
-                  <label className="w-20 text-gray-700">Color</label>
+                  <label className="w-20 text-gray-700">Màu</label>
                   <select
                     className="flex-1 rounded border border-gray-300 p-2"
                     value={selectedColor}

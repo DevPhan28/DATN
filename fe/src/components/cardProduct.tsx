@@ -108,7 +108,8 @@ const CardProduct: React.FC = () => {
   return (
     <div className="m-auto mt-10 max-w-7xl p-5 sm:p-5 md:p-5 lg:p-5 xl:p-0">
       <h1 className="mb-4 text-2xl font-bold sm:mb-8 sm:text-4xl">
-        PRODUCT OVERVIEW
+        
+TỔNG QUAN SẢN PHẨM
       </h1>
       <div className="mb-4 flex flex-wrap items-center justify-between sm:mb-8">
         <div className="flex flex-wrap space-x-4 sm:space-x-8">
@@ -116,7 +117,8 @@ const CardProduct: React.FC = () => {
             onClick={() => setSelectedCategory(null)}
             className="border-b-2 border-gray-900 text-gray-900"
           >
-            All Products
+            
+Tất cả sản phẩm
           </button>
           {categories?.map((category: { _id: string; name: string }) => (
             <a
@@ -183,7 +185,7 @@ const CardProduct: React.FC = () => {
                 to={`${product.slug ? product.slug : product._id}/quickviewProduct`}
                 className="quick-view duration-900 absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-full bg-white px-4 py-2 opacity-0 shadow transition-all hover:bg-black hover:text-white group-hover:translate-y-[-100px] group-hover:opacity-100"
               >
-                View Details
+               Chi tiết sản phẩm
               </Link>
               <h2 className="mt-2 flex items-center justify-between text-gray-500">
                 {product.name}

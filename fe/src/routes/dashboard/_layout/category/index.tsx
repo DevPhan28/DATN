@@ -52,18 +52,18 @@ function CategoryList() {
         <div className="flex items-center gap-2">
           <Button variant="secondary">
             <Adjustments className="text-black" />
-            Filter
+           Lọc
           </Button>
           <Button variant="secondary">
             <ArrowUpTray className="text-black" />
-            Export list
+           Tải lên 
           </Button>
           <Button
             variant="primary"
             onClick={() => void navigate({ to: '/dashboard/category/create' })}
           >
             <Plus />
-            Create Category
+            Thêm danh mục
           </Button>
         </div>
       </div>
@@ -71,13 +71,13 @@ function CategoryList() {
         <Table>
           <Table.Row className="bg-ui-bg-base-hover">
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Category Name
+              Tên danh mục
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Status
+              Trạng thái
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Action
+              Hành động
             </Table.HeaderCell>
           </Table.Row>
           <Table.Body>
@@ -94,7 +94,7 @@ function CategoryList() {
                     className="mt-2 rounded-full px-2 py-1 [&_div]:rounded-full"
                     color="green"
                   >
-                    SHOW
+                   Hiển thị 
                   </StatusBadge>
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     <div className="flex gap-2">
@@ -106,7 +106,7 @@ function CategoryList() {
                           })
                         }
                       >
-                        Edit
+                        Sửa
                       </Button>
                     </div>
                   </Table.Cell>
@@ -115,7 +115,7 @@ function CategoryList() {
             ) : (
               <Table.Row>
                 <Table.Cell className="text-center" colSpan={3}>
-                  No categories found
+                 không có danh mục nào được tìm thấy
                 </Table.Cell>
               </Table.Row>
             )}

@@ -175,11 +175,11 @@ function OrderList() {
         <div className="flex items-center gap-2">
           <Button variant="secondary">
             <Adjustments className="text-black" />
-            Filter
+            Lọc
           </Button>
           <Button variant="secondary">
             <ArrowUpTray className="text-black" />
-            Export list
+            Tải lên
           </Button>
         </div>
       </div>
@@ -216,37 +216,37 @@ function OrderList() {
           <Table.Row className="bg-ui-bg-base-hover">
             <Table.HeaderCell className="font-semibold text-ui-fg-base"></Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Order Number
+              Mã đơn hàng
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Customer Name
+              Tên người dùng
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Phone
+              Số điện thoại
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
               Email
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Address
+              Địa chỉ
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Products
+              Sản phẩm
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Total Price ($)
+              Tổng tiền ($)
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Payment Method
+             Phương thức thanh toán
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Payment Status
+              Trạng thái thanh toán
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Status
+              Trạng thái
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Refund Reason
+             Lí do trả hàng
             </Table.HeaderCell>
           </Table.Row>
           <Table.Body>

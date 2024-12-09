@@ -113,7 +113,7 @@ function ProductCategory() {
           </div>
           <div className="link caption1 mt-3 flex items-center justify-center gap-1">
             <div className="flex items-center justify-center">
-              <a href="/">Home</a>
+              <a href="/">Trang chủ</a>
               <ChevronRightMini />
             </div>
             <div className="capitalize text-gray-500">
@@ -182,7 +182,7 @@ function ProductCategory() {
                     to={`/${product.slug ? product.slug : product._id}/quickviewProduct`}
                     className="quick-view duration-900 absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-full bg-white px-4 py-2 opacity-0 shadow transition-all hover:bg-black hover:text-white group-hover:translate-y-[-100px] group-hover:opacity-100"
                   >
-                    Quick View
+                   Xem nhanh
                   </Link>
                   <h2 className="mt-2 flex items-center justify-between text-gray-500">
                     {product.name}
@@ -212,7 +212,7 @@ function ProductCategory() {
               disabled={currentPage === 1}
               className="rounded-md bg-gray-500 px-4 py-2 text-white disabled:bg-gray-300"
             >
-              Previous
+              Trước
             </button>
             <div className="flex space-x-2">
               {[...Array(totalPages).keys()].map(page => (
@@ -230,7 +230,7 @@ function ProductCategory() {
               disabled={currentPage === totalPages}
               className="rounded-md bg-gray-500 px-4 py-2 text-white disabled:bg-gray-300"
             >
-              Next
+              Sau
             </button>
           </div>
         </div>
