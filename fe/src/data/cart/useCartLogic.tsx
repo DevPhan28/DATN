@@ -88,20 +88,19 @@ export function useCart(userId: string | null) {
   };
 
   const handleDeleteSelectedProducts = () => {
-    const selectedProductIds = Object.keys(selectedProducts)
-      .filter((index) => selectedProducts[parseInt(index)])
-      .map((index) => cartData?.products[parseInt(index)]?.productId)
-      .filter((productId): productId is string => productId !== undefined); 
+    const selectedVariantIds = Object.keys(selectedProducts)
+      .filter((index) => selectedProducts[parseInt(index)]) 
+      .map((index) => cartData?.products[parseInt(index)]?.variantId) 
+      .filter((variantId): variantId is string => variantId !== undefined);
   
-    if (selectedProductIds.length === 0) {
+    if (selectedVariantIds.length === 0) {
       toast.error('Vui lòng chọn ít nhất một sản phẩm để xóa.');
       return;
     }
-  
     deleteItemFromCart.mutate(
       {
         userId: userId || '',
-        productIds: selectedProductIds,
+        variantIds: selectedVariantIds,  
       },
       {
         onSuccess: () => {
@@ -116,7 +115,6 @@ export function useCart(userId: string | null) {
     );
   };
   
-
   const toggleSelectProduct = (index: number) => {
     setSelectedProducts(prev => ({
       ...prev,

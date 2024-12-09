@@ -140,7 +140,7 @@ const getOrders = async (req, res) => {
   try {
     const {
       page = 1,
-      limit = 100,
+      limit = 10,
       status,
       sortBy = "createdAt",
       order = "desc",
@@ -170,7 +170,7 @@ const getOrders = async (req, res) => {
       const statusArray = status.split(",").map(s => s.trim()).filter(s => validStatuses.includes(s));
       if (statusArray.length > 0) {
         if (statusArray.includes('all-delivery')) {
-          filter.status = { $in: ["pending","pendingPayment",'shipped', 'delivered', 'received', "confirmed","canceled",] };
+          filter.status = { $in: ["pending","pendingPayment",'shipped', 'delivered', 'received',"canceled",] };
         } else if (statusArray.includes('all-complaint')) {
           filter.status = { $in: ['complaint', 'refund_in_progress', 'exchange_in_progress',"refund_completed","exchange_completed","canceled_complaint"] };
         } else {

@@ -6,7 +6,6 @@ const {
   getCartByUserId,
   increaseProductQuantity,
   updateProductQuantity,
-  deleteSelectedItemsFromCart
 } = require("../controllers/cart");
 const router = express.Router();
 
@@ -22,6 +21,5 @@ router.patch("/cart/update-quantity", updateProductQuantity);
 
 router.delete("/cart/:userId/product", deleteItemFromCart);
 
-router.delete("/cart/:userId/delete-selected-items", deleteSelectedItemsFromCart);
 
 module.exports = router;

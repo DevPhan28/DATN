@@ -15,21 +15,21 @@ const cartSchema = new Schema(
           required: true,
         },
         variantId: {
-          type: String, // Nếu bạn dùng ObjectId cho biến thể, đổi thành Schema.Types.ObjectId
+          type: String,
           required: true,
         },
         quantity: {
           type: Number,
           required: true,
-          min: 1, // Đảm bảo số lượng tối thiểu là 1
+          min: 1,
         },
         priceAtTime: {
           type: Number,
-          required: true, // Giá tại thời điểm thêm vào giỏ
+          required: true,
         },
         totalPrice: {
           type: Number,
-          required: true, // Tổng giá sản phẩm dựa trên số lượng
+          required: true, 
         },
       },
     ],
@@ -37,7 +37,6 @@ const cartSchema = new Schema(
   { timestamps: true, versionKey: false }
 );
 
-// Middleware để tự động tính tổng giá của từng sản phẩm
 cartSchema.pre("save", function (next) {
   this.products.forEach((product) => {
     product.totalPrice = product.priceAtTime * product.quantity;

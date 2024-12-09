@@ -77,7 +77,9 @@ const updatePaymentStatusOnFailure = async (req, res) => {
 
     // Cập nhật status dựa trên paymentStatus
     if (paymentStatus === "pending") {
-      order.status = "confirmed";
+      order.status = "pending";
+      order.paymentStatus = "pending";
+      await order.save();
     } else if (paymentStatus === "failed") {
       order.status = "pendingPayment";
     }

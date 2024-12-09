@@ -26,7 +26,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
       : [];
     console.log('Selected Items:', selectedItems);
     const [paymentMethod, setPaymentMethod] = useState('online');
-    const { deleteSelectedItemsFromCart } = useCartMutation();
+    const { deleteItemFromCart } = useCartMutation();
     const queryClient = useQueryClient();
 
     const { shippingMessage, shippingFee, isFreeShipping } =
@@ -198,12 +198,12 @@ export const Route = createFileRoute('/_layout/checkout/')({
       const userId = localStorage.getItem('userId');
 
       const items = Array.isArray(selectedItems) ? selectedItems : [];
-      const productIds = items.map(item => item.productId);
-
+      const variantIds = items.map(item => item.variantId);
       const formData = {
         userId,
         items: items.map(item => ({
           productId: item.productId,
+          variantId: item.variantId,
           name: item.name,
           price: item.price,
           quantity: item.quantity,
@@ -227,14 +227,11 @@ export const Route = createFileRoute('/_layout/checkout/')({
         couponCode: selectedCoupon ? selectedCoupon.code : null,
       };
 
-      console.log('Payment Method:', paymentMethod); // Kiểm tra giá trị paymentMethod
-      console.log('Form data:', formData);
-
       try {
         await createOrder.mutateAsync(formData);
-        await deleteSelectedItemsFromCart.mutateAsync({
+        await deleteItemFromCart.mutateAsync({
           userId: userId || '',
-          selectedProductIds: productIds,
+          variantIds: variantIds,
         });
         toast.success('Order placed successfully');
       } catch (error) {

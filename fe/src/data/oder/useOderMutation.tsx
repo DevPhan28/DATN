@@ -43,9 +43,9 @@ const useCheckoutMutation = () => {
     mutationFn: ({ orderId, status }) =>
       instance.put(`/orders/${orderId}`, { status }),
 
-    onSuccess: () => {
+    onSuccess:async () => {
       toast.success('Order status updated successfully');
-      queryClient.invalidateQueries({ queryKey: ['order'] });
+      await queryClient.invalidateQueries({ queryKey: ['orders'] });
     },
 
     onError: error => {

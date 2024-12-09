@@ -14,7 +14,7 @@ export const Route = createFileRoute('/dashboard/_layout/order/')({
 
 function OrderList() {
   const [currentPage, setCurrentPage] = useState(0);
-  const [selectedTab, setSelectedTab] = useState('all'); // State for selected tab
+  const [selectedTab, setSelectedTab] = useState('all-delivery'); 
   const navigate = useNavigate();
   const { updateOrderStatus } = useCheckoutMutation()
   const [selectedGroup, setSelectedGroup] = useState('delivery');
@@ -22,14 +22,12 @@ function OrderList() {
   const {
     data: listOrder,
     meta,
-    totalDeliveredAmount,
-    statusCounts,
     isLoading,
     error,
   } = useFetchOrdersStatus({
     page: currentPage + 1,
     limit: 10,
-    status: selectedTab === 'all' ? undefined : selectedTab,
+    status: selectedTab === 'all-delivery' ? undefined : selectedTab,
   });
 
   // Tính tổng số trang
@@ -60,7 +58,6 @@ function OrderList() {
     { id: 'all-delivery', label: 'Tất cả' },
     { id: 'pendingPayment', label: 'Chờ thanh toán' },
     { id: 'pending', label: 'Chờ xác nhận' },
-    { id: 'confirmed', label: 'Chờ lấy hàng' },
     { id: 'shipped', label: 'Đang vận chuyển' },
     { id: 'received', label: 'Chờ giao hàng' },
     { id: 'delivered', label: 'Đã giao' },
@@ -81,7 +78,6 @@ function OrderList() {
   const deliveryStatuses = [
     { value: 'pendingPayment', label: 'Chờ thanh toán' },
     { value: 'pending', label: 'Chờ xác nhận' },
-    { value: 'confirmed', label: 'Chờ lấy hàng' },
     { value: 'shipped', label: 'Đang vận chuyển' },
     { value: 'received', label: 'Chờ giao hàng' },
     { value: 'delivered', label: 'Đã giao' },
@@ -94,7 +90,7 @@ function OrderList() {
     { value: 'refund_completed', label: 'Hoàn trả thành công' },
     { value: 'exchange_in_progress', label: 'Đang đổi trả hàng' },
     { value: 'exchange_completed', label: 'Đổi trả thành công' },
-    { value: "canceled_complaint", label: 'Hủy khiếu nại' },
+    { value: 'delivered', label: 'Hủy khiếu nại' },
   ];
 
   const handleStatusChange = (orderId, newStatus, currentStatus) => {
@@ -131,7 +127,7 @@ function OrderList() {
     );
   };
   const isNextDeliveryStatusValid = (currentStatus, nextStatus) => {
-    const deliveryOrder = ['pending', 'confirmed', 'shipped','received','delivered ',];
+    const deliveryOrder = ['pending', 'shipped','received','delivered',];
     const currentIndex = deliveryOrder.indexOf(currentStatus);
     const nextIndex = deliveryOrder.indexOf(nextStatus);
 
@@ -141,15 +137,13 @@ function OrderList() {
   const filteredOrders = listOrder?.filter((order) => {
     if (selectedTab === 'all-delivery') {
       if (selectedGroup === 'delivery') {
-        return ['pending', 'confirmed', 'shipped', 'canceled', 'delivered', 'pendingPayment','received',].includes(order.status);
+        return ['pending', 'shipped', 'canceled', 'delivered', 'pendingPayment', 'received'].includes(order.status);
       }
-    }
-    else if (selectedTab === 'all-complaint') {
+    } else if (selectedTab === 'all-complaint') {
       if (selectedGroup === 'complaint') {
         return ['complaint', 'refund_in_progress', 'refund_completed', 'exchange_in_progress', 'exchange_completed', 'canceled_complaint'].includes(order.status);
       }
-    }
-    else {
+    } else {
       return order.status === selectedTab;
     }
     return false;
@@ -185,14 +179,14 @@ function OrderList() {
       </div>
       <div className="m-6 flex justify-start space-x-4 rounded-lg border bg-white px-6 py-4">
         <button
-          onClick={() => setSelectedGroup('delivery')}
+          onClick={() => {setSelectedGroup('delivery')  == setSelectedTab('all-delivery')} }
           className={`text-gray-700 ${selectedGroup === 'delivery' ? 'border-b-2 border-red-500 text-red-600' : ''
             }`}
         >
           Giao hàng
         </button>
         <button
-          onClick={() => setSelectedGroup('complaint')}
+          onClick={() => {setSelectedGroup('complaint') == setSelectedTab('all-complaint')}}
           className={`text-gray-700 ${selectedGroup === 'complaint' ? 'border-b-2 border-red-500 text-red-600' : ''
             }`}
         >

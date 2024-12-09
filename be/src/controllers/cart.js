@@ -88,39 +88,22 @@ const addItemToCart = async (req, res) => {
   }
 };
 const deleteItemFromCart = async (req, res) => {
-  const { userId } = req.params;
-  const { productIds } = req.body;
+  const { userId } = req.params;  // Lấy userId từ params
+  const { variantIds } = req.body;  // Lấy mảng SKU từ body request
   try {
+    // Tìm giỏ hàng của người dùng
     let cart = await Cart.findOne({ userId });
 
     if (!cart) {
       return res.status(404).json({ message: "Không tìm thấy giỏ hàng" });
     }
 
-    cart.products = cart.products.filter(product => 
-      !productIds.map(id => new ObjectId(id).toString()).includes(product.productId.toString())
-  );
-
-    await cart.save();
-    return res.status(200).json({ cart, message: "Đã xóa các sản phẩm đã chọn khỏi giỏ hàng" });
-  } catch (error) {
-    return res.status(500).json({ message: error.message });
-  }
-};
-
-const deleteSelectedItemsFromCart = async (req, res) => {
-  const { userId } = req.params;
-  const { selectedProductIds } = req.body;
-
-  try {
-    let cart = await Cart.findOne({ userId });
-
-    if (!cart) {
-      return res.status(404).json({ message: "Không tìm thấy giỏ hàng" });
-    }
+    // Lọc các sản phẩm có SKU trong variantIds
     cart.products = cart.products.filter(product =>
-      !selectedProductIds.map(id => id.toString()).includes(product.productId.toString())
+      !variantIds.some(variantId => variantId === product.variantId)  
     );
+
+    // Lưu lại giỏ hàng sau khi xóa sản phẩm
     await cart.save();
     return res.status(200).json({ cart, message: "Đã xóa các sản phẩm đã chọn khỏi giỏ hàng" });
   } catch (error) {
@@ -226,5 +209,4 @@ module.exports = {
   increaseProductQuantity,
   decreaseProductQuantity,
   updateProductQuantity,
-  deleteSelectedItemsFromCart
 };

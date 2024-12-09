@@ -7,7 +7,7 @@ const calculateShippingFee = (weight, address, orderValue = 0, coupon = null) =>
         "Quận Ba Đình", "Quận Hoàn Kiếm", "Quận Đống Đa", "Quận Hai Bà Trưng",
         "Quận Tây Hồ", "Quận Cầu Giấy", "Quận Thanh Xuân", "Quận Hoàng Mai", "Quận Long Biên"
       ],
-      baseFees: [10000, 10000, 12000, 14000, 16000, 18000], 
+      baseFees: [10000, 11000, 12000, 14000, 16000, 18000], 
       extraFeePer500g: 2000
     },
     suburban: {
@@ -23,7 +23,7 @@ const calculateShippingFee = (weight, address, orderValue = 0, coupon = null) =>
     rural: {
       districts: [], 
       baseFees: [22000, 22000, 25000, 29000, 31000, 38000],
-      extraFeePer500g: 7000
+      extraFeePer500g: 5000
     }
   };
 
@@ -36,7 +36,6 @@ const calculateShippingFee = (weight, address, orderValue = 0, coupon = null) =>
 
   const zoneData = shippingZones[zone];
   
-  // Determine base fee by weight threshold
   if (weight <= 500) {
     shippingFee = zoneData.baseFees[0];
   } else if (weight <= 1000) {
@@ -53,7 +52,6 @@ const calculateShippingFee = (weight, address, orderValue = 0, coupon = null) =>
     shippingFee = zoneData.baseFees[5] + Math.ceil((weight - 3000) / 500) * zoneData.extraFeePer500g;
   }
 
-  // Check for free shipping conditions
   if (coupon && coupon.isFreeShipping) {
     shippingFee = 0;
   } else if (orderValue > 250000) {

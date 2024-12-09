@@ -4,6 +4,7 @@ import { useCart } from '@/data/cart/useCartLogic';
 import { ChevronRightMini, ReceiptPercent } from '@medusajs/icons';
 import { toast } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+
 export const Route = createFileRoute('/_layout/cart/')({
   component: Cart,
 });
@@ -49,11 +50,12 @@ function Cart() {
     }
     navigate({
       to: '/checkout',
-      state: { selectedItems } as any ,
+      state: { selectedItems },
     });
   };
+
   return (
-    <div className="">
+    <div>
       <div className="main-content flex h-48 w-full flex-col items-center justify-center">
         <div className="text-content">
           <div className="text-center text-4xl font-semibold">Cart</div>

@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import instance from '@/api/axiosIntance';  
 import { toast } from '@medusajs/ui';  
-import { QUERY_KEY } from '@/data/stores/key';
 
 const useCartMutation = () => {
   const queryClient = useQueryClient(); 
@@ -29,13 +28,13 @@ const useCartMutation = () => {
   const deleteItemFromCart = useMutation({
     mutationFn: ({
       userId,
-      productIds,
+      variantIds,
     }: {
       userId: string;
-      productIds: string[];
+      variantIds: string[];
     }) =>
       instance.delete(`/cart/${userId}/product`, {
-        data: { productIds },
+        data: { variantIds },
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
@@ -43,41 +42,6 @@ const useCartMutation = () => {
     onError: (error: any) => {
       toast.error(`Có lỗi xảy ra: ${error.message}`, {
         description: 'Không thể xóa sản phẩm khỏi giỏ hàng, vui lòng thử lại.',
-        duration: 2000,
-      });
-    },
-  });
- 
-  const deleteSelectedItemsFromCart = useMutation({
-    mutationFn: async ({
-      userId,
-      selectedProductIds,
-    }: {
-      userId: string;
-      selectedProductIds: string[];
-    }) => {
-      try {
-        const response = await instance.delete(
-          `/cart/${userId}/delete-selected-items`,
-          {
-            data: { selectedProductIds },
-          }
-        );
-        return response.data;  
-      } catch (error: any) {
-        throw new Error(
-          error?.response?.data?.message || 'Có lỗi xảy ra khi xóa sản phẩm'
-        );
-      }
-    },
-
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [QUERY_KEY.FETCH_CART] });
-    },
-    onError: (error: any) => {
-      toast.error(`Có lỗi xảy ra: ${error.message}`, {
-        description:
-          'Không thể xóa các sản phẩm đã chọn khỏi giỏ hàng, vui lòng thử lại.',
         duration: 2000,
       });
     },
@@ -129,7 +93,6 @@ const useCartMutation = () => {
   return {
     addItemToCart,
     deleteItemFromCart,
-    deleteSelectedItemsFromCart,
     updateQuantity,
     increaseQuantity,
     decreaseQuantity,
