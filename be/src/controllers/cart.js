@@ -125,24 +125,28 @@ const increaseProductQuantity = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: "Product not found in cart" });
     }
+
     const dbProduct = await Product.findById(productId);
     const variant = dbProduct.variants.find(v => v.sku === variantId);
 
-    if (variant.countInStock <= 0) {
-      return res.status(400).json({ message: "Hết hàng trong kho" });
+    if (product.quantity >= variant.countInStock) {
+      return res.status(400).json({ message: "Cannot increase quantity beyond stock level" });
     }
 
     product.quantity++;
     product.totalPrice += product.priceAtTime;
+
     variant.countInStock--;
 
     await dbProduct.save(); 
     await cart.save(); 
+
     res.status(200).json(cart);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 const decreaseProductQuantity = async (req, res) => {
   const { userId, productId, variantId } = req.body;
@@ -159,23 +163,28 @@ const decreaseProductQuantity = async (req, res) => {
       return res.status(404).json({ message: "Product not found in cart" });
     }
 
-    if (product.quantity > 1) {
+    if (product.quantity > 1) {  // Nếu số lượng sản phẩm lớn hơn 1, giảm số lượng bình thường
       product.quantity--;
       product.totalPrice -= product.priceAtTime;
+      
       const dbProduct = await Product.findById(productId);
       const variant = dbProduct.variants.find(v => v.sku === variantId);
+      
       variant.countInStock++;
 
       await dbProduct.save(); 
       await cart.save(); 
       res.status(200).json(cart);
     } else {
-      return res.status(400).json({ message: "Cannot reduce quantity below 1" });
+      // Nếu số lượng sản phẩm là 1 và người dùng cố gắng giảm thêm, đưa ra cảnh báo
+      return res.status(400).json({ message: "Cannot reduce quantity below 1. If you want to remove the product, please remove it from the cart." });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 const updateProductQuantity = async (req, res) => {
   const { userId, productId, variantId, quantity } = req.body;

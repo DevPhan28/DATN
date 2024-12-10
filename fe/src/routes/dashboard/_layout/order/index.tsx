@@ -1,3 +1,4 @@
+import CurrencyVND from '@/components/config/vnd';
 import Header from '@/components/layoutAdmin/header/header';
 import { useFetchOrdersStatus } from '@/data/oder/useOderList';
 import useCheckoutMutation from '@/data/oder/useOderMutation';
@@ -14,9 +15,9 @@ export const Route = createFileRoute('/dashboard/_layout/order/')({
 
 function OrderList() {
   const [currentPage, setCurrentPage] = useState(0);
-  const [selectedTab, setSelectedTab] = useState('all-delivery'); 
+  const [selectedTab, setSelectedTab] = useState('all-delivery');
   const navigate = useNavigate();
-  const { updateOrderStatus } = useCheckoutMutation()
+  const { updateOrderStatus } = useCheckoutMutation();
   const [selectedGroup, setSelectedGroup] = useState('delivery');
 
   const {
@@ -44,13 +45,13 @@ function OrderList() {
   // Chuyển trang
   const nextPage = () => {
     if (canNextPage) {
-      setCurrentPage((prev) => prev + 1);
+      setCurrentPage(prev => prev + 1);
     }
   };
 
   const previousPage = () => {
     if (canPreviousPage) {
-      setCurrentPage((prev) => prev - 1);
+      setCurrentPage(prev => prev - 1);
     }
   };
 
@@ -71,9 +72,8 @@ function OrderList() {
     { id: 'refund_completed', label: 'Hoàn trả thành công' },
     { id: 'exchange_in_progress', label: 'Đang đổi trả hàng' },
     { id: 'exchange_completed', label: 'Đổi trả thành công' },
-    { id: "canceled_complaint", label: 'Hủy khiếu nại' },
+    { id: 'canceled_complaint', label: 'Hủy khiếu nại' },
   ];
-
 
   const deliveryStatuses = [
     { value: 'pendingPayment', label: 'Chờ thanh toán' },
@@ -96,8 +96,8 @@ function OrderList() {
   const handleStatusChange = (orderId, newStatus, currentStatus) => {
     const validStatuses =
       selectedGroup === 'delivery'
-        ? deliveryStatuses.map((status) => status.value)
-        : complaintStatuses.map((status) => status.value);
+        ? deliveryStatuses.map(status => status.value)
+        : complaintStatuses.map(status => status.value);
 
     if (!validStatuses.includes(newStatus)) {
       toast.error('Trạng thái không hợp lệ cho nhóm hiện tại.');
@@ -105,10 +105,14 @@ function OrderList() {
     }
 
     if (
-      (currentStatus === 'refund_in_progress' && newStatus !== 'refund_completed') ||
-      (currentStatus === 'refund_completed' && newStatus !== 'refund_in_progress') ||
-      (currentStatus === 'exchange_in_progress' && newStatus !== 'exchange_completed') ||
-      (currentStatus === 'exchange_completed' && newStatus !== 'exchange_in_progress')
+      (currentStatus === 'refund_in_progress' &&
+        newStatus !== 'refund_completed') ||
+      (currentStatus === 'refund_completed' &&
+        newStatus !== 'refund_in_progress') ||
+      (currentStatus === 'exchange_in_progress' &&
+        newStatus !== 'exchange_completed') ||
+      (currentStatus === 'exchange_completed' &&
+        newStatus !== 'exchange_in_progress')
     ) {
       toast.error('Trạng thái không hợp lệ trong quá trình hoàn trả/đổi trả.');
       return;
@@ -120,28 +124,42 @@ function OrderList() {
         onSuccess: () => {
           toast.success('Cập nhật trạng thái thành công.');
         },
-        onError: (error) => {
+        onError: error => {
           toast.error(`Cập nhật trạng thái thất bại: ${error.message}`);
         },
       }
     );
   };
   const isNextDeliveryStatusValid = (currentStatus, nextStatus) => {
-    const deliveryOrder = ['pending', 'shipped','received','delivered',];
+    const deliveryOrder = ['pending', 'shipped', 'received', 'delivered'];
     const currentIndex = deliveryOrder.indexOf(currentStatus);
     const nextIndex = deliveryOrder.indexOf(nextStatus);
 
     // Chỉ cho phép chuyển sang trạng thái tiếp theo
     return nextIndex === currentIndex + 1;
   };
-  const filteredOrders = listOrder?.filter((order) => {
+  const filteredOrders = listOrder?.filter(order => {
     if (selectedTab === 'all-delivery') {
       if (selectedGroup === 'delivery') {
-        return ['pending', 'shipped', 'canceled', 'delivered', 'pendingPayment', 'received'].includes(order.status);
+        return [
+          'pending',
+          'shipped',
+          'canceled',
+          'delivered',
+          'pendingPayment',
+          'received',
+        ].includes(order.status);
       }
     } else if (selectedTab === 'all-complaint') {
       if (selectedGroup === 'complaint') {
-        return ['complaint', 'refund_in_progress', 'refund_completed', 'exchange_in_progress', 'exchange_completed', 'canceled_complaint'].includes(order.status);
+        return [
+          'complaint',
+          'refund_in_progress',
+          'refund_completed',
+          'exchange_in_progress',
+          'exchange_completed',
+          'canceled_complaint',
+        ].includes(order.status);
       }
     } else {
       return order.status === selectedTab;
@@ -179,31 +197,46 @@ function OrderList() {
       </div>
       <div className="m-6 flex justify-start space-x-4 rounded-lg border bg-white px-6 py-4">
         <button
-          onClick={() => {setSelectedGroup('delivery')  == setSelectedTab('all-delivery')} }
-          className={`text-gray-700 ${selectedGroup === 'delivery' ? 'border-b-2 border-red-500 text-red-600' : ''
-            }`}
+          onClick={() => {
+            setSelectedGroup('delivery') == setSelectedTab('all-delivery');
+          }}
+          className={`text-gray-700 ${
+            selectedGroup === 'delivery'
+              ? 'border-b-2 border-red-500 text-red-600'
+              : ''
+          }`}
         >
           Giao hàng
         </button>
         <button
-          onClick={() => {setSelectedGroup('complaint') == setSelectedTab('all-complaint')}}
-          className={`text-gray-700 ${selectedGroup === 'complaint' ? 'border-b-2 border-red-500 text-red-600' : ''
-            }`}
+          onClick={() => {
+            setSelectedGroup('complaint') == setSelectedTab('all-complaint');
+          }}
+          className={`text-gray-700 ${
+            selectedGroup === 'complaint'
+              ? 'border-b-2 border-red-500 text-red-600'
+              : ''
+          }`}
         >
           Khiếu nại
         </button>
       </div>
       <div className="m-6 flex justify-start space-x-4 rounded-lg border bg-white px-6 py-4">
-        {(selectedGroup === 'delivery' ? deliveryTabs : complaintTabs).map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setSelectedTab(tab.id)}
-            className={`text-gray-700 ${selectedTab === tab.id ? 'border-b-2 border-red-500 text-red-600' : ''
+        {(selectedGroup === 'delivery' ? deliveryTabs : complaintTabs).map(
+          tab => (
+            <button
+              key={tab.id}
+              onClick={() => setSelectedTab(tab.id)}
+              className={`text-gray-700 ${
+                selectedTab === tab.id
+                  ? 'border-b-2 border-red-500 text-red-600'
+                  : ''
               }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+            >
+              {tab.label}
+            </button>
+          )
+        )}
       </div>
       <div className="mx-6 flex flex-col gap-1 overflow-x-auto rounded-lg border border-gray-200 bg-ui-bg-base px-6 py-4">
         <Table className="min-w-full">
@@ -228,10 +261,10 @@ function OrderList() {
               Sản phẩm
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Tổng tiền ($)
+              Tổng tiền (VND)
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-             Phương thức thanh toán
+              Phương thức thanh toán
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
               Trạng thái thanh toán
@@ -240,7 +273,7 @@ function OrderList() {
               Trạng thái
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-             Lí do trả hàng
+              Lí do trả hàng
             </Table.HeaderCell>
           </Table.Row>
           <Table.Body>
@@ -258,12 +291,14 @@ function OrderList() {
                         </button>
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Content className="space-y-2">
-                        <DropdownMenu.Item className="p-2 text-ui-tag-neutral-text hover:text-ui-code-bg-base"
+                        <DropdownMenu.Item
+                          className="p-2 text-ui-tag-neutral-text hover:text-ui-code-bg-base"
                           onClick={() =>
                             void navigate({
                               to: `/dashboard/detailorder/${order._id}/detailorder`,
                             })
-                          }>
+                          }
+                        >
                           View Details
                         </DropdownMenu.Item>
                       </DropdownMenu.Content>
@@ -314,7 +349,7 @@ function OrderList() {
                     ))}
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
-                    {order.totalPrice}
+                    <CurrencyVND amount={order.totalPrice} />
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     {order.paymentMethod === 'online' ? (
@@ -332,32 +367,51 @@ function OrderList() {
                       <span>Đã thanh toán</span>
                     ) : order.paymentStatus === 'failed' ? (
                       <span>Chờ thanh toán</span>
-                    ) : 
-                    order.paymentStatus === 'cod' ? (
+                    ) : order.paymentStatus === 'cod' ? (
                       <span>Thanh toán khi nhận được hàng</span>
-                    ) :(
+                    ) : (
                       order.paymentStatus
                     )}
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     <select
                       value={order.status}
-                      onChange={(e) => handleStatusChange(order._id, e.target.value, order.status)}
+                      onChange={e =>
+                        handleStatusChange(
+                          order._id,
+                          e.target.value,
+                          order.status
+                        )
+                      }
                       className="w-full min-w-[150px] rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-gray-700"
                     >
-                      {(selectedGroup === 'delivery' ? deliveryStatuses : complaintStatuses).map((status) => {
+                      {(selectedGroup === 'delivery'
+                        ? deliveryStatuses
+                        : complaintStatuses
+                      ).map(status => {
                         const isDisabled =
-                          order.status === 'pendingPayment' || 
-                          order.status === 'canceled' || 
+                          order.status === 'pendingPayment' ||
+                          order.status === 'canceled' ||
                           order.status === 'canceled_complaint' ||
                           (selectedGroup === 'delivery' &&
-                            !isNextDeliveryStatusValid(order.status, status.value)) || 
-                          (order.status === 'refund_in_progress' && status.value !== 'refund_completed') || 
-                          (order.status === 'refund_completed' && status.value !== 'refund_in_progress') || 
-                          (order.status === 'exchange_in_progress' && status.value !== 'exchange_completed') ||
-                          (order.status === 'exchange_completed' && status.value !== 'exchange_in_progress');
+                            !isNextDeliveryStatusValid(
+                              order.status,
+                              status.value
+                            )) ||
+                          (order.status === 'refund_in_progress' &&
+                            status.value !== 'refund_completed') ||
+                          (order.status === 'refund_completed' &&
+                            status.value !== 'refund_in_progress') ||
+                          (order.status === 'exchange_in_progress' &&
+                            status.value !== 'exchange_completed') ||
+                          (order.status === 'exchange_completed' &&
+                            status.value !== 'exchange_in_progress');
                         return (
-                          <option key={status.value} value={status.value} disabled={isDisabled}>
+                          <option
+                            key={status.value}
+                            value={status.value}
+                            disabled={isDisabled}
+                          >
                             {status.label}
                           </option>
                         );

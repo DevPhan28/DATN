@@ -175,8 +175,9 @@ export const Route = createFileRoute('/_layout/checkout/')({
 
         setCalculatedShippingFee(isCouponFreeShipping ? 0 : fee);
         setIsCalculatedFreeShipping(isCouponFreeShipping || fee === 0);
+        const feed = <CurrencyVND amount={fee} />;
         setShippingMessageDisplay(
-          isCouponFreeShipping ? 'Miễn phí vận chuyển' : `${fee} VND`
+          isCouponFreeShipping ? 'Miễn phí vận chuyển' : feed
         );
       } catch (error) {
         console.error('Error calculating shipping fee:', error);

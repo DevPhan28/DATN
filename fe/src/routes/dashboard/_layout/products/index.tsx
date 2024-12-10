@@ -1,3 +1,4 @@
+import CurrencyVND from '@/components/config/vnd';
 import Header from '@/components/layoutAdmin/header/header';
 import {
   useFetchCategory,
@@ -83,19 +84,19 @@ function ProductList() {
   // Filter products based on search term and selected categories
   const filteredProducts = useMemo(() => {
     let filtered = listproduct?.data ?? [];
-    
+
     if (searchTerm) {
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
-    
+
     if (selectedCategories.length > 0) {
       filtered = filtered.filter(product =>
         selectedCategories.includes(product.category?.name ?? '')
       );
     }
-    
+
     return filtered;
   }, [listproduct, searchTerm, selectedCategories]);
 
@@ -172,7 +173,9 @@ function ProductList() {
                     toggleCategorySelection(category.name); // Toggle category selection
                   }}
                 >
-                  <Checkbox checked={selectedCategories.includes(category.name)} />
+                  <Checkbox
+                    checked={selectedCategories.includes(category.name)}
+                  />
                   <label>{category.name}</label>
                 </DropdownMenu.Item>
               ))}
@@ -180,7 +183,7 @@ function ProductList() {
           </DropdownMenu>
           <Button variant="secondary">
             <ArrowUpTray className="text-black" />
-            Tải lên 
+            Tải lên
           </Button>
           <Button
             variant="primary"
@@ -212,7 +215,7 @@ function ProductList() {
               Giảm giá (%)
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Số lượng còn lại trong kho 
+              Số lượng còn lại trong kho
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
               Mô tả
@@ -288,10 +291,10 @@ function ProductList() {
                     )}
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
-                    {product.price.toFixed(2)} VND
+                    <CurrencyVND amount={product.price} />
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
-                    <div className='text-xs w-fit rounded-md border border-ui-tag-blue-border bg-ui-tag-blue-bg p-1 text-ui-tag-blue-text'>
+                    <div className="w-fit rounded-md border border-ui-tag-blue-border bg-ui-tag-blue-bg p-1 text-xs text-ui-tag-blue-text">
                       {product.category?.name}
                     </div>
                   </Table.Cell>

@@ -45,12 +45,19 @@ const createOrder = async (req, res) => {
 
 
       for (const item of items) {
-        await Product.findByIdAndUpdate(
-          item.productId,
-          { $inc: { countInStock: -item.quantity } },
-          { new: true }
-        );
+        const product = await Product.findById(item.productId);
+        
+        if (product.countInStock >= item.quantity) {
+          await Product.findByIdAndUpdate(
+            item.productId,
+            { $inc: { countInStock: -item.quantity } },
+            { new: true }
+          );
+        } else {
+          throw new Error(`Không đủ hàng cho sản phẩm ${item.productId}`);
+        }
       }
+      
 
       Mail.sendOrderConfirmation(customerInfo.email, order);
 

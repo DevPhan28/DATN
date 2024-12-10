@@ -13,7 +13,9 @@ export function useCart(userId: string | null) {
   } = useCartMutation();
 
   const [quantities, setQuantities] = useState<Record<number, number>>({});
-  const [selectedProducts, setSelectedProducts] = useState<Record<number, boolean>>({});
+  const [selectedProducts, setSelectedProducts] = useState<
+    Record<number, boolean>
+  >({});
   const [selectAll, setSelectAll] = useState(false);
 
   const handleQuantityChange = (index: number, value: string) => {
@@ -35,7 +37,7 @@ export function useCart(userId: string | null) {
 
   const incrementQuantity = (index: number) => {
     const product = cartData?.products[index];
-  
+
     if (!product) {
       console.warn(`Product at index ${index} is undefined.`);
       return;
@@ -45,7 +47,7 @@ export function useCart(userId: string | null) {
 
     const newQuantity = currentQuantity + 1;
 
-    setQuantities((prev) => ({
+    setQuantities(prev => ({
       ...prev,
       [index]: newQuantity,
     }));
@@ -55,22 +57,25 @@ export function useCart(userId: string | null) {
       variantId: product.variantId,
     });
   };
-  
 
   const decrementQuantity = (index: number) => {
     const product = cartData?.products[index];
     const productQuantity = product?.quantity || 0;
-  
-    const newQuantity = Math.max(
-      (quantities[index] || productQuantity) - 1,
-      0
-    );
-  
-    setQuantities((prev) => ({
+
+    const newQuantity = Math.max((quantities[index] || productQuantity) - 1, 0);
+
+    if (newQuantity === 0) {
+      toast.error(`Có lỗi xảy ra`, {
+        description: 'Không thể cập nhật số lượng về 0.',
+        duration: 2000,
+      });
+    }
+
+    setQuantities(prev => ({
       ...prev,
       [index]: newQuantity,
     }));
-  
+
     if (product && newQuantity > 0) {
       decreaseQuantity.mutate({
         userId: userId || '',
@@ -79,7 +84,6 @@ export function useCart(userId: string | null) {
       });
     }
   };
-  
 
   const productPrice = (index: number): number => {
     const product = cartData?.products[index];
@@ -89,10 +93,10 @@ export function useCart(userId: string | null) {
 
   const handleDeleteSelectedProducts = () => {
     const selectedVariantIds = Object.keys(selectedProducts)
-      .filter((index) => selectedProducts[parseInt(index)]) 
-      .map((index) => cartData?.products[parseInt(index)]?.variantId) 
+      .filter(index => selectedProducts[parseInt(index)])
+      .map(index => cartData?.products[parseInt(index)]?.variantId)
       .filter((variantId): variantId is string => variantId !== undefined);
-  
+
     if (selectedVariantIds.length === 0) {
       toast.error('Vui lòng chọn ít nhất một sản phẩm để xóa.');
       return;
@@ -100,7 +104,7 @@ export function useCart(userId: string | null) {
     deleteItemFromCart.mutate(
       {
         userId: userId || '',
-        variantIds: selectedVariantIds,  
+        variantIds: selectedVariantIds,
       },
       {
         onSuccess: () => {
@@ -114,7 +118,7 @@ export function useCart(userId: string | null) {
       }
     );
   };
-  
+
   const toggleSelectProduct = (index: number) => {
     setSelectedProducts(prev => ({
       ...prev,
