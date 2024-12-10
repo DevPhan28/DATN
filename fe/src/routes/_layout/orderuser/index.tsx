@@ -1,4 +1,5 @@
 import instance from '@/api/axiosIntance';
+import CurrencyVND from '@/components/config/vnd';
 import { useFetchOrdersByUserId } from '@/data/oder/useOderList';
 import { retryPayment } from '@/data/oder/usePayment';
 import { ChevronRightMini } from '@medusajs/icons';
@@ -13,6 +14,7 @@ export const Route = createFileRoute('/_layout/orderuser/')({
 type Order = {
   _id: string;
   status: string;
+  slug: string;
   orderNumber: string;
   customerInfo: CustomerInfo;
   products: Product[];
@@ -381,7 +383,7 @@ function UserOrder() {
                           </p>
                         </div>
                         <span className="text-base text-[#ee4d2d]">
-                          {item.price} đ
+                          <CurrencyVND amount={item.price} />
                         </span>
                       </div>
                     ))}
@@ -389,18 +391,33 @@ function UserOrder() {
                       <div className="flex items-center justify-end p-4">
                         <div className="w-auto space-y-3">
                           <span className="flex items-center justify-between text-lg">
-                            Giảm : <span className="ml-2">0&nbsp;₫</span>
+                            Phí vận chuyển :{' '}
+                            <span className="ml-2">
+                              <div>
+                                {order.shippingMessageDisplay?.props?.amount ? (
+                                  <CurrencyVND
+                                    amount={
+                                      order.shippingMessageDisplay.props.amount
+                                    }
+                                  />
+                                ) : (
+                                  <span className="text-gray-600">
+                                    Miễn phí vận chuyển
+                                  </span>
+                                )}
+                              </div>
+                            </span>
                           </span>
                           <span className="flex items-center justify-between text-lg">
                             Tổng tiền sản phẩm :{' '}
                             <span className="ml-2">
-                              {order.totalPrice.toLocaleString()}&nbsp;₫
+                              <CurrencyVND amount={order.totalPrice} />
                             </span>
                           </span>
                           <p className="flex items-center justify-between text-lg">
                             Thành tiền:{' '}
                             <span className="ml-2 text-2xl text-[#ee4d2d]">
-                              {order.totalPrice.toLocaleString()}&nbsp;₫
+                              <CurrencyVND amount={order.totalPrice} />
                             </span>
                           </p>
                         </div>
@@ -419,7 +436,7 @@ function UserOrder() {
                         order.items.map(item => (
                           <Link
                             key={item.productId}
-                            to={`/${item.slug ? item.slug : item.productId}/quickviewProduct#comments-section`} // Sử dụng slug nếu có
+                            to={`/${item.slug ? item.slug : item.productId}/quickviewProduct#comments-section`}
                             className="mr-2 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
                           >
                             Đánh giá sản phẩm

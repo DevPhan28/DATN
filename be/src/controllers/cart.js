@@ -129,14 +129,14 @@ const increaseProductQuantity = async (req, res) => {
     const dbProduct = await Product.findById(productId);
     const variant = dbProduct.variants.find(v => v.sku === variantId);
 
-    if (product.quantity >= variant.countInStock) {
+    if (product.quantity + 1 > variant.countInStock) {
       return res.status(400).json({ message: "Cannot increase quantity beyond stock level" });
     }
 
     product.quantity++;
     product.totalPrice += product.priceAtTime;
 
-    variant.countInStock--;
+    variant.countInStock -= 1;
 
     await dbProduct.save(); 
     await cart.save(); 
@@ -146,6 +146,7 @@ const increaseProductQuantity = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 const decreaseProductQuantity = async (req, res) => {
@@ -163,7 +164,7 @@ const decreaseProductQuantity = async (req, res) => {
       return res.status(404).json({ message: "Product not found in cart" });
     }
 
-    if (product.quantity > 1) {  // Nếu số lượng sản phẩm lớn hơn 1, giảm số lượng bình thường
+    if (product.quantity > 1) {  x
       product.quantity--;
       product.totalPrice -= product.priceAtTime;
       
@@ -176,7 +177,6 @@ const decreaseProductQuantity = async (req, res) => {
       await cart.save(); 
       res.status(200).json(cart);
     } else {
-      // Nếu số lượng sản phẩm là 1 và người dùng cố gắng giảm thêm, đưa ra cảnh báo
       return res.status(400).json({ message: "Cannot reduce quantity below 1. If you want to remove the product, please remove it from the cart." });
     }
   } catch (error) {

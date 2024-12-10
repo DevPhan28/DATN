@@ -226,6 +226,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
         note: '',
         totalPrice: totalWithDiscount,
         couponCode: selectedCoupon ? selectedCoupon.code : null,
+        shippingMessageDisplay: shippingMessageDisplay,
       };
 
       try {

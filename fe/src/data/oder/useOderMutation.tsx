@@ -17,25 +17,12 @@ const useCheckoutMutation = () => {
       if (typeof data === 'string' && data.includes('http')) {
         location.href = data;
       } else {
-        const { orderId, orderItems } = data;
-
+        const { orderId } = data;
         if (!orderId) {
           console.error('Order ID is missing in the response.');
           return;
         }
-
-        for (const item of orderItems) {
-          const product = await instance.get(`/products/${item.productId}`);
-          if (product.data.countInStock < item.quantity) {
-            toast.error(
-              `Sản phẩm ${product.data.name} không đủ số lượng trong kho.`
-            );
-            return;
-          }
-        }
-
         await queryClient.invalidateQueries({ queryKey: ['cart'] });
-
         navigate({
           to: '/thanks',
           search: {

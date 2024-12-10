@@ -109,12 +109,12 @@ function Cart() {
                         alt={product.name}
                         className="h-auto w-12"
                       />
-                      <div className="w-32 truncate">
+                      <div className="w-36 truncate">
                         {product.name}
                         <span className="text-gray-400">
                           <div className="flex">
                             <div>{product.color || 'Không có'}</div>
-                            <div>, Size: {product.size || 'Không có'}</div>
+                            <div>, {product.size || 'Không có'}</div>
                           </div>
                         </span>
                       </div>

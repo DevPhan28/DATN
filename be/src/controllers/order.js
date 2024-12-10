@@ -19,7 +19,7 @@ console.log("🚀 ===== ZALOPAY_ENDPOINT:", ZALOPAY_ENDPOINT);
 const createOrder = async (req, res) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { userId, items, totalPrice, customerInfo, paymentMethod } = req.body;
+      const { userId, items, totalPrice, customerInfo, paymentMethod,shippingMessageDisplay  } = req.body;
 
       // Tạo đơn hàng chung
       const order = await Order.create({
@@ -41,6 +41,7 @@ const createOrder = async (req, res) => {
         paymentMethod,
         status: "pending", 
         paymentStatus: "cod", 
+        shippingMessageDisplay,
       });
 
 

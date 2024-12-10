@@ -29,6 +29,7 @@ type Order = {
   items: Item[];
 };
 type Item = {
+  slug: any;
   productId: number;
   image: string;
   name: string;
