@@ -1,4 +1,5 @@
 import instance from '@/api/axiosIntance';
+import CurrencyVND from '@/components/config/vnd';
 import ProductRecommendations from '@/components/ProductRecommendations';
 import useCommentMutation from '@/data/Comment/useCommentMutation';
 import {
@@ -72,9 +73,7 @@ function DetailProduct() {
           );
           const average = totalRating / response.data.length;
           setAverageRating(average); // Cập nhật số sao trung bình
-        } catch (err) {
-          
-        }
+        } catch (err) {}
       };
       fetchComments();
     }
@@ -301,8 +300,8 @@ function DetailProduct() {
                     />
                   ))}
                   <span className="font-semibold">
-                    {averageRating.toFixed(1)} trên tổng {comments.length}{' '}
-                    Bình luận
+                    {averageRating.toFixed(1)} trên tổng {comments.length} Bình
+                    luận
                   </span>
                 </div>
               </div>
@@ -310,10 +309,7 @@ function DetailProduct() {
                 Mã sản phẩm: {product.sku}
               </p>
               <div className="mb-4 text-lg font-semibold text-red-600 sm:text-xl lg:text-2xl">
-                {product.price} VND
-                <span className="text-sm text-gray-400 line-through sm:text-base lg:text-lg">
-                  1199 VND
-                </span>
+                <CurrencyVND amount={product.price} />
               </div>
               <div className="mb-4 text-lg sm:text-xl">
                 <p>{product.description}</p>
@@ -392,14 +388,17 @@ function DetailProduct() {
                     <div className="text-lg font-semibold">Free ship</div>
                     <div className="text-sm">Free standard ship</div>
                     <div className="text-sm">
-                    Thời gian giao hàng dự kiến ​​là từ ngày 30 tháng 10 năm 2024 - ngày 31 tháng 10 năm 2024.
+                      Thời gian giao hàng dự kiến ​​là từ ngày 30 tháng 10 năm
+                      2024 - ngày 31 tháng 10 năm 2024.
                     </div>
                   </div>
                 </div>
                 <div className="mt-3 flex gap-4">
                   <ArrowUpRightOnBox className="mt-1.5 text-xl text-green-700" />
                   <div>
-                    <div className="text-lg font-semibold">Chính sách hoàn trả</div>
+                    <div className="text-lg font-semibold">
+                      Chính sách hoàn trả
+                    </div>
                     <div className="text-sm">Tìm hiểu thêm</div>
                   </div>
                 </div>
@@ -429,7 +428,7 @@ function DetailProduct() {
                   </div>
                 </div>
 
-                <div id='comments-section'>
+                <div id="comments-section">
                   <h2 className="text-2xl">Bình luận</h2>
                   <textarea
                     className="mt-5 w-full rounded border p-3"
@@ -450,7 +449,7 @@ function DetailProduct() {
                     onClick={handleCommentSubmit}
                     className="mt-2 rounded bg-blue-500 px-4 py-2 text-white"
                   >
-                   Đăng bình luận
+                    Đăng bình luận
                   </button>
                   <div className="mt-5 pb-5">
                     {comments.length > 0 ? (
@@ -512,7 +511,7 @@ function DetailProduct() {
                                   }
                                 >
                                   <Trash className="text-ui-fg-subtle" />
-                                 Xóa bình luận
+                                  Xóa bình luận
                                 </DropdownMenu.Item>
                               </DropdownMenu.Content>
                             </DropdownMenu>

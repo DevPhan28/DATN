@@ -1,3 +1,4 @@
+import CurrencyVND from '@/components/config/vnd';
 import ErrorCart from '@/components/errors/error-cart';
 import LoginCart from '@/components/errors/error-login-cart';
 import { useCart } from '@/data/cart/useCartLogic';
@@ -119,7 +120,7 @@ function Cart() {
                       </div>
                     </td>
                     <td className="px-4 py-4 text-center">
-                      {productPrice(index)} VND
+                      <CurrencyVND amount={productPrice(index)} />
                     </td>
                     <td className="px-4 py-4 text-center">
                       <div className="flex items-center justify-center">
@@ -147,9 +148,12 @@ function Cart() {
                       </div>
                     </td>
                     <td className="px-4 py-4 text-center">
-                      {(quantities[index] || product.quantity) *
-                        productPrice(index)}{' '}
-                      VND
+                      <CurrencyVND
+                        amount={
+                          (quantities[index] || product.quantity) *
+                          productPrice(index)
+                        }
+                      />
                     </td>
                   </tr>
                 ))}
@@ -184,7 +188,7 @@ function Cart() {
                   <div>
                     Tổng thanh toán (VND):{' '}
                     <span className="text-red-500">
-                      {totalSelectedPrice || '0'}
+                      <CurrencyVND amount={totalSelectedPrice || '0'} />
                     </span>
                   </div>
                   <button

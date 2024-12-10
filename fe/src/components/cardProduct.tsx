@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { useFetchCategory, useFetchProductAll } from '@/data/products/useProductList';
+import {
+  useFetchCategory,
+  useFetchProductAll,
+} from '@/data/products/useProductList';
 import useCartMutation from '@/data/cart/useCartMutation';
 import { Link, useNavigate } from '@tanstack/react-router';
-import { Funnel, MagnifyingGlass, ShoppingCartSolid, Heart as HeartIcon } from '@medusajs/icons';
+import {
+  Funnel,
+  MagnifyingGlass,
+  ShoppingCartSolid,
+  Heart as HeartIcon,
+} from '@medusajs/icons';
 import FilterBar from './FilterBar';
-import { toast } from '@medusajs/ui'; 
-
+import { toast } from '@medusajs/ui';
+import CurrencyVND from './config/vnd';
 
 type Product = {
   slug: string;
@@ -22,8 +30,8 @@ const CardProduct: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showFilter, setShowFilter] = useState<boolean>(false);
   const [showSearch, setShowSearch] = useState<boolean>(false);
-  const [searchTerm, setSearchTerm] = useState<string>(''); 
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]); 
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
   const { addItemToCart } = useCartMutation();
   const navigate = useNavigate();
@@ -31,14 +39,14 @@ const CardProduct: React.FC = () => {
   const toggleFilter = () => {
     setShowFilter(!showFilter);
     if (!showFilter) {
-      setShowSearch(false); 
+      setShowSearch(false);
     }
   };
 
   const toggleSearch = () => {
     setShowSearch(!showSearch);
     if (!showSearch) {
-      setShowFilter(false); 
+      setShowFilter(false);
     }
   };
 
@@ -64,17 +72,17 @@ const CardProduct: React.FC = () => {
     });
   };
 
-  
   useEffect(() => {
     const filterProducts = () => {
       let filtered = listProduct;
 
       // Lọc theo danh mục nếu có
       if (selectedCategory) {
-        filtered = filtered.filter(product => product?.category?._id === selectedCategory);
+        filtered = filtered.filter(
+          product => product?.category?._id === selectedCategory
+        );
       }
 
-     
       if (searchTerm) {
         filtered = filtered.filter(product =>
           product.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -85,22 +93,22 @@ const CardProduct: React.FC = () => {
     };
 
     filterProducts();
-  }, [selectedCategory, searchTerm, listProduct]); 
+  }, [selectedCategory, searchTerm, listProduct]);
 
-  
-  const displayedProducts = filteredProducts.length > 0 ? filteredProducts.slice(0, 8) : listProduct.slice(0, 8);
+  const displayedProducts =
+    filteredProducts.length > 0
+      ? filteredProducts.slice(0, 8)
+      : listProduct.slice(0, 8);
 
- 
   const handleFilterChange = (filtered: Product[]) => {
     setFilteredProducts(filtered);
     if (filtered.length > 0) {
-      toast.success("Sản phẩm đã được lọc thành công!");  
+      toast.success('Sản phẩm đã được lọc thành công!');
     } else {
-      toast.error("Không tìm thấy sản phẩm phù hợp!");  
+      toast.error('Không tìm thấy sản phẩm phù hợp!');
     }
   };
 
-  
   const toggleFavorite = (productId: string) => {
     setIsFavorite(prevState => !prevState);
   };
@@ -108,8 +116,7 @@ const CardProduct: React.FC = () => {
   return (
     <div className="m-auto mt-10 max-w-7xl p-5 sm:p-5 md:p-5 lg:p-5 xl:p-0">
       <h1 className="mb-4 text-2xl font-bold sm:mb-8 sm:text-4xl">
-        
-TỔNG QUAN SẢN PHẨM
+        TỔNG QUAN SẢN PHẨM
       </h1>
       <div className="mb-4 flex flex-wrap items-center justify-between sm:mb-8">
         <div className="flex flex-wrap space-x-4 sm:space-x-8">
@@ -117,8 +124,7 @@ TỔNG QUAN SẢN PHẨM
             onClick={() => setSelectedCategory(null)}
             className="border-b-2 border-gray-900 text-gray-900"
           >
-            
-Tất cả sản phẩm
+            Tất cả sản phẩm
           </button>
           {categories?.map((category: { _id: string; name: string }) => (
             <a
@@ -160,7 +166,7 @@ Tất cả sản phẩm
               type="text"
               placeholder="Search"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={e => setSearchTerm(e.target.value)}
               className="search-input w-full border-none bg-white focus:outline-none"
             />
           </div>
@@ -175,7 +181,10 @@ Tất cả sản phẩm
       {displayedProducts.length > 0 ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-8 md:grid-cols-3 lg:grid-cols-4">
           {displayedProducts.map((product: Product) => (
-            <div key={product._id} className="product-card group relative overflow-hidden text-center">
+            <div
+              key={product._id}
+              className="product-card group relative overflow-hidden text-center"
+            >
               <img
                 src={product.image}
                 alt={product.name}
@@ -185,7 +194,7 @@ Tất cả sản phẩm
                 to={`${product.slug ? product.slug : product._id}/quickviewProduct`}
                 className="quick-view duration-900 absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-full bg-white px-4 py-2 opacity-0 shadow transition-all hover:bg-black hover:text-white group-hover:translate-y-[-100px] group-hover:opacity-100"
               >
-               Chi tiết sản phẩm
+                Chi tiết sản phẩm
               </Link>
               <h2 className="mt-2 flex items-center justify-between text-gray-500">
                 {product.name}
@@ -205,7 +214,7 @@ Tất cả sản phẩm
                 </div>
               </h2>
               <p className="mt-2 flex justify-start text-gray-600">
-                {product.price}₫
+                <CurrencyVND amount={product.price} />
               </p>
             </div>
           ))}
@@ -217,7 +226,7 @@ Tất cả sản phẩm
       <div className="m-auto max-w-6xl p-10 text-center">
         <button
           onClick={() => navigate({ to: '/shop' })}
-          className="rounded-2xl border border-gray-300 bg-blue-500 px-6 py-2 hover:bg-black text-white"
+          className="rounded-2xl border border-gray-300 bg-blue-500 px-6 py-2 text-white hover:bg-black"
         >
           Xem thêm
         </button>

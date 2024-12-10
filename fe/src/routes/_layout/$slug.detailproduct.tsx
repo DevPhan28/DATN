@@ -4,6 +4,7 @@ import { useParams, useNavigate } from '@tanstack/react-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import instance from '@/api/axiosIntance';
 import { toast } from '@medusajs/ui';
+import CurrencyVND from '@/components/config/vnd';
 
 export const Route = createFileRoute('/_layout/$slug/detailproduct')({
   component: () => {
@@ -183,7 +184,9 @@ export const Route = createFileRoute('/_layout/$slug/detailproduct')({
             {/* Product details */}
             <div className="ml-10 mt-4 flex-1 md:mt-0">
               <h1 className="text-2xl font-bold">{product.name}</h1>
-              <p className="mt-2 text-xl text-gray-700">${product.price}</p>
+              <p className="mt-2 text-xl text-gray-700">
+                <CurrencyVND amount={product.price} />
+              </p>
               <p className="mt-4 text-gray-600">{product.description}</p>
 
               {/* Size dropdown with unique sizes */}
