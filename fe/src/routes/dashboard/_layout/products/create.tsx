@@ -429,7 +429,7 @@ function AddBrand() {
                     </div>
                   ))}
               </div>
-
+              {/* detaildescription */}
               <div className="flex flex-col">
                 <label className="block text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Content

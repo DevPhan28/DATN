@@ -9,8 +9,9 @@ import {
 import axios from 'axios';
 import { useRef, useState, useEffect } from 'react';
 import { ArrowDownTray, PlusMini, Trash, XMark } from '@medusajs/icons';
-import { SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
 import instance from '@/api/axiosIntance';
+import TextareaDescription from '@/components/textarea';
 
 export const Route = createFileRoute('/dashboard/_layout/products/$id/edit')({
   loader: async ({ params }: { params: RouteParams }) => {
@@ -50,6 +51,7 @@ function EditProduct() {
     category: string[];
     gallery?: string[];
     description: string;
+    detaildescription: string;
     totalCountInStock: number;
     discount: number;
     variants: Variant[];
@@ -93,6 +95,7 @@ function EditProduct() {
         category: product.category,
         gallery: product.gallery || [],
         description: product.description,
+        detaildescription: product.detaildescription,
         totalCountInStock: product.totalCountInStock || 0,
         discount: product.discount,
         variants: product.variants.map(variant => ({
@@ -101,6 +104,7 @@ function EditProduct() {
           price: variant.price,
           countInStock: variant.countInStock,
           sku: variant.sku,
+          weight: variant.weight
         })),
       });
     }
@@ -134,7 +138,9 @@ function EditProduct() {
       ? `${(size / 1024).toFixed(2)}KB`
       : `${(size / (1024 * 1024)).toFixed(2)}MB`;
   };
-
+  // const plainText = data.detaildescription
+  //   .replace(/<\/?[^>]+(>|$)/g, '')
+  //   .normalize('NFC');
   const onCreateProduct: SubmitHandler<{
     _id: string;
     name: string;
@@ -143,6 +149,7 @@ function EditProduct() {
     category: string[];
     gallery?: string[];
     description: string;
+    detaildescription: string;
     totalCountInStock: number;
     discount: number;
     variants: Variant[];
@@ -178,15 +185,15 @@ function EditProduct() {
       const [responseThumbnail, responseGallery] = await Promise.all([
         selectedImage
           ? axios.post(
-              `http://localhost:8080/api/upload-thumbnail-product`,
-              formDataThumbnail
-            )
+            `http://localhost:8080/api/upload-thumbnail-product`,
+            formDataThumbnail
+          )
           : Promise.resolve({ data: data.image }), // Nếu không tải lên hình mới, giữ hình hiện tại
         selectedGallery.length > 0
           ? axios.post(
-              `http://localhost:8080/api/upload-gallery-product`,
-              formDataGallery
-            )
+            `http://localhost:8080/api/upload-gallery-product`,
+            formDataGallery
+          )
           : Promise.resolve({ data: data.gallery }), // Nếu không tải lên gallery mới, giữ gallery hiện tại
       ]);
 
@@ -207,7 +214,10 @@ function EditProduct() {
       // Xử lý lỗi nếu cần
     }
   };
-
+  // Để cập nhật giá trị khi nội dung thay đổi
+  const handleEditorChange = content => {
+    setValue('detaildescription', content);
+  };
   return (
     <div className="h-screen overflow-y-auto">
       <Header title="Edit Product" pathname="/dashboard/products" />
@@ -466,54 +476,82 @@ function EditProduct() {
               <div className="mt-5">
                 {selectedGallery.length > 0
                   ? selectedGallery.map(item => (
-                      <div
-                        key={item.name}
-                        className="mb-3 flex items-center justify-between gap-3 rounded-lg border bg-ui-bg-subtle-hover px-2 py-3"
-                      >
-                        <div>
-                          <p className="text-sm font-normal text-ui-fg-base">
-                            {item.name}
-                          </p>
-                          <p className="text-xs font-normal text-ui-fg-subtle">
-                            {formatFileSize(item.size)}
-                          </p>
-                        </div>
-                        <XMark
-                          className="cursor-pointer"
-                          onClick={() =>
-                            setSelectedGallery(prev =>
-                              prev.filter(file => file.name !== item.name)
-                            )
-                          }
-                        />
+                    <div
+                      key={item.name}
+                      className="mb-3 flex items-center justify-between gap-3 rounded-lg border bg-ui-bg-subtle-hover px-2 py-3"
+                    >
+                      <div>
+                        <p className="text-sm font-normal text-ui-fg-base">
+                          {item.name}
+                        </p>
+                        <p className="text-xs font-normal text-ui-fg-subtle">
+                          {formatFileSize(item.size)}
+                        </p>
                       </div>
-                    ))
+                      <XMark
+                        className="cursor-pointer"
+                        onClick={() =>
+                          setSelectedGallery(prev =>
+                            prev.filter(file => file.name !== item.name)
+                          )
+                        }
+                      />
+                    </div>
+                  ))
                   : product.gallery &&
-                    product.gallery.map(imgUrl => (
-                      <div
-                        key={imgUrl}
-                        className="mb-3 flex items-center justify-between gap-3 rounded-lg border bg-ui-bg-subtle-hover px-2 py-3"
-                      >
-                        <div>
-                          <img
-                            src={imgUrl}
-                            alt="Gallery Image"
-                            className="h-10 w-10 object-cover"
-                          />
-                          {/* <p className="text-sm font-normal text-ui-fg-base">{imgUrl}</p> */}
-                        </div>
-                        <XMark
-                          className="cursor-pointer"
-                          onClick={() => {
-                            // Implement removal logic, e.g., remove from gallery array
-                            const updatedGallery = watch('gallery').filter(
-                              url => url !== imgUrl
-                            );
-                            setValue('gallery', updatedGallery);
-                          }}
+                  product.gallery.map(imgUrl => (
+                    <div
+                      key={imgUrl}
+                      className="mb-3 flex items-center justify-between gap-3 rounded-lg border bg-ui-bg-subtle-hover px-2 py-3"
+                    >
+                      <div>
+                        <img
+                          src={imgUrl}
+                          alt="Gallery Image"
+                          className="h-10 w-10 object-cover"
                         />
+                        {/* <p className="text-sm font-normal text-ui-fg-base">{imgUrl}</p> */}
                       </div>
-                    ))}
+                      <XMark
+                        className="cursor-pointer"
+                        onClick={() => {
+                          // Implement removal logic, e.g., remove from gallery array
+                          const updatedGallery = watch('gallery').filter(
+                            url => url !== imgUrl
+                          );
+                          setValue('gallery', updatedGallery);
+                        }}
+                      />
+                    </div>
+                  ))}
+              </div>
+            </div>
+            {/* detaildescription */}
+            <div className="flex flex-col">
+              <label className="block text-sm font-medium text-ui-fg-base">
+                <span className="text-ui-tag-red-text">*</span> Content
+              </label>
+              <div className="mt-2 flex flex-1 flex-col">
+                <Controller
+                  name="detaildescription"
+                  control={control}
+                  defaultValue=""
+                  rules={{ required: 'Description is required' }}
+                  render={({ field: { onChange, value } }) => (
+                    <TextareaDescription
+                      apiKey="vx5npguuuktlxhbv9tv6vvgjk1x5astnj8kznhujei9w6ech"
+                      value={value}
+                      onChange={content => handleEditorChange(content, onChange)}
+                      className="h-full w-full"
+                    />
+                  )}
+                />
+
+                {errors.detaildescription && (
+                  <span className="mt-2 text-xs text-red-500">
+                    {errors.detaildescription.message}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -605,12 +643,12 @@ function EditProduct() {
                     </div>
                     <div className="flex-1 space-y-3">
                       <label className="block text-sm font-medium text-ui-fg-base">
-                        SKU
+                        Weight
                       </label>
                       <Input
                         placeholder="e.g., SKU123"
                         size="base"
-                        {...register(`variants.${index}.sku` as const)}
+                        {...register(`variants.${index}.weight` as const)}
                       />
                     </div>
                     <Trash

@@ -83,26 +83,38 @@ function DetailProduct() {
         <div className="p-8">
           <h2 className="text-lg font-bold text-gray-800">Variants</h2>
           {data.product.variants.length > 0 ? (
-            <div className="grid grid-cols-1 gap-4 mt-4">
-              {data.product.variants.map((variant: any, index: number) => (
-                <div
-                  key={variant._id || index}
-                  className="flex justify-between items-center border rounded p-4 shadow-sm"
-                >
-                  <p className="text-black font-medium">Size: {variant.size}</p>
-                  <p className="text-black font-medium">Color: {variant.color}</p>
-                  <p className="text-black font-medium">Price: {variant.price}VND</p>
-                  <p className="text-black font-medium">Sku: {variant.sku}</p>
-                  <p className="text-black font-medium">
-                    Count In Stock: {variant.countInStock}
-                  </p>
-                </div>
-              ))}
+            <div className="overflow-x-auto mt-4">
+              <table className="min-w-full border border-gray-300">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="px-4 py-2 text-left text-black font-medium border">Size</th>
+                    <th className="px-4 py-2 text-left text-black font-medium border">Color</th>
+                    <th className="px-4 py-2 text-left text-black font-medium border">Price (VND)</th>
+                    <th className="px-4 py-2 text-left text-black font-medium border">Sku</th>
+                    <th className="px-4 py-2 text-left text-black font-medium border">Count In Stock</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.product.variants.map((variant: any, index: number) => (
+                    <tr
+                      key={variant._id || index}
+                      className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+                    >
+                      <td className="px-4 py-2 border text-black">{variant.size}</td>
+                      <td className="px-4 py-2 border text-black">{variant.color}</td>
+                      <td className="px-4 py-2 border text-black">{variant.price}</td>
+                      <td className="px-4 py-2 border text-black">{variant.sku}</td>
+                      <td className="px-4 py-2 border text-black">{variant.countInStock}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ) : (
             <p className="text-gray-600">No variants available.</p>
           )}
         </div>
+
       </div>
     </div>
   );
