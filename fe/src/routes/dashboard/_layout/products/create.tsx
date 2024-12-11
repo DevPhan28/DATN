@@ -569,16 +569,6 @@ function AddBrand() {
                         </span>
                       )}
                     </div>
-                    {/* <div className="flex-1 space-y-3">
-                      <label className="block text-sm font-medium text-ui-fg-base">
-                        <span className="text-ui-tag-red-text">*</span> SKU
-                      </label>
-                      <Input
-                        placeholder="e.g., SKU123"
-                        size="base"
-                        {...register(`variants.${index}.sku` as const)}
-                      />
-                    </div> */}
                     <Trash
                       className="mt-9 cursor-pointer text-red-500"
                       onClick={() => remove(index)}

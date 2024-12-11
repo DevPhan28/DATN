@@ -61,7 +61,7 @@ function EditCoupon() {
   }, [couponData, setValue]);
 
   console.log('log data', couponData);
-  
+
   const onEditCoupon: SubmitHandler<CouponFormValues> = async (data) => {
     try {
       editCoupon.mutate(data);
@@ -91,8 +91,7 @@ function EditCoupon() {
         <div className="rounded-lg border bg-ui-bg-base p-7">
           <h1 className="text-2xl font-medium text-ui-fg-base">Thông tin phiếu giảm giá</h1>
           <p className="mb-4 text-sm font-normal text-ui-fg-subtle">
-           
-Cập nhật chi tiết phiếu giảm giá như mã, giảm giá, ngày hết hạn và trạng thái.
+            Cập nhật chi tiết phiếu giảm giá như mã, giảm giá, ngày hết hạn và trạng thái.
           </p>
 
           <div className="space-y-4">
@@ -116,6 +115,7 @@ Cập nhật chi tiết phiếu giảm giá như mã, giảm giá, ngày hết h
             </div>
 
             {/* Discount */}
+            {/* Discount */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
@@ -127,8 +127,9 @@ Cập nhật chi tiết phiếu giảm giá như mã, giảm giá, ngày hết h
                   placeholder="e.g., 10"
                   size="base"
                   {...register('discount', {
-                    required: 'Discount is required',
-                    min: { value: 0, message: 'Discount must be positive' },
+                    required: 'Giảm giá là bắt buộc',
+                    min: { value: 0, message: 'Giảm giá phải là số dương' },
+                    max: { value: 100, message: 'Giảm giá không được vượt quá 100%' },
                   })}
                 />
                 {errors.discount && (
@@ -137,10 +138,12 @@ Cập nhật chi tiết phiếu giảm giá như mã, giảm giá, ngày hết h
               </div>
             </div>
 
+
+            {/* Min Order */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Min Order
+                  <span className="text-ui-tag-red-text">*</span> Đơn hàng tối thiểu
                 </label>
                 <Input
                   type="number"
@@ -148,31 +151,32 @@ Cập nhật chi tiết phiếu giảm giá như mã, giảm giá, ngày hết h
                   placeholder="e.g., 10"
                   size="base"
                   {...register('minOrder', {
-                    required: 'minOrder is required',
-                    min: { value: 0, message: 'minOrder must be positive' },
+                    required: 'Đơn hàng tối thiểu là bắt buộc',
+                    min: { value: 0, message: 'Đơn hàng tối thiểu phải là số dương' },
                   })}
                 />
-                {errors.discount && (
-                  <span className="text-xs text-red-500">{errors.discount.message}</span>
+                {errors.minOrder && (
+                  <span className="text-xs text-red-500">{errors.minOrder.message}</span>
                 )}
               </div>
             </div>
+
             {/* Free Shipping */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                 free ship
+                  Miễn phí vận chuyển
                 </label>
                 <Select
                   defaultValue={String(couponData.isFreeShipping)}
                   onValueChange={(value) => setValue('isFreeShipping', value === 'true')}
                 >
                   <Select.Trigger>
-                    <Select.Value placeholder="Select an option" />
+                    <Select.Value placeholder="Chọn một tùy chọn" />
                   </Select.Trigger>
                   <Select.Content>
-                    <Select.Item value="true">Yes</Select.Item>
-                    <Select.Item value="false">No</Select.Item>
+                    <Select.Item value="true">Có</Select.Item>
+                    <Select.Item value="false">Không</Select.Item>
                   </Select.Content>
                 </Select>
               </div>
@@ -182,7 +186,7 @@ Cập nhật chi tiết phiếu giảm giá như mã, giảm giá, ngày hết h
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                Ngày hết hạn
+                  Ngày hết hạn
                 </label>
                 <DatePicker
                   selectedDate={new Date(couponData.expirationDate)}
@@ -202,7 +206,7 @@ Cập nhật chi tiết phiếu giảm giá như mã, giảm giá, ngày hết h
                   onValueChange={(value) => setValue('isActive', value === 'true')}
                 >
                   <Select.Trigger>
-                    <Select.Value placeholder="Select status" />
+                    <Select.Value placeholder="Chọn trạng thái" />
                   </Select.Trigger>
                   <Select.Content>
                     <Select.Item value="true">Áp dụng</Select.Item>

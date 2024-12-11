@@ -54,41 +54,53 @@ const useCartMutation = () => {
       variantId: string;
       quantity: number;
     }) => instance.patch('/cart/update-quantity', data),
-
+  
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
+  
     onError: (error: any) => {
-      toast.error(`Có lỗi xảy ra: ${error.message}`, {
-        description: 'Không thể cập nhật số lượng, vui lòng thử lại.',
+      // Kiểm tra xem lỗi có phải từ phía API (thông báo lỗi từ server)
+      const errorMessage = error?.response?.data?.error || error.message || 'Có lỗi xảy ra';
+      const errorDescription = error?.response?.data?.description || 'Không thể cập nhật số lượng, vui lòng thử lại.';
+  
+      toast.error(errorMessage, {
+        description: errorDescription,
         duration: 2000,
       });
     },
   });
+  
  
   const increaseQuantity = useMutation({
-    mutationFn: (data: {
-      userId: string;
-      productId: string;
-      variantId: string;
-    }) => instance.patch('/cart/increase-quantity', data),
-
+    mutationFn: (data: { userId: string; productId: string; variantId: string }) => instance.patch('/cart/increase-quantity', data),
+  
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
-  });
+  
+    onError: (error: any) => {
+      const errorMessage = error?.response?.data?.message || error.message || 'Không thể tăng số lượng sản phẩm, vui lòng thử lại.';
+      toast.error(`Có lỗi xảy ra: ${errorMessage}`, {
+        description: 'Không thể tăng số lượng sản phẩm, vui lòng thử lại.',
+        duration: 2000,
+      });
+    },
+  });  
  
   const decreaseQuantity = useMutation({
-    mutationFn: (data: {
-      userId: string;
-      productId: string;
-      variantId: string;
-    }) => instance.patch('/cart/decrease-quantity', data),
-
+    mutationFn: (data: { userId: string; productId: string; variantId: string; confirm: boolean }) =>
+      instance.patch('/cart/decrease-quantity', data),
+  
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
+  
+    onError: (error) => {
+      console.error(error);
+    }
   });
+  
 
   return {
     addItemToCart,

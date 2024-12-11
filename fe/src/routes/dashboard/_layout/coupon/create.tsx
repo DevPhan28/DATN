@@ -2,7 +2,7 @@ import Header from '@/components/layoutAdmin/header/header';
 import useCouponMutation from '@/data/coupon/useCouponMutation';
 import { Button, Input, Select, DatePicker } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, setError } from 'react-hook-form';
 
 export const Route = createFileRoute('/dashboard/_layout/coupon/create')({
   component: AddCoupon,
@@ -26,9 +26,19 @@ function AddCoupon() {
     handleSubmit,
     setValue,
     formState: { errors },
+    setError, // Import setError để xử lý lỗi custom
   } = useForm<CouponFormValues>();
 
   const onCreateCoupon: SubmitHandler<CouponFormValues> = async (data) => {
+    // Kiểm tra nếu discount lớn hơn 100%
+    if (data.discount > 100) {
+      setError('discount', {
+        type: 'manual',
+        message: 'Giảm giá không được lớn hơn 100%',
+      });
+      return;
+    }
+
     try {
       // Gọi API để tạo mã giảm giá mới
       createCoupon.mutate(data);
@@ -64,7 +74,7 @@ function AddCoupon() {
         <div className="rounded-lg border bg-ui-bg-base p-7">
           <h1 className="text-2xl font-medium text-ui-fg-base">Thông tin phiếu giảm giá</h1>
           <p className="mb-4 text-sm font-normal text-ui-fg-subtle">
-          Nhập chi tiết phiếu giảm giá như mã, giảm giá, ngày hết hạn và trạng thái.
+            Nhập chi tiết phiếu giảm giá như mã, giảm giá, ngày hết hạn và trạng thái.
           </p>
 
           <div className="space-y-4">
@@ -106,8 +116,13 @@ function AddCoupon() {
                 {errors.discount && (
                   <span className="text-xs text-red-500">{errors.discount.message}</span>
                 )}
+                {errors.discount?.type === 'manual' && (
+                  <span className="text-xs text-red-500">{errors.discount.message}</span>
+                )}
               </div>
             </div>
+
+            {/* Đơn hàng tối thiểu */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
@@ -119,17 +134,17 @@ function AddCoupon() {
                   placeholder="e.g., 10"
                   size="base"
                   {...register('minOrder', {
-                    required: 'minOrder is required',
-                    min: { value: 0, message: 'minOrder must be positive' },
+                    required: 'MinOrder is required',
+                    min: { value: 0, message: 'MinOrder must be positive' },
                   })}
                 />
-                {errors.discount && (
-                  <span className="text-xs text-red-500">{errors.discount.message}</span>
+                {errors.minOrder && (
+                  <span className="text-xs text-red-500">{errors.minOrder.message}</span>
                 )}
               </div>
             </div>
 
-            {/* Free Shipping */}
+            {/* Miễn phí vận chuyển */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
@@ -150,7 +165,7 @@ function AddCoupon() {
               </div>
             </div>
 
-            {/* Expiration Date */}
+            {/* Ngày hết hạn */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
@@ -163,7 +178,7 @@ function AddCoupon() {
               </div>
             </div>
 
-            {/* Active Trạng thái */}
+            {/* Trạng thái */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">

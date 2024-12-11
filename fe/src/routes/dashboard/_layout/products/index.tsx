@@ -215,9 +215,6 @@ function ProductList() {
               Giảm giá (%)
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Số lượng còn lại trong kho
-            </Table.HeaderCell>
-            <Table.HeaderCell className="font-semibold text-ui-fg-base">
               Mô tả
             </Table.HeaderCell>
           </Table.Row>
@@ -300,9 +297,6 @@ function ProductList() {
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     {product.discount} %
-                  </Table.Cell>
-                  <Table.Cell className="font-semibold text-ui-fg-base">
-                    {product.totalCountInStock} Sản phẩm
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     {product.description}

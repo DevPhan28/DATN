@@ -129,17 +129,21 @@ const increaseProductQuantity = async (req, res) => {
     const dbProduct = await Product.findById(productId);
     const variant = dbProduct.variants.find(v => v.sku === variantId);
 
-    if (product.quantity + 1 > variant.countInStock) {
-      return res.status(400).json({ message: "Cannot increase quantity beyond stock level" });
+    if (!variant) {
+      return res.status(404).json({ message: "Product variant not found" });
     }
 
+    // Kiểm tra nếu số lượng sản phẩm trong giỏ vượt quá số lượng tồn kho
+    if (product.quantity + 1 > variant.countInStock) {
+      return res.status(400).json({ message: `Số lượng yêu cầu vượt quá tồn kho. Chỉ còn lại ${variant.countInStock} sản phẩm.` });
+    }
+
+    // Cập nhật giỏ hàng
     product.quantity++;
     product.totalPrice += product.priceAtTime;
 
-    variant.countInStock -= 1;
-
-    await dbProduct.save(); 
-    await cart.save(); 
+    // Lưu giỏ hàng
+    await cart.save();
 
     res.status(200).json(cart);
   } catch (error) {
@@ -147,10 +151,8 @@ const increaseProductQuantity = async (req, res) => {
   }
 };
 
-
-
 const decreaseProductQuantity = async (req, res) => {
-  const { userId, productId, variantId } = req.body;
+  const { userId, productId, variantId, confirm } = req.body;  
   try {
     let cart = await Cart.findOne({ userId });
     if (!cart) {
@@ -163,28 +165,33 @@ const decreaseProductQuantity = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: "Product not found in cart" });
     }
-
-    if (product.quantity > 1) {  x
+    if (product.quantity > 1) {
       product.quantity--;
       product.totalPrice -= product.priceAtTime;
       
       const dbProduct = await Product.findById(productId);
       const variant = dbProduct.variants.find(v => v.sku === variantId);
-      
-      variant.countInStock++;
-
-      await dbProduct.save(); 
-      await cart.save(); 
+      await dbProduct.save();
+      await cart.save();
       res.status(200).json(cart);
     } else {
-      return res.status(400).json({ message: "Cannot reduce quantity below 1. If you want to remove the product, please remove it from the cart." });
+      if (confirm) {
+        // Nếu confirm = true, xóa sản phẩm khỏi giỏ hàng
+        cart.products = cart.products.filter(item =>
+          !(item.productId.toString() === productId && item.variantId === variantId)
+        );
+        
+        await cart.save();
+        res.status(200).json({ cart, message: "Sản phẩm đã được xóa khỏi giỏ hàng vì số lượng là 0" });
+      } else {
+        // Nếu confirm không phải là true, trả về thông báo yêu cầu xác nhận
+        res.status(400).json({ message: "Vui lòng xác nhận để xóa sản phẩm khỏi giỏ hàng" });
+      }
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
-
 
 const updateProductQuantity = async (req, res) => {
   const { userId, productId, variantId, quantity } = req.body;
@@ -198,18 +205,40 @@ const updateProductQuantity = async (req, res) => {
       (item) => item.productId.toString() === productId && item.variantId === variantId
     );
     if (!product) {
+      return res.status(404).json({ error: "Product not found in cart" });
+    }
+
+    const item = await Product.findById(productId);
+    if (!item) {
       return res.status(404).json({ error: "Product not found" });
     }
 
-    product.quantity = quantity;
-    product.totalPrice = product.priceAtTime * quantity;
+    const variant = item.variants.find(v => v.sku === variantId);
+    if (!variant) {
+      return res.status(404).json({ error: "Product variant not found" });
+    }
 
+    // Adjust the quantity if it's greater than the available stock
+    if (quantity > variant.countInStock) {
+      return res.status(400).json({
+        error: `Số lượng yêu cầu vượt quá tồn kho. Chỉ còn lại ${variant.countInStock} sản phẩm.`
+      });
+    }
+
+    // Update quantity if it's within stock limits
+    product.quantity = quantity > variant.countInStock ? variant.countInStock : quantity;
+    product.totalPrice = product.priceAtTime * product.quantity;
+
+    // Save the updated cart
     await cart.save();
+
     return res.status(200).json({ cart });
   } catch (error) {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+
 
 module.exports = {
   getCartByUserId,

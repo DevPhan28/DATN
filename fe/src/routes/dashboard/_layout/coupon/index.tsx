@@ -135,7 +135,7 @@ function CouponList() {
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">{coupon.code}</Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
-                    {coupon.isFreeShipping ? 'Không áp dụng' : `${coupon.discount} VND`}
+                    {coupon.isFreeShipping ? 'Không áp dụng' : `${coupon.discount} %`}
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">{coupon.isFreeShipping ? 'Có' : 'Không'}</Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">

@@ -21,7 +21,6 @@ const createOrder = async (req, res) => {
     try {
       const { userId, items, totalPrice, customerInfo, paymentMethod,shippingMessageDisplay  } = req.body;
 
-      // Tạo đơn hàng chung
       const order = await Order.create({
         userId,
         items: items.map((item) => ({
@@ -47,18 +46,18 @@ const createOrder = async (req, res) => {
 
       for (const item of items) {
         const product = await Product.findById(item.productId);
-        
-        if (product.countInStock >= item.quantity) {
-          await Product.findByIdAndUpdate(
-            item.productId,
-            { $inc: { countInStock: -item.quantity } },
+        const variant = product.variants.find(
+          (variant) => variant.sku === item.variantId
+        );
+      
+        if (variant) {
+          await Product.updateOne(
+            { _id: item.productId, "variants.sku": item.variantId },
+            { $inc: { "variants.$.countInStock": -item.quantity } },
             { new: true }
           );
-        } else {
-          throw new Error(`Không đủ hàng cho sản phẩm ${item.productId}`);
-        }
+        } 
       }
-      
 
       Mail.sendOrderConfirmation(customerInfo.email, order);
 
@@ -246,15 +245,13 @@ const getOrdersByUserId = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    // Tìm kiếm các đơn hàng theo userId
-    const orders = await Order.find({ userId });
+    const orders = await Order.find({ userId })
+      .sort({ createdAt: -1 }) 
 
-    // Nếu không có đơn hàng nào, trả về mảng trống
     if (!orders || orders.length === 0) {
-      return res.status(StatusCodes.OK).json([]); // Trả về mảng trống thay vì lỗi
+      return res.status(StatusCodes.OK).json([]); 
     }
 
-    // Kiểm tra và log chi tiết các thuộc tính của từng sản phẩm
     orders.forEach((order) => {
       order.items.forEach((item) => {
         if (!item.color || !item.size) {

@@ -1,26 +1,31 @@
 const CreateSlugByTitle = require("../config/slug"); // Không sử dụng destructuring
 
 const Product = require("../models/product");
+
 const getProduct = async (req, res) => {
-  // Lấy limit và page từ query, với giá trị mặc định là 10 và 1
   const { limit = 10, page = 1 } = req.query;
-  const skip = (page - 1) * limit; // Tính toán số sản phẩm cần bỏ qua
+  const skip = (page - 1) * limit;
 
   try {
-    const products = await Product.find({})
+    // Lọc chỉ những sản phẩm có ít nhất một variant có countInStock > 0
+    const products = await Product.find({ 
+        "variants.countInStock": { $gt: 0 }
+      })
       .limit(Number(limit))
       .skip(Number(skip))
-      .populate("category", "name"); // Sử dụng populate để lấy tên danh mục
+      .populate("category", "name");
 
-    const totalItems = await Product.countDocuments(); // Đếm tổng số sản phẩm
+    const totalItems = await Product.countDocuments({ 
+        "variants.countInStock": { $gt: 0 }
+      });
 
     if (products.length === 0) {
       return res.status(200).json({
         meta: {
           totalItems: 0,
-          totalPages: 0, // Tính toán tổng số trang
-          currentPage: Number(page), // Trang hiện tại
-          limit: Number(limit), // Số sản phẩm trên mỗi trang
+          totalPages: 0,
+          currentPage: Number(page),
+          limit: Number(limit),
         },
         data: [],
       });
@@ -29,9 +34,9 @@ const getProduct = async (req, res) => {
     return res.status(200).json({
       meta: {
         totalItems,
-        totalPages: Math.ceil(totalItems / limit), // Tính toán tổng số trang
-        currentPage: Number(page), // Trang hiện tại
-        limit: Number(limit), // Số sản phẩm trên mỗi trang
+        totalPages: Math.ceil(totalItems / limit),
+        currentPage: Number(page),
+        limit: Number(limit),
       },
       data: products,
     });
@@ -180,11 +185,14 @@ const uploadGallery = async (req, res) => {
 };
 const getProductAll = async (req, res) => {
   try {
-    // Lấy toàn bộ danh sách sản phẩm, sử dụng populate để lấy tên danh mục
-    const products = await Product.find({}).populate("category", "name");
+    const products = await Product.find({
+        "variants.countInStock": { $gt: 0 }
+      })
+      .populate("category", "name");
 
-    // Đếm tổng số sản phẩm
-    const totalItems = await Product.countDocuments();
+    const totalItems = await Product.countDocuments({
+        "variants.countInStock": { $gt: 0 }
+      });
 
     if (products.length === 0) {
       return res.status(200).json({
@@ -197,15 +205,14 @@ const getProductAll = async (req, res) => {
 
     return res.status(200).json({
       meta: {
-        totalItems, // Tổng số sản phẩm
+        totalItems,
       },
-      data: products, // Trả về tất cả sản phẩm
+      data: products,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 /// search products
 const searchProduct = async (req, res) => {

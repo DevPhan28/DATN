@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import useCartMutation from '@/data/cart/useCartMutation';
 import { useFetchCart } from '@/data/cart/useFetchCart';
-import { toast } from '@medusajs/ui';
+import { toast, usePrompt } from '@medusajs/ui';
 
 export function useCart(userId: string | null) {
   const { data: cartData, isLoading } = useFetchCart(userId || '');
@@ -37,51 +37,75 @@ export function useCart(userId: string | null) {
 
   const incrementQuantity = (index: number) => {
     const product = cartData?.products[index];
-
+  
     if (!product) {
       console.warn(`Product at index ${index} is undefined.`);
       return;
     }
-
+  
     const currentQuantity = quantities[index] || product.quantity || 0;
-
+  
+    // Tính toán số lượng mới
     const newQuantity = currentQuantity + 1;
-
+  
+    // Cập nhật quantities (dựa trên index)
     setQuantities(prev => ({
       ...prev,
       [index]: newQuantity,
     }));
+  
+    // Nếu userId không tồn tại, không gọi API
+    if (!userId) {
+      console.warn("User ID is missing.");
+      return;
+    }
+  
+    // Gọi mutation để tăng số lượng
     increaseQuantity.mutate({
-      userId: userId || '',
+      userId,
       productId: product.productId,
       variantId: product.variantId,
     });
   };
+  
 
-  const decrementQuantity = (index: number) => {
+  const dialog = usePrompt();
+
+  const decrementQuantity = async (index: number) => {
     const product = cartData?.products[index];
     const productQuantity = product?.quantity || 0;
-
-    const newQuantity = Math.max((quantities[index] || productQuantity) - 1, 0);
-
+    const newQuantity = Math.max(
+      (quantities[index] || productQuantity) - 1,
+      0
+    );
+  
     if (newQuantity === 0) {
-      toast.error(`Có lỗi xảy ra`, {
-        description: 'Không thể cập nhật số lượng về 0.',
-        duration: 2000,
+      const userHasConfirmed = await dialog({
+        title: 'Xác nhận xóa sản phẩm',
+        description: 'Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng không?',
       });
+  
+      if (!userHasConfirmed) {
+        return;
+      }
     }
-
-    setQuantities(prev => ({
+  
+    setQuantities((prev) => ({
       ...prev,
       [index]: newQuantity,
     }));
-
-    if (product && newQuantity > 0) {
-      decreaseQuantity.mutate({
-        userId: userId || '',
-        productId: product.productId,
-        variantId: product.variantId,
-      });
+  
+    if (product && newQuantity >= 0) {
+      try {
+        await decreaseQuantity.mutateAsync({
+          userId: userId || '',
+          productId: product.productId,
+          variantId: product.variantId,
+          confirm: true
+        });
+      } catch (error) {
+        toast.error('Có lỗi xảy ra khi giảm số lượng sản phẩm.');
+      }
     }
   };
 
