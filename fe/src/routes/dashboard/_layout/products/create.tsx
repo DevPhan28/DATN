@@ -132,15 +132,24 @@ function AddBrand() {
     discount: number;
     variants: Variant[];
   }> = async data => {
+    // Kiểm tra trùng size và color
+    const uniqueVariants = new Set();
+    for (const variant of data.variants) {
+      const key = `${variant.size}`;
+      if (uniqueVariants.has(key)) {
+        toast.error('Duplicate variant detected: size must be unique.');
+        return;
+      }
+      uniqueVariants.add(key);
+    }
+
+    // Nếu không trùng, thực hiện submit
     if (!selectedImage) return;
 
     const totalCountInStock = data.variants.reduce((total, variant) => {
-      console.log(typeof variant.countInStock);
       return total + Number(variant.countInStock);
     }, 0);
-    const plainText = data.detaildescription
-      .replace(/<\/?[^>]+(>|$)/g, '')
-      .normalize('NFC');
+
     const formDataThumbnail = new FormData();
     const formDataGallery = new FormData();
     formDataThumbnail.append('image', selectedImage);
@@ -168,11 +177,11 @@ function AddBrand() {
         });
         reset();
       }
-      console.log('totalCountInStock', totalCountInStock);
     } catch (error) {
       throw new Error('Failed to upload image');
     }
   };
+
   // Để cập nhật giá trị khi nội dung thay đổi
   const handleEditorChange = content => {
     setValue('detaildescription', content);
@@ -193,20 +202,21 @@ function AddBrand() {
           </div>
           <div className="flex gap-2">
             <Button variant="secondary" type="button">
-              Cancel
+              Hủy
             </Button>
             <Button variant="primary" type="submit">
-              Create New
+              Thêm sản phẩm mới
             </Button>
           </div>
         </div>
         <div className="rounded-lg border bg-ui-bg-base p-7">
           <h1 className="text-2xl font-medium text-ui-fg-base">
-            General Information
+          Thông tin chung
           </h1>
           <p className="mb-4 text-sm font-normal text-ui-fg-subtle">
-            Provide the basic brand details like name, category, price,
-            discount, and description.
+            
+Cung cấp các chi tiết cơ bản về thương hiệu như tên, chủng loại, giá cả,
+            giảm giá và mô tả.
           </p>
 
           <div className="space-y-4">
@@ -214,13 +224,13 @@ function AddBrand() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Product Name
+                  <span className="text-ui-tag-red-text">*</span> Tên sản phẩm
                 </label>
                 <Input
                   placeholder="Type here"
                   size="base"
                   {...register('name', {
-                    required: 'Product name is required',
+                    required: 'Tên sản phẩm phải bắt buộc',
                   })}
                 />
                 {errors.name && (
@@ -234,10 +244,10 @@ function AddBrand() {
             {/* Image Upload */}
             <div>
               <label className="block text-sm font-medium text-ui-fg-base">
-                <span className="text-ui-tag-red-text">*</span> Image
+                <span className="text-ui-tag-red-text">*</span> Ảnh
               </label>
               <p className="mb-2 text-xs text-ui-fg-muted">
-                Max file size is 500KB. Supports .jpg and .png formats.
+              Kích thước tệp tối đa là 500KB. Hỗ trợ các định dạng .jpg và .png.
               </p>
               <button
                 type="button"
@@ -247,7 +257,7 @@ function AddBrand() {
                 <div className="mb-2 flex items-center">
                   <ArrowDownTray className="mr-1 h-5 w-5" />
                   <p className="text-xs font-medium text-ui-fg-base">
-                    Import Files
+                   Tải lên file 
                   </p>
                   <input
                     type="file"
@@ -259,7 +269,7 @@ function AddBrand() {
                   />
                 </div>
                 <p className="mb-2 text-center text-xs text-ui-fg-muted">
-                  Drag and drop files here or click to upload
+                Kéo và thả file vào đây hoặc bấm vào để tải lên
                 </p>
               </button>
               <div className="mt-5">
@@ -286,7 +296,7 @@ function AddBrand() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Price ($)
+                  <span className="text-ui-tag-red-text">*</span> Giá (VND)
                 </label>
                 <Input
                   type="number"
@@ -294,8 +304,8 @@ function AddBrand() {
                   placeholder="e.g., 199.99"
                   size="base"
                   {...register('price', {
-                    required: 'Price is required',
-                    min: { value: 0, message: 'Price must be positive' },
+                    required: 'Giá phải bắt buộc',
+                    min: { value: 0, message: 'Giá không được nhỏ hơn 0' },
                   })}
                 />
                 {errors.price && (
@@ -310,7 +320,7 @@ function AddBrand() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Category
+                  <span className="text-ui-tag-red-text">*</span> Danh mục
                 </label>
                 <div className="w-full">
                   <Select
@@ -341,17 +351,14 @@ function AddBrand() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Discount (%)
+                  <span className="text-ui-tag-red-text">*</span> Giảm giá (%)
                 </label>
                 <Input
                   type="number"
                   step="0.01"
                   placeholder="e.g., 10"
                   size="base"
-                  {...register('discount', {
-                    required: 'Discount is required',
-                    min: { value: 0, message: 'Discount must be positive' },
-                  })}
+                 
                 />
                 {errors.discount && (
                   <span className="text-xs text-red-500">
@@ -365,7 +372,7 @@ function AddBrand() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Description
+                  <span className="text-ui-tag-red-text">*</span> Mô tả
                 </label>
                 <Textarea
                   placeholder="Type here"
@@ -377,10 +384,10 @@ function AddBrand() {
             {/* Gallery Upload */}
             <div>
               <label className="block text-sm font-medium text-ui-fg-base">
-                <span className="text-ui-tag-red-text">*</span> Gallerry
+                <span className="text-ui-tag-red-text">*</span> Ảnh trưng bày 
               </label>
               <p className="mb-2 text-xs text-ui-fg-muted">
-                Max file size is 500KB. Supports .jpg and .png formats.
+              Kích thước tệp tối đa là 500KB. Hỗ trợ các định dạng .jpg và .png.
               </p>
               <button
                 type="button"
@@ -390,7 +397,7 @@ function AddBrand() {
                 <div className="mb-2 flex items-center">
                   <ArrowDownTray className="mr-1 h-5 w-5" />
                   <p className="text-xs font-medium text-ui-fg-base">
-                    Import Files
+                    Tải lên file
                   </p>
                   <input
                     type="file"
@@ -403,7 +410,7 @@ function AddBrand() {
                   />
                 </div>
                 <p className="mb-2 text-center text-xs text-ui-fg-muted">
-                  Drag and drop files here or click to upload
+                Kéo và thả file vào đây hoặc bấm vào để tải lên
                 </p>
               </button>
               <div className="mt-5">
@@ -429,17 +436,17 @@ function AddBrand() {
                     </div>
                   ))}
               </div>
-              {/* detaildescription */}
+
               <div className="flex flex-col">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Content
+                  <span className="text-ui-tag-red-text">*</span> Nội dung
                 </label>
                 <div className="mt-2 flex flex-1 flex-col">
                   <Controller
                     name="detaildescription"
                     control={control}
                     defaultValue=""
-                    rules={{ required: 'Description is required' }}
+                    rules={{ required: 'Mô tả cần bắt buộc' }}
                     render={({ field: { onChange, value } }) => (
                       <TextareaDescription
                         apiKey="vx5npguuuktlxhbv9tv6vvgjk1x5astnj8kznhujei9w6ech"
@@ -462,7 +469,7 @@ function AddBrand() {
             {/* Variants */}
             <div>
               <h2 className="mt-5 text-lg font-medium text-ui-fg-base">
-                Variants
+                Biến thể
               </h2>
               <div className="mt-4">
                 {fields.map((item, index) => (
@@ -475,7 +482,15 @@ function AddBrand() {
                         placeholder="e.g., M"
                         size="base"
                         {...register(`variants.${index}.size` as const, {
-                          required: 'Size is required',
+                          required: 'Size phải bắt buộc',
+                          validate: value => {
+                            const variants = watch('variants');
+                            const isDuplicate = variants.some(
+                              (variant, i) =>
+                                i !== index && variant.size === value
+                            );
+                            return isDuplicate ? 'Size đã tồn tại.' : true;
+                          },
                         })}
                       />
                       {errors.variants?.[index]?.size && (
@@ -486,13 +501,13 @@ function AddBrand() {
                     </div>
                     <div className="flex-1 space-y-3">
                       <label className="block text-sm font-medium text-ui-fg-base">
-                        <span className="text-ui-tag-red-text">*</span> Color
+                        <span className="text-ui-tag-red-text">*</span> Màu
                       </label>
                       <Input
                         placeholder="e.g., Red"
                         size="base"
                         {...register(`variants.${index}.color` as const, {
-                          required: 'Size is required',
+                          required: 'Màu phải bắt buộc',
                         })}
                       />
                       {errors.variants?.[index]?.color && (
@@ -503,16 +518,16 @@ function AddBrand() {
                     </div>
                     <div className="flex-1 space-y-3">
                       <label className="block text-sm font-medium text-ui-fg-base">
-                        <span className="text-ui-tag-red-text">*</span> Price
-                        ($)
+                        <span className="text-ui-tag-red-text">*</span> Giá
+                        (VND)
                       </label>
                       <Input
                         type="number"
                         placeholder="e.g., 199.99"
                         size="base"
                         {...register(`variants.${index}.price` as const, {
-                          required: 'Price is required',
-                          min: { value: 0, message: 'Price must be positive' },
+                          required: 'Giá phải bắt buộc',
+                          min: { value: 0, message: 'Giá phải lớn hơn 0' },
                         })}
                       />
                       {errors.variants?.[index]?.price && (
@@ -524,7 +539,7 @@ function AddBrand() {
                     <div className="flex-1 space-y-3">
                       <label className="block text-sm font-medium text-ui-fg-base">
                         <span className="text-ui-tag-red-text">*</span>{' '}
-                        CountInStock
+                        Số lượng trong kho
                       </label>
                       <Input
                         type="number"
@@ -533,7 +548,7 @@ function AddBrand() {
                         {...register(
                           `variants.${index}.countInStock` as const,
                           {
-                            required: 'CountInStock is required',
+                            required: 'Số lượng trong kho cần bắt buộc ',
                             min: {
                               value: 0,
                               message: 'CountInStock must be positive',
@@ -549,14 +564,14 @@ function AddBrand() {
                     </div>
                     <div className="flex-1 space-y-3">
                       <label className="block text-sm font-medium text-ui-fg-base">
-                        <span className="text-ui-tag-red-text">*</span> Weight
+                        <span className="text-ui-tag-red-text">*</span> Khối lượng
                       </label>
                       <Input
                         type="number"
                         placeholder="e.g., 100"
                         size="base"
                         {...register(`variants.${index}.weight` as const, {
-                          required: 'weight is required',
+                          required: 'Khối lượng cần bắt buộc',
                           min: {
                             value: 0,
                             message: 'weight must be positive',
@@ -569,6 +584,16 @@ function AddBrand() {
                         </span>
                       )}
                     </div>
+                    {/* <div className="flex-1 space-y-3">
+                      <label className="block text-sm font-medium text-ui-fg-base">
+                        <span className="text-ui-tag-red-text">*</span> SKU
+                      </label>
+                      <Input
+                        placeholder="e.g., SKU123"
+                        size="base"
+                        {...register(`variants.${index}.sku` as const)}
+                      />
+                    </div> */}
                     <Trash
                       className="mt-9 cursor-pointer text-red-500"
                       onClick={() => remove(index)}
@@ -587,7 +612,7 @@ function AddBrand() {
                     })
                   }
                 >
-                  <PlusMini /> Add Variant
+                  <PlusMini /> Thêm biến thể
                 </Button>
               </div>
             </div>

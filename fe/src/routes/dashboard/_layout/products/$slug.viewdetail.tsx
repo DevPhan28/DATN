@@ -33,7 +33,7 @@ function DetailProduct() {
 
   return (
     <div className="h-screen overflow-y-auto">
-      <Header title="Create New Products" pathname="/" />
+      <Header title="Chi tiết sản phẩm" pathname="/" />
       <div className="bg-white shadow-md rounded-lg overflow-hidden m-8">
         <div className="max-w-6xl grid grid-cols-3">
           {/* Product Image */}
@@ -62,7 +62,7 @@ function DetailProduct() {
 
         {/* Gallery Section */}
         <div className="p-8">
-          <h2 className="text-lg font-bold text-gray-800">Gallery</h2>
+          <h2 className="text-lg font-bold text-gray-800">Ảnh trưng bày</h2>
           {data.product.gallery.length > 0 ? (
             <div className="grid grid-cols-4 gap-4 mt-4">
               {data.product.gallery.map((image: string, index: number) => (
@@ -75,23 +75,24 @@ function DetailProduct() {
               ))}
             </div>
           ) : (
-            <p className="text-gray-600">No images available in the gallery.</p>
+            <p className="text-gray-600">
+Không có hình ảnh nào trong thư viện.</p>
           )}
         </div>
 
         {/* Variants Section */}
         <div className="p-8">
-          <h2 className="text-lg font-bold text-gray-800">Variants</h2>
+          <h2 className="text-lg font-bold text-gray-800">Biến thể</h2>
           {data.product.variants.length > 0 ? (
             <div className="overflow-x-auto mt-4">
               <table className="min-w-full border border-gray-300">
                 <thead className="bg-gray-100">
                   <tr>
                     <th className="px-4 py-2 text-left text-black font-medium border">Size</th>
-                    <th className="px-4 py-2 text-left text-black font-medium border">Color</th>
-                    <th className="px-4 py-2 text-left text-black font-medium border">Price (VND)</th>
+                    <th className="px-4 py-2 text-left text-black font-medium border">Màu</th>
+                    <th className="px-4 py-2 text-left text-black font-medium border">Giá (VND)</th>
                     <th className="px-4 py-2 text-left text-black font-medium border">Sku</th>
-                    <th className="px-4 py-2 text-left text-black font-medium border">Count In Stock</th>
+                    <th className="px-4 py-2 text-left text-black font-medium border">Số lượng trong kho</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -111,7 +112,7 @@ function DetailProduct() {
               </table>
             </div>
           ) : (
-            <p className="text-gray-600">No variants available.</p>
+            <p className="text-gray-600">Không có sẵn các biến thể.</p>
           )}
         </div>
 

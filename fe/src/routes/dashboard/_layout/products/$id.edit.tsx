@@ -1,6 +1,6 @@
 import Header from '@/components/layoutAdmin/header/header';
 import useProductMutation from '@/data/products/useProductMutation';
-import { Button, Input, Select, Textarea } from '@medusajs/ui';
+import { Button, Input, Select, Textarea, toast } from '@medusajs/ui';
 import {
   createFileRoute,
   useNavigate,
@@ -154,6 +154,15 @@ function EditProduct() {
     discount: number;
     variants: Variant[];
   }> = async data => {
+    const uniqueVariants = new Set();
+    for (const variant of data.variants) {
+      const key = `${variant.size}`;
+      if (uniqueVariants.has(key)) {
+        toast.error('Duplicate variant detected: size must be unique.');
+        return;
+      }
+      uniqueVariants.add(key);
+    }
     if (
       !data.name ||
       !data.price ||
@@ -237,20 +246,20 @@ function EditProduct() {
               type="button"
               onClick={() => navigate({ to: '/dashboard/products' })}
             >
-              Cancel
+              Hủy
             </Button>
             <Button variant="primary" type="submit">
-              Save Changes
+             Lưu thay đổi
             </Button>
           </div>
         </div>
         <div className="rounded-lg border bg-ui-bg-base p-7">
           <h1 className="text-2xl font-medium text-ui-fg-base">
-            General Information
+            Thông tin chung
           </h1>
           <p className="mb-4 text-sm font-normal text-ui-fg-subtle">
-            Provide the basic product details like name, category, price,
-            discount, and description.
+          Cung cấp các chi tiết cơ bản về sản phẩm như tên, chủng loại, giá cả,
+          giảm giá và mô tả.
           </p>
 
           <div className="space-y-4">
@@ -258,13 +267,13 @@ function EditProduct() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Product Name
+                  <span className="text-ui-tag-red-text">*</span> Tên sản phẩm
                 </label>
                 <Input
                   placeholder="Type here"
                   size="base"
                   {...register('name', {
-                    required: 'Product name is required',
+                    required: 'Tên sản phẩm phải bắt buộc',
                   })}
                 />
                 {errors.name && (
@@ -278,10 +287,11 @@ function EditProduct() {
             {/* Image Upload */}
             <div>
               <label className="block text-sm font-medium text-ui-fg-base">
-                <span className="text-ui-tag-red-text">*</span> Image
+                <span className="text-ui-tag-red-text">*</span> Ảnh
               </label>
               <p className="mb-2 text-xs text-ui-fg-muted">
-                Max file size is 500KB. Supports .jpg and .png formats.
+               
+Kích thước tệp tối đa là 500KB. Hỗ trợ các định dạng .jpg và .png.
               </p>
               <button
                 type="button"
@@ -291,7 +301,8 @@ function EditProduct() {
                 <div className="mb-2 flex items-center">
                   <ArrowDownTray className="mr-1 h-5 w-5" />
                   <p className="text-xs font-medium text-ui-fg-base">
-                    Import Files
+                    
+Tải lên file
                   </p>
                   <input
                     type="file"
@@ -303,7 +314,8 @@ function EditProduct() {
                   />
                 </div>
                 <p className="mb-2 text-center text-xs text-ui-fg-muted">
-                  Drag and drop files here or click to upload
+                  
+Kéo và thả file vào đây hoặc bấm vào để tải lên
                 </p>
               </button>
               <div className="mt-5">
@@ -345,7 +357,7 @@ function EditProduct() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Price ($)
+                  <span className="text-ui-tag-red-text">*</span> Giá (VND)
                 </label>
                 <Input
                   type="number"
@@ -353,7 +365,7 @@ function EditProduct() {
                   placeholder="e.g., 199.99"
                   size="base"
                   {...register('price', {
-                    required: 'Price is required',
+                    required: 'Giá phải bắt buộc',
                     min: { value: 0, message: 'Price must be positive' },
                   })}
                 />
@@ -369,7 +381,7 @@ function EditProduct() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Category
+                  <span className="text-ui-tag-red-text">*</span> Danh mục
                 </label>
                 <div className="w-full">
                   <Select
@@ -401,17 +413,14 @@ function EditProduct() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Discount (%)
+                  <span className="text-ui-tag-red-text">*</span> Giảm giá (%)
                 </label>
                 <Input
                   type="number"
                   step="0.01"
                   placeholder="e.g., 10"
                   size="base"
-                  {...register('discount', {
-                    required: 'Discount is required',
-                    min: { value: 0, message: 'Discount must be positive' },
-                  })}
+                
                 />
                 {errors.discount && (
                   <span className="text-xs text-red-500">
@@ -425,12 +434,12 @@ function EditProduct() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Description
+                  <span className="text-ui-tag-red-text">*</span> Mô tả
                 </label>
                 <Textarea
                   placeholder="Type here"
                   {...register('description', {
-                    required: 'Description is required',
+                    required: 'Mô tả phải bắt buộc',
                   })}
                 />
                 {errors.description && (
@@ -444,10 +453,11 @@ function EditProduct() {
             {/* Gallery Upload */}
             <div>
               <label className="block text-sm font-medium text-ui-fg-base">
-                <span className="text-ui-tag-red-text">*</span> Gallery
+                <span className="text-ui-tag-red-text">*</span> Ảnh trưng bày
               </label>
               <p className="mb-2 text-xs text-ui-fg-muted">
-                Max file size is 500KB. Supports .jpg and .png formats.
+               
+Kích thước tệp tối đa là 500KB. Hỗ trợ các định dạng .jpg và .png.
               </p>
               <button
                 type="button"
@@ -457,7 +467,8 @@ function EditProduct() {
                 <div className="mb-2 flex items-center">
                   <ArrowDownTray className="mr-1 h-5 w-5" />
                   <p className="text-xs font-medium text-ui-fg-base">
-                    Import Files
+                    
+Tải lên file
                   </p>
                   <input
                     type="file"
@@ -470,7 +481,8 @@ function EditProduct() {
                   />
                 </div>
                 <p className="mb-2 text-center text-xs text-ui-fg-muted">
-                  Drag and drop files here or click to upload
+                  
+Kéo và thả file vào đây hoặc bấm vào để tải lên
                 </p>
               </button>
               <div className="mt-5">
@@ -529,14 +541,14 @@ function EditProduct() {
             {/* detaildescription */}
             <div className="flex flex-col">
               <label className="block text-sm font-medium text-ui-fg-base">
-                <span className="text-ui-tag-red-text">*</span> Content
+                <span className="text-ui-tag-red-text">*</span> Nội dung
               </label>
               <div className="mt-2 flex flex-1 flex-col">
                 <Controller
                   name="detaildescription"
                   control={control}
                   defaultValue=""
-                  rules={{ required: 'Description is required' }}
+                  rules={{ required: 'Mô tả phải bắt buộc' }}
                   render={({ field: { onChange, value } }) => (
                     <TextareaDescription
                       apiKey="vx5npguuuktlxhbv9tv6vvgjk1x5astnj8kznhujei9w6ech"
@@ -571,7 +583,15 @@ function EditProduct() {
                         placeholder="e.g., M"
                         size="base"
                         {...register(`variants.${index}.size` as const, {
-                          required: 'Size is required',
+                          required: 'Size is phải bắt buộc',
+                          validate: value => {
+                            const variants = watch('variants');
+                            const isDuplicate = variants.some(
+                              (variant, i) =>
+                                i !== index && variant.size === value
+                            );
+                            return isDuplicate ? 'Size đã tồn tại.' : true;
+                          },
                         })}
                       />
                       {errors.variants?.[index]?.size && (
@@ -588,7 +608,7 @@ function EditProduct() {
                         placeholder="e.g., Red"
                         size="base"
                         {...register(`variants.${index}.color` as const, {
-                          required: 'Color is required',
+                          required: 'Color phải bắt buộc',
                         })}
                       />
                       {errors.variants?.[index]?.color && (
@@ -606,7 +626,7 @@ function EditProduct() {
                         placeholder="e.g., 199.99"
                         size="base"
                         {...register(`variants.${index}.price` as const, {
-                          required: 'Price is required',
+                          required: 'Giá phải bắt buộc',
                           min: { value: 0, message: 'Price must be positive' },
                         })}
                       />
@@ -618,7 +638,7 @@ function EditProduct() {
                     </div>
                     <div className="flex-1 space-y-3">
                       <label className="block text-sm font-medium text-ui-fg-base">
-                        Count In Stock
+                        Số lượng tồn kho 
                       </label>
                       <Input
                         type="number"
@@ -627,7 +647,7 @@ function EditProduct() {
                         {...register(
                           `variants.${index}.countInStock` as const,
                           {
-                            required: 'Count In Stock is required',
+                            required: 'Số lượng trong kho cần băt buộc',
                             min: {
                               value: 0,
                               message: 'Count In Stock must be positive',
@@ -669,7 +689,7 @@ function EditProduct() {
                     })
                   }
                 >
-                  <PlusMini /> Add Variant
+                  <PlusMini /> Thêm biến thể
                 </Button>
               </div>
             </div>
