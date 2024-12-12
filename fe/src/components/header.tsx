@@ -135,36 +135,6 @@ const Header = () => {
                 onClick={toggleSearch}
               ></i>
               </a>
-
-              {/* Form tìm kiếm */}
-              {/* {isSearchOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                  <div className="relative w-full max-w-md rounded-lg bg-white p-4 shadow-lg">
-                    <button
-                      className="absolute right-2 top-2 rounded-full p-2 transition hover:bg-gray-200"
-                      onClick={toggleSearch}
-                    >
-                      <img
-                        src="https://themewagon.github.io/cozastore/images/icons/icon-close2.png"
-                        alt="Close"
-                        className="h-5 w-5"
-                      />
-                    </button>
-                    <form className="flex items-center space-x-3 rounded-md border border-gray-300 p-3 shadow-sm">
-                      <button className="p-2 text-gray-500 transition hover:text-gray-700">
-                        <i className="fa-solid fa-magnifying-glass text-[20px]"></i>
-                      </button>
-                      <input
-                        type="text"
-                        name="search"
-                        placeholder="Search..."
-                        className="w-full p-2 text-sm placeholder-gray-400 focus:outline-none focus:ring focus:ring-blue-500"
-                      />
-                    </form>
-                  </div>
-                </div>
-              )} */}
-              {/* <SearchBar /> */}
               <Link to="/cart" className="relative">
                 <i className="fa-solid fa-cart-shopping text-[20px] hover:text-blue-400"></i>
                 {/* Display total items in the cart */}

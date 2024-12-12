@@ -222,14 +222,13 @@ const updateProductQuantity = async (req, res) => {
     if (quantity > variant.countInStock) {
       return res.status(400).json({
         error: `Số lượng yêu cầu vượt quá tồn kho. Chỉ còn lại ${variant.countInStock} sản phẩm.`
+
       });
     }
 
-    // Update quantity if it's within stock limits
     product.quantity = quantity > variant.countInStock ? variant.countInStock : quantity;
     product.totalPrice = product.priceAtTime * product.quantity;
 
-    // Save the updated cart
     await cart.save();
 
     return res.status(200).json({ cart });
@@ -237,8 +236,6 @@ const updateProductQuantity = async (req, res) => {
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
-
 
 module.exports = {
   getCartByUserId,

@@ -2,7 +2,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import instance from '@/api/axiosIntance';
 import { useNavigate } from '@tanstack/react-router';
 import { toast } from '@medusajs/ui';
-import { updatePaymentStatus } from './usePayment';
 
 const useCheckoutMutation = () => {
   const navigate = useNavigate();
@@ -23,6 +22,7 @@ const useCheckoutMutation = () => {
           return;
         }
         await queryClient.invalidateQueries({ queryKey: ['cart'] });
+        
         navigate({
           to: '/thanks',
           search: {

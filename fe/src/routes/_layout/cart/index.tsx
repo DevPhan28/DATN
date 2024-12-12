@@ -54,7 +54,6 @@ function Cart() {
       state: { selectedItems },
     });
   };
-
   return (
     <div>
       <div className="main-content flex h-48 w-full flex-col items-center justify-center">

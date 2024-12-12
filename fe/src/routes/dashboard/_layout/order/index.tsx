@@ -72,15 +72,14 @@ function OrderList() {
     { id: 'refund_completed', label: 'Hoàn trả thành công' },
     { id: 'exchange_in_progress', label: 'Đang đổi trả hàng' },
     { id: 'exchange_completed', label: 'Đổi trả thành công' },
-    { id: 'canceled_complaint', label: 'Hủy khiếu nại' },
   ];
 
   const deliveryStatuses = [
     { value: 'pendingPayment', label: 'Chờ thanh toán' },
     { value: 'pending', label: 'Chờ xác nhận' },
     { value: 'shipped', label: 'Đang vận chuyển' },
-    { value: 'received', label: 'Chờ giao hàng' },
-    { value: 'delivered', label: 'Đã giao' },
+    { value: 'received', label: 'Giao hàng thành công' },
+    { value: 'delivered', label: 'Hoàn thành đơn hàng' },
     { value: 'canceled', label: 'Đã hủy' },
   ];
 
@@ -135,9 +134,9 @@ function OrderList() {
     const currentIndex = deliveryOrder.indexOf(currentStatus);
     const nextIndex = deliveryOrder.indexOf(nextStatus);
 
-    // Chỉ cho phép chuyển sang trạng thái tiếp theo
     return nextIndex === currentIndex + 1;
   };
+  
   const filteredOrders = listOrder?.filter(order => {
     if (selectedTab === 'all-delivery') {
       if (selectedGroup === 'delivery') {

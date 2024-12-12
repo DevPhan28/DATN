@@ -22,6 +22,8 @@ interface CartData {
 const fetchCart = async (userId: string): Promise<CartData> => {
   try {
     const response = await instance.get(`/cart/${userId}`);
+    console.log(response);
+    
     return response.data; 
   } catch (error: any) {
     throw new Error(error.response?.data?.message || 'Có lỗi xảy ra khi fetch giỏ hàng');

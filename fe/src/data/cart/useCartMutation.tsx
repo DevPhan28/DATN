@@ -60,10 +60,8 @@ const useCartMutation = () => {
     },
   
     onError: (error: any) => {
-      // Kiểm tra xem lỗi có phải từ phía API (thông báo lỗi từ server)
       const errorMessage = error?.response?.data?.error || error.message || 'Có lỗi xảy ra';
       const errorDescription = error?.response?.data?.description || 'Không thể cập nhật số lượng, vui lòng thử lại.';
-  
       toast.error(errorMessage, {
         description: errorDescription,
         duration: 2000,
@@ -71,7 +69,6 @@ const useCartMutation = () => {
     },
   });
   
- 
   const increaseQuantity = useMutation({
     mutationFn: (data: { userId: string; productId: string; variantId: string }) => instance.patch('/cart/increase-quantity', data),
   
