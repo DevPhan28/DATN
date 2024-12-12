@@ -30,7 +30,6 @@ const getCartByUserId = async (req, res) => {
         };
       }).filter(product => product !== null), 
     };
-
     return res.status(200).json(cartData);
   } catch (error) {
     return res.status(500).json({ message: error.message });
@@ -221,8 +220,7 @@ const updateProductQuantity = async (req, res) => {
     // Adjust the quantity if it's greater than the available stock
     if (quantity > variant.countInStock) {
       return res.status(400).json({
-        error: `Số lượng yêu cầu vượt quá tồn kho. Chỉ còn lại ${variant.countInStock} sản phẩm.`
-
+        error: `Số lượng yêu cầu vượt quá tồn kho. Chỉ còn lại ${variant.countInStock} sản phẩm.`,
       });
     }
 

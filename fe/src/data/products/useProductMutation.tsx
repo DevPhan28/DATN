@@ -3,12 +3,13 @@ import { QUERY_KEY } from '@/data/stores/key.ts';
 import instance from '@/api/axiosIntance';
 import { useNavigate } from '@tanstack/react-router';
 import { toast } from '@medusajs/ui';
+import { useSocket } from '../socket/useSocket';
 
 
 const useProductMutation = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-
+  const socket = useSocket();  
   const createProduct = useMutation({
     mutationFn: (data: {
       name: string;
@@ -78,23 +79,27 @@ const useProductMutation = () => {
         console.error("Lỗi khi gọi API chỉnh sửa sản phẩm:", error);
       }
     },
-
+  
     onSuccess: async (result) => {
+  
       toast.success('Edit successful', {
         description: 'Edit products successful!',
         duration: 1000,
       });
 
+      socket.emit('admin-update-product', result);  
+
       await queryClient.invalidateQueries({
-        queryKey: [QUERY_KEY.FETCH_PRODUCT],
+        queryKey: ['products'],  
       });
 
       void navigate({
         to: '/dashboard/products',
       });
-
+  
       return result;
     },
+  
     onError: (error) => {
       toast.error(`Có lỗi xảy ra: ${error.message}`);
     },

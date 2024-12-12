@@ -1,13 +1,4 @@
 const express = require("express");
-// import {
-//   addProduct,
-//   deleteProduct,
-//   getProduct,
-//   getProductById,
-//   relatedProduct,
-//   updateProduct,
-//   uploadThumbnail,
-// } from "../controllers/product";
 const { upload } = require("../config/multer");
 const {
   getProduct,
@@ -30,12 +21,7 @@ router.get(`/products/filter`, filterProducts);
 router.get(`/products/:id`, getProductById);
 router.get(`/product`, getProductAll);
 
-
-// router.get(`/products/:categoryId/related`, relatedProduct);
 router.post(`/products`, addProduct);
-// router.get("/product", (req, res) => {
-//   res.json({ message: "ok" });
-// });
 router.post(
   `/upload-thumbnail-product`,
   upload.single("image"),

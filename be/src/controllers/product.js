@@ -1,7 +1,6 @@
 const CreateSlugByTitle = require("../config/slug"); // Không sử dụng destructuring
 
 const Product = require("../models/product");
-
 const getProduct = async (req, res) => {
   const { limit = 10, page = 1 } = req.query;
   const skip = (page - 1) * limit;
@@ -134,11 +133,11 @@ const updateProduct = async (req, res) => {
     const data = await Product.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
-    if (data.length < 0) {
+    if (!data) {
       return res.status(404).json({ message: "No product found" });
     }
-    return res.status(201).json({
-      messages: "Cập nhật sản phẩm thành công",
+    return res.status(200).json({
+      message: "Cập nhật sản phẩm thành công",
       data,
     });
   } catch (error) {
