@@ -102,7 +102,10 @@ function CouponList() {
               <Table.HeaderCell className="font-semibold text-ui-fg-base"></Table.HeaderCell>
               <Table.HeaderCell className="font-semibold text-ui-fg-base">Mã phiếu giảm giá</Table.HeaderCell>
               <Table.HeaderCell className="font-semibold text-ui-fg-base">Giảm giá</Table.HeaderCell>
+              <Table.HeaderCell className="font-semibold text-ui-fg-base">Tổng tiền yêu cầu</Table.HeaderCell>
+              <Table.HeaderCell className="font-semibold text-ui-fg-base">Số tiền giảm tối đa</Table.HeaderCell>
               <Table.HeaderCell className="font-semibold text-ui-fg-base">Miễn phí vận chuyển</Table.HeaderCell>
+              <Table.HeaderCell className="font-semibold text-ui-fg-base">Ngày bắt đầu</Table.HeaderCell>
               <Table.HeaderCell className="font-semibold text-ui-fg-base">Ngày hết hạn</Table.HeaderCell>
               <Table.HeaderCell className="font-semibold text-ui-fg-base">Trạng thái</Table.HeaderCell>
             </Table.Row>
@@ -137,7 +140,16 @@ function CouponList() {
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     {coupon.isFreeShipping ? 'Không áp dụng' : `${coupon.discount} %`}
                   </Table.Cell>
+                  <Table.Cell className="font-semibold text-ui-fg-base">
+                    {coupon.minOrder == 0 ? 'Không áp dụng' : `${coupon.minOrder} đ`}
+                  </Table.Cell>
+                  <Table.Cell className="font-semibold text-ui-fg-base">
+                    {coupon.maxDiscountAmount == 0 ? 'Không áp dụng' : `${coupon.maxDiscountAmount} đ`}
+                  </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">{coupon.isFreeShipping ? 'Có' : 'Không'}</Table.Cell>
+                  <Table.Cell className="font-semibold text-ui-fg-base">
+                    {new Date(coupon.startDate).toLocaleDateString()}
+                  </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     {new Date(coupon.expirationDate).toLocaleDateString()}
                   </Table.Cell>

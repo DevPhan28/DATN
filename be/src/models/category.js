@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { Schema } = require("mongoose");
+const { Schema } = mongoose;
 const slugify = require("slugify");
 
 const categorySchema = new Schema(
@@ -15,6 +15,11 @@ const categorySchema = new Schema(
       unique: true,
       required: true,
       lowercase: true,
+    },
+    parentCategory: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Category',
+      default: null, // Giá trị mặc định là null để xác định là danh mục gốc
     },
   },
   { timestamps: true, versionKey: false }

@@ -13,6 +13,8 @@ interface CouponFormValues {
   discount: number;
   minOrder: number;
   expirationDate: string;
+  startDate: string; // Thêm startDate
+  maxDiscountAmount: number; // Thêm maxDiscountAmount
   isActive: boolean;
   isFreeShipping: boolean;
 }
@@ -35,6 +37,15 @@ function AddCoupon() {
       setError('discount', {
         type: 'manual',
         message: 'Giảm giá không được lớn hơn 100%',
+      });
+      return;
+    }
+
+    // Kiểm tra nếu maxDiscountAmount lớn hơn discount
+    if (data.maxDiscountAmount > 0 && data.maxDiscountAmount < data.discount) {
+      setError('maxDiscountAmount', {
+        type: 'manual',
+        message: 'Số tiền giảm không thể nhỏ hơn tỷ lệ giảm giá',
       });
       return;
     }
@@ -97,7 +108,7 @@ function AddCoupon() {
               </div>
             </div>
 
-            {/* Discount */}
+            {/* Giảm giá */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
@@ -144,6 +155,25 @@ function AddCoupon() {
               </div>
             </div>
 
+            {/* Số tiền giảm tối đa */}
+            <div className="flex space-x-4">
+              <div className="flex-1 space-y-3">
+                <label className="block text-sm font-medium text-ui-fg-base">
+                  Số tiền giảm tối đa
+                </label>
+                <Input
+                  type="number"
+                  step="1"
+                  placeholder="e.g., 50"
+                  size="base"
+                  {...register('maxDiscountAmount')}
+                />
+                {errors.maxDiscountAmount && (
+                  <span className="text-xs text-red-500">{errors.maxDiscountAmount.message}</span>
+                )}
+              </div>
+            </div>
+
             {/* Miễn phí vận chuyển */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
@@ -165,6 +195,19 @@ function AddCoupon() {
               </div>
             </div>
 
+            {/* Ngày bắt đầu */}
+            <div className="flex space-x-4">
+              <div className="flex-1 space-y-3">
+                <label className="block text-sm font-medium text-ui-fg-base">
+                  <span className="text-ui-tag-red-text">*</span> Ngày bắt đầu
+                </label>
+                <DatePicker
+                  placeholder="Chọn ngày bắt đầu"
+                  onChange={(date) => setValue('startDate', date)}
+                />
+              </div>
+            </div>
+
             {/* Ngày hết hạn */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
@@ -172,7 +215,7 @@ function AddCoupon() {
                   <span className="text-ui-tag-red-text">*</span> Ngày hết hạn
                 </label>
                 <DatePicker
-                  placeholder="Select expiration date"
+                  placeholder="Chọn ngày hết hạn"
                   onChange={(date) => setValue('expirationDate', date)}
                 />
               </div>

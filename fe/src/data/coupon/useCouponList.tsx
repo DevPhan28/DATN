@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { QUERY_KEY } from '../stores/key';
 import instance from '@/api/axiosIntance';
+import { Coupon } from '@/types/coupon';
 
 // Hàm fetch danh sách mã giảm giá từ API
 export const fetchCoupons = async (params: CouponParams) => {
@@ -52,23 +53,37 @@ export const useFetchCouponById = (_id: string) => {
 };
 
 // Hàm fetch danh sách mã giảm giá hợp lệ từ API
-export const fetchAvailableCoupons = async (): Promise<Coupon[]> => {
+export const fetchAvailableCoupons = async (orderAmount: number): Promise<Coupon[]> => {
   try {
-    const res = await instance.get<{ data: Coupon[] }>('/available-coupon');
+    const res = await instance.get('/available-coupon', {
+      params: { orderAmount },
+    });
+
     if (res.status !== 200) {
-      throw new Error('Error while fetching available coupons');
+      throw new Error(`Error while fetching available coupons - status: ${res.status}`);
     }
+
+    // Kiểm tra nếu response có cấu trúc dữ liệu mong đợi
+    if (!Array.isArray(res.data)) {
+      throw new Error('Invalid response format from server.');
+    }
+
     return res.data;
-  } catch (error) {
-    console.error('Error while fetching available coupons:', error);
+  } catch (error: any) {
+    console.error('Error fetching available coupons:', error.message);
     throw error;
   }
 };
 
+
 // Hook `useFetchAvailableCoupons` để lấy danh sách mã giảm giá hợp lệ
-export const useFetchAvailableCoupons = () => {
+export const useFetchAvailableCoupons = (orderAmount: number) => {
   return useQuery({
-    queryKey: QUERY_KEY.FETCH_AVAILABLE_COUPONS,
-    queryFn: fetchAvailableCoupons,
+    queryKey: ['availableCoupons', orderAmount],
+    queryFn: () => fetchAvailableCoupons(orderAmount),
+    enabled: !!orderAmount,
+    onError: (error) => {
+      console.error('Failed to fetch available coupons:', error);
+    },
   });
 };

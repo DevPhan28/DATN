@@ -22,7 +22,7 @@ import {
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 
-const pageSize = 7;
+const pageSize = 10;
 
 export const Route = createFileRoute('/dashboard/_layout/products/')({
   component: ProductList,

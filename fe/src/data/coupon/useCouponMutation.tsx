@@ -13,31 +13,35 @@ const useCouponMutation = () => {
     mutationFn: (data: {
       code: string;
       discount: number;
+      minOrder: number;
       expirationDate: string;
+      startDate: string | null; 
+      maxDiscountAmount: number | null;
       isActive: boolean;
       isFreeShipping: boolean;
     }) => instance.post<{ id: string }>('/create-coupon', data),
-
+  
     onSuccess: async (result) => {
       toast.success('Create successful', {
         description: 'Create coupon successful',
         duration: 1000,
       });
-
+  
       await queryClient.invalidateQueries({
-        queryKey: [QUERY_KEY.FETCH_COUPONS],
+        queryKey: ['coupon'],
       });
-
+  
       void navigate({
         to: '/dashboard/coupon',
       });
-
+  
       return result;
     },
     onError: (error) => {
       toast.error(`Error creating coupon: ${error.message}`);
     },
   });
+  
 
   // Xóa mã giảm giá
   const deleteCoupon = useMutation({
@@ -55,7 +59,7 @@ const useCouponMutation = () => {
       });
 
       await queryClient.invalidateQueries({
-        queryKey: [QUERY_KEY.FETCH_COUPONS],
+        queryKey: ['coupon'],
       });
     },
     onError: (error) => {
@@ -70,22 +74,32 @@ const useCouponMutation = () => {
       code: string;
       discount: number;
       expirationDate: string;
+      startDate: string; // Thêm startDate
+      maxDiscountAmount?: number; // Thêm maxDiscountAmount (không bắt buộc)
+      minOrder?: number; // Thêm minOrder (không bắt buộc)
       isActive: boolean;
       isFreeShipping: boolean;
     }) => {
-      const { _id, ...updateData } = data;
-      const response = await instance.put(`/update-coupon/${_id}`, updateData);
-      console.log("Response data:", response.data);  // Kiểm tra phản hồi từ API
-      return response.data;
+      const { _id, ...updateData } = data; // Tách _id để sử dụng trong URL
+      try {
+        const response = await instance.put(`/update-coupon/${_id}`, updateData);
+        console.log("Response data:", response.data); // Log phản hồi từ API để debug
+        return response.data;
+      } catch (error: any) {
+        console.error("Error updating coupon:", error.response?.data || error.message);
+        throw error; // Ném lỗi để trigger onError
+      }
     },
     onSuccess: () => {
       toast.success("Coupon updated successfully");
-      queryClient.invalidateQueries(['coupon']);
+      queryClient.invalidateQueries({
+        queryKey: ['coupon'],
+      }); 
     },
-    onError: (error) => {
-      toast.error(`Error updating coupon: ${error.message}`);
+    onError: (error: any) => {
+      toast.error(`Error updating coupon: ${error.response?.data?.error || error.message}`);
     },
-  });
+  });  
   
   return { createCoupon, deleteCoupon, editCoupon };
 };

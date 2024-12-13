@@ -2,8 +2,9 @@ import CurrencyVND from '@/components/config/vnd';
 import Header from '@/components/layoutAdmin/header/header';
 import { useFetchOrdersStatus } from '@/data/oder/useOderList';
 import useCheckoutMutation from '@/data/oder/useOderMutation';
-import { Adjustments, ArrowUpTray, EllipsisVertical } from '@medusajs/icons';
-import { Button, DropdownMenu, Input, Table, toast } from '@medusajs/ui';
+import { Adjustments, ArrowUpTray, EllipsisVertical, Loader } from '@medusajs/icons';
+import { Button, DropdownMenu, Input, Table, toast, } from '@medusajs/ui';
+
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 
@@ -19,6 +20,7 @@ function OrderList() {
   const navigate = useNavigate();
   const { updateOrderStatus } = useCheckoutMutation();
   const [selectedGroup, setSelectedGroup] = useState('delivery');
+  const [Loading, setIsLoading] = useState(false);
 
   const {
     data: listOrder,
@@ -60,8 +62,8 @@ function OrderList() {
     { id: 'pendingPayment', label: 'Chờ thanh toán' },
     { id: 'pending', label: 'Chờ xác nhận' },
     { id: 'shipped', label: 'Đang vận chuyển' },
-    { id: 'received', label: 'Chờ giao hàng' },
-    { id: 'delivered', label: 'Đã giao' },
+    { id: 'received', label: 'Giao hàng thành công' },
+    { id: 'delivered', label: 'Hoàn thành đơn hàng' },
     { id: 'canceled', label: 'Đã hủy' },
   ];
 
@@ -102,28 +104,31 @@ function OrderList() {
       toast.error('Trạng thái không hợp lệ cho nhóm hiện tại.');
       return;
     }
+    if (currentStatus === 'complaint' && !['refund_in_progress', 'exchange_in_progress', 'received'].includes(newStatus)) {
+      toast.error('Trạng thái chỉ có thể chuyển sang "Đang hoàn trả hàng", "Đang đổi trả hàng" hoặc "Đã nhận hàng".');
+      return;
+    }
 
     if (
-      (currentStatus === 'refund_in_progress' &&
-        newStatus !== 'refund_completed') ||
-      (currentStatus === 'refund_completed' &&
-        newStatus !== 'refund_in_progress') ||
-      (currentStatus === 'exchange_in_progress' &&
-        newStatus !== 'exchange_completed') ||
-      (currentStatus === 'exchange_completed' &&
-        newStatus !== 'exchange_in_progress')
+      (currentStatus === 'refund_in_progress' && newStatus !== 'refund_completed') ||
+      (currentStatus === 'refund_completed' && newStatus !== 'refund_in_progress') ||
+      (currentStatus === 'exchange_in_progress' && newStatus !== 'exchange_completed') ||
+      (currentStatus === 'exchange_completed' && newStatus !== 'exchange_in_progress')
     ) {
       toast.error('Trạng thái không hợp lệ trong quá trình hoàn trả/đổi trả.');
       return;
     }
+    setIsLoading(true);
 
     updateOrderStatus.mutate(
       { orderId, status: newStatus },
       {
         onSuccess: () => {
+          setIsLoading(false);
           toast.success('Cập nhật trạng thái thành công.');
         },
         onError: error => {
+          setIsLoading(false);
           toast.error(`Cập nhật trạng thái thất bại: ${error.message}`);
         },
       }
@@ -136,7 +141,7 @@ function OrderList() {
 
     return nextIndex === currentIndex + 1;
   };
-  
+
   const filteredOrders = listOrder?.filter(order => {
     if (selectedTab === 'all-delivery') {
       if (selectedGroup === 'delivery') {
@@ -194,16 +199,23 @@ function OrderList() {
           </Button>
         </div>
       </div>
+      {Loading && (
+        <div className="fixed inset-0 z-50 flex justify-center items-center bg-opacity-50 bg-gray-800">
+          <div className="flex justify-center items-center space-x-2 py-4 bg-white p-6 rounded-lg shadow-lg">
+            <div className="w-8 h-8 border-4 border-t-4 border-gray-200 border-solid rounded-full animate-spin border-t-indigo-600" />
+            <p className="text-gray-500">Đang cập nhật...</p>
+          </div>
+        </div>
+      )}
       <div className="m-6 flex justify-start space-x-4 rounded-lg border bg-white px-6 py-4">
         <button
           onClick={() => {
             setSelectedGroup('delivery') == setSelectedTab('all-delivery');
           }}
-          className={`text-gray-700 ${
-            selectedGroup === 'delivery'
-              ? 'border-b-2 border-red-500 text-red-600'
-              : ''
-          }`}
+          className={`text-gray-700 ${selectedGroup === 'delivery'
+            ? 'border-b-2 border-red-500 text-red-600'
+            : ''
+            }`}
         >
           Giao hàng
         </button>
@@ -211,11 +223,10 @@ function OrderList() {
           onClick={() => {
             setSelectedGroup('complaint') == setSelectedTab('all-complaint');
           }}
-          className={`text-gray-700 ${
-            selectedGroup === 'complaint'
-              ? 'border-b-2 border-red-500 text-red-600'
-              : ''
-          }`}
+          className={`text-gray-700 ${selectedGroup === 'complaint'
+            ? 'border-b-2 border-red-500 text-red-600'
+            : ''
+            }`}
         >
           Khiếu nại
         </button>
@@ -226,11 +237,10 @@ function OrderList() {
             <button
               key={tab.id}
               onClick={() => setSelectedTab(tab.id)}
-              className={`text-gray-700 ${
-                selectedTab === tab.id
-                  ? 'border-b-2 border-red-500 text-red-600'
-                  : ''
-              }`}
+              className={`text-gray-700 ${selectedTab === tab.id
+                ? 'border-b-2 border-red-500 text-red-600'
+                : ''
+                }`}
             >
               {tab.label}
             </button>
@@ -392,6 +402,8 @@ function OrderList() {
                           order.status === 'pendingPayment' ||
                           order.status === 'canceled' ||
                           order.status === 'canceled_complaint' ||
+                          order.status === 'refund_completed' ||
+                          order.status === 'exchange_completed' ||
                           (selectedGroup === 'delivery' &&
                             !isNextDeliveryStatusValid(
                               order.status,
@@ -399,12 +411,12 @@ function OrderList() {
                             )) ||
                           (order.status === 'refund_in_progress' &&
                             status.value !== 'refund_completed') ||
-                          (order.status === 'refund_completed' &&
-                            status.value !== 'refund_in_progress') ||
                           (order.status === 'exchange_in_progress' &&
                             status.value !== 'exchange_completed') ||
-                          (order.status === 'exchange_completed' &&
-                            status.value !== 'exchange_in_progress');
+                          (order.status === 'complaint' &&
+                            status.value !== 'refund_in_progress' &&
+                            status.value !== 'exchange_in_progress'
+                            && status.value !== 'delivered');;
                         return (
                           <option
                             key={status.value}

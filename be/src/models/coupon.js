@@ -13,7 +13,7 @@ const couponSchema = new mongoose.Schema({
     },
     validate: {
       validator: function (v) {
-        return v <= 100; // Kiểm tra giá trị giảm giá không vượt quá 100%
+        return v <= 100; 
       },
       message: "Discount cannot be more than 100%",
     },
@@ -24,6 +24,14 @@ const couponSchema = new mongoose.Schema({
   expirationDate: {
     type: Date,
     required: true,
+  },
+  startDate: {
+    type: Date, // Ngày bắt đầu của mã giảm giá
+    required: false,
+  },
+  maxDiscountAmount: {
+    type: Number, // Số tiền tối đa được giảm
+    default: 0, // Mặc định là không có giới hạn tối đa
   },
   isActive: {
     type: Boolean,

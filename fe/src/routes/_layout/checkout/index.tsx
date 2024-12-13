@@ -27,18 +27,14 @@ export const Route = createFileRoute('/_layout/checkout/')({
     console.log('Selected Items:', selectedItems);
     const [paymentMethod, setPaymentMethod] = useState('online');
     const { deleteItemFromCart } = useCartMutation();
-    const queryClient = useQueryClient();
 
     const { shippingMessage, shippingFee, isFreeShipping } =
       location.state || {};
     console.log(shippingMessage);
 
     // Fetch available coupons
-    const {
-      data: availableCoupons,
-      error: couponError,
-      isLoading: isCouponsLoading,
-    } = useFetchAvailableCoupons();
+    
+
     const [selectedCoupon, setSelectedCoupon] = useState(null);
     const [discountAmount, setDiscountAmount] = useState(0);
 
@@ -49,7 +45,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
     const totalAmount = selectedItems.reduce(
       (acc, item) => acc + item.price * item.quantity,
       0
-    );
+    ); 
 
     const handlePaymentMethodChange = method => {
       setPaymentMethod(method);
@@ -57,18 +53,29 @@ export const Route = createFileRoute('/_layout/checkout/')({
 
     const calculateDiscountedTotal = () => {
       if (selectedCoupon) {
-        const discount = (selectedCoupon.discount / 100) * totalAmount;
-        return totalAmount - discount;
+        const rawDiscount = (selectedCoupon.discount / 100) * totalAmount;
+        return Math.min(rawDiscount, selectedCoupon.maxDiscountAmount || rawDiscount);
       }
-      return totalAmount;
+      return 0;
     };
+    const calculateTotalWithDiscount = () => {
+      const discount = selectedCoupon?.isFreeShipping ? 0 : calculateDiscountedTotal();
+      const shipping = selectedCoupon?.isFreeShipping ? 0 : calculatedShippingFee;
+      return totalAmount - discount + shipping;
+    };
+    
+
     const [isVoucherModalOpen, setVoucherModalOpen] = useState(false);
 
     // Mở modal
     const openVoucherModal = () => {
       setVoucherModalOpen(true);
     };
-
+    const {
+      data: availableCoupons,
+      error: couponError,
+      isLoading: isCouponsLoading,
+    } = useFetchAvailableCoupons(totalAmount);
     // Địa chỉ
     const [cities, setCities] = useState([]);
     const [districts, setDistricts] = useState([]);
@@ -540,6 +547,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
               isOpen={isVoucherModalOpen}
               onClose={() => setVoucherModalOpen(false)}
               onApplyCoupon={handleCouponChange}
+              totalAmount ={totalAmount}
             />
           </div>
           <div className="m-auto mt-5 max-w-7xl bg-white p-5 pt-10">
@@ -584,13 +592,13 @@ export const Route = createFileRoute('/_layout/checkout/')({
                 <div className="flex justify-between gap-24">
                   <h5 className="text-xl text-gray-500">Số tiền giảm:</h5>
                   <div className="text-right">
-                    <CurrencyVND amount={discountAmount} />
+                    <CurrencyVND amount={calculateDiscountedTotal()} />
                   </div>
                 </div>
                 <div className="flex justify-between gap-24">
                   <h5 className="text-xl text-gray-500">Tổng:</h5>
                   <div className="text-right">
-                    <CurrencyVND amount={totalWithDiscount} />
+                    <CurrencyVND amount={calculateTotalWithDiscount()} />
                   </div>
                 </div>
               </div>

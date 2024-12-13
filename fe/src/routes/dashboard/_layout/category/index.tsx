@@ -1,7 +1,8 @@
 import Header from '@/components/layoutAdmin/header/header';
+import useCategoryMutation from '@/data/category/useCategoryMutation';
 import { useFetchCategory } from '@/data/products/useProductList';
-import { Adjustments, ArrowUpTray, Plus } from '@medusajs/icons';
-import { Button, Input, StatusBadge, Table } from '@medusajs/ui';
+import { Adjustments, ArrowUpTray, Plus, EllipsisVertical } from '@medusajs/icons';
+import { Button, Input, StatusBadge, Table, DropdownMenu, usePrompt } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 
@@ -19,6 +20,8 @@ function CategoryList() {
 
   const { data: listCategory } = useFetchCategory();
 
+  const { deleteCategory } = useCategoryMutation(); // Hook để gọi hàm xóa
+
   const filteredCategories = useMemo(() => {
     if (!listCategory || !searchTerm) return listCategory;
     return listCategory.filter((category: any) =>
@@ -33,6 +36,25 @@ function CategoryList() {
       setCurrentPage(currentPage - 1);
     }
   };
+  
+  const dialog = usePrompt();
+   const handleDelete = async (categoryId: string) => {
+    const userHasConfirmed = await dialog({
+      title: 'Delete products',
+      description: 'bạn có muốn xóa không ?',
+    });
+    if (userHasConfirmed) {
+      deleteCategory.mutate(categoryId, {
+        onSuccess: () => {
+         
+        },
+        onError: (error) => {
+          console.error("Lỗi khi xóa danh mục:", error);
+        },
+      });
+    }
+  };
+  
 
   return (
     <div className="h-screen overflow-y-auto">
@@ -70,14 +92,12 @@ function CategoryList() {
       <div className="border-gray-200 mx-6 flex flex-col gap-1 rounded-lg border bg-ui-bg-base px-6 py-4">
         <Table>
           <Table.Row className="bg-ui-bg-base-hover">
+            <Table.HeaderCell className="font-semibold text-ui-fg-base" />
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
               Tên danh mục
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
               Trạng thái
-            </Table.HeaderCell>
-            <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Hành động
             </Table.HeaderCell>
           </Table.Row>
           <Table.Body>
@@ -87,6 +107,29 @@ function CategoryList() {
                   key={category._id}
                   className="[&_td:last-child]:w-[5%] [&_td:last-child]:whitespace-nowrap"
                 >
+                  <Table.Cell>
+                    <DropdownMenu>
+                      <DropdownMenu.Trigger asChild>
+                        <button type="button" className="outline-none">
+                          <EllipsisVertical />
+                        </button>
+                      </DropdownMenu.Trigger>
+                      <DropdownMenu.Content className="space-y-2">
+                        <DropdownMenu.Item className="p-2 text-ui-tag-neutral-text hover:text-ui-code-bg-base">
+                          Xem chi tiết
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Item className="gap-x-2" asChild>
+                          <span onClick={() => handleDelete(category._id)}>Xóa</span>
+                        </DropdownMenu.Item>
+                        <DropdownMenu.Item
+                          className="gap-x-2"
+                          onClick={() => void navigate({ to: `/dashboard/category/${category._id}/edit` })}
+                        >
+                          Chỉnh sửa
+                        </DropdownMenu.Item>
+                      </DropdownMenu.Content>
+                    </DropdownMenu>
+                  </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     {category.name}
                   </Table.Cell>
@@ -94,28 +137,14 @@ function CategoryList() {
                     className="mt-2 rounded-full px-2 py-1 [&_div]:rounded-full"
                     color="green"
                   >
-                   Hiển thị 
+                    Hiển thị
                   </StatusBadge>
-                  <Table.Cell className="font-semibold text-ui-fg-base">
-                    <div className="flex gap-2">
-                      <Button
-                        variant={'secondary'}
-                        onClick={() =>
-                          void navigate({
-                            to: `/dashboard/category/${category._id}/edit`,
-                          })
-                        }
-                      >
-                        Sửa
-                      </Button>
-                    </div>
-                  </Table.Cell>
                 </Table.Row>
               ))
             ) : (
               <Table.Row>
                 <Table.Cell className="text-center" colSpan={3}>
-                 không có danh mục nào được tìm thấy
+                  không có danh mục nào được tìm thấy
                 </Table.Cell>
               </Table.Row>
             )}

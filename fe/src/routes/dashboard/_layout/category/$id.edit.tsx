@@ -112,6 +112,7 @@ function EditCategory() {
                   <span className="text-ui-tag-red-text">*</span> Tên danh mục
                 </label>
                 <Input
+                
                   placeholder="Nhập tên danh mục"
                   size="base"
                   {...register('name', {

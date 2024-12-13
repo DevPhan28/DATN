@@ -24,7 +24,7 @@ export const Route = createFileRoute('/dashboard/_layout/products/create')({
 
 function AddBrand() {
   const navigate = useNavigate();
-
+  const [Loading, setIsLoading] = useState(false);
   const categories = Route.useLoaderData();
 
   const {
@@ -146,17 +146,13 @@ function AddBrand() {
     // Nếu không trùng, thực hiện submit
     if (!selectedImage) return;
 
-    const totalCountInStock = data.variants.reduce((total, variant) => {
-      return total + Number(variant.countInStock);
-    }, 0);
-
     const formDataThumbnail = new FormData();
     const formDataGallery = new FormData();
     formDataThumbnail.append('image', selectedImage);
     for (let file of selectedGallery) {
       formDataGallery.append('photos', file);
     }
-
+    setIsLoading(true);
     try {
       const [responseThumbnail, responseGallery] = await Promise.all([
         await axios.post(
@@ -173,7 +169,15 @@ function AddBrand() {
           ...data,
           image: responseThumbnail.data,
           gallery: responseGallery.data,
-          totalCountInStock: totalCountInStock,
+        },
+        {
+          onSuccess: () => {
+            setIsLoading(false);
+          },
+          onError: error => {
+            setIsLoading(false);
+            toast.error(`Cập nhật trạng thái thất bại: ${error.message}`);
+          },
         });
         reset();
       }
@@ -189,6 +193,14 @@ function AddBrand() {
   };
   return (
     <div className="h-screen overflow-y-auto">
+      {Loading && (
+        <div className="fixed inset-0 z-50 flex justify-center items-center bg-opacity-50 bg-gray-800">
+          <div className="flex justify-center items-center space-x-2 py-4 bg-white p-6 rounded-lg shadow-lg">
+            <div className="w-8 h-8 border-4 border-t-4 border-gray-200 border-solid rounded-full animate-spin border-t-indigo-600" />
+            <p className="text-gray-500">Đang thêm sản phẩm...</p>
+          </div>
+        </div>
+      )}
       <Header title="Create New Products" pathname="/" />
       <form onSubmit={handleSubmit(onCreateProduct)} className="m-8">
         <div className="my-3 flex justify-between">

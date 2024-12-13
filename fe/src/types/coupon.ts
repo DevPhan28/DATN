@@ -1,12 +1,13 @@
 
-type Coupon = {
-    id: string; 
-    code: string;
-    discount: number; 
-    minOrder: number;
-    expirationDate: string;
-    isActive: boolean; 
-    isFreeShipping: boolean; 
+export type Coupon = {
+  code: string;
+  discount: number;
+  minOrder: number;
+  expirationDate: string;
+  startDate: string;
+  maxDiscountAmount: number; 
+  isActive: boolean;
+  isFreeShipping: boolean;
   }
   
   type CouponParams = {

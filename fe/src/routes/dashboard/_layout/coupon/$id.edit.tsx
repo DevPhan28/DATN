@@ -23,7 +23,9 @@ interface CouponFormValues {
   code: string;
   discount: number;
   minOrder: number;
-  expirationDate: string;
+  expirationDate: Date; // Sử dụng Date thay vì string
+  startDate: Date;
+  maxDiscountAmount?: number; // Thêm maxDiscountAmount (không bắt buộc)
   isActive: boolean;
   isFreeShipping: boolean;
 }
@@ -43,7 +45,10 @@ function EditCoupon() {
       _id: '',
       code: '',
       discount: 0,
-      expirationDate: '',
+      minOrder: 0,
+      expirationDate: new Date(),
+      startDate: new Date(),
+      maxDiscountAmount: undefined, 
       isActive: true,
       isFreeShipping: false,
     },
@@ -54,13 +59,14 @@ function EditCoupon() {
       setValue('_id', couponData._id);
       setValue('code', couponData.code);
       setValue('discount', couponData.discount);
-      setValue('expirationDate', couponData.expirationDate);
+      setValue('minOrder', couponData.minOrder);
+      setValue('expirationDate', new Date(couponData.expirationDate)); 
+      setValue('startDate', new Date(couponData.startDate));
+      setValue('maxDiscountAmount', couponData.maxDiscountAmount);
       setValue('isActive', couponData.isActive);
       setValue('isFreeShipping', couponData.isFreeShipping);
     }
   }, [couponData, setValue]);
-
-  console.log('log data', couponData);
 
   const onEditCoupon: SubmitHandler<CouponFormValues> = async (data) => {
     try {
@@ -115,7 +121,6 @@ function EditCoupon() {
             </div>
 
             {/* Discount */}
-            {/* Discount */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
@@ -138,7 +143,6 @@ function EditCoupon() {
               </div>
             </div>
 
-
             {/* Min Order */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
@@ -157,6 +161,24 @@ function EditCoupon() {
                 />
                 {errors.minOrder && (
                   <span className="text-xs text-red-500">{errors.minOrder.message}</span>
+                )}
+              </div>
+            </div>
+            {/* Max Discount Amount */}
+            <div className="flex space-x-4">
+              <div className="flex-1 space-y-3">
+                <label className="block text-sm font-medium text-ui-fg-base">
+                  Số tiền giảm tối đa
+                </label>
+                <Input
+                  type="number"
+                  step="1"
+                  placeholder="e.g., 500000"
+                  size="base"
+                  {...register('maxDiscountAmount')}
+                />
+                {errors.maxDiscountAmount && (
+                  <span className="text-xs text-red-500">{errors.maxDiscountAmount.message}</span>
                 )}
               </div>
             </div>
@@ -181,6 +203,18 @@ function EditCoupon() {
                 </Select>
               </div>
             </div>
+            {/* Start Date */}
+            <div className="flex space-x-4">
+              <div className="flex-1 space-y-3">
+                <label className="block text-sm font-medium text-ui-fg-base">
+                  Ngày bắt đầu
+                </label>
+                <DatePicker
+                  defaultValue={new Date(couponData.startDate)}
+                  onChange={(value) => setValue('startDate', value)}
+                />
+              </div>
+            </div>
 
             {/* Expiration Date */}
             <div className="flex space-x-4">
@@ -189,8 +223,8 @@ function EditCoupon() {
                   Ngày hết hạn
                 </label>
                 <DatePicker
-                  selectedDate={new Date(couponData.expirationDate)}
-                  onDateChange={(date) => setValue('expirationDate', date.toISOString())}
+                  defaultValue={new Date(couponData.expirationDate)}
+                  onChange={(value) => setValue('expirationDate', value)}
                 />
               </div>
             </div>

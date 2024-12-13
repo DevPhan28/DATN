@@ -12,9 +12,11 @@ const {
   getProductBySlug,
   searchProduct,
   filterProducts,
+  updateProductsCategoris,
 } = require("../controllers/product");
 
 const router = express.Router();
+router.put('/categories/update-products', updateProductsCategoris);
 router.get(`/products`, getProduct);
 router.get(`/products/slug/:slug`, getProductBySlug);
 router.get(`/products/filter`, filterProducts);

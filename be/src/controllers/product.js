@@ -1,5 +1,5 @@
 const CreateSlugByTitle = require("../config/slug"); // Không sử dụng destructuring
-
+const Category = require("../models/category");
 const Product = require("../models/product");
 const getProduct = async (req, res) => {
   const { limit = 10, page = 1 } = req.query;
@@ -321,6 +321,46 @@ const filterProducts = async (req, res) => {
   }
 };
 
+const updateProductsCategoris = async (req, res) => {
+  try {
+    const { categoryId, newCategoryId } = req.body;
+  // Kiểm tra sự tồn tại của danh mục
+    const [oldCategory, newCategory] = await Promise.all([
+      Category.findById(categoryId),
+      Category.findById(newCategoryId),
+    ]);
+
+    if (!oldCategory) {
+      return res.status(404).json({ message: "Danh mục cũ không tồn tại" });
+    }
+
+    if (!newCategory) {
+      return res.status(404).json({ message: "Danh mục mới không tồn tại" });
+    }
+
+    // Cập nhật sản phẩm
+    const updatedProducts = await Product.updateMany(
+      { category: categoryId },
+      { $set: { category: newCategoryId } }
+    );
+
+    // Nếu không có sản phẩm, tiếp tục thực hiện mà không trả lỗi
+    if (updatedProducts.modifiedCount === 0) {
+      console.log("Không có sản phẩm để cập nhật");
+    }
+
+    return res.status(200).json({
+      message: "Danh mục cũ đã được xử lý thành công",
+      totalUpdated: updatedProducts.modifiedCount,
+    });
+  } catch (error) {
+    console.error("Lỗi trong updateProductsCategoris:", error.message);
+    res.status(500).json({
+      message: "Có lỗi xảy ra trong quá trình xử lý danh mục",
+      error: error.message,
+    });
+  }
+};
 
 
 module.exports = {
@@ -335,5 +375,6 @@ module.exports = {
   getProductAll,
   getProductBySlug,
   searchProduct,
-  filterProducts
+  filterProducts,
+  updateProductsCategoris,
 };
