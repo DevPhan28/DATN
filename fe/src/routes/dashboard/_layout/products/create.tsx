@@ -223,12 +223,11 @@ function AddBrand() {
         </div>
         <div className="rounded-lg border bg-ui-bg-base p-7">
           <h1 className="text-2xl font-medium text-ui-fg-base">
-          Thông tin chung
+            Thông tin chung
           </h1>
           <p className="mb-4 text-sm font-normal text-ui-fg-subtle">
-            
-Cung cấp các chi tiết cơ bản về thương hiệu như tên, chủng loại, giá cả,
-            giảm giá và mô tả.
+            Cung cấp các chi tiết cơ bản về thương hiệu như tên, chủng loại, giá
+            cả, giảm giá và mô tả.
           </p>
 
           <div className="space-y-4">
@@ -259,7 +258,8 @@ Cung cấp các chi tiết cơ bản về thương hiệu như tên, chủng lo�
                 <span className="text-ui-tag-red-text">*</span> Ảnh
               </label>
               <p className="mb-2 text-xs text-ui-fg-muted">
-              Kích thước tệp tối đa là 500KB. Hỗ trợ các định dạng .jpg và .png.
+                Kích thước tệp tối đa là 500KB. Hỗ trợ các định dạng .jpg và
+                .png.
               </p>
               <button
                 type="button"
@@ -269,7 +269,7 @@ Cung cấp các chi tiết cơ bản về thương hiệu như tên, chủng lo�
                 <div className="mb-2 flex items-center">
                   <ArrowDownTray className="mr-1 h-5 w-5" />
                   <p className="text-xs font-medium text-ui-fg-base">
-                   Tải lên file 
+                    Tải lên file
                   </p>
                   <input
                     type="file"
@@ -281,7 +281,7 @@ Cung cấp các chi tiết cơ bản về thương hiệu như tên, chủng lo�
                   />
                 </div>
                 <p className="mb-2 text-center text-xs text-ui-fg-muted">
-                Kéo và thả file vào đây hoặc bấm vào để tải lên
+                  Kéo và thả file vào đây hoặc bấm vào để tải lên
                 </p>
               </button>
               <div className="mt-5">
@@ -370,7 +370,6 @@ Cung cấp các chi tiết cơ bản về thương hiệu như tên, chủng lo�
                   step="0.01"
                   placeholder="e.g., 10"
                   size="base"
-                 
                 />
                 {errors.discount && (
                   <span className="text-xs text-red-500">
@@ -396,10 +395,11 @@ Cung cấp các chi tiết cơ bản về thương hiệu như tên, chủng lo�
             {/* Gallery Upload */}
             <div>
               <label className="block text-sm font-medium text-ui-fg-base">
-                <span className="text-ui-tag-red-text">*</span> Ảnh trưng bày 
+                <span className="text-ui-tag-red-text">*</span> Ảnh trưng bày
               </label>
               <p className="mb-2 text-xs text-ui-fg-muted">
-              Kích thước tệp tối đa là 500KB. Hỗ trợ các định dạng .jpg và .png.
+                Kích thước tệp tối đa là 500KB. Hỗ trợ các định dạng .jpg và
+                .png.
               </p>
               <button
                 type="button"
@@ -422,7 +422,7 @@ Cung cấp các chi tiết cơ bản về thương hiệu như tên, chủng lo�
                   />
                 </div>
                 <p className="mb-2 text-center text-xs text-ui-fg-muted">
-                Kéo và thả file vào đây hoặc bấm vào để tải lên
+                  Kéo và thả file vào đây hoặc bấm vào để tải lên
                 </p>
               </button>
               <div className="mt-5">
@@ -550,8 +550,8 @@ Cung cấp các chi tiết cơ bản về thương hiệu như tên, chủng lo�
                     </div>
                     <div className="flex-1 space-y-3">
                       <label className="block text-sm font-medium text-ui-fg-base">
-                        <span className="text-ui-tag-red-text">*</span>{' '}
-                        Số lượng trong kho
+                        <span className="text-ui-tag-red-text">*</span> Số lượng
+                        trong kho
                       </label>
                       <Input
                         type="number"
@@ -576,7 +576,8 @@ Cung cấp các chi tiết cơ bản về thương hiệu như tên, chủng lo�
                     </div>
                     <div className="flex-1 space-y-3">
                       <label className="block text-sm font-medium text-ui-fg-base">
-                        <span className="text-ui-tag-red-text">*</span> Khối lượng
+                        <span className="text-ui-tag-red-text">*</span> Khối
+                        lượng
                       </label>
                       <Input
                         type="number"

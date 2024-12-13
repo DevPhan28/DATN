@@ -237,7 +237,7 @@ function DetailProduct() {
                 <ChevronRightMini />
               </div>
               <div className="flex items-center justify-center">
-                <a href="/">Cửa hàng</a>
+                <a href="/shop">Cửa hàng</a>
                 <ChevronRightMini />
               </div>
               <div className="capitalize text-gray-500">

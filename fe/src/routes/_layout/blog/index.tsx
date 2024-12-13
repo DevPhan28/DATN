@@ -1,99 +1,131 @@
-import React from 'react';
-import { createFileRoute } from '@tanstack/react-router';
-import { useFetchCategory } from '@/data/products/useProductList';
+import { useState, useEffect } from 'react';
+import instance from '@/api/axiosIntance';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { ChevronRightMini, Tag, TagSolid } from '@medusajs/icons';
 
 const BlogPage = () => {
-  const { data: listCategory } = useFetchCategory();
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
+  const postsPerPage = 8; // Số bài viết mỗi trang
+
+  // Gọi API để lấy danh sách bài viết
+  const fetchPosts = async () => {
+    try {
+      const response = await instance.get('/posts'); // Gửi request GET đến API
+      setPosts(response.data.data); // Lưu danh sách bài viết vào state
+    } catch (error) {
+      console.error('Lỗi khi gọi API:', error.message);
+    } finally {
+      setLoading(false); // Dừng trạng thái loading
+    }
+  };
+
+  useEffect(() => {
+    fetchPosts(); // Gọi API khi component được mount
+  }, []);
+
+  // Tính toán bài viết trên trang hiện tại
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+
+  // Số trang tổng cộng
+  const totalPages = Math.ceil(posts.length / postsPerPage);
+
+  // Chuyển trang
+  const paginate = pageNumber => {
+    setCurrentPage(pageNumber);
+  };
 
   return (
     <>
       {/* Title page */}
-      <section
-        className="bg-cover bg-center text-center py-24 px-6"
-        style={{ backgroundImage: "url('https://picsum.photos/seed/picsum/200/300')" }}
-      >
-        <h2 className="text-4xl font-bold text-white">Blog</h2>
-      </section>
-
-      {/* Content page */}
-      <section className="bg-gray-100 py-16">
-        <div className="container mx-auto">
-          <div className="flex flex-wrap -mx-4">
-            {/* Blog Posts */}
-            <div className="w-full lg:w-2/3 px-4 mb-12 lg:mb-0">
-              {[1, 2, 3].map((item, index) => (
-                <div key={index} className="mb-16">
-                  <a href="/blog-detail" className="block relative overflow-hidden group">
-                    <img
-                      src="https://picsum.photos/seed/picsum/200/300"
-                      alt={`Img blog`}
-                      className="w-full h-80 object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <div className="absolute top-4 right-4 flex flex-col items-center bg-black/70 text-white py-2 px-4 rounded-lg">
-                      <span className="text-xl">22</span>
-                      <span className="text-sm">Jan 2018</span>
-                    </div>
-                  </a>
-                  <div className="pt-8">
-                    <h4 className="text-2xl font-semibold mb-4">
-                      <a
-                        href="/blog-detail"
-                        className="hover:text-blue-600 transition-colors duration-300"
-                      >
-                       8 Inspiring Ways to Wear Dresses in the Winter
-                      </a>
-                    </h4>
-                    <p className="text-gray-600 mb-6">
-                      Class aptent taciti sociosqu ad litora torquent per conubia nostra.
-                    </p>
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-500 text-sm">
-                        <span>By Admin | StreetStyle, Fashion | 8 Comments</span>
-                      </span>
-                      <a
-                        href="/blog-detail"
-                        className="text-blue-600 hover:text-blue-800 transition-colors duration-300"
-                      >
-                        Continue Reading <i className="fa fa-long-arrow-right ml-2"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              ))}
+      <div className="main-content flex h-48 w-full flex-col items-center justify-center">
+        <div className="text-content">
+          <div className="text-center text-4xl font-semibold">Blog</div>
+          <div className="link caption1 mt-3 flex items-center justify-center gap-1">
+            <div className="flex items-center justify-center">
+              <Link to="/">Trang chủ</Link>
+              <ChevronRightMini />
             </div>
-
-            {/* Sidebar */}
-            <div className="w-full lg:w-1/3 px-4">
-              <div className="relative mb-12">
-                <input
-                  className="w-full border border-gray-300 rounded-lg py-3 px-4 focus:outline-none"
-                  type="text"
-                  name="search"
-                  placeholder="Search"
-                />
-                <button className="absolute top-1/2 right-4 transform -translate-y-1/2 text-gray-500">
-                  <i className="zmdi zmdi-search"></i>
-                </button>
-              </div>
-
-              {/* Dynamic Categories */}
-              <div>
-                <h4 className="text-xl font-semibold mb-8">Categories</h4>
-                <ul>
-                  {listCategory?.map((category) => (
-                    <li key={category._id} className="border-b border-gray-200 last:border-none">
-                      <a
-                        href="#"
-                        className="block py-4 text-gray-700 hover:text-blue-600 transition-colors duration-300"
-                      >
-                        {category.name}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            <div className="flex items-center justify-center">
+              <Link to="/blog">Blog</Link>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Blog section */}
+      <section className="bg-gray-100 py-16">
+        <div className="m-auto max-w-7xl rounded-lg bg-white p-8 shadow-md">
+          <div className="mb-8 flex items-center justify-between">
+            <h3 className="text-2xl font-bold text-gray-800">
+              Tin tức mới nhất
+            </h3>
+          </div>
+
+          {/* Loading state */}
+          {loading ? (
+            <div className="text-center text-gray-500">Đang tải...</div>
+          ) : currentPosts.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+                {/* Dynamic blog posts */}
+                {currentPosts.map(post => (
+                  <div
+                    key={post._id}
+                    className="overflow-hidden rounded-lg bg-white shadow-md transition-shadow duration-300 hover:shadow-lg"
+                  >
+                    <Link to={`/detailblog/${post.slug}`} className="block">
+                      <img
+                        src={post.thumbnail || 'https://picsum.photos/300/200'}
+                        className="h-56 w-full rounded-t-lg object-cover"
+                      />
+                    </Link>
+                    <div className="p-4">
+                      <h5 className="mb-2 text-lg font-semibold text-gray-800">
+                        <Link
+                          to={`/detailblog/${post.slug}`}
+                          className="transition-colors duration-300 hover:text-blue-500"
+                        >
+                          {post.title}
+                        </Link>
+                      </h5>
+                      <p className="line-clamp-2 flex items-center space-x-2 text-xs text-gray-700">
+                        <Tag />
+                        <span>{post.tags}</span>
+                      </p>
+                      <i className="mb-2 text-sm text-gray-500">
+                        {new Date(post.createdAt).toLocaleDateString()}
+                      </i>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Pagination */}
+              <div className="mt-8 flex justify-center">
+                {Array.from({ length: totalPages }, (_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => paginate(index + 1)}
+                    className={`mx-1 rounded-lg px-4 py-2 ${
+                      currentPage === index + 1
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-200 text-gray-700'
+                    } transition hover:bg-blue-500 hover:text-white`}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="text-center text-gray-500">
+              Không có bài viết nào.
+            </div>
+          )}
         </div>
       </section>
     </>

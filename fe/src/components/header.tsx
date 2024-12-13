@@ -99,17 +99,17 @@ const Header = () => {
                   href="/featuredProducts"
                   className="relative px-2 py-2 font-medium hover:text-blue-400"
                 >
-                  Nổi bật 
+                  Nổi bật
                   <span className="absolute left-14 mt-[-8px] w-9 rounded-xl bg-red-400 text-center text-xs uppercase text-white">
                     Hot
                   </span>
                 </a>
-                <a
-                  href="/blog"
+                <Link
+                  to="/blog"
                   className="px-2 py-2 font-medium hover:text-blue-400"
                 >
                   Blog
-                </a>
+                </Link>
                 <a
                   href="#"
                   className="px-2 py-2 font-medium hover:text-blue-400"
@@ -120,7 +120,7 @@ const Header = () => {
                   href="#"
                   className="px-2 py-2 font-medium hover:text-blue-400"
                 >
-                  Liên hệ 
+                  Liên hệ
                 </a>
               </div>
             </div>
@@ -128,12 +128,12 @@ const Header = () => {
             {/* Icons and menu toggle button */}
             <div className="flex items-center space-x-2 text-[19px]">
               {/* Icon search */}
-              
+
               <a href="/searchList">
-              <i
-                className="fa-solid fa-magnifying-glass cursor-pointer p-3 text-[20px] hover:text-blue-400"
-                onClick={toggleSearch}
-              ></i>
+                <i
+                  className="fa-solid fa-magnifying-glass cursor-pointer p-3 text-[20px] hover:text-blue-400"
+                  onClick={toggleSearch}
+                ></i>
               </a>
               <Link to="/cart" className="relative">
                 <i className="fa-solid fa-cart-shopping text-[20px] hover:text-blue-400"></i>
@@ -223,12 +223,12 @@ const Header = () => {
                         </Link>
                         <div className="mt-3 text-gray-500">
                           Bạn chưa có tài khoản?
-                          <a
+                          <Link
                             className="w-full pl-1 text-black hover:underline"
-                            href="/register"
+                            to="/register"
                           >
                             Đăng ký
-                          </a>
+                          </Link>
                         </div>
                       </div>
                     )}
@@ -268,7 +268,7 @@ const Header = () => {
                 href="#"
                 className="block px-3 py-2 font-medium hover:text-blue-400"
               >
-                Về chúng tôi 
+                Về chúng tôi
               </a>
               <a
                 href="#"

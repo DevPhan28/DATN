@@ -3,6 +3,7 @@ import {
   ArrowRightOnRectangle,
   CogSixTooth,
   Key,
+  Pencil,
   ReceiptPercent,
   Tag,
   Users,
@@ -71,6 +72,14 @@ const menuCoupon: MenuItem[] = [
     name: 'Coupon List',
     icon: <ReceiptPercent />,
     href: '/dashboard/coupon',
+  },
+];
+const menuBlog: MenuItem[] = [
+  {
+    id: 1,
+    name: 'Blog List',
+    icon: <Pencil />,
+    href: '/dashboard/blog',
   },
 ];
 
@@ -167,6 +176,22 @@ const Sidebar = () => {
           </header>
           <div>
             {menuCoupon.map(item => (
+              <ItemSidebar
+                key={item.id}
+                href={item.href}
+                id={item.id}
+                name={item.name}
+                icon={item.icon}
+              />
+            ))}
+          </div>
+        </section>
+        <section className="space-y-1">
+          <header className="py-1.5 pl-2 text-xs font-medium text-ui-fg-muted">
+            Blog
+          </header>
+          <div>
+            {menuBlog.map(item => (
               <ItemSidebar
                 key={item.id}
                 href={item.href}

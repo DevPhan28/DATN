@@ -31,7 +31,7 @@ function AddCoupon() {
     setError, // Import setError để xử lý lỗi custom
   } = useForm<CouponFormValues>();
 
-  const onCreateCoupon: SubmitHandler<CouponFormValues> = async (data) => {
+  const onCreateCoupon: SubmitHandler<CouponFormValues> = async data => {
     // Kiểm tra nếu discount lớn hơn 100%
     if (data.discount > 100) {
       setError('discount', {
@@ -61,7 +61,7 @@ function AddCoupon() {
 
   return (
     <div className="h-screen overflow-y-auto">
-      <Header title="Create New Coupon" pathname="/" />
+      <Header title="Tạo mã giảm giá" pathname="/" />
       <form onSubmit={handleSubmit(onCreateCoupon)} className="m-8">
         <div className="my-3 flex justify-between">
           <div className="w-[330px]">
@@ -73,7 +73,11 @@ function AddCoupon() {
             />
           </div>
           <div className="flex gap-2">
-            <Button variant="secondary" type="button" onClick={() => navigate({ to: '/dashboard/coupon' })}>
+            <Button
+              variant="secondary"
+              type="button"
+              onClick={() => navigate({ to: '/dashboard/coupon' })}
+            >
               Hủy
             </Button>
             <Button variant="primary" type="submit">
@@ -81,11 +85,14 @@ function AddCoupon() {
             </Button>
           </div>
         </div>
-        
+
         <div className="rounded-lg border bg-ui-bg-base p-7">
-          <h1 className="text-2xl font-medium text-ui-fg-base">Thông tin phiếu giảm giá</h1>
+          <h1 className="text-2xl font-medium text-ui-fg-base">
+            Thông tin phiếu giảm giá
+          </h1>
           <p className="mb-4 text-sm font-normal text-ui-fg-subtle">
-            Nhập chi tiết phiếu giảm giá như mã, giảm giá, ngày hết hạn và trạng thái.
+            Nhập chi tiết phiếu giảm giá như mã, giảm giá, ngày hết hạn và trạng
+            thái.
           </p>
 
           <div className="space-y-4">
@@ -103,7 +110,9 @@ function AddCoupon() {
                   })}
                 />
                 {errors.code && (
-                  <span className="text-xs text-red-500">{errors.code.message}</span>
+                  <span className="text-xs text-red-500">
+                    {errors.code.message}
+                  </span>
                 )}
               </div>
             </div>
@@ -125,10 +134,14 @@ function AddCoupon() {
                   })}
                 />
                 {errors.discount && (
-                  <span className="text-xs text-red-500">{errors.discount.message}</span>
+                  <span className="text-xs text-red-500">
+                    {errors.discount.message}
+                  </span>
                 )}
                 {errors.discount?.type === 'manual' && (
-                  <span className="text-xs text-red-500">{errors.discount.message}</span>
+                  <span className="text-xs text-red-500">
+                    {errors.discount.message}
+                  </span>
                 )}
               </div>
             </div>
@@ -137,7 +150,8 @@ function AddCoupon() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Đơn hàng tối thiểu
+                  <span className="text-ui-tag-red-text">*</span> Đơn hàng tối
+                  thiểu
                 </label>
                 <Input
                   type="number"
@@ -150,7 +164,9 @@ function AddCoupon() {
                   })}
                 />
                 {errors.minOrder && (
-                  <span className="text-xs text-red-500">{errors.minOrder.message}</span>
+                  <span className="text-xs text-red-500">
+                    {errors.minOrder.message}
+                  </span>
                 )}
               </div>
             </div>
@@ -178,10 +194,13 @@ function AddCoupon() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Miễn phí vận chuyển
+                  <span className="text-ui-tag-red-text">*</span> Miễn phí vận
+                  chuyển
                 </label>
                 <Select
-                  onValueChange={(value) => setValue('isFreeShipping', value === 'true')}
+                  onValueChange={value =>
+                    setValue('isFreeShipping', value === 'true')
+                  }
                   defaultValue="false"
                 >
                   <Select.Trigger>
@@ -228,7 +247,9 @@ function AddCoupon() {
                   <span className="text-ui-tag-red-text">*</span> Trạng thái
                 </label>
                 <Select
-                  onValueChange={(value) => setValue('isActive', value === 'true')}
+                  onValueChange={value =>
+                    setValue('isActive', value === 'true')
+                  }
                   defaultValue="true"
                 >
                   <Select.Trigger>

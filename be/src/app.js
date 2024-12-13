@@ -17,7 +17,7 @@ const shippingRoutes = require('./routers/shipping');
 const couponRoutes = require('./routers/coupon');
 const commentRouter = require('./routers/comment');
 const paymentRoutes = require('./routers/paymentRoutes');
-
+const blogRoutes = require('./routers/blog');
 // Database connection
 const { connectDB } = require('./config/db');
 
@@ -59,6 +59,7 @@ app.use('/api', couponRoutes);
 app.use('/api', commentRouter);
 app.use('/api', paymentRoutes);
 app.use('/api', message);
+app.use('/api', blogRoutes);
 
 // Start servers
 const appPort = 8000;

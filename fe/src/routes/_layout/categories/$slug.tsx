@@ -117,7 +117,7 @@ function ProductCategory() {
               <ChevronRightMini />
             </div>
             <div className="capitalize text-gray-500">
-              <a href="#">{categoryName}</a>
+              <Link to=".">{categoryName}</Link>
             </div>
           </div>
         </div>
@@ -182,7 +182,7 @@ function ProductCategory() {
                     to={`/${product.slug ? product.slug : product._id}/quickviewProduct`}
                     className="quick-view duration-900 absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-full bg-white px-4 py-2 opacity-0 shadow transition-all hover:bg-black hover:text-white group-hover:translate-y-[-100px] group-hover:opacity-100"
                   >
-                   Xem nhanh
+                    Xem nhanh
                   </Link>
                   <h2 className="mt-2 flex items-center justify-between text-gray-500">
                     {product.name}
