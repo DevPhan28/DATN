@@ -1,20 +1,22 @@
-import instance from '@/api/axiosIntance';
-import CurrencyVND from '@/components/config/vnd';
-import ProductRecommendations from '@/components/ProductRecommendations';
-import useCommentMutation from '@/data/Comment/useCommentMutation';
 import {
-  ArrowUpRightOnBox,
+  createFileRoute,
+  useNavigate,
+  useParams,
+} from '@tanstack/react-router';
+import { useEffect, useState } from 'react';
+import {
   ChevronRightMini,
-  EllipsisHorizontal,
-  RocketLaunch,
   StarSolid,
   ThumbUp,
-  Trash,
+  EllipsisHorizontal,
+  CommandLine,
+  RocketLaunch,
+  ArrowUpRightOnBox,
 } from '@medusajs/icons';
-import { DropdownMenu, IconButton, toast } from '@medusajs/ui';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, useParams } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import instance from '@/api/axiosIntance';
+import { toast } from '@medusajs/ui';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
+import ProductRecommendations from '@/components/ProductRecommendations';
 
 export const Route = createFileRoute('/_layout/$slug/quickviewProduct')({
   component: DetailProduct,
@@ -22,6 +24,7 @@ export const Route = createFileRoute('/_layout/$slug/quickviewProduct')({
 
 function DetailProduct() {
   const [currentImage, setCurrentImage] = useState('');
+  const [images, setImages] = useState([]);
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -29,13 +32,9 @@ function DetailProduct() {
   const [selectedColor, setSelectedColor] = useState('');
   const [availableColors, setAvailableColors] = useState([]);
   const [quantity, setQuantity] = useState(1);
-  const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState('');
-  const { createComment, removeComment } = useCommentMutation();
-  const [rating, setRating] = useState(0); // State for product rating
-  const [averageRating, setAverageRating] = useState(0);
 
   const { slug } = useParams({ from: '/_layout/$slug/quickviewProduct' });
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   // Fetch product information from API
@@ -59,70 +58,6 @@ function DetailProduct() {
 
     fetchProduct();
   }, [slug]);
-  useEffect(() => {
-    if (product) {
-      const fetchComments = async () => {
-        try {
-          const response = await instance.get(
-            `/comments/product/${product._id}`
-          );
-          setComments(response.data);
-          const totalRating = response.data.reduce(
-            (sum, comment) => sum + comment.rating,
-            0
-          );
-          const average = totalRating / response.data.length;
-          setAverageRating(average); // Cập nhật số sao trung bình
-        } catch (err) {}
-      };
-      fetchComments();
-    }
-  }, [product]);
-  useEffect(() => {
-    if (window.location.hash === '#comments-section') {
-      const commentsSection = document.getElementById('comments-section');
-      if (commentsSection) {
-        commentsSection.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  }, [slug]); // Ensure this effect runs when the component mounts
-
-  useEffect(() => {
-    if (window.location.hash === '#comments-section') {
-      const commentTextarea = document.querySelector('textarea');
-      if (commentTextarea) {
-        commentTextarea.focus(); // Focus the textarea
-      }
-    }
-  }, [product]); // Trigger when product data is available
-  // console.log(localStorage.getItem('userId'));
-  const handleCommentSubmit = async () => {
-    if (!newComment.trim()) {
-      toast.error('Vui lòng nhập bình luận.');
-      return;
-    }
-
-    if (rating === 0) {
-      toast.error('Vui lòng chọn đánh giá sao.');
-      return;
-    }
-
-    try {
-      // Call createComment mutation with rating
-      createComment.mutate({
-        productId: product._id,
-        content: newComment,
-        userId: localStorage.getItem('userId') || '', // Ensure userId is available
-        rating: rating, // Pass the rating value
-      });
-
-      // Reset input and rating
-      setNewComment('');
-      setRating(0);
-    } catch (err) {
-      toast.error('Không thể gửi bình luận. Vui lòng thử lại.');
-    }
-  };
 
   // Mutation to add item to cart
   const addItemToCart = useMutation({
@@ -199,12 +134,7 @@ function DetailProduct() {
       ],
     });
   };
-  const handleDeleteComment = (commentId: string) => {
-    removeComment.mutate(commentId);
-  };
-  const handleRatingChange = (newRating: number) => {
-    setRating(newRating); // Update the rating value
-  };
+
   // Add this query
   const { data: categoryData } = useQuery({
     queryKey: ['category', product?.categoryId],
@@ -213,7 +143,7 @@ function DetailProduct() {
       const response = await instance.get(`/categories/${product.categoryId}`);
       return response.data;
     },
-    enabled: !!product?.categoryId,
+    enabled: !!product?.categoryId
   });
 
   // Display loading or error if any
@@ -230,25 +160,24 @@ function DetailProduct() {
       <div className="">
         <div className="main-content flex h-48 w-full flex-col items-center justify-center">
           <div className="text-content">
-            <div className="text-center text-4xl font-semibold">Cửa hàng</div>
+            <div className="text-center text-4xl font-semibold">Shop</div>
             <div className="link caption1 mt-3 flex items-center justify-center gap-1">
               <div className="flex items-center justify-center">
-                <a href="/">Trang chủ</a>
+                <a href="/">Home</a>
                 <ChevronRightMini />
               </div>
               <div className="flex items-center justify-center">
-                <a href="/shop">Cửa hàng</a>
+                <a href="/">Shop</a>
                 <ChevronRightMini />
               </div>
               <div className="capitalize text-gray-500">
-                <a href="#">Chi tiết</a>
+                <a href="#">View Detail</a>
               </div>
             </div>
           </div>
         </div>
       </div>
       <div className="bg-gray-50 py-10">
-        <div>{/* Hiển thị số sao trung bình */}</div>
         <div className="m-auto max-w-7xl p-5 sm:p-5 md:p-5 lg:p-5 xl:p-0">
           <div className="mt-5 flex flex-col justify-between bg-white p-5 shadow md:gap-48 lg:flex-row">
             <div className="flex flex-col gap-5 lg:flex-row">
@@ -289,34 +218,23 @@ function DetailProduct() {
             <div className="mt-6 lg:mt-0">
               <h2 className="mb-4 w-96 text-xl font-bold sm:text-2xl lg:text-3xl">
                 {product.name}
-              </h2>{' '}
-              <div className="rating">
-                <div className="mt-1 flex items-center">
-                  {/* Hiển thị sao trung bình */}
-                  {[...Array(5)].map((_, index) => (
-                    <StarSolid
-                      key={index}
-                      className={`h-5 w-5 ${index < Math.floor(averageRating) ? 'text-yellow-400' : 'text-gray-300'}`}
-                    />
-                  ))}
-                  <span className="font-semibold">
-                    {averageRating.toFixed(1)} trên tổng {comments.length} Bình
-                    luận
-                  </span>
-                </div>
-              </div>
+              </h2>
               <p className="mb-2 text-sm text-gray-600 sm:text-base">
-                Mã sản phẩm: {product.sku}
+                SKU: {product.sku}
               </p>
               <div className="mb-4 text-lg font-semibold text-red-600 sm:text-xl lg:text-2xl">
-                <CurrencyVND amount={product.price} />
+                ${product.price}
+                <span className="text-sm text-gray-400 line-through sm:text-base lg:text-lg">
+                  $1199
+                </span>
               </div>
               <div className="mb-4 text-lg sm:text-xl">
                 <p>{product.description}</p>
               </div>
+
               {/* Size dropdown with unique sizes */}
               <div className="mb-4 flex items-center">
-                <label className="w-20 text-gray-700">Kích cỡ</label>
+                <label className="w-20 text-gray-700">Size</label>
                 <select
                   className="flex-1 rounded border border-gray-300 p-2"
                   value={selectedSize}
@@ -330,8 +248,9 @@ function DetailProduct() {
                   ))}
                 </select>
               </div>
+
               <div className="mb-4 flex items-center">
-                <label className="w-20 text-gray-700">Màu</label>
+                <label className="w-20 text-gray-700">Color</label>
                 <select
                   className="flex-1 rounded border border-gray-300 p-2"
                   value={selectedColor}
@@ -347,6 +266,7 @@ function DetailProduct() {
                     ))}
                 </select>
               </div>
+
               {/* Quantity and Add to Cart */}
               <div className="mb-4 flex items-center gap-5">
                 <div>Quantity</div>
@@ -372,14 +292,16 @@ function DetailProduct() {
                   </button>
                 </div>
               </div>
+
               {/* Add to cart button */}
               <button
                 className="mt-3 rounded-md bg-blue-500 px-5 py-2 text-sm text-white transition hover:bg-gray-800 sm:px-6 sm:py-3 sm:text-lg"
                 onClick={handleAddToCart}
                 disabled={addItemToCart.isLoading}
               >
-                {addItemToCart.isLoading ? 'Đang thêm...' : 'Thêm vào giỏ hàng'}
+                {addItemToCart.isLoading ? 'Đang thêm...' : 'ADD TO CART'}
               </button>
+
               {/* Shipping and return info */}
               <div className="mt-4 w-full bg-[#EEEEEE] p-4">
                 <div className="flex gap-4">
@@ -388,140 +310,88 @@ function DetailProduct() {
                     <div className="text-lg font-semibold">Free ship</div>
                     <div className="text-sm">Free standard ship</div>
                     <div className="text-sm">
-                      Thời gian giao hàng dự kiến ​​là từ ngày 30 tháng 10 năm
-                      2024 - ngày 31 tháng 10 năm 2024.
+                      Estimated delivery is October 30, 2024 - October 31, 2024.
                     </div>
                   </div>
                 </div>
                 <div className="mt-3 flex gap-4">
                   <ArrowUpRightOnBox className="mt-1.5 text-xl text-green-700" />
                   <div>
-                    <div className="text-lg font-semibold">
-                      Chính sách hoàn trả
-                    </div>
-                    <div className="text-sm">Tìm hiểu thêm</div>
+                    <div className="text-lg font-semibold">Return Policy</div>
+                    <div className="text-sm">Learn more</div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="mx-auto mt-10 bg-white p-8 shadow">
-            <h2 className="text-2xl font-semibold">Mô tả chi tiết</h2>
-            <div
-              className="mt-5"
-              dangerouslySetInnerHTML={{ __html: product.detaildescription }}
-            />
+          <div className="mx-auto mt-10 bg-white p-8 shadow-lg">
+            <h2 className='text-2xl font-semibold'>Mô tả chi tiết</h2>
+            <div className='mt-5' dangerouslySetInnerHTML={{ __html: product.detaildescription }} />
           </div>
-          <div className="mt-10 bg-white p-4 shadow">
-            <div className="flex flex-col gap-10 lg:flex-row">
+          <div className="bg-white p-4 shadow mt-10">
+            <div className="flex flex-col lg:flex-row gap-10">
               {/* Left side - Customer Reviews lg:w-1/2*/}
-
-              <div className="w-full">
-                <div className="mt-5 flex w-full justify-between">
-                  <h2 className="text-[24px] font-semibold">
-                    Đánh Giá Sản Phẩm (
-                    {comments.length > 0 ? comments.length : 0})
-                  </h2>
-                  <div className="flex items-center text-[18px] font-normal text-[#666666]">
+              <div className="mt-10 w-full ">
+                <div className='w-full mt-5 flex justify-between'>
+                  <h2 className='font-semibold text-[24px]'>Customer Reviews (500+)</h2>
+                  <div className='font-normal text-[18px] flex items-center text-[#666666]'>
                     <div>See All</div>
                     <ChevronRightMini />
                   </div>
                 </div>
 
-                <div id="comments-section">
-                  <h2 className="text-2xl">Bình luận</h2>
-                  <textarea
-                    className="mt-5 w-full rounded border p-3"
-                    placeholder="Write a comment..."
-                    value={newComment}
-                    onChange={e => setNewComment(e.target.value)}
-                  />
-                  <div className="flex items-center gap-2">
-                    {[1, 2, 3, 4, 5].map(star => (
-                      <StarSolid
-                        key={star}
-                        className={`cursor-pointer ${rating >= star ? 'text-orange-300' : 'text-orange-200'}`}
-                        onClick={() => handleRatingChange(star)}
-                      />
-                    ))}
+                {/* Rating Section */}
+                <div className="flex gap-2 mt-6 border h-20 p-2 bg-gray-50">
+                  <h1 className='font-semibold text-[28px]'>4.8</h1>
+                  <div className='flex mt-2'>
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-200' />
                   </div>
-                  <button
-                    onClick={handleCommentSubmit}
-                    className="mt-2 rounded bg-blue-500 px-4 py-2 text-white"
-                  >
-                    Đăng bình luận
-                  </button>
-                  <div className="mt-5 pb-5">
-                    {comments.length > 0 ? (
-                      comments.map(comment => (
-                        <div key={comment._id} className="mb-4">
-                          <div className="flex items-center gap-3">
-                            <img
-                              src={comment.userId?.avatar}
-                              alt="User Avatar"
-                              className="h-10 w-10 rounded-full"
-                            />
-                            <div>
-                              <h3 className="font-semibold">
-                                {comment.userId?.username}
-                              </h3>
-                              <div className="flex">
-                                {/* Đoạn này sẽ hiển thị sao dựa trên rating của comment */}
-                                {[1, 2, 3, 4, 5].map(star => (
-                                  <div key={star}>
-                                    {comment.rating >= star ? (
-                                      <StarSolid className="text-orange-300" />
-                                    ) : (
-                                      <StarSolid className="text-orange-200" />
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
+                  <div className="flex gap-2 self-center">
+                    <button className='border p-2 bg-white'>ALL</button>
+                    <button className='border p-2 bg-white'>5 stars (99)</button>
+                    <button className='border p-2 bg-white'>4 stars (8)</button>
+                    <button className='border p-2 bg-white'>2 stars (2)</button>
+                    <button className='border p-2 bg-white'>1 stars (8)</button>
+                  </div>
+                </div>
 
-                              <p className="mt-1">{comment.commentText}</p>
-                              <small>
-                                {new Date(comment.createdAt).toLocaleString(
-                                  'vi-VN',
-                                  {
-                                    year: 'numeric',
-                                    month: '2-digit',
-                                    day: '2-digit',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                  }
-                                )}
-                              </small>
-                            </div>
-                          </div>
-                          <div className="mt-10 flex justify-end gap-2 text-[#767676]">
-                            <ThumbUp className="text-black" />
-                            Hữu ích
-                            <DropdownMenu>
-                              <DropdownMenu.Trigger asChild>
-                                <IconButton>
-                                  <EllipsisHorizontal />
-                                </IconButton>
-                              </DropdownMenu.Trigger>
-                              <DropdownMenu.Content>
-                                <DropdownMenu.Separator />
-                                <DropdownMenu.Item
-                                  className="gap-x-2"
-                                  onClick={() =>
-                                    handleDeleteComment(comment._id)
-                                  }
-                                >
-                                  <Trash className="text-ui-fg-subtle" />
-                                  Xóa bình luận
-                                </DropdownMenu.Item>
-                              </DropdownMenu.Content>
-                            </DropdownMenu>
-                          </div>
-                          <div className="mt-5 border-b pb-5"></div>
-                        </div>
-                      ))
-                    ) : (
-                      <p>Chưa có bình luận nào</p>
-                    )}
+                {/* Review 1 */}
+                <div className='mt-5 border-b pb-5'>
+                  <h3 className='font-semibold'>Anh Thư <span className='text-[#767676] font-light'>14 Jun, 2024</span></h3>
+                  <div className='flex'>
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                  </div>
+                  <p className='mt-1'>Áo đẹp, chất lượng ổn áp, mình m72 nặng 58kg mặc size M nhe.</p>
+                  <div className="mt-10 flex gap-2 justify-end text-[#767676]">
+                    <ThumbUp className='text-black' />
+                    Hữu ích(2)
+                    <EllipsisHorizontal className='text-black' />
+                  </div>
+                </div>
+
+                {/* Review 2 */}
+                <div className='mt-5 border-b pb-5'>
+                  <h3 className='font-semibold'>Anh Thư <span className='text-[#767676] font-light'>14 Jun, 2024</span></h3>
+                  <div className='flex'>
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                    <StarSolid className='text-orange-300' />
+                  </div>
+                  <p className='mt-1'>Áo đẹp, chất lượng ổn áp, mình m72 nặng 58kg mặc size M nhe.</p>
+                  <div className="mt-10 flex gap-2 justify-end text-[#767676]">
+                    <ThumbUp className='text-black' />
+                    Hữu ích(2)
+                    <EllipsisHorizontal className='text-black' />
                   </div>
                 </div>
               </div>

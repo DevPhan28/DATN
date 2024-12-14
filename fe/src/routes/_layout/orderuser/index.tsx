@@ -247,6 +247,9 @@ function UserOrder() {
 
   const username = storedData?.user?.username || 'Không có tên người dùng';
   const emailuser = storedData?.user?.email || 'Không có tên người dùng';
+  // tổng tiền sản phẩm
+  const total = ordersToDisplay.map(item => (item.price || 0) * (item.quantity || 0))
+    .reduce((sum, price) => sum + price, 0);
 
   return (
     <div className="bg-gray-50">
@@ -305,8 +308,8 @@ function UserOrder() {
                 key={tab.id}
                 onClick={() => setSelectedTab(tab.id)}
                 className={`px-2 py-2 text-gray-700 sm:px-4 ${selectedTab === tab.id
-                    ? 'border-b-2 border-red-500 text-red-600'
-                    : ''
+                  ? 'border-b-2 border-red-500 text-red-600'
+                  : ''
                   }`}
               >
                 {tab.label}
@@ -317,52 +320,48 @@ function UserOrder() {
           {ordersToDisplay.length > 0 ? (
             <div className="space-y-4">
               {ordersToDisplay.map((order: Order) => {
+                // Tính tổng tiền sản phẩm
+                const totalProductPrice = order.items.reduce((total, item) => {
+                  return total + (item.price * item.quantity);
+                }, 0);
+
                 return (
-                  <div
-                    key={order._id}
-                    className="rounded-lg bg-white p-6 shadow-md"
-                  >
+                  <div key={order._id} className="rounded-lg bg-white p-6 shadow-md">
                     <div className="mb-4 flex items-center justify-between">
                       <span
                         className={`rounded-full px-4 py-1 text-sm font-medium ${order.status === 'canceled' ||
-                            order.status === 'canceled_complaint'
-                            ? 'bg-red-200 text-red-600'
-                            : order.status === 'pending'
-                              ? 'bg-yellow-200 text-yellow-700'
-                              : order.status === 'confirmed'
-                                ? 'bg-blue-200 text-blue-700'
-                                : order.status === 'shipped' ||
-                                  order.status === 'received'
-                                  ? 'bg-indigo-200 text-indigo-700'
-                                  : order.status === 'delivered'
-                                    ? 'bg-green-200 text-green-700'
-                                    : order.status === 'complaint'
-                                      ? 'bg-purple-500 text-white'
-                                      : order.status === 'refund_in_progress' ||
-                                        order.status ===
-                                        'exchange_in_progress'
-                                        ? 'bg-orange-200 text-orange-700'
-                                        : order.status === 'refund_completed' ||
-                                          order.status ===
-                                          'exchange_completed'
-                                          ? 'bg-teal-200 text-teal-700'
-                                          : order.status === 'pendingPayment'
-                                            ? 'bg-gray-200 text-gray-700'
-                                            : ''
+                          order.status === 'canceled_complaint'
+                          ? 'bg-red-200 text-red-600'
+                          : order.status === 'pending'
+                            ? 'bg-yellow-200 text-yellow-700'
+                            : order.status === 'confirmed'
+                              ? 'bg-blue-200 text-blue-700'
+                              : order.status === 'shipped' ||
+                                order.status === 'received'
+                                ? 'bg-indigo-200 text-indigo-700'
+                                : order.status === 'delivered'
+                                  ? 'bg-green-200 text-green-700'
+                                  : order.status === 'complaint'
+                                    ? 'bg-purple-500 text-white'
+                                    : order.status === 'refund_in_progress' ||
+                                      order.status === 'exchange_in_progress'
+                                      ? 'bg-orange-200 text-orange-700'
+                                      : order.status === 'refund_completed' ||
+                                        order.status === 'exchange_completed'
+                                        ? 'bg-teal-200 text-teal-700'
+                                        : order.status === 'pendingPayment'
+                                          ? 'bg-gray-200 text-gray-700'
+                                          : ''
                           }`}
                       >
                         {getStatusLabel(order.status)}
                       </span>
-
                       <span className="text-sm text-gray-500">
                         Mã đơn hàng: {order.orderNumber}
                       </span>
                     </div>
                     {order.items.map(item => (
-                      <div
-                        key={item.productId}
-                        className="mb-4 flex items-center space-x-4"
-                      >
+                      <div key={item.productId} className="mb-4 flex items-center space-x-4">
                         <img
                           src={item.image}
                           alt={item.name}
@@ -370,7 +369,7 @@ function UserOrder() {
                         />
                         <div className="flex-1">
                           <p className="text-xl font-semibold uppercase text-gray-800">
-                            {item.name}
+                            <Link to={`/orderuser/${order._id}/user`}> {item.name}</Link>
                           </p>
                           <p className="text-sm text-gray-600">
                             Phân loại hàng: Màu: {item.color || ''}{' '}
@@ -410,14 +409,14 @@ function UserOrder() {
                             Giảm giá:
                             <span className="ml-2">
                               <div>
-                               <CurrencyVND amount= {order.discount}/>
+                                <CurrencyVND amount={order.discount} />
                               </div>
                             </span>
                           </span>
                           <span className="flex items-center justify-between text-lg">
                             Tổng tiền sản phẩm :{' '}
                             <span className="ml-2">
-                              <CurrencyVND amount={order.totalPrice} />
+                              <CurrencyVND amount={totalProductPrice} />
                             </span>
                           </span>
                           <p className="flex items-center justify-between text-lg">
@@ -456,6 +455,9 @@ function UserOrder() {
                           Hủy đơn hàng
                         </button>
                       )}
+                      <button className="mr-2 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600">
+                        áda
+                      </button>
                       {order.status === 'received' && (
                         <>
                           <button
@@ -488,6 +490,7 @@ function UserOrder() {
             </div>
           )}
 
+
           <div className="mt-8 flex items-center justify-center space-x-2">
             <button
               onClick={() => handlePageChange(currentPage - 1)}
@@ -497,25 +500,27 @@ function UserOrder() {
               Trước
             </button>
 
-            {Array.from({ length: totalPages }, (_, index) => index + 1)
-              .filter(
-                page =>
-                  page === 1 || // Trang đầu tiên
-                  page === totalPages || // Trang cuối cùng
-                  (page >= currentPage - 2 && page <= currentPage + 2) // Các trang xung quanh trang hiện tại
-              )
-              .map(page => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`rounded-full px-4 py-2 ${currentPage === page
+            {
+              Array.from({ length: totalPages }, (_, index) => index + 1)
+                .filter(
+                  page =>
+                    page === 1 || // Trang đầu tiên
+                    page === totalPages || // Trang cuối cùng
+                    (page >= currentPage - 2 && page <= currentPage + 2) // Các trang xung quanh trang hiện tại
+                )
+                .map(page => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`rounded-full px-4 py-2 ${currentPage === page
                       ? 'bg-blue-500 text-white'
                       : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
-                >
-                  {page}
-                </button>
-              ))}
+                      }`}
+                  >
+                    {page}
+                  </button>
+                ))
+            }
 
             <button
               onClick={() => handlePageChange(currentPage + 1)}
@@ -524,44 +529,46 @@ function UserOrder() {
             >
               Sau
             </button>
-          </div>
-        </div>
-      </div>
+          </div >
+        </div >
+      </div >
 
       {/* Complaint Modal */}
-      {showComplaintModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="rounded-lg bg-white p-6 shadow-md">
-            <h2 className="mb-4 text-lg font-semibold">
-              Tình huống bạn đang gặp?
-            </h2>
-            <div className="flex flex-col space-y-2">
-              <Link
-                to={`/refund/${userId}/${selectedOrderId}`}
-                className="w-full rounded bg-blue-500 p-2 text-white"
-              >
-                Tôi đã nhận hàng nhưng không còn nhu cầu/hàng có vấn đề (bể vỡ,
-                sai mẫu, lỗi, khác mô tả...)
-              </Link>
-              <Link
-                to={`/exchange/${userId}/${selectedOrderId}`}
-                className="mt-2 w-full rounded bg-blue-500 p-2 text-white"
-              >
-                Tôi chưa nhận hàng/nhận thiếu hàng
-              </Link>
-            </div>
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={() => setShowComplaintModal(false)}
-                className="ml-2 rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
-              >
-                Hủy
-              </button>
+      {
+        showComplaintModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="rounded-lg bg-white p-6 shadow-md">
+              <h2 className="mb-4 text-lg font-semibold">
+                Tình huống bạn đang gặp?
+              </h2>
+              <div className="flex flex-col space-y-2">
+                <Link
+                  to={`/refund/${userId}/${selectedOrderId}`}
+                  className="w-full rounded bg-blue-500 p-2 text-white"
+                >
+                  Tôi đã nhận hàng nhưng không còn nhu cầu/hàng có vấn đề (bể vỡ,
+                  sai mẫu, lỗi, khác mô tả...)
+                </Link>
+                <Link
+                  to={`/exchange/${userId}/${selectedOrderId}`}
+                  className="mt-2 w-full rounded bg-blue-500 p-2 text-white"
+                >
+                  Tôi chưa nhận hàng/nhận thiếu hàng
+                </Link>
+              </div>
+              <div className="mt-4 flex justify-end">
+                <button
+                  onClick={() => setShowComplaintModal(false)}
+                  className="ml-2 rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
+                >
+                  Hủy
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 }
 
