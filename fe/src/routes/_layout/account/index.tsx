@@ -13,14 +13,16 @@ function AccountUser() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isSaving, setIsSaving] = useState(false); // state for saving status
+  const [isSaving, setIsSaving] = useState(false);
 
   const {
     register,
     handleSubmit,
     watch,
-    formState: { errors },
-  } = useForm<Iaccount>();
+    formState: { errors, isValid },
+  } = useForm<Iaccount>({
+    mode: 'onChange',
+  });
 
   const fetchUserInfo = async () => {
     const userId = localStorage.getItem('userId'); // Lấy userId từ localStorage
@@ -31,21 +33,19 @@ function AccountUser() {
     }
 
     try {
-      // Gọi API với userId từ URL và thêm vào header
       const response = await instance.get(`/user/info/${userId}`, {
         headers: {
           'user-id': userId, // Thêm userId vào header
         },
       });
 
-      // Kiểm tra xem response và response.data có hợp lệ không
       if (!response || !response.data || !response.data.user) {
         throw new Error(
-          'Failed to fetch user information or user data is missing'
+          'Không thể lấy thông tin người dùng hoặc dữ liệu người dùng bị thiếu'
         );
       }
 
-      setUser(response.data.user); // Lấy user từ response.data
+      setUser(response.data.user);
     } catch (err) {
       console.error(err);
       setError(err.message);
@@ -63,33 +63,42 @@ function AccountUser() {
 
     if (!userId) {
       setError('User ID is missing');
-      toast.error('User ID is missing'); // Toast thông báo lỗi
+      toast.error('User ID is missing');
       return;
     }
 
-    setIsSaving(true); // Đặt trạng thái lưu thay đổi đang diễn ra
+    // Kiểm tra các trường trống
+    if ((data.newPassword || data.confirmPassword) && !data.oldPassword) {
+      toast.error('Mật khẩu cũ là bắt buộc khi thay đổi mật khẩu mới');
+      return;
+    }
+
+    if (
+      (data.newPassword && !data.confirmPassword) ||
+      (data.confirmPassword && !data.newPassword)
+    ) {
+      toast.error('Cả mật khẩu mới và xác nhận mật khẩu phải được nhập');
+      return;
+    }
+
+    if (data.newPassword !== data.confirmPassword) {
+      toast.error('Mật khẩu mới và xác nhận mật khẩu không khớp');
+      return;
+    }
+
+    setIsSaving(true);
 
     try {
-      // Tạo đối tượng payload chứa các thông tin cần cập nhật
       const updateData: any = {
-        username: data.username,
-        email: data.email,
         avatar: data.avatar,
       };
 
-      // Kiểm tra và chỉ gửi mật khẩu nếu người dùng muốn thay đổi
       if (data.oldPassword && data.newPassword && data.confirmPassword) {
-        if (data.newPassword !== data.confirmPassword) {
-          toast.error('Mật khẩu mới và xác nhận mật khẩu không khớp'); // Toast thông báo lỗi
-          setIsSaving(false);
-          return;
-        }
         updateData.oldPassword = data.oldPassword;
         updateData.newPassword = data.newPassword;
         updateData.confirmPassword = data.confirmPassword;
       }
 
-      // Gửi API để cập nhật thông tin người dùng
       const response = await instance.put(
         `/user/update/${userId}`,
         updateData,
@@ -100,34 +109,26 @@ function AccountUser() {
         }
       );
 
-      // Kiểm tra mã trạng thái response để xác nhận yêu cầu thành công
       if (response.status >= 200 && response.status < 300) {
-        toast.success('Cập nhật tài khoản thành công!'); // Toast thông báo thành công
-        fetchUserInfo(); // Có thể refresh lại dữ liệu người dùng sau khi cập nhật thành công
+        toast.success('Cập nhật tài khoản thành công!');
+        fetchUserInfo();
       } else {
-        // Nếu response không thành công, ném lỗi để xử lý trong catch
         throw new Error('Cập nhật tài khoản không thành công.');
       }
     } catch (err) {
       console.error(err);
-
-      // Hiển thị thông báo lỗi từ backend hoặc mặc định
-      if (err.response && err.response.data && err.response.data.message) {
-        // Nếu có thông báo lỗi từ backend, hiển thị nó
-        toast.error(
-          err.response.data.message ||
-            'Có lỗi khi cập nhật tài khoản. Vui lòng thử lại.'
-        );
-      } else {
-        // Nếu không có thông báo từ backend, hiển thị thông báo mặc định
-        toast.error(
-          err.message || 'Có lỗi khi cập nhật tài khoản. Vui lòng thử lại.'
-        );
-      }
+      toast.error(
+        err.response?.data?.message ||
+          'Có lỗi khi cập nhật tài khoản. Vui lòng thử lại.'
+      );
     } finally {
-      setIsSaving(false); // Đảm bảo cập nhật lại trạng thái khi hoàn thành
+      setIsSaving(false);
     }
   };
+
+  // Kiểm tra mật khẩu mới có giống mật khẩu cũ không
+  const newPassword = watch('newPassword');
+  const oldPassword = user?.password; // Giả sử mật khẩu cũ được lưu trữ trong `user.password`
 
   if (loading) {
     return <div>Loading...</div>;
@@ -138,23 +139,31 @@ function AccountUser() {
   }
 
   if (!user) {
-    return <div>No user information available</div>;
+    return <div>Không có thông tin người dùng nào có sẵn</div>;
   }
 
   return (
     <div className="main-content flex h-auto w-full flex-col items-center justify-center bg-gray-50 p-5">
+      {loading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="flex items-center justify-center space-x-2 rounded-lg bg-white p-6 py-4 shadow-lg">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-t-4 border-solid border-gray-200 border-t-indigo-600" />
+            <p className="text-gray-500">Đang cập nhật...</p>
+          </div>
+        </div>
+      )}
       <div className="main-content flex h-48 w-full flex-col items-center justify-center">
         <div className="text-content">
           <div className="text-center text-4xl font-semibold">
-            Tài khoản của tôi
+            Cập nhật mật khẩu
           </div>
           <div className="link caption1 mt-3 flex items-center justify-center gap-1">
             <div className="flex items-center justify-center">
-              <a href="/">Home</a>
+              <Link to="/">Home</Link>
               <ChevronRightMini />
             </div>
             <div className="capitalize text-gray-500">
-              <Link to="/account">Tài khoản của tôi</Link>
+              <Link to="/account">Cập nhật mật khẩu</Link>
             </div>
           </div>
         </div>
@@ -162,58 +171,13 @@ function AccountUser() {
 
       <div className="account-user mx-auto mt-8 w-full max-w-3xl rounded-lg bg-white p-8 shadow-lg">
         <h2 className="mb-6 text-3xl font-semibold text-gray-800">
-          Thông tin tài khoản
+          Cập nhật mật khẩu
         </h2>
 
         <form
           className="user-info-form space-y-6"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <div className="form-group">
-            <label
-              htmlFor="username"
-              className="text-lg font-medium text-gray-700"
-            >
-              Tên người dùng
-            </label>
-            <Input
-              type="text"
-              id="username"
-              {...register('username', { required: 'Username bắt buộc' })}
-              defaultValue={user.username}
-              className="form-control w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.username && (
-              <p className="text-sm text-red-500">{errors.username.message}</p>
-            )}
-          </div>
-
-          <div className="form-group">
-            <label
-              htmlFor="email"
-              className="text-lg font-medium text-gray-700"
-            >
-              Email
-            </label>
-            <Input
-              type="email"
-              id="email"
-              {...register('email', {
-                required: 'Email bắt buộc',
-                pattern: {
-                  value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                  message: 'Email sai định dạng',
-                },
-              })}
-              defaultValue={user.email}
-              className="form-control w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.email && (
-              <p className="text-sm text-red-500">{errors.email.message}</p>
-            )}
-          </div>
-
-          {/* Các ô mật khẩu */}
           <div className="form-group">
             <label
               htmlFor="old-password"
@@ -225,9 +189,7 @@ function AccountUser() {
               type="password"
               id="old-password"
               {...register('oldPassword', {
-                required:
-                  (watch('newPassword') || watch('confirmPassword')) &&
-                  'Mật khẩu cũ là bắt buộc', // Chỉ yêu cầu nếu đổi mật khẩu mới
+                required: 'Mật khẩu cũ là bắt buộc',
               })}
               className="form-control w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -249,12 +211,17 @@ function AccountUser() {
               type="password"
               id="new-password"
               {...register('newPassword', {
-                required:
-                  (watch('confirmPassword') && 'Mật khẩu mới là bắt buộc') ||
-                  false, // Chỉ yêu cầu nếu nhập mật khẩu xác nhận
+                required: 'Mật khẩu mới là bắt buộc',
+
                 minLength: {
                   value: 6,
                   message: 'Mật khẩu mới phải có ít nhất 6 ký tự',
+                },
+                validate: value => {
+                  // Kiểm tra nếu mật khẩu mới trùng với mật khẩu cũ
+                  if (value === oldPassword) {
+                    return 'Mật khẩu mới không được giống với mật khẩu cũ';
+                  }
                 },
               })}
               className="form-control w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -277,9 +244,8 @@ function AccountUser() {
               type="password"
               id="confirm-password"
               {...register('confirmPassword', {
-                required:
-                  (watch('newPassword') && 'Xác nhận mật khẩu là bắt buộc') ||
-                  false, // Chỉ yêu cầu nếu nhập mật khẩu mới
+                required: 'Xác nhận mật khẩu là bắt buộc',
+
                 validate: (value, { newPassword }) =>
                   value === newPassword || 'Mật khẩu xác nhận không khớp',
               })}
@@ -292,12 +258,11 @@ function AccountUser() {
             )}
           </div>
 
-          {/* Submit button */}
           <div className="form-group text-center">
             <Button
               type="submit"
               className="w-full rounded-md bg-blue-600 py-3 font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={isSaving}
+              disabled={isSaving || !isValid}
             >
               {isSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
             </Button>

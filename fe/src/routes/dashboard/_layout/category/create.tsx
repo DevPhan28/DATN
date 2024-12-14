@@ -1,8 +1,8 @@
+import instance from '@/api/axiosIntance';
 import Header from '@/components/layoutAdmin/header/header';
 import { Button, Input, toast } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import instance from '@/api/axiosIntance';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 export const Route = createFileRoute('/dashboard/_layout/category/create')({
   component: AddCategory,
@@ -10,7 +10,6 @@ export const Route = createFileRoute('/dashboard/_layout/category/create')({
 
 function AddCategory() {
   const navigate = useNavigate();
-
   const {
     register,
     handleSubmit,
@@ -25,14 +24,14 @@ function AddCategory() {
     try {
       // Send API request to create category
       await instance.post('/categories', { name: data.name });
-      toast.success('Create successful', {
-        description: 'Create category successful!',
+      toast.success('Tạo danh mục', {
+        description: 'Tạo danh mục thành công!',
         duration: 1000,
       });
       // Redirect to categories list after creation
       navigate({ to: '/dashboard/category' });
     } catch (error) {
-      console.error('Failed to create category:', error);
+      console.error('Thêm danh mục thất bại', error);
     }
   };
 
@@ -47,7 +46,7 @@ function AddCategory() {
               className="text-sm font-medium text-ui-fg-subtle hover:cursor-pointer"
               onClick={() => navigate({ to: '/dashboard/category' })}
             >
-             Danh sách danh mục
+              Danh sách danh mục
             </button>
             <button
               type="submit"
@@ -62,21 +61,20 @@ function AddCategory() {
               type="button"
               onClick={() => navigate({ to: '/dashboard/category' })}
             >
-             Hủy
+              Hủy
             </Button>
             <Button variant="primary" type="submit">
-             Tạo danh mục
+              Tạo danh mục
             </Button>
           </div>
         </div>
 
         <div className="rounded-lg border bg-ui-bg-base p-7">
           <h1 className="text-2xl font-medium text-ui-fg-base">
-          Thông tin chung
-
+            Thông tin chung
           </h1>
           <p className="mb-4 text-sm font-normal text-ui-fg-subtle">
-          Cung cấp tên danh mục.
+            Cung cấp tên danh mục.
           </p>
 
           <div className="space-y-4">
