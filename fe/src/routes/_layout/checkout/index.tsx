@@ -33,7 +33,6 @@ export const Route = createFileRoute('/_layout/checkout/')({
     console.log(shippingMessage);
 
     // Fetch available coupons
-    
 
     const [selectedCoupon, setSelectedCoupon] = useState(null);
     const [discountAmount, setDiscountAmount] = useState(0);
@@ -45,7 +44,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
     const totalAmount = selectedItems.reduce(
       (acc, item) => acc + item.price * item.quantity,
       0
-    ); 
+    );
 
     const handlePaymentMethodChange = method => {
       setPaymentMethod(method);
@@ -54,18 +53,23 @@ export const Route = createFileRoute('/_layout/checkout/')({
     const calculateDiscountedTotal = () => {
       if (selectedCoupon) {
         const rawDiscount = (selectedCoupon.discount / 100) * totalAmount;
-        return Math.min(rawDiscount, selectedCoupon.maxDiscountAmount || rawDiscount);
+        return Math.min(
+          rawDiscount,
+          selectedCoupon.maxDiscountAmount || rawDiscount
+        );
       }
       return 0;
     };
     const calculateTotalWithDiscount = () => {
-      const discount = selectedCoupon?.isFreeShipping ? 0 : calculateDiscountedTotal();
-      const shipping = selectedCoupon?.isFreeShipping ? 0 : calculatedShippingFee;
+      const discount = selectedCoupon?.isFreeShipping
+        ? 0
+        : calculateDiscountedTotal();
+      const shipping = selectedCoupon?.isFreeShipping
+        ? 0
+        : calculatedShippingFee;
       return totalAmount - discount + shipping;
     };
     const discount = calculateDiscountedTotal();
-
-  
 
     const [isVoucherModalOpen, setVoucherModalOpen] = useState(false);
 
@@ -200,7 +204,8 @@ export const Route = createFileRoute('/_layout/checkout/')({
       }
     }, [selectedDistrict, totalAmount, isCouponFreeShipping]);
 
-    const totalWithDiscount = calculateTotalWithDiscount()
+    const totalWithDiscount = calculateTotalWithDiscount();
+
     const handleSubmit = async (e: any) => {
       e.preventDefault();
       const userId = localStorage.getItem('userId');
@@ -548,7 +553,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
               isOpen={isVoucherModalOpen}
               onClose={() => setVoucherModalOpen(false)}
               onApplyCoupon={handleCouponChange}
-              totalAmount ={totalAmount}
+              totalAmount={totalAmount}
             />
           </div>
           <div className="m-auto mt-5 max-w-7xl bg-white p-5 pt-10">

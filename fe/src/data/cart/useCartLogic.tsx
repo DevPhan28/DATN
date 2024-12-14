@@ -26,82 +26,96 @@ export function useCart(userId: string | null) {
     }));
     const product = cartData?.products[index];
     if (product) {
-      updateQuantity.mutate({
-        userId: userId || '',
-        productId: product.productId,
-        variantId: product.variantId,
-        quantity,
-      });
+      updateQuantity.mutate(
+        {
+          userId: userId || '',
+          productId: product.productId,
+          variantId: product.variantId,
+          quantity,
+        },
+        {
+          onError: error => {
+            // Kiểm tra nếu lỗi liên quan đến số lượng vượt quá tồn kho
+            if (error?.response?.data?.error === 'OUT_OF_STOCK') {
+              // Reload trang khi số lượng vượt quá tồn kho
+              window.location.reload();
+            }
+          },
+        }
+      );
     }
   };
 
   const incrementQuantity = (index: number) => {
     const product = cartData?.products[index];
-  
+
     if (!product) {
       console.warn(`Product at index ${index} is undefined.`);
       return;
     }
-  
+
     const currentQuantity = quantities[index] || product.quantity || 0;
-  
-    // Tính toán số lượng mới
     const newQuantity = currentQuantity + 1;
-  
-    // Cập nhật quantities (dựa trên index)
+
     setQuantities(prev => ({
       ...prev,
       [index]: newQuantity,
     }));
-  
-    // Nếu userId không tồn tại, không gọi API
+
     if (!userId) {
-      console.warn("User ID is missing.");
+      console.warn('User ID is missing.');
       return;
     }
-  
-    // Gọi mutation để tăng số lượng
-    increaseQuantity.mutate({
-      userId,
-      productId: product.productId,
-      variantId: product.variantId,
-    });
+
+    increaseQuantity.mutate(
+      {
+        userId,
+        productId: product.productId,
+        variantId: product.variantId,
+      },
+      {
+        onError: error => {
+          // Kiểm tra nếu lỗi liên quan đến số lượng vượt quá tồn kho
+          if (error?.response?.data?.error === 'OUT_OF_STOCK') {
+            // Reload trang khi số lượng vượt quá tồn kho
+            window.location.reload();
+          }
+        },
+      }
+    );
   };
-  
 
   const dialog = usePrompt();
 
   const decrementQuantity = async (index: number) => {
     const product = cartData?.products[index];
     const productQuantity = product?.quantity || 0;
-    const newQuantity = Math.max(
-      (quantities[index] || productQuantity) - 1,
-      0
-    );
-  
+    const newQuantity = Math.max((quantities[index] || productQuantity) - 1, 0);
+
     if (newQuantity === 0) {
       const userHasConfirmed = await dialog({
         title: 'Xác nhận xóa sản phẩm',
-        description: 'Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng không?',
+        description:
+          'Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng không?',
       });
-  
+
       if (!userHasConfirmed) {
         return;
       }
     }
-  
-    setQuantities((prev) => ({
+
+    setQuantities(prev => ({
       ...prev,
       [index]: newQuantity,
     }));
-  
+
     if (product && newQuantity >= 0) {
       try {
         await decreaseQuantity.mutateAsync({
           userId: userId || '',
           productId: product.productId,
           variantId: product.variantId,
-          confirm: true
+          confirm: true,
         });
       } catch (error) {
         toast.error('Có lỗi xảy ra khi giảm số lượng sản phẩm.');
@@ -144,22 +158,51 @@ export function useCart(userId: string | null) {
   };
 
   const toggleSelectProduct = (index: number) => {
-    setSelectedProducts(prev => ({
-      ...prev,
-      [index]: !prev[index],
-    }));
+    setSelectedProducts(prev => {
+      const newSelectedProducts = { ...prev, [index]: !prev[index] };
+
+      if (newSelectedProducts[index]) {
+        const product = cartData?.products[index];
+        if (product) {
+          setQuantities(prevQuantities => ({
+            ...prevQuantities,
+            [index]: product.quantity,
+          }));
+        }
+      } else {
+        setQuantities(prevQuantities => {
+          const updatedQuantities = { ...prevQuantities };
+          delete updatedQuantities[index];
+          return updatedQuantities;
+        });
+      }
+
+      return newSelectedProducts;
+    });
   };
 
   const toggleSelectAll = () => {
     const newSelectAll = !selectAll;
     setSelectAll(newSelectAll);
+
     if (newSelectAll) {
       const allSelected = Object.fromEntries(
         cartData?.products.map((_, index) => [index, true]) || []
       );
       setSelectedProducts(allSelected);
+
+      const updatedQuantities = cartData?.products.reduce(
+        (acc, product, index) => {
+          acc[index] = product.quantity;
+          return acc;
+        },
+        {} as Record<number, number>
+      );
+
+      setQuantities(updatedQuantities || {});
     } else {
       setSelectedProducts({});
+      setQuantities({});
     }
   };
 

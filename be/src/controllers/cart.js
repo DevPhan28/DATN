@@ -112,12 +112,15 @@ const deleteItemFromCart = async (req, res) => {
 
 const increaseProductQuantity = async (req, res) => {
   const { userId, productId, variantId } = req.body;
+
   try {
+    // Tìm giỏ hàng của người dùng
     let cart = await Cart.findOne({ userId });
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
 
+    // Tìm sản phẩm trong giỏ hàng
     const product = cart.products.find(
       (item) => item.productId.toString() === productId && item.variantId === variantId
     );
@@ -125,19 +128,22 @@ const increaseProductQuantity = async (req, res) => {
       return res.status(404).json({ message: "Product not found in cart" });
     }
 
+    // Tìm sản phẩm và biến thể từ cơ sở dữ liệu
     const dbProduct = await Product.findById(productId);
-    const variant = dbProduct.variants.find(v => v.sku === variantId);
+    const variant = dbProduct.variants.find((v) => v.sku === variantId);
 
     if (!variant) {
       return res.status(404).json({ message: "Product variant not found" });
     }
 
-    // Kiểm tra nếu số lượng sản phẩm trong giỏ vượt quá số lượng tồn kho
-    if (product.quantity + 1 > variant.countInStock) {
-      return res.status(400).json({ message: `Số lượng yêu cầu vượt quá tồn kho. Chỉ còn lại ${variant.countInStock} sản phẩm.` });
+    // Kiểm tra nếu số lượng hiện tại đã đạt đến giới hạn tồn kho
+    if (product.quantity >= variant.countInStock) {
+      return res.status(400).json({
+        message: `Không thể tăng thêm số lượng. Chỉ còn lại ${variant.countInStock} sản phẩm trong kho.`,
+      });
     }
 
-    // Cập nhật giỏ hàng
+    // Tăng số lượng sản phẩm trong giỏ
     product.quantity++;
     product.totalPrice += product.priceAtTime;
 
@@ -149,6 +155,7 @@ const increaseProductQuantity = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 const decreaseProductQuantity = async (req, res) => {
   const { userId, productId, variantId, confirm } = req.body;  

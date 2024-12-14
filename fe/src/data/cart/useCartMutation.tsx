@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import instance from '@/api/axiosIntance';  
-import { toast } from '@medusajs/ui';  
+import instance from '@/api/axiosIntance';
+import { toast } from '@medusajs/ui';
 
 const useCartMutation = () => {
-  const queryClient = useQueryClient(); 
+  const queryClient = useQueryClient();
   const addItemToCart = useMutation({
     mutationFn: (data: {
       userId: string;
@@ -24,7 +24,7 @@ const useCartMutation = () => {
       });
     },
   });
- 
+
   const deleteItemFromCart = useMutation({
     mutationFn: ({
       userId,
@@ -46,7 +46,7 @@ const useCartMutation = () => {
       });
     },
   });
- 
+
   const updateQuantity = useMutation({
     mutationFn: (data: {
       userId: string;
@@ -54,50 +54,70 @@ const useCartMutation = () => {
       variantId: string;
       quantity: number;
     }) => instance.patch('/cart/update-quantity', data),
-  
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
-  
+
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.error || error.message || 'Có lỗi xảy ra';
-      const errorDescription = error?.response?.data?.description || 'Không thể cập nhật số lượng, vui lòng thử lại.';
+      const errorMessage =
+        error?.response?.data?.error || error.message || 'Có lỗi xảy ra';
+      const errorDescription =
+        error?.response?.data?.description ||
+        'Không thể cập nhật số lượng, vui lòng thử lại.';
       toast.error(errorMessage, {
         description: errorDescription,
         duration: 2000,
       });
     },
   });
-  
+
   const increaseQuantity = useMutation({
-    mutationFn: (data: { userId: string; productId: string; variantId: string }) => instance.patch('/cart/increase-quantity', data),
-  
+    mutationFn: (data: {
+      userId: string;
+      productId: string;
+      variantId: string;
+    }) => instance.patch('/cart/increase-quantity', data),
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
-  
+
     onError: (error: any) => {
-      const errorMessage = error?.response?.data?.message || error.message || 'Không thể tăng số lượng sản phẩm, vui lòng thử lại.';
+      const errorMessage =
+        error?.response?.data?.message ||
+        error.message ||
+        'Không thể tăng số lượng sản phẩm, vui lòng thử lại.';
+
+      // Hiển thị thông báo lỗi
       toast.error(`Có lỗi xảy ra: ${errorMessage}`, {
         description: 'Không thể tăng số lượng sản phẩm, vui lòng thử lại.',
         duration: 2000,
       });
+
+      // Nếu server trả về lỗi vượt quá số lượng tồn kho, làm mới lại giỏ hàng
+      if (error?.response?.status === 400) {
+        queryClient.invalidateQueries({ queryKey: ['cart'] });
+      }
     },
-  });  
- 
+  });
+
   const decreaseQuantity = useMutation({
-    mutationFn: (data: { userId: string; productId: string; variantId: string; confirm: boolean }) =>
-      instance.patch('/cart/decrease-quantity', data),
-  
+    mutationFn: (data: {
+      userId: string;
+      productId: string;
+      variantId: string;
+      confirm: boolean;
+    }) => instance.patch('/cart/decrease-quantity', data),
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
     },
-  
-    onError: (error) => {
+
+    onError: error => {
       console.error(error);
-    }
+    },
   });
-  
 
   return {
     addItemToCart,

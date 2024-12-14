@@ -22,7 +22,7 @@ const useCheckoutMutation = () => {
           return;
         }
         await queryClient.invalidateQueries({ queryKey: ['cart'] });
-        
+
         navigate({
           to: '/thanks',
           search: {
