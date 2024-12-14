@@ -1,5 +1,5 @@
 import { useFetchCart } from '@/data/cart/useFetchCart';
-import { BarsThree, XMark } from '@medusajs/icons';
+import { BarsThree, XMark, MagnifyingGlass } from '@medusajs/icons';
 import { toast } from '@medusajs/ui';
 import { Link } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
@@ -9,6 +9,7 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false); // Trạng thái hiển thị form tìm kiếm
+  const [showInput, setShowInput] = useState(false); // Trạng thái hiển thị ô input
   // Kiểm tra trạng thái đăng nhập khi component được tải
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -129,12 +130,33 @@ const Header = () => {
             <div className="flex items-center space-x-2 text-[19px]">
               {/* Icon search */}
 
-              <a href="/searchList">
+              {/* <a href="/searchList">
                 <i
                   className="fa-solid fa-magnifying-glass cursor-pointer p-3 text-[20px] hover:text-blue-400"
                   onClick={toggleSearch}
                 ></i>
-              </a>
+              </a> */}
+              <div className="mx-auto flex max-w-md items-center space-x-2">
+                {/* Hiển thị ô input khi nhấn nút "Search" */}
+                {showInput && (
+                  <div className="flex w-full overflow-hidden rounded-full border bg-white px-1 py-1 font-[sans-serif]">
+                    <input
+                      type="text"
+                      placeholder="Search Something..."
+                      className="w-full bg-white pl-4 text-sm outline-none"
+                    />
+                  </div>
+                )}
+
+             
+                <button
+                  onClick={() => setShowInput(prev => !prev)} // Đảo ngược trạng thái hiển thị
+                  type="button"
+                  className="rounded-full  px-5 py-2 text-sm  transition-all hover:opacity-90"
+                >
+                 <Link to={"/shop"}> <MagnifyingGlass/></Link>
+                </button>
+              </div>
               <Link to="/cart" className="relative">
                 <i className="fa-solid fa-cart-shopping text-[20px] hover:text-blue-400"></i>
                 {/* Display total items in the cart */}

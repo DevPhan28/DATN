@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   useFetchCategory,
   useFetchProductAll,
@@ -14,6 +14,8 @@ import {
   ChevronRightMini,
 } from '@medusajs/icons';
 import FilterBar from '@/components/FilterBar';
+import CurrencyVND from '@/components/config/vnd';
+import { toast } from '@medusajs/ui';
 export const Route = createFileRoute('/_layout/shop/')({
   component: Shop,
 });
@@ -22,7 +24,9 @@ function Shop() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null); // Thêm trạng thái để theo dõi danh mục được chọn
   const [showFilter, setShowFilter] = useState<boolean>(false);
   const [showSearch, setShowSearch] = useState<boolean>(false);
+   const [searchTerm, setSearchTerm] = useState<string>('');
   const { addItemToCart } = useCartMutation();
+   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
 
   const toggleFilter = () => {
     setShowFilter(!showFilter);
@@ -59,15 +63,41 @@ function Shop() {
       ], // variantId được thêm nếu có
     });
   };
+  useEffect(() => {
+    const filterProducts = () => {
+      let filtered = listProduct;
 
-  const filteredProducts = selectedCategory
-    ? listProduct.filter(product => product?.category?._id === selectedCategory)
-    : listProduct; // Hiển thị tất cả sản phẩm nếu không chọn danh mục nào
+      // Lọc theo danh mục nếu có
+      if (selectedCategory) {
+        filtered = filtered.filter(
+          product => product?.category?._id === selectedCategory
+        );
+      }
 
-  const displayedProducts = filteredProducts
-    ? filteredProducts.slice(0, 16)
-    : [];
+      if (searchTerm) {
+        filtered = filtered.filter(product =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
 
+      setFilteredProducts(filtered);
+    };
+
+    filterProducts();
+  }, [selectedCategory, searchTerm, listProduct]);
+  const displayedProducts =
+    filteredProducts.length > 0
+      ? filteredProducts.slice(0, 8)
+      : listProduct.slice(0, 8);
+
+       const handleFilterChange = (filtered: Product[]) => {
+          setFilteredProducts(filtered);
+          if (filtered.length > 0) {
+            toast.success('Sản phẩm đã được lọc thành công!');
+          } else {
+            toast.error('Không tìm thấy sản phẩm phù hợp!');
+          }
+        };
   return (
     <div>
       <div className=''>
@@ -134,17 +164,19 @@ function Shop() {
             <div className="mb-8 scale-100 transform opacity-100 transition-all duration-500 ease-in-out">
               <div className="flex items-center space-x-2 rounded-lg border border-gray-300 p-4">
                 <MagnifyingGlass className="mr-2" />
-                <input
-                  type="text"
-                  placeholder="Search"
-                  className="search-input w-full border-none bg-white focus:outline-none"
-                />
+                 <input
+              type="text"
+              placeholder="Search"
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="search-input w-full border-none bg-white focus:outline-none"
+            />
               </div>
             </div>
           )}
 
           {/* Thanh lọc */}
-          {showFilter && <FilterBar />}
+          {showFilter && <FilterBar onFilterChange={handleFilterChange} />}
 
           {/* Hiển thị trạng thái Loading hoặc Error */}
           {loading && <p>Loading products...</p>}
@@ -181,7 +213,7 @@ function Shop() {
                     </div>
                   </h2>
                   <p className="mt-2 flex justify-start text-gray-600">
-                    ${product.price}
+                  <CurrencyVND amount={product.price} />
                   </p>
                 </div>
               ))}

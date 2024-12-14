@@ -41,29 +41,7 @@ function SearchList() {
   };
 
   // Handle page navigation
-  const handlePageChange = (newPage: number) => {
-    if (newPage > 0 && newPage <= pagination.totalPages) {
-      setPage(newPage);
-    }
-  };
 
-  const handleAddToCart = (product: Product) => {
-    const userId = localStorage.getItem('userId') ?? ''; // Handle userId
-    if (!userId) {
-      console.error('User ID is missing');
-      return;
-    }
-    addItemToCart.mutate({
-      userId: userId,
-      products: [
-        {
-          productId: product._id,
-          variantId: product.variantId ?? '',
-          quantity: 1,
-        },
-      ],
-    });
-  };
 
   return (
     <div className="search-container mx-auto max-w-7xl p-5 sm:p-5 md:p-5 lg:p-10">
