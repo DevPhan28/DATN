@@ -1,4 +1,5 @@
 import instance from '@/api/axiosIntance';
+import CurrencyVND from '@/components/config/vnd';
 import Header from '@/components/layoutAdmin/header/header';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useParams } from '@tanstack/react-router';
@@ -140,7 +141,7 @@ function DetailProduct() {
                         {variant.color}
                       </td>
                       <td className="border px-4 py-2 text-black">
-                        {variant.price}
+                         <CurrencyVND amount={variant.price}/>
                       </td>
                       <td className="border px-4 py-2 text-black">
                         {variant.sku}

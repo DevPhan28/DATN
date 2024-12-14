@@ -1,7 +1,7 @@
 import instance from '@/api/axiosIntance';
 import CurrencyVND from '@/components/config/vnd';
 import { Table, toast } from '@medusajs/ui';
-import { ArchiveBox,TagSolid, Users } from '@medusajs/icons';
+import { ArchiveBox, TagSolid, Users } from '@medusajs/icons';
 import { createFileRoute, useParams } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
@@ -102,7 +102,7 @@ function OrderDetail() {
                 </div>
                 <div className="mb-4">
                   <h2 className="mb-2 flex items-center space-x-2 text-lg font-semibold">
-                  <TagSolid/>  <p>Địa chỉ nhận hàng</p>
+                    <TagSolid /> <p>Địa chỉ nhận hàng</p>
                   </h2>
                   <p>Số điện thoại: (+84) {customerInfo.phone}</p>
                   <p>
@@ -112,7 +112,7 @@ function OrderDetail() {
                 </div>
                 <div className="mb-4">
                   <h2 className="mb-2 flex items-center space-x-2 text-lg font-semibold">
-                  <Users/> <p>Thông tin vận chuyển</p>
+                    <Users /> <p>Thông tin vận chuyển</p>
                   </h2>
                   <p>
                     Kiện hàng :
@@ -242,11 +242,7 @@ function OrderDetail() {
                       <td className="px-4 py-2">
                         {items.map((item, index) => (
                           <td key={item._id} className="">
-                            <CurrencyVND
-                              amount={(
-                                item.price * item.quantity
-                              ).toLocaleString()}
-                            />
+                            <CurrencyVND amount={item.price * item.quantity} />
                           </td>
                         ))}
                       </td>
@@ -262,6 +258,7 @@ function OrderDetail() {
                       <td></td>
                       <td className="px-4 py-2"></td>
                     </tr>
+
                     <tr>
                       <td colSpan={4} className="px-4 py-2 text-gray-500">
                         Phí vận chuyển
@@ -279,6 +276,15 @@ function OrderDetail() {
                       </td>
                       <td></td>
                       <td className="px-4 py-2"></td>
+                    </tr>
+                    <tr>
+                      <td colSpan={4} className="px-4 py-2 font-semibold">
+                        Giảm giá
+                      </td>
+
+                      <td className="px-4 py-2">
+                        <CurrencyVND amount={orderDetail.discount} />
+                      </td>
                     </tr>
 
                     {/* <tr>
@@ -303,7 +309,7 @@ function OrderDetail() {
                       <td colSpan={4} className="px-4 py-2 font-semibold">
                         Phương thức thanh toán
                       </td>
-                      <td className="px-4 py-2 text-lg">{paymentStatus}</td>
+                      <td className="px-4 py-2 text-lg">{paymentMethod}</td>
                       <td></td>
                       <td className="px-4 py-2"></td>
                     </tr>

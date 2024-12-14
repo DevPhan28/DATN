@@ -407,6 +407,14 @@ function UserOrder() {
                             </span>
                           </span>
                           <span className="flex items-center justify-between text-lg">
+                            Giảm giá:
+                            <span className="ml-2">
+                              <div>
+                               <CurrencyVND amount= {order.discount}/>
+                              </div>
+                            </span>
+                          </span>
+                          <span className="flex items-center justify-between text-lg">
                             Tổng tiền sản phẩm :{' '}
                             <span className="ml-2">
                               <CurrencyVND amount={order.totalPrice} />

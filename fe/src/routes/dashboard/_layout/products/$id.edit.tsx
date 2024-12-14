@@ -631,7 +631,7 @@ Kéo và thả file vào đây hoặc bấm vào để tải lên
                   </div>
                     <div className="flex-1 space-y-3">
                       <label className="block text-sm font-medium text-ui-fg-base">
-                        Price ($)
+                        Price (VND)
                       </label>
                       <Input
                         type="number"
