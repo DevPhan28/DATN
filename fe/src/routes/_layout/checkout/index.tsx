@@ -63,7 +63,9 @@ export const Route = createFileRoute('/_layout/checkout/')({
       const shipping = selectedCoupon?.isFreeShipping ? 0 : calculatedShippingFee;
       return totalAmount - discount + shipping;
     };
-    
+    const discount = calculateDiscountedTotal();
+
+  
 
     const [isVoucherModalOpen, setVoucherModalOpen] = useState(false);
 
@@ -198,9 +200,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
       }
     }, [selectedDistrict, totalAmount, isCouponFreeShipping]);
 
-    const totalWithDiscount =
-      calculateDiscountedTotal() +
-      (isCouponFreeShipping ? 0 : calculatedShippingFee);
+    const totalWithDiscount = calculateTotalWithDiscount()
     const handleSubmit = async (e: any) => {
       e.preventDefault();
       const userId = localStorage.getItem('userId');
@@ -234,6 +234,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
         totalPrice: totalWithDiscount,
         couponCode: selectedCoupon ? selectedCoupon.code : null,
         shippingMessageDisplay: shippingMessageDisplay,
+        discount: discount,
       };
 
       try {

@@ -61,18 +61,6 @@ const getCategoryBySlug = async (req, res) => {
 const addCategory = async (req, res) => {
   try {
     // Tạo slug từ tên danh mục
-    const rootCategory = await Category.findOne({ name: "Danh mục gốc" });
-
-    if (!rootCategory) {
-      // Tạo danh mục gốc nếu chưa có
-      const newRootCategory = new Category({
-        name: "Danh mục gốc",
-        slug: "danh-muc-goc",
-        parentCategory: null, // Đặt parentCategory là null
-      });
-
-      await newRootCategory.save();
-    } 
     const slug = slugify(req.body.name, { lower: true, strict: true });
 
     // Tạo danh mục

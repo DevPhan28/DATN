@@ -85,6 +85,7 @@ const OrderSchema = new mongoose.Schema(
     zalopayTimestamp: { type: Number }, // Thời gian giao dịch qua ZaloPay
     note: String,
     shippingMessageDisplay: { type: Object },
+    discount: { type: String },
     statusHistory: { type: [String], default: [] },
     receivedAt: Date,
     createdAt: { type: Date, default: Date.now },

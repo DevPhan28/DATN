@@ -19,7 +19,7 @@ console.log("🚀 ===== ZALOPAY_ENDPOINT:", ZALOPAY_ENDPOINT);
 const createOrder = async (req, res) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { userId, items, totalPrice, customerInfo, paymentMethod,shippingMessageDisplay  } = req.body;
+      const { userId, items, totalPrice, customerInfo, paymentMethod, shippingMessageDisplay , discount } = req.body;
 
       const order = await Order.create({
         userId,
@@ -41,6 +41,7 @@ const createOrder = async (req, res) => {
         status: "pending", 
         paymentStatus: "cod", 
         shippingMessageDisplay,
+        discount,
       });
 
 

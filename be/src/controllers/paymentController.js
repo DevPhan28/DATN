@@ -52,15 +52,12 @@ console.log("Testt");
 const updatePaymentStatusOnFailure = async (req, res) => {
   let { orderId, paymentStatus } = req.body;
 
-  
-  // Kiểm tra giá trị orderId
   if (!orderId || !mongoose.Types.ObjectId.isValid(orderId)) {
     return res.status(400).json({ message: "Invalid or missing Order ID" });
   }   
 
   orderId = new mongoose.Types.ObjectId(orderId);
   console.log("oderId", orderId);
-  // Kiểm tra giá trị paymentStatus
   if (!["paid", "pending", "failed", "pendingPayment"].includes(paymentStatus)) {
     return res.status(400).json({ message: "Invalid paymentStatus value" });
   }
@@ -72,10 +69,8 @@ const updatePaymentStatusOnFailure = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // Cập nhật paymentStatus
     order.paymentStatus = paymentStatus;
 
-    // Cập nhật status dựa trên paymentStatus
     if (paymentStatus === "pending") {
       order.status = "pending";
       order.paymentStatus = "pending";
