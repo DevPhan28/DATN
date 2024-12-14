@@ -57,12 +57,52 @@ const getCategoryBySlug = async (req, res) => {
   }
 };
 
+// const addCategory = async (req, res) => {
+//   try {
+//     // Tạo slug từ tên danh mục
+//     const slug = slugify(req.body.name, { lower: true, strict: true });
+
+//     // Kiểm tra nếu parentCategory không được truyền vào, gán mặc định là null
+
+//     // Tạo danh mục
+//     const category = await Category.create({
+//       name: req.body.name,
+//       slug, // Thêm slug vào dữ liệu
+//     });
+
+//     return res.status(201).json({
+//       message: "Tạo danh mục thành công",
+//       category, // Đổi tên từ categories -> category cho đúng số ít
+//     });
+//   } catch (error) {
+//     // Kiểm tra lỗi trùng slug (hoặc tên)
+//     if (error.code === 11000) {
+//       return res.status(400).json({
+//         message: "Danh mục đã tồn tại",
+//       });
+//     }
+
+//     // Xử lý lỗi khác
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 const addCategory = async (req, res) => {
   try {
     // Tạo slug từ tên danh mục
-    const slug = slugify(req.body.name, { lower: true, strict: true });
+    const rootCategory = await Category.findOne({ name: "Danh mục gốc" });
 
-    // Kiểm tra nếu parentCategory không được truyền vào, gán mặc định là null
+    if (!rootCategory) {
+      // Tạo danh mục gốc nếu chưa có
+      const newRootCategory = new Category({
+        name: "Danh mục gốc",
+        slug: "danh-muc-goc",
+        parentCategory: null, // Đặt parentCategory là null
+      });
+
+      await newRootCategory.save();
+    } 
+    const slug = slugify(req.body.name, { lower: true, strict: true });
 
     // Tạo danh mục
     const category = await Category.create({
@@ -86,7 +126,6 @@ const addCategory = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 const getRootCategory = async (req, res) => {
   try {
