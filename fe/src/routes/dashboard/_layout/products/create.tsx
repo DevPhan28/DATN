@@ -135,9 +135,9 @@ function AddBrand() {
     // Kiểm tra trùng size và color
     const uniqueVariants = new Set();
     for (const variant of data.variants) {
-      const key = `${variant.size}`;
+      const key = `${variant.color}`;
       if (uniqueVariants.has(key)) {
-        toast.error('Duplicate variant detected: size must be unique.');
+        toast.error('Duplicate variant detected: color must be unique.');
         return;
       }
       uniqueVariants.add(key);
@@ -493,16 +493,8 @@ function AddBrand() {
                       <Input
                         placeholder="e.g., M"
                         size="base"
-                        {...register(`variants.${index}.size` as const, {
+                         {...register(`variants.${index}.size` as const, {
                           required: 'Size phải bắt buộc',
-                          validate: value => {
-                            const variants = watch('variants');
-                            const isDuplicate = variants.some(
-                              (variant, i) =>
-                                i !== index && variant.size === value
-                            );
-                            return isDuplicate ? 'Size đã tồn tại.' : true;
-                          },
                         })}
                       />
                       {errors.variants?.[index]?.size && (
@@ -519,8 +511,17 @@ function AddBrand() {
                         placeholder="e.g., Red"
                         size="base"
                         {...register(`variants.${index}.color` as const, {
-                          required: 'Màu phải bắt buộc',
+                          required: 'Size phải bắt buộc',
+                          validate: value => {
+                            const variants = watch('variants');
+                            const isDuplicate = variants.some(
+                              (variant, i) =>
+                                i !== index && variant.color === value
+                            );
+                            return isDuplicate ? 'Màu đã tồn tại.' : true;
+                          },
                         })}
+                        
                       />
                       {errors.variants?.[index]?.color && (
                         <span className="text-xs text-red-500">

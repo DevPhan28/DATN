@@ -32,6 +32,7 @@ import { Route as LayoutCartIndexImport } from './routes/_layout/cart/index'
 import { Route as LayoutBlogIndexImport } from './routes/_layout/blog/index'
 import { Route as LayoutAccountIndexImport } from './routes/_layout/account/index'
 import { Route as LayoutAboutIndexImport } from './routes/_layout/about/index'
+import { Route as LayoutDetailblogSlugImport } from './routes/_layout/detailblog/$slug'
 import { Route as LayoutCategoriesSlugImport } from './routes/_layout/categories/$slug'
 import { Route as LayoutSlugQuickviewProductImport } from './routes/_layout/$slug.quickviewProduct'
 import { Route as LayoutSlugDetailproductImport } from './routes/_layout/$slug.detailproduct'
@@ -40,9 +41,11 @@ import { Route as DashboardLayoutProductsIndexImport } from './routes/dashboard/
 import { Route as DashboardLayoutOrderIndexImport } from './routes/dashboard/_layout/order/index'
 import { Route as DashboardLayoutCouponIndexImport } from './routes/dashboard/_layout/coupon/index'
 import { Route as DashboardLayoutCategoryIndexImport } from './routes/dashboard/_layout/category/index'
+import { Route as DashboardLayoutBlogIndexImport } from './routes/dashboard/_layout/blog/index'
 import { Route as DashboardLayoutProductsCreateImport } from './routes/dashboard/_layout/products/create'
 import { Route as DashboardLayoutCouponCreateImport } from './routes/dashboard/_layout/coupon/create'
 import { Route as DashboardLayoutCategoryCreateImport } from './routes/dashboard/_layout/category/create'
+import { Route as DashboardLayoutBlogCreateImport } from './routes/dashboard/_layout/blog/create'
 import { Route as LayoutRefundUserIdOrderIdImport } from './routes/_layout/refund/$userId.$orderId'
 import { Route as LayoutExchangeUserIdOrderIdImport } from './routes/_layout/exchange/$userId.$orderId'
 import { Route as DashboardLayoutProductsSlugViewdetailImport } from './routes/dashboard/_layout/products/$slug.viewdetail'
@@ -158,6 +161,11 @@ const LayoutAboutIndexRoute = LayoutAboutIndexImport.update({
   getParentRoute: () => LayoutRoute,
 } as any)
 
+const LayoutDetailblogSlugRoute = LayoutDetailblogSlugImport.update({
+  path: '/detailblog/$slug',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
 const LayoutCategoriesSlugRoute = LayoutCategoriesSlugImport.update({
   path: '/categories/$slug',
   getParentRoute: () => LayoutRoute,
@@ -204,6 +212,11 @@ const DashboardLayoutCategoryIndexRoute =
     getParentRoute: () => DashboardLayoutRoute,
   } as any)
 
+const DashboardLayoutBlogIndexRoute = DashboardLayoutBlogIndexImport.update({
+  path: '/blog/',
+  getParentRoute: () => DashboardLayoutRoute,
+} as any)
+
 const DashboardLayoutProductsCreateRoute =
   DashboardLayoutProductsCreateImport.update({
     path: '/products/create',
@@ -221,6 +234,11 @@ const DashboardLayoutCategoryCreateRoute =
     path: '/category/create',
     getParentRoute: () => DashboardLayoutRoute,
   } as any)
+
+const DashboardLayoutBlogCreateRoute = DashboardLayoutBlogCreateImport.update({
+  path: '/blog/create',
+  getParentRoute: () => DashboardLayoutRoute,
+} as any)
 
 const LayoutRefundUserIdOrderIdRoute = LayoutRefundUserIdOrderIdImport.update({
   path: '/refund/$userId/$orderId',
@@ -364,6 +382,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutCategoriesSlugImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/detailblog/$slug': {
+      id: '/_layout/detailblog/$slug'
+      path: '/detailblog/$slug'
+      fullPath: '/detailblog/$slug'
+      preLoaderRoute: typeof LayoutDetailblogSlugImport
+      parentRoute: typeof LayoutImport
+    }
     '/_layout/about/': {
       id: '/_layout/about/'
       path: '/about'
@@ -448,6 +473,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutRefundUserIdOrderIdImport
       parentRoute: typeof LayoutImport
     }
+    '/dashboard/_layout/blog/create': {
+      id: '/dashboard/_layout/blog/create'
+      path: '/blog/create'
+      fullPath: '/dashboard/blog/create'
+      preLoaderRoute: typeof DashboardLayoutBlogCreateImport
+      parentRoute: typeof DashboardLayoutImport
+    }
     '/dashboard/_layout/category/create': {
       id: '/dashboard/_layout/category/create'
       path: '/category/create'
@@ -467,6 +499,13 @@ declare module '@tanstack/react-router' {
       path: '/products/create'
       fullPath: '/dashboard/products/create'
       preLoaderRoute: typeof DashboardLayoutProductsCreateImport
+      parentRoute: typeof DashboardLayoutImport
+    }
+    '/dashboard/_layout/blog/': {
+      id: '/dashboard/_layout/blog/'
+      path: '/blog'
+      fullPath: '/dashboard/blog'
+      preLoaderRoute: typeof DashboardLayoutBlogIndexImport
       parentRoute: typeof DashboardLayoutImport
     }
     '/dashboard/_layout/category/': {
@@ -556,6 +595,7 @@ interface LayoutRouteChildren {
   LayoutSlugDetailproductRoute: typeof LayoutSlugDetailproductRoute
   LayoutSlugQuickviewProductRoute: typeof LayoutSlugQuickviewProductRoute
   LayoutCategoriesSlugRoute: typeof LayoutCategoriesSlugRoute
+  LayoutDetailblogSlugRoute: typeof LayoutDetailblogSlugRoute
   LayoutAboutIndexRoute: typeof LayoutAboutIndexRoute
   LayoutAccountIndexRoute: typeof LayoutAccountIndexRoute
   LayoutBlogIndexRoute: typeof LayoutBlogIndexRoute
@@ -574,6 +614,7 @@ const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutSlugDetailproductRoute: LayoutSlugDetailproductRoute,
   LayoutSlugQuickviewProductRoute: LayoutSlugQuickviewProductRoute,
   LayoutCategoriesSlugRoute: LayoutCategoriesSlugRoute,
+  LayoutDetailblogSlugRoute: LayoutDetailblogSlugRoute,
   LayoutAboutIndexRoute: LayoutAboutIndexRoute,
   LayoutAccountIndexRoute: LayoutAccountIndexRoute,
   LayoutBlogIndexRoute: LayoutBlogIndexRoute,
@@ -592,9 +633,11 @@ const LayoutRouteWithChildren =
 
 interface DashboardLayoutRouteChildren {
   DashboardLayoutIndexRoute: typeof DashboardLayoutIndexRoute
+  DashboardLayoutBlogCreateRoute: typeof DashboardLayoutBlogCreateRoute
   DashboardLayoutCategoryCreateRoute: typeof DashboardLayoutCategoryCreateRoute
   DashboardLayoutCouponCreateRoute: typeof DashboardLayoutCouponCreateRoute
   DashboardLayoutProductsCreateRoute: typeof DashboardLayoutProductsCreateRoute
+  DashboardLayoutBlogIndexRoute: typeof DashboardLayoutBlogIndexRoute
   DashboardLayoutCategoryIndexRoute: typeof DashboardLayoutCategoryIndexRoute
   DashboardLayoutCouponIndexRoute: typeof DashboardLayoutCouponIndexRoute
   DashboardLayoutOrderIndexRoute: typeof DashboardLayoutOrderIndexRoute
@@ -610,9 +653,11 @@ interface DashboardLayoutRouteChildren {
 
 const DashboardLayoutRouteChildren: DashboardLayoutRouteChildren = {
   DashboardLayoutIndexRoute: DashboardLayoutIndexRoute,
+  DashboardLayoutBlogCreateRoute: DashboardLayoutBlogCreateRoute,
   DashboardLayoutCategoryCreateRoute: DashboardLayoutCategoryCreateRoute,
   DashboardLayoutCouponCreateRoute: DashboardLayoutCouponCreateRoute,
   DashboardLayoutProductsCreateRoute: DashboardLayoutProductsCreateRoute,
+  DashboardLayoutBlogIndexRoute: DashboardLayoutBlogIndexRoute,
   DashboardLayoutCategoryIndexRoute: DashboardLayoutCategoryIndexRoute,
   DashboardLayoutCouponIndexRoute: DashboardLayoutCouponIndexRoute,
   DashboardLayoutOrderIndexRoute: DashboardLayoutOrderIndexRoute,
@@ -659,6 +704,7 @@ export interface FileRoutesByFullPath {
   '/$slug/detailproduct': typeof LayoutSlugDetailproductRoute
   '/$slug/quickviewProduct': typeof LayoutSlugQuickviewProductRoute
   '/categories/$slug': typeof LayoutCategoriesSlugRoute
+  '/detailblog/$slug': typeof LayoutDetailblogSlugRoute
   '/about': typeof LayoutAboutIndexRoute
   '/account': typeof LayoutAccountIndexRoute
   '/blog': typeof LayoutBlogIndexRoute
@@ -671,9 +717,11 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardLayoutIndexRoute
   '/exchange/$userId/$orderId': typeof LayoutExchangeUserIdOrderIdRoute
   '/refund/$userId/$orderId': typeof LayoutRefundUserIdOrderIdRoute
+  '/dashboard/blog/create': typeof DashboardLayoutBlogCreateRoute
   '/dashboard/category/create': typeof DashboardLayoutCategoryCreateRoute
   '/dashboard/coupon/create': typeof DashboardLayoutCouponCreateRoute
   '/dashboard/products/create': typeof DashboardLayoutProductsCreateRoute
+  '/dashboard/blog': typeof DashboardLayoutBlogIndexRoute
   '/dashboard/category': typeof DashboardLayoutCategoryIndexRoute
   '/dashboard/coupon': typeof DashboardLayoutCouponIndexRoute
   '/dashboard/order': typeof DashboardLayoutOrderIndexRoute
@@ -699,6 +747,7 @@ export interface FileRoutesByTo {
   '/$slug/detailproduct': typeof LayoutSlugDetailproductRoute
   '/$slug/quickviewProduct': typeof LayoutSlugQuickviewProductRoute
   '/categories/$slug': typeof LayoutCategoriesSlugRoute
+  '/detailblog/$slug': typeof LayoutDetailblogSlugRoute
   '/about': typeof LayoutAboutIndexRoute
   '/account': typeof LayoutAccountIndexRoute
   '/blog': typeof LayoutBlogIndexRoute
@@ -710,9 +759,11 @@ export interface FileRoutesByTo {
   '/thanks': typeof LayoutThanksIndexRoute
   '/exchange/$userId/$orderId': typeof LayoutExchangeUserIdOrderIdRoute
   '/refund/$userId/$orderId': typeof LayoutRefundUserIdOrderIdRoute
+  '/dashboard/blog/create': typeof DashboardLayoutBlogCreateRoute
   '/dashboard/category/create': typeof DashboardLayoutCategoryCreateRoute
   '/dashboard/coupon/create': typeof DashboardLayoutCouponCreateRoute
   '/dashboard/products/create': typeof DashboardLayoutProductsCreateRoute
+  '/dashboard/blog': typeof DashboardLayoutBlogIndexRoute
   '/dashboard/category': typeof DashboardLayoutCategoryIndexRoute
   '/dashboard/coupon': typeof DashboardLayoutCouponIndexRoute
   '/dashboard/order': typeof DashboardLayoutOrderIndexRoute
@@ -741,6 +792,7 @@ export interface FileRoutesById {
   '/_layout/$slug/detailproduct': typeof LayoutSlugDetailproductRoute
   '/_layout/$slug/quickviewProduct': typeof LayoutSlugQuickviewProductRoute
   '/_layout/categories/$slug': typeof LayoutCategoriesSlugRoute
+  '/_layout/detailblog/$slug': typeof LayoutDetailblogSlugRoute
   '/_layout/about/': typeof LayoutAboutIndexRoute
   '/_layout/account/': typeof LayoutAccountIndexRoute
   '/_layout/blog/': typeof LayoutBlogIndexRoute
@@ -753,9 +805,11 @@ export interface FileRoutesById {
   '/dashboard/_layout/': typeof DashboardLayoutIndexRoute
   '/_layout/exchange/$userId/$orderId': typeof LayoutExchangeUserIdOrderIdRoute
   '/_layout/refund/$userId/$orderId': typeof LayoutRefundUserIdOrderIdRoute
+  '/dashboard/_layout/blog/create': typeof DashboardLayoutBlogCreateRoute
   '/dashboard/_layout/category/create': typeof DashboardLayoutCategoryCreateRoute
   '/dashboard/_layout/coupon/create': typeof DashboardLayoutCouponCreateRoute
   '/dashboard/_layout/products/create': typeof DashboardLayoutProductsCreateRoute
+  '/dashboard/_layout/blog/': typeof DashboardLayoutBlogIndexRoute
   '/dashboard/_layout/category/': typeof DashboardLayoutCategoryIndexRoute
   '/dashboard/_layout/coupon/': typeof DashboardLayoutCouponIndexRoute
   '/dashboard/_layout/order/': typeof DashboardLayoutOrderIndexRoute
@@ -784,6 +838,7 @@ export interface FileRouteTypes {
     | '/$slug/detailproduct'
     | '/$slug/quickviewProduct'
     | '/categories/$slug'
+    | '/detailblog/$slug'
     | '/about'
     | '/account'
     | '/blog'
@@ -796,9 +851,11 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/exchange/$userId/$orderId'
     | '/refund/$userId/$orderId'
+    | '/dashboard/blog/create'
     | '/dashboard/category/create'
     | '/dashboard/coupon/create'
     | '/dashboard/products/create'
+    | '/dashboard/blog'
     | '/dashboard/category'
     | '/dashboard/coupon'
     | '/dashboard/order'
@@ -823,6 +880,7 @@ export interface FileRouteTypes {
     | '/$slug/detailproduct'
     | '/$slug/quickviewProduct'
     | '/categories/$slug'
+    | '/detailblog/$slug'
     | '/about'
     | '/account'
     | '/blog'
@@ -834,9 +892,11 @@ export interface FileRouteTypes {
     | '/thanks'
     | '/exchange/$userId/$orderId'
     | '/refund/$userId/$orderId'
+    | '/dashboard/blog/create'
     | '/dashboard/category/create'
     | '/dashboard/coupon/create'
     | '/dashboard/products/create'
+    | '/dashboard/blog'
     | '/dashboard/category'
     | '/dashboard/coupon'
     | '/dashboard/order'
@@ -863,6 +923,7 @@ export interface FileRouteTypes {
     | '/_layout/$slug/detailproduct'
     | '/_layout/$slug/quickviewProduct'
     | '/_layout/categories/$slug'
+    | '/_layout/detailblog/$slug'
     | '/_layout/about/'
     | '/_layout/account/'
     | '/_layout/blog/'
@@ -875,9 +936,11 @@ export interface FileRouteTypes {
     | '/dashboard/_layout/'
     | '/_layout/exchange/$userId/$orderId'
     | '/_layout/refund/$userId/$orderId'
+    | '/dashboard/_layout/blog/create'
     | '/dashboard/_layout/category/create'
     | '/dashboard/_layout/coupon/create'
     | '/dashboard/_layout/products/create'
+    | '/dashboard/_layout/blog/'
     | '/dashboard/_layout/category/'
     | '/dashboard/_layout/coupon/'
     | '/dashboard/_layout/order/'
@@ -940,6 +1003,7 @@ export const routeTree = rootRoute
         "/_layout/$slug/detailproduct",
         "/_layout/$slug/quickviewProduct",
         "/_layout/categories/$slug",
+        "/_layout/detailblog/$slug",
         "/_layout/about/",
         "/_layout/account/",
         "/_layout/blog/",
@@ -980,9 +1044,11 @@ export const routeTree = rootRoute
       "parent": "/dashboard",
       "children": [
         "/dashboard/_layout/",
+        "/dashboard/_layout/blog/create",
         "/dashboard/_layout/category/create",
         "/dashboard/_layout/coupon/create",
         "/dashboard/_layout/products/create",
+        "/dashboard/_layout/blog/",
         "/dashboard/_layout/category/",
         "/dashboard/_layout/coupon/",
         "/dashboard/_layout/order/",
@@ -1014,6 +1080,10 @@ export const routeTree = rootRoute
     },
     "/_layout/categories/$slug": {
       "filePath": "_layout/categories/$slug.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/detailblog/$slug": {
+      "filePath": "_layout/detailblog/$slug.tsx",
       "parent": "/_layout"
     },
     "/_layout/about/": {
@@ -1064,6 +1134,10 @@ export const routeTree = rootRoute
       "filePath": "_layout/refund/$userId.$orderId.tsx",
       "parent": "/_layout"
     },
+    "/dashboard/_layout/blog/create": {
+      "filePath": "dashboard/_layout/blog/create.tsx",
+      "parent": "/dashboard/_layout"
+    },
     "/dashboard/_layout/category/create": {
       "filePath": "dashboard/_layout/category/create.tsx",
       "parent": "/dashboard/_layout"
@@ -1074,6 +1148,10 @@ export const routeTree = rootRoute
     },
     "/dashboard/_layout/products/create": {
       "filePath": "dashboard/_layout/products/create.tsx",
+      "parent": "/dashboard/_layout"
+    },
+    "/dashboard/_layout/blog/": {
+      "filePath": "dashboard/_layout/blog/index.tsx",
       "parent": "/dashboard/_layout"
     },
     "/dashboard/_layout/category/": {

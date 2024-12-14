@@ -3,12 +3,16 @@ import Header from '@/components/layoutAdmin/header/header';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useParams } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/dashboard/_layout/products/$slug/viewdetail')({
+export const Route = createFileRoute(
+  '/dashboard/_layout/products/$slug/viewdetail'
+)({
   component: DetailProduct,
 });
 
 function DetailProduct() {
-  const { slug } = useParams({ from: '/dashboard/_layout/products/$slug/viewdetail' });
+  const { slug } = useParams({
+    from: '/dashboard/_layout/products/$slug/viewdetail',
+  });
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['product', slug],
@@ -24,20 +28,26 @@ function DetailProduct() {
   });
 
   if (isLoading) {
-    return <div className="flex justify-center items-center h-screen text-gray-500">Loading...</div>;
+    return (
+      <div className="flex h-screen items-center justify-center text-gray-500">
+        Loading...
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="text-center text-red-500">Error: {error.message}</div>;
+    return (
+      <div className="text-center text-red-500">Error: {error.message}</div>
+    );
   }
 
   return (
     <div className="h-screen overflow-y-auto">
       <Header title="Chi tiết sản phẩm" pathname="/" />
-      <div className="bg-white shadow-md rounded-lg overflow-hidden m-8">
-        <div className="max-w-6xl grid grid-cols-3">
+      <div className="m-8 overflow-hidden rounded-lg bg-white shadow-md">
+        <div className="grid max-w-6xl grid-cols-3">
           {/* Product Image */}
-          <div className="p-4 flex items-center">
+          <div className="flex items-center p-4">
             <img
               src={data.product.image}
               alt={data.product.name}
@@ -46,16 +56,27 @@ function DetailProduct() {
           </div>
 
           {/* Product Details */}
-          <div className="p-6 space-y-4">
-            <h1 className="text-2xl font-bold text-gray-800 uppercase">{data.product.name}</h1>
-            <p className="text-black font-semibold">
-              Mô tả: <span className="text-gray-600 font-sans">{data.product.description}</span>
+          <div className="space-y-4 p-6">
+            <h1 className="text-2xl font-bold uppercase text-gray-800">
+              {data.product.name}
+            </h1>
+            <p className="font-semibold text-black">
+              Mô tả:{' '}
+              <span className="font-sans text-gray-600">
+                {data.product.description}
+              </span>
             </p>
-            <div className="text-black font-semibold">
-              Giá: <span className="text-xl font-semibold text-red-600">{data.product.price}VND</span>
+            <div className="font-semibold text-black">
+              Giá:{' '}
+              <span className="text-xl font-semibold text-red-600">
+                {data.product.price}VND
+              </span>
             </div>
-            <div className="text-black font-semibold">
-              Giảm giá: <span className="text-xl font-semibold text-gray-600">{data.product.discount}%</span>
+            <div className="font-semibold text-black">
+              Giảm giá:{' '}
+              <span className="text-xl font-semibold text-gray-600">
+                {data.product.discount}%
+              </span>
             </div>
           </div>
         </div>
@@ -64,19 +85,20 @@ function DetailProduct() {
         <div className="p-8">
           <h2 className="text-lg font-bold text-gray-800">Ảnh trưng bày</h2>
           {data.product.gallery.length > 0 ? (
-            <div className="grid grid-cols-4 gap-4 mt-4">
+            <div className="mt-4 grid grid-cols-4 gap-4">
               {data.product.gallery.map((image: string, index: number) => (
                 <img
                   key={index}
                   src={image}
                   alt={`Gallery Image ${index + 1}`}
-                  className="w-full h-48 object-cover rounded shadow"
+                  className="h-48 w-full rounded object-cover shadow"
                 />
               ))}
             </div>
           ) : (
             <p className="text-gray-600">
-Không có hình ảnh nào trong thư viện.</p>
+              Không có hình ảnh nào trong thư viện.
+            </p>
           )}
         </div>
 
@@ -84,15 +106,25 @@ Không có hình ảnh nào trong thư viện.</p>
         <div className="p-8">
           <h2 className="text-lg font-bold text-gray-800">Biến thể</h2>
           {data.product.variants.length > 0 ? (
-            <div className="overflow-x-auto mt-4">
+            <div className="mt-4 overflow-x-auto">
               <table className="min-w-full border border-gray-300">
                 <thead className="bg-gray-100">
                   <tr>
-                    <th className="px-4 py-2 text-left text-black font-medium border">Size</th>
-                    <th className="px-4 py-2 text-left text-black font-medium border">Màu</th>
-                    <th className="px-4 py-2 text-left text-black font-medium border">Giá (VND)</th>
-                    <th className="px-4 py-2 text-left text-black font-medium border">Sku</th>
-                    <th className="px-4 py-2 text-left text-black font-medium border">Số lượng trong kho</th>
+                    <th className="border px-4 py-2 text-left font-medium text-black">
+                      Size
+                    </th>
+                    <th className="border px-4 py-2 text-left font-medium text-black">
+                      Màu
+                    </th>
+                    <th className="border px-4 py-2 text-left font-medium text-black">
+                      Giá (VND)
+                    </th>
+                    <th className="border px-4 py-2 text-left font-medium text-black">
+                      Sku
+                    </th>
+                    <th className="border px-4 py-2 text-left font-medium text-black">
+                      Số lượng trong kho
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -101,11 +133,21 @@ Không có hình ảnh nào trong thư viện.</p>
                       key={variant._id || index}
                       className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
                     >
-                      <td className="px-4 py-2 border text-black">{variant.size}</td>
-                      <td className="px-4 py-2 border text-black">{variant.color}</td>
-                      <td className="px-4 py-2 border text-black">{variant.price}</td>
-                      <td className="px-4 py-2 border text-black">{variant.sku}</td>
-                      <td className="px-4 py-2 border text-black">{variant.countInStock}</td>
+                      <td className="border px-4 py-2 text-black">
+                        {variant.size}
+                      </td>
+                      <td className="border px-4 py-2 text-black">
+                        {variant.color}
+                      </td>
+                      <td className="border px-4 py-2 text-black">
+                        {variant.price}
+                      </td>
+                      <td className="border px-4 py-2 text-black">
+                        {variant.sku}
+                      </td>
+                      <td className="border px-4 py-2 text-black">
+                        {variant.countInStock}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -115,11 +157,9 @@ Không có hình ảnh nào trong thư viện.</p>
             <p className="text-gray-600">Không có sẵn các biến thể.</p>
           )}
         </div>
-
       </div>
     </div>
   );
-
 }
 
 export default DetailProduct;
