@@ -304,11 +304,10 @@ function UserOrder() {
               <button
                 key={tab.id}
                 onClick={() => setSelectedTab(tab.id)}
-                className={`px-2 py-2 text-gray-700 sm:px-4 ${
-                  selectedTab === tab.id
+                className={`px-2 py-2 text-gray-700 sm:px-4 ${selectedTab === tab.id
                     ? 'border-b-2 border-red-500 text-red-600'
                     : ''
-                }`}
+                  }`}
               >
                 {tab.label}
               </button>
@@ -325,33 +324,32 @@ function UserOrder() {
                   >
                     <div className="mb-4 flex items-center justify-between">
                       <span
-                        className={`rounded-full px-4 py-1 text-sm font-medium ${
-                          order.status === 'canceled' ||
-                          order.status === 'canceled_complaint'
+                        className={`rounded-full px-4 py-1 text-sm font-medium ${order.status === 'canceled' ||
+                            order.status === 'canceled_complaint'
                             ? 'bg-red-200 text-red-600'
                             : order.status === 'pending'
                               ? 'bg-yellow-200 text-yellow-700'
                               : order.status === 'confirmed'
                                 ? 'bg-blue-200 text-blue-700'
                                 : order.status === 'shipped' ||
-                                    order.status === 'received'
+                                  order.status === 'received'
                                   ? 'bg-indigo-200 text-indigo-700'
                                   : order.status === 'delivered'
                                     ? 'bg-green-200 text-green-700'
                                     : order.status === 'complaint'
                                       ? 'bg-purple-500 text-white'
                                       : order.status === 'refund_in_progress' ||
-                                          order.status ===
-                                            'exchange_in_progress'
+                                        order.status ===
+                                        'exchange_in_progress'
                                         ? 'bg-orange-200 text-orange-700'
                                         : order.status === 'refund_completed' ||
-                                            order.status ===
-                                              'exchange_completed'
+                                          order.status ===
+                                          'exchange_completed'
                                           ? 'bg-teal-200 text-teal-700'
                                           : order.status === 'pendingPayment'
                                             ? 'bg-gray-200 text-gray-700'
                                             : ''
-                        }`}
+                          }`}
                       >
                         {getStatusLabel(order.status)}
                       </span>
@@ -490,19 +488,27 @@ function UserOrder() {
             >
               Trước
             </button>
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index + 1}
-                onClick={() => handlePageChange(index + 1)}
-                className={`rounded-full px-4 py-2 ${
-                  currentPage === index + 1
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                {index + 1}
-              </button>
-            ))}
+
+            {Array.from({ length: totalPages }, (_, index) => index + 1)
+              .filter(
+                page =>
+                  page === 1 || // Trang đầu tiên
+                  page === totalPages || // Trang cuối cùng
+                  (page >= currentPage - 2 && page <= currentPage + 2) // Các trang xung quanh trang hiện tại
+              )
+              .map(page => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`rounded-full px-4 py-2 ${currentPage === page
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                    }`}
+                >
+                  {page}
+                </button>
+              ))}
+
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               className="rounded-full bg-gray-200 px-3 py-1 text-gray-600 hover:bg-gray-300"

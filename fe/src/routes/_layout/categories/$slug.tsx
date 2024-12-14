@@ -49,7 +49,7 @@ function ProductCategory() {
 
   const filteredProducts = selectedCategory
     ? listProduct.filter(product => product?.category?._id === selectedCategory)
-    : listProduct; // Hiển thị tất cả sản phẩm nếu không chọn danh mục nào
+    : listProduct;
 
   const displayedProducts = filteredProducts
     ? filteredProducts.slice(0, 16)
@@ -166,9 +166,9 @@ function ProductCategory() {
           {error && <p className="text-red-500">{error}</p>}
 
           {/* Hiển thị danh sách sản phẩm */}
-          {currentProducts.length > 0 ? (
+          {products.length > 0 ? (
             <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 sm:gap-8 md:grid-cols-3 lg:grid-cols-4">
-              {currentProducts.map((product: Product) => (
+              {products.map((product: Product) => (
                 <div
                   key={product._id}
                   className="product-card group relative overflow-hidden text-center"
@@ -202,7 +202,7 @@ function ProductCategory() {
               ))}
             </div>
           ) : (
-            !loading && <p>No products found.</p>
+            !loading && <p>Không có sản phẩm nào</p>
           )}
 
           {/* Hiển thị phân trang */}

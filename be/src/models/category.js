@@ -19,7 +19,6 @@ const categorySchema = new Schema(
     parentCategory: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Category',
-      default: null, // Giá trị mặc định là null để xác định là danh mục gốc
     },
   },
   { timestamps: true, versionKey: false }

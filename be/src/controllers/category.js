@@ -38,22 +38,21 @@ const getCategoryById = async (req, res) => {
 
 const getCategoryBySlug = async (req, res) => {
   try {
-    // Tìm danh mục theo slug
+    console.log("Slug nhận được:", req.params.slug);
+
     const category = await Category.findOne({ slug: req.params.slug });
+    console.log("Danh mục tìm thấy:", category);
+
     if (!category) {
       return res.status(404).json({ message: "Không tìm thấy danh mục" });
     }
 
-    // Tìm các sản phẩm thuộc danh mục
     const products = await Product.find({ category: category._id });
+    console.log("Sản phẩm thuộc danh mục:", products);
 
-    // Trả về dữ liệu danh mục và sản phẩm
-    return res.status(200).json({
-      category, // Thông tin danh mục
-      products, // Danh sách sản phẩm thuộc danh mục
-    });
+    return res.status(200).json({ category, products });
   } catch (error) {
-    // Xử lý lỗi server
+    console.error("Lỗi xảy ra:", error.message);
     res.status(500).json({ message: error.message });
   }
 };
@@ -62,6 +61,8 @@ const addCategory = async (req, res) => {
   try {
     // Tạo slug từ tên danh mục
     const slug = slugify(req.body.name, { lower: true, strict: true });
+
+    // Kiểm tra nếu parentCategory không được truyền vào, gán mặc định là null
 
     // Tạo danh mục
     const category = await Category.create({
@@ -86,6 +87,7 @@ const addCategory = async (req, res) => {
   }
 };
 
+
 const getRootCategory = async (req, res) => {
   try {
     const rootCategory = await Category.findOne({ parentCategory: null });
@@ -97,18 +99,6 @@ const getRootCategory = async (req, res) => {
     console.error("Lỗi khi lấy danh mục gốc:", error);
     res.status(500).json({ message: "Có lỗi xảy ra khi lấy danh mục gốc" });
   }
-};
-const findRootCategory = async () => {
-  let rootCategory = await Category.findOne({ parentCategory: null });
-  if (!rootCategory) {
-    rootCategory = new Category({
-      name: "Danh mục gốc",
-      slug: "danh-muc-goc",
-      parentCategory: null,
-    });
-    await rootCategory.save();
-  }
-  return rootCategory;
 };
 
 const deleteCategory = async (req, res) => {

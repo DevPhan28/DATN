@@ -12,7 +12,7 @@ const {
 const router = express.Router();
 router.get(`/categories`, getCategorys);
 
-router.get(`/categories/danh-muc-goc`,   getRootCategory);
+router.get(`/categories/danh-muc-goc-a`, getRootCategory);
 
 router.get(`/categorys/:id`, getCategoryById);
 

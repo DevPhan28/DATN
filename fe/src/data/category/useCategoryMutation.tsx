@@ -47,7 +47,7 @@ const useCategoryMutation = (
   const deleteCategory = useMutation({
     mutationFn: async (id: string) => {
       // 1. Lấy danh mục gốc
-      const rootCategory = await instance.get('/categories/danh-muc-goc');
+      const rootCategory = await instance.get('/categories/danh-muc-goc-a');
       if (!rootCategory?.data?._id) {
         throw new Error("Không tìm thấy danh mục gốc!");
       }
