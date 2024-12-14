@@ -10,6 +10,14 @@ const signup = async (req, res) => {
     // lấy dữ liệu từ client gửi lên : req.body
     const { username, email, password, confirmPassword, avatar } = req.body;
 
+    // Kiểm tra username không chứa dấu hoặc ký tự đặc biệt
+    const usernameRegex = /^[a-zA-Z0-9_]+$/; // Chỉ cho phép chữ, số và dấu gạch dưới
+    if (!usernameRegex.test(username)) {
+      return res.status(400).json({
+        messages: "Username không được chứa dấu hoặc ký tự đặc biệt!",
+      });
+    }
+
     // kiểm tra dữ liệu từ client gửi lên có đúng với schema không
     const { error } = registerSchema.validate(req.body, { abortEarly: false });
     if (error) {
@@ -237,25 +245,9 @@ const getUserInfo = async (req, res) => {
 };
 const updateAccount = async (req, res) => {
   const { userId } = req.params; // Lấy userId từ URL params
-  const { username, email, avatar, oldPassword, newPassword, confirmPassword } =
-    req.body;
+  const { oldPassword, newPassword, confirmPassword } = req.body;
 
   try {
-    // Kiểm tra xem username hoặc email có tồn tại trong hệ thống không
-    const existUserByUsername = await User.findOne({ username });
-    if (existUserByUsername && existUserByUsername._id.toString() !== userId) {
-      return res.status(400).json({
-        message: "Username already exists",
-      });
-    }
-
-    const existUserByEmail = await User.findOne({ email });
-    if (existUserByEmail && existUserByEmail._id.toString() !== userId) {
-      return res.status(400).json({
-        message: "Email already exists",
-      });
-    }
-
     // Tìm người dùng trong database
     const user = await User.findById(userId);
 
@@ -265,30 +257,21 @@ const updateAccount = async (req, res) => {
       });
     }
 
-    // Kiểm tra định dạng email (tuỳ chọn)
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (email && !emailRegex.test(email)) {
-      return res.status(400).json({ message: "Invalid email format" });
-    }
-
-    // Kiểm tra mật khẩu (nếu có) phải có độ dài tối thiểu (tuỳ chọn)
+    // Kiểm tra mật khẩu mới có độ dài tối thiểu (tuỳ chọn)
     if (newPassword && newPassword.length < 6) {
       return res
         .status(400)
         .json({ message: "Password must be at least 6 characters long" });
     }
 
-    // Kiểm tra nếu không có thay đổi
-    if (
-      user.username === username &&
-      user.email === email &&
-      user.avatar === avatar &&
-      !newPassword // Kiểm tra nếu không có thay đổi mật khẩu
-    ) {
-      return res.status(400).json({ message: "No changes detected" });
+    // Kiểm tra nếu mật khẩu mới trùng với mật khẩu cũ
+    if (newPassword && oldPassword && newPassword === oldPassword) {
+      return res.status(400).json({
+        message: "Mật khẩu mới không được giống với mật khẩu cũ",
+      });
     }
 
-    // Nếu có thay đổi mật khẩu, kiểm tra mật khẩu cũ
+    // Nếu có mật khẩu mới, kiểm tra mật khẩu cũ và cập nhật mật khẩu
     if (newPassword) {
       // Kiểm tra mật khẩu cũ
       if (!oldPassword) {
@@ -310,19 +293,14 @@ const updateAccount = async (req, res) => {
       // Kiểm tra mật khẩu mới và mật khẩu xác nhận phải giống nhau
       if (newPassword !== confirmPassword) {
         return res.status(400).json({
-          message: "Mật khẩu mới và xác nhận không khớp",
+          message: "Mật khẩu mới và xác nhận mật khẩu không khớp",
         });
       }
 
       // Mã hóa mật khẩu mới
       const hashedPassword = await bcryptjs.hash(newPassword, 10);
-      user.password = hashedPassword;
+      user.password = hashedPassword; // Cập nhật mật khẩu mới vào user
     }
-
-    // Cập nhật thông tin người dùng
-    user.username = username || user.username;
-    user.email = email || user.email;
-    user.avatar = avatar || user.avatar;
 
     // Lưu lại thông tin cập nhật vào database
     await user.save();
@@ -331,13 +309,13 @@ const updateAccount = async (req, res) => {
     user.password = undefined;
 
     return res.status(200).json({
-      message: "Account updated successfully",
+      message: "Mật khẩu đã được cập nhật thành công",
       user,
     });
   } catch (error) {
     console.error(error);
     return res.status(500).json({
-      message: "Error updating account",
+      message: "Có lỗi khi cập nhật mật khẩu",
       error: error.message,
     });
   }

@@ -49,11 +49,11 @@ function Login() {
         {/* Left section with text */}
         <div className="w-full space-y-5 text-center text-ui-bg-base md:w-1/2 md:text-left">
           <p className="text-header-login-1 font-bold">
-            Streamline your workflow
+            Tinh gọn trải nghiệm mua sắm của bạn
           </p>
           <p className="txt-large">
-            Access your dashboard to manage your brand, sales, and performance
-            with ease!
+            Khám phá những bộ sưu tập thời trang mới nhất, dễ dàng đặt hàng và
+            nhận ngay các ưu đãi đặc biệt chỉ có tại cửa hàng của chúng tôi!
           </p>
         </div>
 
@@ -74,10 +74,10 @@ function Login() {
             {/* Welcome message */}
             <div className="space-y-1 text-center">
               <p className="txt-compact-large text-ui-fg-subtle">
-                Welcome to Fashion Zone
+                Chào mừng bạn đến với Fashion Zone
               </p>
               <p className="text-header-web-2 font-semibold text-ui-fg-base">
-                Login to your account
+                Đăng nhập vào tài khoản của bạn
               </p>
             </div>
 
@@ -90,13 +90,13 @@ function Login() {
                   id="email"
                   aria-label="Email"
                   {...register('email', {
-                    required: 'Email is required',
+                    required: 'Email là bắt buộc',
                     pattern: {
                       value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                      message: 'Invalid email format or contains spaces',
+                      message: 'Định dạng email không hợp lệ hoặc có dấu cách',
                     },
                   })}
-                  placeholder="Enter your email"
+                  placeholder="Nhập email của bạn"
                 />
                 {errors.email && (
                   <p className="text-red-500">{errors.email.message}</p>
@@ -105,19 +105,19 @@ function Login() {
 
               {/* Password input */}
               <div className="txt-compact-medium-plus space-y-2 text-ui-fg-subtle">
-                <label htmlFor="password">Password</label>
+                <label htmlFor="password">Mật khẩu</label>
                 <Input
                   id="password"
-                  aria-label="Password"
+                  aria-label="Mật khẩu"
                   type="password"
                   {...register('password', {
-                    required: 'Password is required',
+                    required: 'Mật khẩu là bắt buộc',
                     minLength: {
                       value: 6,
-                      message: 'Password must be at least 6 characters',
+                      message: 'Mật khẩu phải có ít nhất 6 ký tự',
                     },
                   })}
-                  placeholder="Enter your password"
+                  placeholder="Nhập mật khẩu của bạn"
                 />
                 {errors.password && (
                   <p className="text-red-500">{errors.password.message}</p>
@@ -133,16 +133,15 @@ function Login() {
               type="submit"
               className="w-full bg-blue-600 text-white hover:bg-blue-700"
             >
-              Login
+              Đăng nhập
             </Button>
           </form>
 
           {/* Forgot password */}
           <p className="txt-compact-large mt-6 text-ui-fg-subtle">
-            {' '}
-            <Link to="/forgot-password">Forgot your password?</Link>{' '}
+            <Link to="/forgot-password">Quên mật khẩu? </Link>
             <Link className="text-blue-600 hover:underline" to="/register">
-              You do not have an account!
+              Bạn chưa có tài khoản?
             </Link>
           </p>
         </div>

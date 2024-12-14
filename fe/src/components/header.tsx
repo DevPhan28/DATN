@@ -211,7 +211,7 @@ const Header = () => {
                         </li>
                         <li className="custom-cursor-on-hover p-1 px-3 hover:bg-white hover:text-blue-400">
                           <Link to="/account" className="block w-full" href="#">
-                            Tài khoản của tôi
+                            Cập nhật mật khẩu
                           </Link>
                         </li>
                         <li className="custom-cursor-on-hover p-1 px-3 hover:bg-white hover:text-blue-400">

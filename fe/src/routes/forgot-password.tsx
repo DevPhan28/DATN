@@ -2,6 +2,7 @@ import { requestResetPassword } from '@/data/auth/useResetPassword';
 import { Button, Input } from '@medusajs/ui';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { SubmitHandler, useForm } from 'react-hook-form';
+
 export const Route = createFileRoute('/forgot-password')({
   component: ForgotPasswordPage,
 });
@@ -31,11 +32,11 @@ function ForgotPasswordPage() {
         {/* Left section with text */}
         <div className="w-full space-y-5 text-center text-ui-bg-base md:w-1/2 md:text-left">
           <p className="text-header-login-1 font-bold">
-            Streamline your workflow
+            Khám phá bộ sưu tập thời trang mới nhất
           </p>
           <p className="txt-large">
-            Access your dashboard to manage your brand, sales, and performance
-            with ease!
+            Mua sắm quần áo, phụ kiện và những sản phẩm thời trang chất lượng
+            ngay hôm nay để làm mới phong cách của bạn!
           </p>
         </div>
 
@@ -56,10 +57,10 @@ function ForgotPasswordPage() {
             {/* Welcome message */}
             <div className="space-y-1 text-center">
               <p className="txt-compact-large text-ui-fg-subtle">
-                Welcome to Fashion Zone
+                Chào mừng đến với Fashion Zone
               </p>
               <p className="text-header-web-2 font-semibold text-ui-fg-base">
-                Forgot password to your account
+                Quên mật khẩu của tài khoản?
               </p>
             </div>
 
@@ -72,13 +73,14 @@ function ForgotPasswordPage() {
                   id="email"
                   aria-label="Email"
                   {...register('email', {
-                    required: 'Email is required',
+                    required: 'Email là bắt buộc',
                     pattern: {
                       value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                      message: 'Invalid email format or contains spaces',
+                      message:
+                        'Định dạng email không hợp lệ hoặc chứa khoảng trắng',
                     },
                   })}
-                  placeholder="Enter your email"
+                  placeholder="Nhập email của bạn"
                 />
                 {errors.email && (
                   <p className="text-red-500">{errors.email.message}</p>
@@ -90,15 +92,14 @@ function ForgotPasswordPage() {
               type="submit"
               className="w-full bg-blue-600 text-white hover:bg-blue-700"
             >
-              Login
+              Gửi yêu cầu
             </Button>
           </form>
 
-          {/* Forgot password */}
+          {/* Back to login */}
           <p className="txt-compact-large mt-6 text-ui-fg-subtle">
-            {' '}
             <Link className="text-blue-600 hover:underline" to="/login">
-              Back to login page!
+              Quay lại trang đăng nhập!
             </Link>
           </p>
         </div>
