@@ -209,7 +209,6 @@ function Shop() {
                       >
                         <ShoppingCartSolid />
                       </Link>
-                      <Heart />
                     </div>
                   </h2>
                   <p className="mt-2 flex justify-start text-gray-600">

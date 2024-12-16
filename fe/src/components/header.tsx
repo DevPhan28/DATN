@@ -166,7 +166,6 @@ const Header = () => {
                   </span>
                 )}
               </Link>
-              <i className="fa-regular fa-heart p-3 text-[20px] hover:text-blue-400"></i>
               <div className="flex items-center sm:hidden">
                 <button
                   onClick={toggleMenu}

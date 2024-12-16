@@ -40,16 +40,6 @@ function AddCoupon() {
       });
       return;
     }
-
-    // Kiểm tra nếu maxDiscountAmount lớn hơn discount
-    if (data.maxDiscountAmount > 0 && data.maxDiscountAmount < data.discount) {
-      setError('maxDiscountAmount', {
-        type: 'manual',
-        message: 'Số tiền giảm không thể nhỏ hơn tỷ lệ giảm giá',
-      });
-      return;
-    }
-
     try {
       // Gọi API để tạo mã giảm giá mới
       createCoupon.mutate(data);

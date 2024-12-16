@@ -58,6 +58,7 @@ const createOrder = async (req, res) => {
             { new: true }
           );
         } 
+        
       }
 
       Mail.sendOrderConfirmation(customerInfo.email, order);
@@ -148,7 +149,7 @@ const getOrders = async (req, res) => {
   try {
     const {
       page = 1,
-      limit = 10,
+      limit = 1000,
       status,
       sortBy = "createdAt",
       order = "desc",

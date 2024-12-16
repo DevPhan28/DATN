@@ -76,10 +76,6 @@ const productSchema = new mongoose.Schema(
     detaildescription: {
       type: String,
     },
-    discount: {
-      type: Number,
-      default: 0,
-    },
     featured: {
       type: Boolean,
       default: false,

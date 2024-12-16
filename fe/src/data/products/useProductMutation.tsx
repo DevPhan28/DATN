@@ -18,7 +18,6 @@ const useProductMutation = () => {
       category: string[];
       gallery?: string[];
       description: string;
-      discount: number;
       variants: Variant[];
     }) => instance.post<{ id: string }>('/products', data),
 
@@ -51,6 +50,7 @@ const useProductMutation = () => {
       }
     },
     onSuccess: async (result) => {
+      socket.emit('admin-update-product', result);  
       toast.success('Delete successful', {
         description: 'Delete products successful',
         duration: 1000,

@@ -164,6 +164,7 @@ const retryPayment = async (req, res) => {
     }
 
     order.paymentStatus = "pending";
+    order.status = "pending";
     await order.save();
 
     return res.status(200).json({ paymentUrl: data.order_url });

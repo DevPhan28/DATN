@@ -115,66 +115,10 @@ const CardProduct: React.FC = () => {
 
   return (
     <div className="m-auto mt-10 max-w-7xl p-5 sm:p-5 md:p-5 lg:p-5 xl:p-0">
-      <h1 className="mb-4 text-2xl font-bold sm:mb-8 sm:text-4xl">
+      <h1 className="mb-10 text-2xl font-bold sm:mb-8 sm:text-4xl">
         TỔNG QUAN SẢN PHẨM
       </h1>
-      <div className="mb-4 flex flex-wrap items-center justify-between sm:mb-8">
-        <div className="flex flex-wrap space-x-4 sm:space-x-8">
-          <button
-            onClick={() => setSelectedCategory(null)}
-            className="border-b-2 border-gray-900 text-gray-900"
-          >
-            Tất cả sản phẩm
-          </button>
-          {categories?.map((category: { _id: string; name: string }) => (
-            <a
-              href="#"
-              key={category._id}
-              onClick={e => {
-                e.preventDefault();
-                setSelectedCategory(category._id);
-              }}
-              className={`border-gray-900 text-gray-600 hover:border-b-2 ${selectedCategory === category._id ? 'border-b-2' : ''}`}
-            >
-              {category.name}
-            </a>
-          ))}
-        </div>
-        <div className="mt-4 flex space-x-2 sm:mt-0 sm:space-x-4">
-          <button
-            onClick={toggleFilter}
-            className="flex items-center rounded border border-gray-300 px-2 py-1 sm:px-4 sm:py-2"
-          >
-            <Funnel className="mr-1 sm:mr-2" />{' '}
-            {showFilter ? 'Close' : 'Filter'}
-          </button>
-          <button
-            onClick={toggleSearch}
-            className="flex items-center rounded border border-gray-300 px-2 py-1 sm:px-4 sm:py-2"
-          >
-            <MagnifyingGlass className="mr-1 sm:mr-2" />{' '}
-            {showSearch ? 'Close' : 'Search'}
-          </button>
-        </div>
-      </div>
-
-      {showSearch && (
-        <div className="mb-8 scale-100 transform opacity-100 transition-all duration-500 ease-in-out">
-          <div className="flex items-center space-x-2 rounded-lg border border-gray-300 p-4">
-            <MagnifyingGlass className="mr-2" />
-            <input
-              type="text"
-              placeholder="Search"
-              value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
-              className="search-input w-full border-none bg-white focus:outline-none"
-            />
-          </div>
-        </div>
-      )}
-
-      {showFilter && <FilterBar onFilterChange={handleFilterChange} />}
-
+    
       {loading && <p>Loading products...</p>}
       {error && <p className="text-red-500">{error}</p>}
 
@@ -205,12 +149,6 @@ const CardProduct: React.FC = () => {
                   >
                     <ShoppingCartSolid />
                   </Link>
-                  <button
-                    onClick={() => toggleFavorite(product._id)}
-                    className={`transition-colors ${isFavorite ? 'text-red-500' : 'text-gray-500'}`}
-                  >
-                    <HeartIcon />
-                  </button>
                 </div>
               </h2>
               <p className="mt-2 flex justify-start text-gray-600">
