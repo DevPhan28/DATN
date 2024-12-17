@@ -90,15 +90,18 @@ const Mail = {
 
   translateOrderStatus: (status) => {
     const statusTranslations = {
-      pending: "Đang chờ xử lý",
-      confirmed: "Đã xác nhận",
-      shipped: "Đang giao hàng",
-      received: "Đã nhận hàng",
-      delivered: "Đã giao hàng",
-      canceled: "Đã hủy",
-      refund: "Hoàn tiền",
-      exchange: "Đổi hàng",
-      return_completed: "Hoàn trả hoàn tất"
+    pendingPayment: 'Đang chờ thanh toán',
+    pending: 'Đang chờ xử lý',
+    confirmed: 'Đã xác nhận',
+    shipped: 'Đang giao hàng',
+    received: 'Đã nhận hàng',
+    delivered: 'Đã giao hàng',
+    canceled: 'Đơn bị hủy',
+    complaint: 'Khiếu nại',
+    refund_in_progress: 'Đang hoàn trả hàng',
+    refund_completed: 'Hoàn trả hàng thành công',
+    exchange_in_progress: 'Đang đổi trả hàng',
+    exchange_completed: 'Đổi trả hàng thành công',
     };
 
     return statusTranslations[status] || status;

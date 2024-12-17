@@ -7,6 +7,7 @@ import {
   useParams,
 } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
+import CurrencyVND from '@/components/config/vnd';
 
 export const Route = createFileRoute('/_layout/refund/$userId/$orderId')({
   component: RefundRequestPage,
@@ -21,6 +22,7 @@ type Order = {
     quantity: number;
     price: number;
     image: string;
+    totalPrice : string
   }[];
 };
 
@@ -48,6 +50,7 @@ function RefundRequestPage() {
       return;
     }
 
+    
     const fetchOrder = async () => {
       setLoading(true);
       try {
@@ -69,7 +72,6 @@ function RefundRequestPage() {
 
     fetchOrder();
   }, [orderId, navigate]);
-
   const handleSubmit = async () => {
     if (
       !order ||
@@ -145,11 +147,6 @@ function RefundRequestPage() {
   if (!order || !order.items || order.items.length === 0) {
     return <div className="text-center">Đơn hàng không có sản phẩm nào.</div>;
   }
-
-  const totalRefundAmount = order.items.reduce(
-    (total: number, item: any) => total + item.price * item.quantity,
-    0
-  );
 
   return (
     <div className="mx-auto mt-8 max-w-3xl bg-white p-6 shadow-md">
@@ -229,7 +226,7 @@ function RefundRequestPage() {
         <h3 className="mb-2 text-lg font-semibold">Thông tin hoàn tiền</h3>
         <div className="mb-2 flex justify-between">
           <span>Số tiền hoàn lại:</span>
-          <span>{totalRefundAmount.toLocaleString()} đ</span>
+          <span><CurrencyVND amount={order.totalPrice}/></span>
         </div>
 
         <label className="mb-2 block text-sm font-medium text-gray-700">

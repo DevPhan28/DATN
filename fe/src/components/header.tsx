@@ -157,7 +157,7 @@ const Header = () => {
                  <Link to={"/shop"}> <MagnifyingGlass/></Link>
                 </button>
               </div>
-              <Link to="/cart" className="relative mr-10">
+              <Link to="/cart" className="relative">
                 <i className="fa-solid fa-cart-shopping text-[20px] hover:text-blue-400"></i>
                 {/* Display total items in the cart */}
                 {!isLoading && totalItems > 0 && (
@@ -166,7 +166,7 @@ const Header = () => {
                   </span>
                 )}
               </Link>
-              <div className="flex items-center sm:hidden">
+              <div className="flex items-center sm:hidden ">
                 <button
                   onClick={toggleMenu}
                   className="flex items-center justify-center p-2 text-gray-500 hover:text-blue-400 focus:outline-none"
@@ -181,7 +181,7 @@ const Header = () => {
               <div className="group relative z-10" ref={menuRef}>
                 <div
                   onClick={toggleMenu}
-                  className="custom-cursor-on-hover flex cursor-pointer items-center gap-x-2"
+                  className="custom-cursor-on-hover flex cursor-pointer items-center gap-x-2 ml-8"
                 >
                   {isLoggedIn ? (
                     <>

@@ -24,7 +24,6 @@ export const Route = createFileRoute('/_layout/checkout/')({
     const selectedItems = Array.isArray(location.state?.selectedItems)
       ? location.state.selectedItems
       : [];
-    console.log('Selected Items:', selectedItems);
     const [paymentMethod, setPaymentMethod] = useState('online');
     const { deleteItemFromCart } = useCartMutation();
 
@@ -161,7 +160,6 @@ export const Route = createFileRoute('/_layout/checkout/')({
     const calculateShipping = async () => {
       try {
         // Check the contents of selectedItems to ensure all items are included
-        console.log('Selected Items for Shipping Calculation:', selectedItems);
 
         // Calculate total weight based on selected items
         const totalWeight = selectedItems.reduce(

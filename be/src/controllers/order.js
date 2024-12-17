@@ -284,30 +284,26 @@ const updateOrder = async (req, res) => {
         .json({ error: "Order not found" });
     }
 
-    // Nếu trạng thái chuyển thành 'canceled', hoàn lại số lượng vào countInStock
-    if (status === "canceled" && order.status !== "canceled") {
+    // Nếu trạng thái chuyển thành 'refund_completed', hoàn lại số lượng vào countInStock
+    if (status === "refund_completed" && order.status !== "refund_completed") {
       for (const item of order.items) {
         const product = await Product.findById(item.productId);
 
         if (product) {
-          // Tìm variant tương ứng nếu có
-          const variant = product.variants.find(
-            (v) => v.sku === item.variantId
+          // Tìm variant bằng cách khớp color và size thay vì variantId
+          const variantIndex = product.variants.findIndex(
+            (v) => v.color === item.color && v.size === item.size
           );
 
-          if (variant) {
-            // Cộng lại số lượng vào countInStock của variant
-            await Product.updateOne(
-              { _id: item.productId, "variants.sku": item.variantId },
-              { $inc: { "variants.$.countInStock": item.quantity } }
-            );
+          if (variantIndex >= 0) {
+            // Tăng số lượng cho biến thể được tìm thấy
+            product.variants[variantIndex].countInStock += item.quantity;
           } else {
-            // Nếu không có variant, cập nhật countInStock của sản phẩm
-            await Product.updateOne(
-              { _id: item.productId },
-              { $inc: { countInStock: item.quantity } }
-            );
+            // Nếu không có variant, tăng countInStock cho sản phẩm
+            product.countInStock += item.quantity;
           }
+
+          await product.save(); // Lưu thay đổi
         }
       }
     }

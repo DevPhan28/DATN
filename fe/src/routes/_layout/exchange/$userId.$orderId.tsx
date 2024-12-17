@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import instance from '@/api/axiosIntance';
 import { toast, usePrompt } from '@medusajs/ui';
 import { AxiosError } from 'axios';
+import CurrencyVND from '@/components/config/vnd';
 type Order = {
   items: {
     productId: string;
@@ -198,7 +199,7 @@ function ExchangeRequestPage() {
         <h3 className="mb-2 text-lg font-semibold">Thông tin hoàn tiền</h3>
         <div className="mb-2 flex justify-between">
           <span>Số tiền hoàn lại:</span>
-          <span>{totalRefundAmount.toLocaleString()} đ</span>
+          <span><CurrencyVND amount={order.totalPrice}/></span>
         </div>
 
         <label className="mb-2 block text-sm font-medium text-gray-700">
