@@ -274,6 +274,7 @@ const updateOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
     const { status } = req.body;
+
     const order = await Order.findById(orderId);
 
     if (!order) {
@@ -283,16 +284,40 @@ const updateOrder = async (req, res) => {
         .json({ error: "Order not found" });
     }
 
-    // Cập nhật trạng thái nếu khác trạng thái hiện tại
+    // Nếu trạng thái chuyển thành 'canceled', hoàn lại số lượng vào countInStock
+    if (status === "canceled" && order.status !== "canceled") {
+      for (const item of order.items) {
+        const product = await Product.findById(item.productId);
+
+        if (product) {
+          // Tìm variant tương ứng nếu có
+          const variant = product.variants.find(
+            (v) => v.sku === item.variantId
+          );
+
+          if (variant) {
+            // Cộng lại số lượng vào countInStock của variant
+            await Product.updateOne(
+              { _id: item.productId, "variants.sku": item.variantId },
+              { $inc: { "variants.$.countInStock": item.quantity } }
+            );
+          } else {
+            // Nếu không có variant, cập nhật countInStock của sản phẩm
+            await Product.updateOne(
+              { _id: item.productId },
+              { $inc: { countInStock: item.quantity } }
+            );
+          }
+        }
+      }
+    }
+
+    // Cập nhật trạng thái đơn hàng nếu khác trạng thái hiện tại
     if (order.status !== status) {
       order.statusHistory.push(order.status);
       order.status = status;
       await order.save();
       console.log("Order status updated and saved.");
-    } else {
-      console.log(
-        "Status is the same as the current status. No update necessary."
-      );
     }
 
     // Gửi email thông báo nếu có email khách hàng
@@ -310,6 +335,7 @@ const updateOrder = async (req, res) => {
       .json({ error: error.message });
   }
 };
+
 
 const deleteOrder = async (req, res) => {
   try {
@@ -356,16 +382,40 @@ const cancelOrder = async (req, res) => {
       });
     }
 
+    // Tăng lại số lượng vào countInStock cho từng sản phẩm trong đơn hàng
+    for (const item of order.items) {
+      const product = await Product.findById(item.productId);
+
+      if (product) {
+        // Kiểm tra nếu có variant (ví dụ như color/size/weight)
+        const variantIndex = product.variants.findIndex(
+          (v) => v.color === item.color && v.size === item.size
+        );
+
+        if (variantIndex >= 0) {
+          // Nếu tìm thấy variant, tăng số lượng vào countInStock của variant đó
+          product.variants[variantIndex].countInStock += item.quantity;
+        } else {
+          // Nếu không có variant, tăng số lượng vào countInStock chung của sản phẩm
+          product.countInStock += item.quantity;
+        }
+
+        await product.save(); // Lưu lại thay đổi
+      }
+    }
+
     // Cập nhật trạng thái thành "canceled"
     order.status = "canceled";
     await order.save();
-    res.status(200).json({ message: "Đơn hàng đã được hủy thành công", order });
+
+    // Gửi email thông báo nếu có
     if (order.customerInfo && order.customerInfo.email) {
       await Mail.sendOrderStatusUpdate(order.customerInfo.email, order);
-    } else {
-      console.warn("Customer email not found. Skipping email notification.");
     }
+
+    res.status(200).json({ message: "Đơn hàng đã được hủy thành công", order });
   } catch (error) {
+    console.error("Lỗi khi hủy đơn hàng:", error.message);
     res.status(500).json({
       message: "Có lỗi xảy ra khi hủy đơn hàng",
       error: error.message || error,

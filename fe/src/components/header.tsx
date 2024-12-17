@@ -43,7 +43,7 @@ const Header = () => {
     setIsLoggedIn(false);
     toast.success('Đăng xuất', {
       description: 'Bạn đã đăng xuất thành công',
-      duration: 900,
+      duration: 1000,
     });
   };
   //Phần menu của user
@@ -157,7 +157,7 @@ const Header = () => {
                  <Link to={"/shop"}> <MagnifyingGlass/></Link>
                 </button>
               </div>
-              <Link to="/cart" className="relative">
+              <Link to="/cart" className="relative mr-10">
                 <i className="fa-solid fa-cart-shopping text-[20px] hover:text-blue-400"></i>
                 {/* Display total items in the cart */}
                 {!isLoading && totalItems > 0 && (
