@@ -507,20 +507,6 @@ export const Route = createFileRoute('/_layout/checkout/')({
                   </tbody>
                 </table>
               </div>
-              <div className="mt-5 flex items-center gap-2">
-                <label
-                  htmlFor=""
-                  className="custom-cursor-default-hover text-nowrap"
-                >
-                  Tin nhắn:
-                </label>
-                <input
-                  name="noteMessage"
-                  type="text"
-                  placeholder="Nhập vô..."
-                  className="w-full rounded-sm border border-gray-300 px-3 py-1"
-                />
-              </div>
               <div className="mt-5 flex justify-end">
                 <div className="flex items-center gap-2 text-xl font-semibold">
                   Tổng số tiền ({totalQuantity} sản phẩm):{' '}

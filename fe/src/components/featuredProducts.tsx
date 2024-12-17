@@ -7,7 +7,7 @@ import 'slick-carousel/slick/slick.css';
 
 const NextArrow = ({ onClick }: any) => (
   <div
-    className="custom-arrow custom-next hover:bg-gray-300 transition-all p-2 rounded-full"
+    className="custom-arrow custom-next rounded-full p-2 transition-all hover:bg-gray-300"
     onClick={onClick}
     style={{
       display: 'block',
@@ -25,7 +25,7 @@ const NextArrow = ({ onClick }: any) => (
 
 const PrevArrow = ({ onClick }: any) => (
   <div
-    className="custom-arrow custom-prev hover:bg-gray-300 transition-all p-2 rounded-full"
+    className="custom-arrow custom-prev rounded-full p-2 transition-all hover:bg-gray-300"
     onClick={onClick}
     style={{
       display: 'block',
@@ -67,7 +67,7 @@ const FeaturedProducts = () => {
 
   // Slider settings for continuous, smooth scroll
   const settings = {
-    dots: false,  // Set this to false to remove the navigation dots
+    dots: false,
     infinite: true,
     speed: 500,
     slidesToShow: 4,
@@ -77,7 +77,7 @@ const FeaturedProducts = () => {
     arrows: true,
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
-    cssEase: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)', // Adds a smooth easing effect
+    cssEase: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
     responsive: [
       {
         breakpoint: 1024,
@@ -103,12 +103,11 @@ const FeaturedProducts = () => {
     ],
   };
 
-
   return (
-    <div className=" xl:p-0 lg:p-5 md:p-5 sm:p-5 relative">
-      <div className="max-w-7xl m-auto">
-        <h2 className="text-left text-4xl uppercase font-bold mb-5 relative">
-          Sản phẩm nổi bật 
+    <div className="relative sm:p-5 md:p-5 lg:p-5 xl:p-0">
+      <div className="m-auto max-w-7xl">
+        <h2 className="relative mb-5 text-left text-4xl font-bold uppercase">
+          Sản phẩm nổi bật
         </h2>
       </div>
       {loading && <p>Loading products...</p>}
@@ -119,12 +118,12 @@ const FeaturedProducts = () => {
           {displayedProducts.map((product: any) => (
             <div
               key={product._id}
-              className=" group relative overflow-hidden text-center"
+              className="group relative overflow-hidden text-center"
             >
               <img
                 src={product.image}
                 alt={product.name}
-                className="h-80 w-full transform transition-transform duration-500 object-cover"
+                className="h-80 w-full transform object-cover transition-transform duration-500"
               />
               <Link
                 to={`/${product.slug ? product.slug : product._id}/quickviewProduct`}
