@@ -47,6 +47,7 @@ import { Route as DashboardLayoutCouponCreateImport } from './routes/dashboard/_
 import { Route as DashboardLayoutCategoryCreateImport } from './routes/dashboard/_layout/category/create'
 import { Route as DashboardLayoutBlogCreateImport } from './routes/dashboard/_layout/blog/create'
 import { Route as LayoutRefundUserIdOrderIdImport } from './routes/_layout/refund/$userId.$orderId'
+import { Route as LayoutOrderuserIdUserImport } from './routes/_layout/orderuser/$id.user'
 import { Route as LayoutExchangeUserIdOrderIdImport } from './routes/_layout/exchange/$userId.$orderId'
 import { Route as DashboardLayoutProductsSlugViewdetailImport } from './routes/dashboard/_layout/products/$slug.viewdetail'
 import { Route as DashboardLayoutProductsIdEditImport } from './routes/dashboard/_layout/products/$id.edit'
@@ -242,6 +243,11 @@ const DashboardLayoutBlogCreateRoute = DashboardLayoutBlogCreateImport.update({
 
 const LayoutRefundUserIdOrderIdRoute = LayoutRefundUserIdOrderIdImport.update({
   path: '/refund/$userId/$orderId',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutOrderuserIdUserRoute = LayoutOrderuserIdUserImport.update({
+  path: '/orderuser/$id/user',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -466,6 +472,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutExchangeUserIdOrderIdImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/orderuser/$id/user': {
+      id: '/_layout/orderuser/$id/user'
+      path: '/orderuser/$id/user'
+      fullPath: '/orderuser/$id/user'
+      preLoaderRoute: typeof LayoutOrderuserIdUserImport
+      parentRoute: typeof LayoutImport
+    }
     '/_layout/refund/$userId/$orderId': {
       id: '/_layout/refund/$userId/$orderId'
       path: '/refund/$userId/$orderId'
@@ -606,6 +619,7 @@ interface LayoutRouteChildren {
   LayoutShopIndexRoute: typeof LayoutShopIndexRoute
   LayoutThanksIndexRoute: typeof LayoutThanksIndexRoute
   LayoutExchangeUserIdOrderIdRoute: typeof LayoutExchangeUserIdOrderIdRoute
+  LayoutOrderuserIdUserRoute: typeof LayoutOrderuserIdUserRoute
   LayoutRefundUserIdOrderIdRoute: typeof LayoutRefundUserIdOrderIdRoute
 }
 
@@ -625,6 +639,7 @@ const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutShopIndexRoute: LayoutShopIndexRoute,
   LayoutThanksIndexRoute: LayoutThanksIndexRoute,
   LayoutExchangeUserIdOrderIdRoute: LayoutExchangeUserIdOrderIdRoute,
+  LayoutOrderuserIdUserRoute: LayoutOrderuserIdUserRoute,
   LayoutRefundUserIdOrderIdRoute: LayoutRefundUserIdOrderIdRoute,
 }
 
@@ -716,6 +731,7 @@ export interface FileRoutesByFullPath {
   '/thanks': typeof LayoutThanksIndexRoute
   '/dashboard/': typeof DashboardLayoutIndexRoute
   '/exchange/$userId/$orderId': typeof LayoutExchangeUserIdOrderIdRoute
+  '/orderuser/$id/user': typeof LayoutOrderuserIdUserRoute
   '/refund/$userId/$orderId': typeof LayoutRefundUserIdOrderIdRoute
   '/dashboard/blog/create': typeof DashboardLayoutBlogCreateRoute
   '/dashboard/category/create': typeof DashboardLayoutCategoryCreateRoute
@@ -758,6 +774,7 @@ export interface FileRoutesByTo {
   '/shop': typeof LayoutShopIndexRoute
   '/thanks': typeof LayoutThanksIndexRoute
   '/exchange/$userId/$orderId': typeof LayoutExchangeUserIdOrderIdRoute
+  '/orderuser/$id/user': typeof LayoutOrderuserIdUserRoute
   '/refund/$userId/$orderId': typeof LayoutRefundUserIdOrderIdRoute
   '/dashboard/blog/create': typeof DashboardLayoutBlogCreateRoute
   '/dashboard/category/create': typeof DashboardLayoutCategoryCreateRoute
@@ -804,6 +821,7 @@ export interface FileRoutesById {
   '/_layout/thanks/': typeof LayoutThanksIndexRoute
   '/dashboard/_layout/': typeof DashboardLayoutIndexRoute
   '/_layout/exchange/$userId/$orderId': typeof LayoutExchangeUserIdOrderIdRoute
+  '/_layout/orderuser/$id/user': typeof LayoutOrderuserIdUserRoute
   '/_layout/refund/$userId/$orderId': typeof LayoutRefundUserIdOrderIdRoute
   '/dashboard/_layout/blog/create': typeof DashboardLayoutBlogCreateRoute
   '/dashboard/_layout/category/create': typeof DashboardLayoutCategoryCreateRoute
@@ -850,6 +868,7 @@ export interface FileRouteTypes {
     | '/thanks'
     | '/dashboard/'
     | '/exchange/$userId/$orderId'
+    | '/orderuser/$id/user'
     | '/refund/$userId/$orderId'
     | '/dashboard/blog/create'
     | '/dashboard/category/create'
@@ -891,6 +910,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/thanks'
     | '/exchange/$userId/$orderId'
+    | '/orderuser/$id/user'
     | '/refund/$userId/$orderId'
     | '/dashboard/blog/create'
     | '/dashboard/category/create'
@@ -935,6 +955,7 @@ export interface FileRouteTypes {
     | '/_layout/thanks/'
     | '/dashboard/_layout/'
     | '/_layout/exchange/$userId/$orderId'
+    | '/_layout/orderuser/$id/user'
     | '/_layout/refund/$userId/$orderId'
     | '/dashboard/_layout/blog/create'
     | '/dashboard/_layout/category/create'
@@ -1014,6 +1035,7 @@ export const routeTree = rootRoute
         "/_layout/shop/",
         "/_layout/thanks/",
         "/_layout/exchange/$userId/$orderId",
+        "/_layout/orderuser/$id/user",
         "/_layout/refund/$userId/$orderId"
       ]
     },
@@ -1128,6 +1150,10 @@ export const routeTree = rootRoute
     },
     "/_layout/exchange/$userId/$orderId": {
       "filePath": "_layout/exchange/$userId.$orderId.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/orderuser/$id/user": {
+      "filePath": "_layout/orderuser/$id.user.tsx",
       "parent": "/_layout"
     },
     "/_layout/refund/$userId/$orderId": {
