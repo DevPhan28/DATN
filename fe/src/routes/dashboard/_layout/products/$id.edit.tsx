@@ -53,7 +53,6 @@ function EditProduct() {
     description: string;
     detaildescription: string;
     totalCountInStock: number;
-    discount: number;
     variants: Variant[];
   }>({
     defaultValues: {
@@ -65,7 +64,6 @@ function EditProduct() {
       gallery: [],
       description: '',
       totalCountInStock: 0,
-      discount: 0,
       variants: [],
     },
   });
@@ -97,7 +95,6 @@ function EditProduct() {
         description: product.description,
         detaildescription: product.detaildescription,
         totalCountInStock: product.totalCountInStock || 0,
-        discount: product.discount,
         variants: product.variants.map(variant => ({
           size: variant.size,
           color: variant.color,
@@ -151,7 +148,6 @@ function EditProduct() {
     description: string;
     detaildescription: string;
     totalCountInStock: number;
-    discount: number;
     variants: Variant[];
   }> = async data => {
     const uniqueVariants = new Set();
@@ -410,26 +406,6 @@ Kéo và thả file vào đây hoặc bấm vào để tải lên
               </div>
             </div>
 
-            {/* Discount */}
-            <div className="flex space-x-4">
-              <div className="flex-1 space-y-3">
-                <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Giảm giá (%)
-                </label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  placeholder="e.g., 10"
-                  size="base"
-                
-                />
-                {errors.discount && (
-                  <span className="text-xs text-red-500">
-                    {errors.discount.message}
-                  </span>
-                )}
-              </div>
-            </div>
 
             {/* Description */}
             <div className="flex space-x-4">
@@ -582,20 +558,24 @@ Kéo và thả file vào đây hoặc bấm vào để tải lên
                       <span className="text-ui-tag-red-text">*</span> Size
                     </label>
                     <Input
-                      placeholder="e.g., M"
-                      size="base"
-                      {...register(`variants.${index}.size` as const, {
-                        required: 'Size is required',
-                        validate: value => {
-                          const variants = watch('variants');
-                          const isDuplicate = variants.some(
-                            (variant, i) =>
-                              i !== index && variant.size === value && variant.color === variants[index].color
-                          );
-                          return isDuplicate ? 'Combination of size and color must be unique.' : true;
-                        },
-                      })}
-                    />
+                        placeholder="e.g., M"
+                        size="base"
+                        {...register(`variants.${index}.size` as const, {
+                          required: 'Kích thước là bắt buộc',
+                          validate: value => {
+                            const variants = watch('variants');
+                            const isDuplicate = variants.some(
+                              (variant, i) =>
+                                i !== index &&
+                                variant.size === value &&
+                                variant.color === variants[index].color // Kiểm tra cả size và color
+                            );
+                            return isDuplicate
+                              ? 'Kích thước đã tồn tại.'
+                              : true;
+                          },
+                        })}
+                      />
                     {errors.variants?.[index]?.size && (
                       <span className="text-xs text-red-500">
                         {errors.variants[index].size.message}
@@ -609,20 +589,22 @@ Kéo và thả file vào đây hoặc bấm vào để tải lên
                       <span className="text-ui-tag-red-text">*</span> Color
                     </label>
                     <Input
-                      placeholder="e.g., Red"
-                      size="base"
-                      {...register(`variants.${index}.color` as const, {
-                        required: 'Màu phải bắt buộc',
-                        validate: value => {
-                          const variants = watch('variants');
-                          const isDuplicate = variants.some(
-                            (variant, i) =>
-                              i !== index && variant.color === value && variant.size === variants[index].size
-                          );
-                          return isDuplicate ? 'Màu đã tồn tại' : true;
-                        },
-                      })}
-                    />
+                        placeholder="e.g., Red"
+                        size="base"
+                        {...register(`variants.${index}.color` as const, {
+                          required: 'Màu là bắt buộc',
+                          validate: value => {
+                            const variants = watch('variants');
+                            const isDuplicate = variants.some(
+                              (variant, i) =>
+                                i !== index &&
+                                variant.color === value &&
+                                variant.size === variants[index].size // Kiểm tra cả color và size
+                            );
+                            return isDuplicate ? 'Màu đã tồn tại.' : true;
+                          },
+                        })}
+                      />
                     {errors.variants?.[index]?.color && (
                       <span className="text-xs text-red-500">
                         {errors.variants[index].color.message}

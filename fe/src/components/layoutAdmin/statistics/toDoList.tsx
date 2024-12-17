@@ -5,12 +5,11 @@ const translateOrderStatus = status => {
   const statusTranslations = {
     pendingPayment: 'Đang chờ thanh toán',
     pending: 'Đang chờ xử lý',
-    confirmed: 'Đã xác nhận',
-    shipped: 'Đang giao hàng',
-    received: 'Đã nhận hàng',
-    delivered: 'Đã giao hàng',
+    shipped: 'Đang vận chuyển',
+    received: 'Giao hàng thành công',
+    delivered: 'Hoàn thành đơn hàng',
     canceled: 'Đơn bị hủy',
-    complaint: 'Khiếu nại',
+    complaint: 'Khiếu nại chờ xử lý',
     refund_in_progress: 'Đang hoàn trả hàng',
     refund_completed: 'Hoàn trả hàng thành công',
     exchange_in_progress: 'Đang đổi trả hàng',
@@ -21,15 +20,14 @@ const translateOrderStatus = status => {
 };
 
 const ToDoList = () => {
-  const { data, isLoading, error } = useFetchOrders({}); // Adjust parameters if needed
+  const { data, isLoading, error } = useFetchOrders({});
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error loading orders: {error.message}</p>;
 
-  // Define all possible statuses with default count of 0
   const defaultStatusCounts = {
+    pendingPayment: 0,
     pending: 0,
-    confirmed: 0,
     shipped: 0,
     received: 0,
     delivered: 0,
@@ -41,17 +39,57 @@ const ToDoList = () => {
     exchange_completed: 0,
   };
 
+  // Phân loại trạng thái thành 2 nhóm
+  const deliveryStatuses = [
+    'pendingPayment', 'pending', 'shipped', 'received', 'delivered', 'canceled',
+  ];
+  const complaintStatuses = [
+    'complaint', 'refund_in_progress', 'refund_completed', 'exchange_in_progress', 'exchange_completed',
+  ];
+
   const statusCounts = { ...defaultStatusCounts, ...data?.statusCounts };
+
+  const deliveryCounts = Object.keys(statusCounts)
+    .filter(status => deliveryStatuses.includes(status))
+    .reduce((obj, key) => ({ ...obj, [key]: statusCounts[key] }), {});
+
+  const complaintCounts = Object.keys(statusCounts)
+    .filter(status => complaintStatuses.includes(status))
+    .reduce((obj, key) => ({ ...obj, [key]: statusCounts[key] }), {});
 
   return (
     <div className="m-6 rounded-lg bg-white p-6">
-      <h2 className="mb-8 text-xl font-semibold">Danh sách cần làm</h2>
+      <h2 className="mb-8 text-xl font-semibold text-center">Danh sách cần làm</h2>
+
+      {/* Nhóm Delivery */}
+      <h3 className="text-lg font-medium mt-4 mb-2">Đơn giao hàng</h3>
       <div className="grid grid-cols-4 gap-4">
-        {Object.keys(statusCounts).map(status => (
+        {Object.keys(deliveryCounts).map(status => (
           <div key={status} className="text-center">
-            <Link to={`/dashboard/order?page=1&limit=10&status=${status}`}>
+            <Link
+              to="/dashboard/order"
+              state={{ status, selectedGroup: 'delivery' }}
+            >
               <div className="text-3xl font-bold text-blue-500">
-                {statusCounts[status]}
+                {deliveryCounts[status]}
+              </div>
+              <p className="text-sm text-gray-600">{translateOrderStatus(status)}</p>
+            </Link>
+          </div>
+        ))}
+      </div>
+
+      {/* Nhóm Complaint */}
+      <h3 className="text-lg font-medium mt-8 mb-2">Khiếu nại</h3>
+      <div className="grid grid-cols-4 gap-4">
+        {Object.keys(complaintCounts).map(status => (
+          <div key={status} className="text-center">
+            <Link
+              to="/dashboard/order"
+              state={{ status, selectedGroup: 'complaint' }}
+            >
+              <div className="text-3xl font-bold text-red-500">
+                {complaintCounts[status]}
               </div>
               <p className="text-sm text-gray-600">{translateOrderStatus(status)}</p>
             </Link>

@@ -43,7 +43,7 @@ const Header = () => {
     setIsLoggedIn(false);
     toast.success('Đăng xuất', {
       description: 'Bạn đã đăng xuất thành công',
-      duration: 900,
+      duration: 1000,
     });
   };
   //Phần menu của user
@@ -147,8 +147,7 @@ const Header = () => {
                   </span>
                 )}
               </Link>
-              <i className="fa-regular fa-heart p-3 text-[20px] hover:text-blue-400"></i>
-              <div className="flex items-center sm:hidden">
+              <div className="flex items-center sm:hidden ">
                 <button
                   onClick={toggleMenu}
                   className="flex items-center justify-center p-2 text-gray-500 hover:text-blue-400 focus:outline-none"
@@ -163,7 +162,7 @@ const Header = () => {
               <div className="group relative z-10" ref={menuRef}>
                 <div
                   onClick={toggleMenu}
-                  className="custom-cursor-on-hover flex cursor-pointer items-center gap-x-2"
+                  className="custom-cursor-on-hover flex cursor-pointer items-center gap-x-2 ml-8"
                 >
                   {isLoggedIn ? (
                     <>

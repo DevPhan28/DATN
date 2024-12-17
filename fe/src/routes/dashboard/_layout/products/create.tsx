@@ -44,7 +44,6 @@ function AddBrand() {
     description: string;
     detaildescription: string;
     totalCountInStock: number;
-    discount: number;
     variants: Variant[];
   }>({
     defaultValues: {
@@ -129,13 +128,12 @@ function AddBrand() {
     gallery?: string[];
     description: string;
     totalCountInStock: number;
-    discount: number;
     variants: Variant[];
   }> = async data => {
     // Kiểm tra trùng size và color
     const uniqueVariants = new Set();
     for (const variant of data.variants) {
-      const key = `${variant.color}`;
+      const key = `${variant.color}-${variant.color}`;
       if (uniqueVariants.has(key)) {
         toast.error('Duplicate variant detected: color must be unique.');
         return;
@@ -165,20 +163,22 @@ function AddBrand() {
         ),
       ]);
       if (responseThumbnail?.data && responseGallery.data) {
-        createProduct.mutate({
-          ...data,
-          image: responseThumbnail.data,
-          gallery: responseGallery.data,
-        },
-        {
-          onSuccess: () => {
-            setIsLoading(false);
+        createProduct.mutate(
+          {
+            ...data,
+            image: responseThumbnail.data,
+            gallery: responseGallery.data,
           },
-          onError: error => {
-            setIsLoading(false);
-            toast.error(`Cập nhật trạng thái thất bại: ${error.message}`);
-          },
-        });
+          {
+            onSuccess: () => {
+              setIsLoading(false);
+            },
+            onError: error => {
+              setIsLoading(false);
+              toast.error(`Cập nhật trạng thái thất bại: ${error.message}`);
+            },
+          }
+        );
         reset();
       }
     } catch (error) {
@@ -194,9 +194,9 @@ function AddBrand() {
   return (
     <div className="h-screen overflow-y-auto">
       {Loading && (
-        <div className="fixed inset-0 z-50 flex justify-center items-center bg-opacity-50 bg-gray-800">
-          <div className="flex justify-center items-center space-x-2 py-4 bg-white p-6 rounded-lg shadow-lg">
-            <div className="w-8 h-8 border-4 border-t-4 border-gray-200 border-solid rounded-full animate-spin border-t-indigo-600" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="flex items-center justify-center space-x-2 rounded-lg bg-white p-6 py-4 shadow-lg">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-t-4 border-solid border-gray-200 border-t-indigo-600" />
             <p className="text-gray-500">Đang thêm sản phẩm...</p>
           </div>
         </div>
@@ -213,7 +213,9 @@ function AddBrand() {
             />
           </div>
           <div className="flex gap-2">
-            <Button variant="secondary" type="button">
+            <Button variant="secondary"
+              type="button"
+              onClick={() => navigate({ to: '/dashboard/products' })} >
               Hủy
             </Button>
             <Button variant="primary" type="submit">
@@ -358,27 +360,6 @@ function AddBrand() {
                 )}
               </div>
             </div>
-
-            {/* Discount */}
-            <div className="flex space-x-4">
-              <div className="flex-1 space-y-3">
-                <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Giảm giá (%)
-                </label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  placeholder="e.g., 10"
-                  size="base"
-                />
-                {errors.discount && (
-                  <span className="text-xs text-red-500">
-                    {errors.discount.message}
-                  </span>
-                )}
-              </div>
-            </div>
-
             {/* Description */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
@@ -493,10 +474,23 @@ function AddBrand() {
                       <Input
                         placeholder="e.g., M"
                         size="base"
-                         {...register(`variants.${index}.size` as const, {
-                          required: 'Size phải bắt buộc',
+                        {...register(`variants.${index}.size` as const, {
+                          required: 'Kích thước là bắt buộc',
+                          validate: value => {
+                            const variants = watch('variants');
+                            const isDuplicate = variants.some(
+                              (variant, i) =>
+                                i !== index &&
+                                variant.size === value &&
+                                variant.color === variants[index].color // Kiểm tra cả size và color
+                            );
+                            return isDuplicate
+                              ? 'Kích thước đã tồn tại.'
+                              : true;
+                          },
                         })}
                       />
+
                       {errors.variants?.[index]?.size && (
                         <span className="text-xs text-red-500">
                           {errors.variants[index].size.message}
@@ -511,18 +505,20 @@ function AddBrand() {
                         placeholder="e.g., Red"
                         size="base"
                         {...register(`variants.${index}.color` as const, {
-                          required: 'Size phải bắt buộc',
+                          required: 'Màu là bắt buộc',
                           validate: value => {
                             const variants = watch('variants');
                             const isDuplicate = variants.some(
                               (variant, i) =>
-                                i !== index && variant.color === value
+                                i !== index &&
+                                variant.color === value &&
+                                variant.size === variants[index].size // Kiểm tra cả color và size
                             );
                             return isDuplicate ? 'Màu đã tồn tại.' : true;
                           },
                         })}
-                        
                       />
+
                       {errors.variants?.[index]?.color && (
                         <span className="text-xs text-red-500">
                           {errors.variants[index].color.message}
@@ -638,3 +634,4 @@ function AddBrand() {
 }
 
 export default AddBrand;
+

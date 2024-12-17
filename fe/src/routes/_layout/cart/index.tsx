@@ -160,13 +160,6 @@ function Cart() {
             </table>
 
             <div className="mt-2 bg-white shadow">
-              <div className="flex items-center justify-end gap-3 px-4 py-2">
-                <ReceiptPercent className="text-orange-600" />
-                <span>fashion zone voucher</span>
-                <a href="#" className="text-blue-400 hover:underline">
-                  Chọn hoặc nhập mã
-                </a>
-              </div>
               <div className="flex justify-between p-4">
                 <div className="ml-10 flex items-center gap-5">
                   <input

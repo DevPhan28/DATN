@@ -5,7 +5,7 @@ import useCheckoutMutation from '@/data/oder/useOderMutation';
 import { Adjustments, ArrowUpTray, EllipsisVertical, Loader } from '@medusajs/icons';
 import { Button, DropdownMenu, Input, Table, toast, } from '@medusajs/ui';
 
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, useLocation, useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 
 const pageSize = 10;
@@ -15,11 +15,14 @@ export const Route = createFileRoute('/dashboard/_layout/order/')({
 });
 
 function OrderList() {
+   const location = useLocation();
+      const status =location.state?.status || 'all-delivery'
+      const select = location.state?.selectedGroup || 'delivery';
   const [currentPage, setCurrentPage] = useState(0);
-  const [selectedTab, setSelectedTab] = useState('all-delivery');
+  const [selectedTab, setSelectedTab] = useState( status || 'all-delivery');
   const navigate = useNavigate();
   const { updateOrderStatus } = useCheckoutMutation();
-  const [selectedGroup, setSelectedGroup] = useState('delivery');
+  const [selectedGroup, setSelectedGroup] = useState(select || 'delivery');
   const [Loading, setIsLoading] = useState(false);
 
   const {

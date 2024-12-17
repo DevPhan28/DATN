@@ -24,7 +24,6 @@ export const Route = createFileRoute('/_layout/checkout/')({
     const selectedItems = Array.isArray(location.state?.selectedItems)
       ? location.state.selectedItems
       : [];
-    console.log('Selected Items:', selectedItems);
     const [paymentMethod, setPaymentMethod] = useState('online');
     const { deleteItemFromCart } = useCartMutation();
 
@@ -161,7 +160,6 @@ export const Route = createFileRoute('/_layout/checkout/')({
     const calculateShipping = async () => {
       try {
         // Check the contents of selectedItems to ensure all items are included
-        console.log('Selected Items for Shipping Calculation:', selectedItems);
 
         // Calculate total weight based on selected items
         const totalWeight = selectedItems.reduce(
@@ -508,20 +506,6 @@ export const Route = createFileRoute('/_layout/checkout/')({
                     ))}
                   </tbody>
                 </table>
-              </div>
-              <div className="mt-5 flex items-center gap-2">
-                <label
-                  htmlFor=""
-                  className="custom-cursor-default-hover text-nowrap"
-                >
-                  Tin nhắn:
-                </label>
-                <input
-                  name="noteMessage"
-                  type="text"
-                  placeholder="Nhập vô..."
-                  className="w-full rounded-sm border border-gray-300 px-3 py-1"
-                />
               </div>
               <div className="mt-5 flex justify-end">
                 <div className="flex items-center gap-2 text-xl font-semibold">
