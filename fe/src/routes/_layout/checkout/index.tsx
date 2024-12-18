@@ -36,6 +36,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
     const [selectedCoupon, setSelectedCoupon] = useState(null);
     const [discountAmount, setDiscountAmount] = useState(0);
 
+
     const totalQuantity = selectedItems.reduce(
       (acc, item) => acc + item.quantity,
       0
@@ -73,6 +74,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
     const [isVoucherModalOpen, setVoucherModalOpen] = useState(false);
 
     // Mở modal
+    const userIdAddCoupon = localStorage.getItem('userId');
     const openVoucherModal = () => {
       setVoucherModalOpen(true);
     };
@@ -80,7 +82,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
       data: availableCoupons,
       error: couponError,
       isLoading: isCouponsLoading,
-    } = useFetchAvailableCoupons(totalAmount);
+    } = useFetchAvailableCoupons(totalAmount, userIdAddCoupon, selectedCoupon?.code );
     // Địa chỉ
     const [cities, setCities] = useState([]);
     const [districts, setDistricts] = useState([]);
@@ -538,6 +540,8 @@ export const Route = createFileRoute('/_layout/checkout/')({
               onClose={() => setVoucherModalOpen(false)}
               onApplyCoupon={handleCouponChange}
               totalAmount={totalAmount}
+              userId={userIdAddCoupon}
+              code={selectedCoupon?.code || null}
             />
           </div>
           <div className="m-auto mt-5 max-w-7xl bg-white p-5 pt-10">
@@ -582,7 +586,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
                 <div className="flex justify-between gap-24">
                   <h5 className="text-xl text-gray-500">Số tiền giảm:</h5>
                   <div className="text-right">
-                    -<CurrencyVND amount={calculateDiscountedTotal()} />
+                    <CurrencyVND amount={calculateDiscountedTotal()} />
                   </div>
                 </div>
                 <div className="flex justify-between gap-24">

@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { QUERY_KEY } from '@/data/stores/key.ts';
 import { useNavigate } from '@tanstack/react-router';
 import { toast } from '@medusajs/ui';
 import instance from '@/api/axiosIntance';

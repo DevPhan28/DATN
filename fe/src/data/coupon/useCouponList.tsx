@@ -52,18 +52,21 @@ export const useFetchCouponById = (_id: string) => {
   });
 };
 
-// Hàm fetch danh sách mã giảm giá hợp lệ từ API
-export const fetchAvailableCoupons = async (orderAmount: number): Promise<Coupon[]> => {
+export const fetchAvailableCoupons = async (
+  orderAmount: number,
+  userId: string,
+  code?: string // Thêm tham số code (không bắt buộc)
+): Promise<Coupon[]> => {
   try {
     const res = await instance.get('/available-coupon', {
-      params: { orderAmount },
+      params: { orderAmount, userId, code }, // Gửi orderAmount, userId và code nếu có
     });
 
     if (res.status !== 200) {
       throw new Error(`Error while fetching available coupons - status: ${res.status}`);
     }
 
-    // Kiểm tra nếu response có cấu trúc dữ liệu mong đợi
+    // Kiểm tra response có phải là mảng hợp lệ
     if (!Array.isArray(res.data)) {
       throw new Error('Invalid response format from server.');
     }
@@ -75,15 +78,34 @@ export const fetchAvailableCoupons = async (orderAmount: number): Promise<Coupon
   }
 };
 
-
-// Hook `useFetchAvailableCoupons` để lấy danh sách mã giảm giá hợp lệ
-export const useFetchAvailableCoupons = (orderAmount: number) => {
+// Hook `useFetchAvailableCoupons` để lấy danh sách mã giảm giá hoặc áp dụng mã cụ thể
+export const useFetchAvailableCoupons = (
+  orderAmount: number,
+  userId: string,
+  code?: string // Thêm tham số code không bắt buộc
+) => {
   return useQuery({
-    queryKey: ['availableCoupons', orderAmount],
-    queryFn: () => fetchAvailableCoupons(orderAmount),
-    enabled: !!orderAmount,
+    queryKey: ['availableCoupons', orderAmount, userId, code], // Thêm code vào queryKey nếu có
+    queryFn: () => fetchAvailableCoupons(orderAmount, userId, code),
+    enabled: !!orderAmount && !!userId, // Kích hoạt khi orderAmount và userId tồn tại
     onError: (error) => {
       console.error('Failed to fetch available coupons:', error);
     },
   });
+};
+
+
+export const fetchCouponUsers = async (couponId: string): Promise<User[]> => {
+  try {
+    const res = await instance.get<{ users: User[] }>(`/coupon/${couponId}/users`);
+
+    if (res.status !== 200) {
+      throw new Error(`Error fetching coupon users - status: ${res.status}`);
+    }
+
+    return res.data.users;
+  } catch (error: any) {
+    console.error('Error fetching coupon users:', error.message);
+    throw new Error('Failed to fetch coupon users');
+  }
 };

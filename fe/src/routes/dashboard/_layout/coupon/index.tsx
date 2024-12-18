@@ -123,7 +123,15 @@ function CouponList() {
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Content className="space-y-2">
                         <DropdownMenu.Item className="p-2 text-ui-tag-neutral-text hover:text-ui-code-bg-base">
-                          Xem chi tiết
+                        <span
+                            onClick={() =>
+                              void navigate({
+                                to: `/dashboard/coupon/${coupon._id}/showUser`,
+                              })
+                            }
+                          >
+                            Chi tiết sản phẩm
+                          </span>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item className="gap-x-2" asChild>
                           <span onClick={async () => deleteEntity(coupon._id)}>Xóa</span>

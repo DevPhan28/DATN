@@ -1,5 +1,5 @@
 import instance from '@/api/axiosIntance';
-import CurrencyVND from '@/components/config/vnd';
+import CurrencyVND, { CreateSlugByTitle } from '@/components/config/vnd';
 import { useFetchOrdersByUserId } from '@/data/oder/useOderList';
 import { retryPayment } from '@/data/oder/usePayment';
 import { ChevronRightMini } from '@medusajs/icons';
@@ -148,6 +148,7 @@ function UserOrder() {
       setOrders(data);
     }
   }, [data]);
+
 
   if (!userId) {
     return (
@@ -461,10 +462,10 @@ function UserOrder() {
                         order.items.map(item => (
                           <Link
                             key={item.productId}
-                            to={`/${item.slug ? item.slug : item.productId}/quickviewProduct#comments-section`}
+                            to={`/${CreateSlugByTitle(item.name)}/quickviewProduct#comments-section`}
                             className="mr-2 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
                           >
-                            Đánh giá sản phẩm
+                            Đánh giá sản phẩm {item.name}
                           </Link>
                         ))}
                       {order.status === 'pending' && (

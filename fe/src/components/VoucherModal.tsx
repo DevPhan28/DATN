@@ -2,8 +2,8 @@ import { useFetchAvailableCoupons } from '@/data/coupon/useCouponList';
 import React, { useState } from 'react';
 import CurrencyVND from './config/vnd';
 
-const VoucherModal = ({ isOpen, onClose, onApplyCoupon, totalAmount }) => {
-  const { data: availableCoupons, error, isLoading } = useFetchAvailableCoupons(totalAmount);
+const VoucherModal = ({ isOpen, onClose, onApplyCoupon, totalAmount, userId, code }) => {
+  const { data: availableCoupons, error, isLoading } = useFetchAvailableCoupons(totalAmount, userId, code);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
 
   if (!isOpen) return null;

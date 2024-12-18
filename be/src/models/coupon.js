@@ -41,6 +41,15 @@ const couponSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  usageCount: {
+    type: Number,
+    default: 0, // Mặc định là chưa được sử dụng lần nào
+  },
+  usedBy: {
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: "User", // Tham chiếu tới collection User
+    default: [], // Mảng rỗng mặc định
+  },
 });
 
 module.exports = mongoose.model("Coupon", couponSchema);

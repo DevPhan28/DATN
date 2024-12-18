@@ -7,7 +7,8 @@ const {
   deleteCoupon,
   applyCoupon,
   getAvailableCoupons,
-  getCouponById
+  getCouponById,
+  getCouponUsers
 } = require("../controllers/coupon");
 
 // Tạo mã giảm giá mới
@@ -27,5 +28,7 @@ router.post("/apply-coupon", applyCoupon);
 
 // Lấy các mã giảm giá hợp lệ cho người dùng chọn
 router.get("/available-coupon", getAvailableCoupons);
+
+router.get("/coupon/:couponId/users", getCouponUsers);
 
 module.exports = router;
