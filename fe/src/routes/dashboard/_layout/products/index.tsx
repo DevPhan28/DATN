@@ -108,9 +108,9 @@ function ProductList() {
           product.countInStock !== undefined
             ? product.countInStock
             : product.variants?.reduce(
-                (total, variant) => total + (variant.countInStock || 0),
-                0
-              ) || 0,
+              (total, variant) => total + (variant.countInStock || 0),
+              0
+            ) || 0,
       })) ?? []
     );
   }, [filteredProducts]);
@@ -292,7 +292,7 @@ function ProductList() {
                       {product.category?.name}
                     </div>
                   </Table.Cell>
-                  <Table.Cell className="font-semibold text-ui-fg-base">
+                  <Table.Cell className="font-semibold text-ui-fg-base truncate max-w-xs">
                     {product.description}
                   </Table.Cell>
                 </Table.Row>

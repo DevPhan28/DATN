@@ -35,11 +35,27 @@ const DashboardOverview = () => {
     error: deliveredCountError,
   } = useFetchSuccessfulOrderCount();
 
-  const totalDeliveredAmount = successfulOrderData?.totalDeliveredAmount || 0;
-  const deliveredOrderCount = successfulOrderData?.successfulOrders || 0;
-
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>('');
+
+  const filteredOrders = listOrder.filter(order => {
+    const orderDate = parseISO(order.createdAt);
+    return (
+      (!startDate || isAfter(orderDate, parseISO(startDate)) || isEqual(orderDate, parseISO(startDate))) &&
+      (!endDate || isBefore(orderDate, parseISO(endDate)) || isEqual(orderDate, parseISO(endDate)))
+    );
+  });
+
+  const totalRevenue = filteredOrders.reduce((sum, order) => {
+    if (order.status === 'delivered') {
+      return sum + order.totalPrice;
+    }
+    return sum;
+  }, 0);
+
+  const deliveredOrdersCount = filteredOrders.filter(
+    order => order.status === 'delivered'
+  ).length;
 
   const generateDateRange = (start: Date, end: Date) => {
     const days = differenceInDays(end, start);
@@ -48,25 +64,14 @@ const DashboardOverview = () => {
     );
   };
 
-  const revenueByDay = listOrder.reduce(
+  const revenueByDay = filteredOrders.reduce(
     (acc: Record<string, number>, order) => {
       if (order.status === 'delivered') {
         const date = format(new Date(order.createdAt), 'yyyy-MM-dd');
-
-        const isWithinRange =
-          (!startDate ||
-            isAfter(parseISO(date), parseISO(startDate)) ||
-            isEqual(parseISO(date), parseISO(startDate))) &&
-          (!endDate ||
-            isBefore(parseISO(date), parseISO(endDate)) ||
-            isEqual(parseISO(date), parseISO(endDate)));
-
-        if (isWithinRange) {
-          if (!acc[date]) {
-            acc[date] = 0;
-          }
-          acc[date] += order.totalPrice;
+        if (!acc[date]) {
+          acc[date] = 0;
         }
+        acc[date] += order.totalPrice;
       }
       return acc;
     },
@@ -98,15 +103,7 @@ const DashboardOverview = () => {
             <Input
               type="date"
               value={startDate}
-              onChange={e => {
-                setStartDate(e.target.value);
-                if (
-                  endDate &&
-                  isBefore(parseISO(e.target.value), parseISO(endDate))
-                ) {
-                  setEndDate('');
-                }
-              }}
+              onChange={e => setStartDate(e.target.value)}
               className="rounded border px-2 py-1"
             />
           </div>
@@ -116,7 +113,6 @@ const DashboardOverview = () => {
               type="date"
               value={endDate}
               onChange={e => setEndDate(e.target.value)}
-              min={startDate || undefined} // Giới hạn ngày tối thiểu là "Từ ngày" đã chọn
               className="rounded border px-2 py-1"
             />
           </div>
@@ -128,13 +124,13 @@ const DashboardOverview = () => {
         <div className="rounded-lg bg-gray-100 p-4 text-center">
           <h3 className="text-lg font-semibold">Tổng doanh thu</h3>
           <p className="text-2xl font-bold">
-            ₫ {totalDeliveredAmount.toLocaleString()}
+            ₫ {totalRevenue.toLocaleString()}
           </p>
           <p className="text-sm text-gray-500">Tổng giá trị đơn hàng đã giao</p>
         </div>
         <div className="rounded-lg bg-gray-100 p-4 text-center">
           <h3 className="text-lg font-semibold">Đơn hàng đã giao</h3>
-          <p className="text-2xl font-bold">{deliveredOrderCount}</p>
+          <p className="text-2xl font-bold">{deliveredOrdersCount}</p>
           <p className="text-sm text-gray-500">
             Số lượng đơn hàng đã giao thành công
           </p>
@@ -163,3 +159,5 @@ const DashboardOverview = () => {
 };
 
 export default DashboardOverview;
+
+

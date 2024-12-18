@@ -16,10 +16,10 @@ export const Route = createFileRoute('/dashboard/_layout/order/')({
 
 function OrderList() {
   const location = useLocation();
-  const status =location.state?.status || 'all-delivery'
+  const status = location.state?.status || 'all-delivery'
   const select = location.state?.selectedGroup || 'delivery';
   const [currentPage, setCurrentPage] = useState(0);
-  const [selectedTab, setSelectedTab] = useState( status || 'all-delivery');
+  const [selectedTab, setSelectedTab] = useState(status || 'all-delivery');
   const navigate = useNavigate();
   const { updateOrderStatus } = useCheckoutMutation();
   const [selectedGroup, setSelectedGroup] = useState(select || 'delivery');
@@ -107,10 +107,15 @@ function OrderList() {
       toast.error('Trạng thái không hợp lệ cho nhóm hiện tại.');
       return;
     }
-    if (currentStatus === 'complaint' && !['refund_in_progress', 'exchange_in_progress', 'received'].includes(newStatus)) {
-      toast.error('Trạng thái chỉ có thể chuyển sang "Đang hoàn trả hàng", "Đang đổi trả hàng" hoặc "Đã nhận hàng".');
-      return;
-    }
+    if (
+      currentStatus === 'pending' &&
+      newStatus === 'canceled'
+    ) {
+    } else
+      if (currentStatus === 'complaint' && !['refund_in_progress', 'exchange_in_progress', 'received'].includes(newStatus)) {
+        toast.error('Trạng thái chỉ có thể chuyển sang "Đang hoàn trả hàng", "Đang đổi trả hàng" hoặc "Đã nhận hàng".');
+        return;
+      }
 
     if (
       (currentStatus === 'refund_in_progress' && newStatus !== 'refund_completed') ||
@@ -408,18 +413,19 @@ function OrderList() {
                           order.status === 'refund_completed' ||
                           order.status === 'exchange_completed' ||
                           (selectedGroup === 'delivery' &&
-                            !isNextDeliveryStatusValid(
-                              order.status,
-                              status.value
-                            )) ||
+                            !(
+                              isNextDeliveryStatusValid(order.status, status.value) ||
+                              (order.status === 'pending' && status.value === 'canceled') // Cho phép từ pending sang canceled
+                            )
+                          ) ||
                           (order.status === 'refund_in_progress' &&
                             status.value !== 'refund_completed') ||
                           (order.status === 'exchange_in_progress' &&
                             status.value !== 'exchange_completed') ||
                           (order.status === 'complaint' &&
                             status.value !== 'refund_in_progress' &&
-                            status.value !== 'exchange_in_progress'
-                            && status.value !== 'delivered');;
+                            status.value !== 'exchange_in_progress' &&
+                            status.value !== 'delivered');
                         return (
                           <option
                             key={status.value}

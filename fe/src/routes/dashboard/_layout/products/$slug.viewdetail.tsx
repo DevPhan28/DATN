@@ -70,7 +70,7 @@ function DetailProduct() {
             <div className="font-semibold text-black">
               Giá:{' '}
               <span className="text-xl font-semibold text-red-600">
-                {data.product.price}VND
+                <CurrencyVND amount={data.product.price}/>
               </span>
             </div>
             <div className="font-semibold text-black">
@@ -118,7 +118,7 @@ function DetailProduct() {
                       Màu
                     </th>
                     <th className="border px-4 py-2 text-left font-medium text-black">
-                      Giá (VND)
+                      Giá (đ)
                     </th>
                     <th className="border px-4 py-2 text-left font-medium text-black">
                       Sku

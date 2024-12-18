@@ -54,7 +54,7 @@ const calculateShippingFee = (weight, address, orderValue = 0, coupon = null) =>
 
   if (coupon && coupon.isFreeShipping) {
     shippingFee = 0;
-  } else if (orderValue > 10000000) {
+  } else if (orderValue > 1000000) {
     shippingFee = 0;
   }
 
