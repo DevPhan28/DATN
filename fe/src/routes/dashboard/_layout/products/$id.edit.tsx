@@ -564,16 +564,16 @@ function EditProduct() {
                           required: 'Kích thước là bắt buộc',
                           validate: value => {
                             const variants = watch('variants');
-                            (variant, i) =>
-                                 const isDuplicate = variants.some(
-                              i !== index &&
-                              variant.size === value &&
-                              variant.color === variants[index].color // Kiểm tra cả size và color
+                            const isDuplicate = variants.some(
+                              (variant, i) =>
+                                i !== index &&
+                                variant.size === value &&
+                                variant.color === variants[index].color // Kiểm tra cả size và color
                             );
-                              return isDuplicate
-                                ? 'Kích thước đã tồn tại.'
-                                : true;
-                            },
+                            return isDuplicate
+                              ? 'Kích thước đã tồn tại.'
+                              : true;
+                          },
                         })}
                       />
                       {errors.variants?.[index]?.size && (
