@@ -706,7 +706,7 @@ cron.schedule('* * * * *', async () => {
     console.log("Cron job triggered at:", new Date());
 
     const now = new Date();
-    const oneMinuteAgo = new Date(now.getTime() - 10 * 1000);
+    const oneMinuteAgo = new Date(now.getTime() - 10 * 60 * 1000);
 
     // Tìm các đơn hàng có trạng thái 'pendingPayment' quá 1 phút
     const orders = await Order.find({
