@@ -133,7 +133,8 @@ function AddBrand() {
     // Kiểm tra trùng size và color
     const uniqueVariants = new Set();
     for (const variant of data.variants) {
-      const key = `${variant.color}-${variant.color}`;
+      const key = `${variant.color}-${variant.size}`;
+
       if (uniqueVariants.has(key)) {
         toast.error('Duplicate variant detected: color must be unique.');
         return;

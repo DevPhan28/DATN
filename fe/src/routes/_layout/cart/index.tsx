@@ -108,7 +108,7 @@ function Cart() {
                         alt={product.name}
                         className="h-auto w-12"
                       />
-                      <div className="w-36 truncate">
+                      <div className="w-36">
                         {product.name}
                         <span className="text-gray-400">
                           <div className="flex">
