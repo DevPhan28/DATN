@@ -133,9 +133,12 @@ const Header = () => {
                 <button
                   onClick={() => setShowInput(prev => !prev)} // Đảo ngược trạng thái hiển thị
                   type="button"
-                  className="rounded-full  px-5 py-2 text-sm  transition-all hover:opacity-90"
+                  className="rounded-full px-5 py-2 text-sm transition-all hover:opacity-90"
                 >
-                  <Link to={"/searchList"}> <MagnifyingGlass/></Link>
+                  <Link to={'/searchList'}>
+                    {' '}
+                    <MagnifyingGlass />
+                  </Link>
                 </button>
               </div>
               <Link to="/cart" className="relative">
@@ -147,7 +150,7 @@ const Header = () => {
                   </span>
                 )}
               </Link>
-              <div className="flex items-center sm:hidden ">
+              <div className="flex items-center sm:hidden">
                 <button
                   onClick={toggleMenu}
                   className="flex items-center justify-center p-2 text-gray-500 hover:text-blue-400 focus:outline-none"
@@ -162,7 +165,7 @@ const Header = () => {
               <div className="group relative z-10" ref={menuRef}>
                 <div
                   onClick={toggleMenu}
-                  className="custom-cursor-on-hover flex cursor-pointer items-center gap-x-2 ml-8"
+                  className="custom-cursor-on-hover ml-4 flex cursor-pointer items-center gap-x-2"
                 >
                   {isLoggedIn ? (
                     <>
