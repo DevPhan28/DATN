@@ -7,16 +7,16 @@ const getProduct = async (req, res) => {
 
   try {
     // Lọc chỉ những sản phẩm có ít nhất một variant có countInStock > 0
-    const products = await Product.find({ 
-        "variants.countInStock": { $gt: 0 }
-      })
+    const products = await Product.find({
+      "variants.countInStock": { $gt: 0 }
+    })
       .limit(Number(limit))
       .skip(Number(skip))
       .populate("category", "name");
 
-    const totalItems = await Product.countDocuments({ 
-        "variants.countInStock": { $gt: 0 }
-      });
+    const totalItems = await Product.countDocuments({
+      "variants.countInStock": { $gt: 0 }
+    });
 
     if (products.length === 0) {
       return res.status(200).json({
@@ -53,7 +53,7 @@ const getProductById = async (req, res) => {
     return res.status(200).json({
       data,
     });
-    
+
   } catch (error) {
     // Xử lý lỗi nếu có
     console.error('Error fetching product:', error);
@@ -130,20 +130,43 @@ const deleteProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
-    const data = await Product.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    if (!data) {
+    const productId = req.params.id;
+    const updates = req.body;
+
+    // Tìm sản phẩm trước
+    const product = await Product.findById(productId);
+    if (!product) {
       return res.status(404).json({ message: "No product found" });
     }
+
+    // Xử lý cập nhật variants nếu có
+    if (updates.variants && Array.isArray(updates.variants)) {
+      const existingVariants = product.variants || [];
+      const updatedVariants = updates.variants.map((variant) => {
+        // Nếu variant chưa có SKU, tạo SKU mới
+        if (!variant.sku) {
+          variant.sku = `${variant.size}-${variant.color || "unknown"}-${Date.now()}`;
+        }
+        return variant;
+      });
+
+      // Gộp variants cũ và mới
+      product.variants = [...existingVariants, ...updatedVariants];
+    }
+
+    // Cập nhật sản phẩm với thông tin mới
+    Object.assign(product, updates); // Áp dụng các thay đổi khác
+    const savedProduct = await product.save();
+
     return res.status(200).json({
       message: "Cập nhật sản phẩm thành công",
-      data,
+      data: savedProduct,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 const relatedProduct = async (req, res) => {
   try {
@@ -185,13 +208,13 @@ const uploadGallery = async (req, res) => {
 const getProductAll = async (req, res) => {
   try {
     const products = await Product.find({
-        "variants.countInStock": { $gt: 0 }
-      })
+      "variants.countInStock": { $gt: 0 }
+    })
       .populate("category", "name");
 
     const totalItems = await Product.countDocuments({
-        "variants.countInStock": { $gt: 0 }
-      });
+      "variants.countInStock": { $gt: 0 }
+    });
 
     if (products.length === 0) {
       return res.status(200).json({
@@ -262,7 +285,7 @@ const searchProduct = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-  
+
 };
 const filterProducts = async (req, res) => {
   try {
@@ -324,7 +347,7 @@ const filterProducts = async (req, res) => {
 const updateProductsCategoris = async (req, res) => {
   try {
     const { categoryId, newCategoryId } = req.body;
-  // Kiểm tra sự tồn tại của danh mục
+    // Kiểm tra sự tồn tại của danh mục
     const [oldCategory, newCategory] = await Promise.all([
       Category.findById(categoryId),
       Category.findById(newCategoryId),

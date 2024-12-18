@@ -153,7 +153,7 @@ function EditProduct() {
     const uniqueVariants = new Set();
     for (const variant of data.variants) {
       const key = `${variant.size}-${variant.color}`;
-      
+
       if (uniqueVariants.has(key)) {
         toast.error('Duplicate variant detected: color must be unique.');
         return;
@@ -246,7 +246,7 @@ function EditProduct() {
               Hủy
             </Button>
             <Button variant="primary" type="submit">
-             Lưu thay đổi
+              Lưu thay đổi
             </Button>
           </div>
         </div>
@@ -255,8 +255,8 @@ function EditProduct() {
             Thông tin chung
           </h1>
           <p className="mb-4 text-sm font-normal text-ui-fg-subtle">
-          Cung cấp các chi tiết cơ bản về sản phẩm như tên, chủng loại, giá cả,
-          giảm giá và mô tả.
+            Cung cấp các chi tiết cơ bản về sản phẩm như tên, chủng loại, giá cả,
+            giảm giá và mô tả.
           </p>
 
           <div className="space-y-4">
@@ -287,8 +287,8 @@ function EditProduct() {
                 <span className="text-ui-tag-red-text">*</span> Ảnh
               </label>
               <p className="mb-2 text-xs text-ui-fg-muted">
-               
-Kích thước tệp tối đa là 500KB. Hỗ trợ các định dạng .jpg và .png.
+
+                Kích thước tệp tối đa là 500KB. Hỗ trợ các định dạng .jpg và .png.
               </p>
               <button
                 type="button"
@@ -298,8 +298,8 @@ Kích thước tệp tối đa là 500KB. Hỗ trợ các định dạng .jpg v�
                 <div className="mb-2 flex items-center">
                   <ArrowDownTray className="mr-1 h-5 w-5" />
                   <p className="text-xs font-medium text-ui-fg-base">
-                    
-Tải lên file
+
+                    Tải lên file
                   </p>
                   <input
                     type="file"
@@ -311,8 +311,8 @@ Tải lên file
                   />
                 </div>
                 <p className="mb-2 text-center text-xs text-ui-fg-muted">
-                  
-Kéo và thả file vào đây hoặc bấm vào để tải lên
+
+                  Kéo và thả file vào đây hoặc bấm vào để tải lên
                 </p>
               </button>
               <div className="mt-5">
@@ -433,8 +433,8 @@ Kéo và thả file vào đây hoặc bấm vào để tải lên
                 <span className="text-ui-tag-red-text">*</span> Ảnh trưng bày
               </label>
               <p className="mb-2 text-xs text-ui-fg-muted">
-               
-Kích thước tệp tối đa là 500KB. Hỗ trợ các định dạng .jpg và .png.
+
+                Kích thước tệp tối đa là 500KB. Hỗ trợ các định dạng .jpg và .png.
               </p>
               <button
                 type="button"
@@ -444,8 +444,8 @@ Kích thước tệp tối đa là 500KB. Hỗ trợ các định dạng .jpg v�
                 <div className="mb-2 flex items-center">
                   <ArrowDownTray className="mr-1 h-5 w-5" />
                   <p className="text-xs font-medium text-ui-fg-base">
-                    
-Tải lên file
+
+                    Tải lên file
                   </p>
                   <input
                     type="file"
@@ -458,8 +458,8 @@ Tải lên file
                   />
                 </div>
                 <p className="mb-2 text-center text-xs text-ui-fg-muted">
-                  
-Kéo và thả file vào đây hoặc bấm vào để tải lên
+
+                  Kéo và thả file vào đây hoặc bấm vào để tải lên
                 </p>
               </button>
               <div className="mt-5">
@@ -552,43 +552,43 @@ Kéo và thả file vào đây hoặc bấm vào để tải lên
               <div className="mt-4">
                 {fields.map((item, index) => (
                   <div key={item.id} className="mb-4 flex space-x-4">
-                  {/* Size Input */}
-                  <div className="flex-1 space-y-3">
-                    <label className="block text-sm font-medium text-ui-fg-base">
-                      <span className="text-ui-tag-red-text">*</span> Size
-                    </label>
-                    <Input
+                    {/* Size Input */}
+                    <div className="flex-1 space-y-3">
+                      <label className="block text-sm font-medium text-ui-fg-base">
+                        <span className="text-ui-tag-red-text">*</span> Size
+                      </label>
+                      <Input
                         placeholder="e.g., M"
                         size="base"
                         {...register(`variants.${index}.size` as const, {
                           required: 'Kích thước là bắt buộc',
                           validate: value => {
                             const variants = watch('variants');
-                            const isDuplicate = variants.some(
-                              (variant, i) =>
-                                i !== index &&
-                                variant.size === value &&
-                                variant.color === variants[index].color // Kiểm tra cả size và color
+                            (variant, i) =>
+                                 const isDuplicate = variants.some(
+                              i !== index &&
+                              variant.size === value &&
+                              variant.color === variants[index].color // Kiểm tra cả size và color
                             );
-                            return isDuplicate
-                              ? 'Kích thước đã tồn tại.'
-                              : true;
-                          },
+                              return isDuplicate
+                                ? 'Kích thước đã tồn tại.'
+                                : true;
+                            },
                         })}
                       />
-                    {errors.variants?.[index]?.size && (
-                      <span className="text-xs text-red-500">
-                        {errors.variants[index].size.message}
-                      </span>
-                    )}
-                  </div>
-              
-                  {/* Color Input */}
-                  <div className="flex-1 space-y-3">
-                    <label className="block text-sm font-medium text-ui-fg-base">
-                      <span className="text-ui-tag-red-text">*</span> Color
-                    </label>
-                    <Input
+                      {errors.variants?.[index]?.size && (
+                        <span className="text-xs text-red-500">
+                          {errors.variants[index].size.message}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Color Input */}
+                    <div className="flex-1 space-y-3">
+                      <label className="block text-sm font-medium text-ui-fg-base">
+                        <span className="text-ui-tag-red-text">*</span> Color
+                      </label>
+                      <Input
                         placeholder="e.g., Red"
                         size="base"
                         {...register(`variants.${index}.color` as const, {
@@ -605,12 +605,12 @@ Kéo và thả file vào đây hoặc bấm vào để tải lên
                           },
                         })}
                       />
-                    {errors.variants?.[index]?.color && (
-                      <span className="text-xs text-red-500">
-                        {errors.variants[index].color.message}
-                      </span>
-                    )}
-                  </div>
+                      {errors.variants?.[index]?.color && (
+                        <span className="text-xs text-red-500">
+                          {errors.variants[index].color.message}
+                        </span>
+                      )}
+                    </div>
                     <div className="flex-1 space-y-3">
                       <label className="block text-sm font-medium text-ui-fg-base">
                         Price (VND)
@@ -632,7 +632,7 @@ Kéo và thả file vào đây hoặc bấm vào để tải lên
                     </div>
                     <div className="flex-1 space-y-3">
                       <label className="block text-sm font-medium text-ui-fg-base">
-                        Số lượng tồn kho 
+                        Số lượng tồn kho
                       </label>
                       <Input
                         type="number"
