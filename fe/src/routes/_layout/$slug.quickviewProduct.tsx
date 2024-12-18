@@ -1,6 +1,7 @@
 import instance from '@/api/axiosIntance';
 import CurrencyVND from '@/components/config/vnd';
 import ProductRecommendations from '@/components/ProductRecommendations';
+import { useCart } from '@/data/cart/useCartLogic';
 import useCommentMutation from '@/data/Comment/useCommentMutation';
 import { useSocket } from '@/data/socket/useSocket';
 import {
@@ -249,7 +250,12 @@ function DetailProduct() {
   const uniqueSizes = [
     ...new Set(product.variants.map(variant => variant.size)),
   ];
-
+  const userId = localStorage.getItem('userId');
+  // const {
+  //   handleQuantityChange,
+  //   incrementQuantity,
+  //   decrementQuantity,
+  // } = useCart(userId);
   return (
     <div>
       <div className="">
@@ -347,8 +353,8 @@ function DetailProduct() {
                     <button
                       onClick={() => handleSizeChange(size)}
                       className={`px-4 py-2 border rounded ${selectedSize === size
-                          ? 'bg-blue-500 text-white border-blue-500'
-                          : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+                        ? 'bg-blue-500 text-white border-blue-500'
+                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
                         }`}
                     >
                       {size}
@@ -359,30 +365,39 @@ function DetailProduct() {
               </div>
 
 
-              {/* Color selection with color circles */}
-              <div className="mb-4">
-                <label className="block mb-2 text-gray-700">Màu</label>
-                <div className="flex gap-2">
+              <div className="mb-4 h-32">
+                <label className="block mb-2 text-gray-700 ">Màu</label>
+                <div className="flex gap-2 h-16">
                   {availableColors &&
-                    availableColors.map(color => (
+                    availableColors.map((color) => (
                       <button
                         key={color}
                         onClick={() => setSelectedColor(color)}
-                        className={`w-10 h-10 rounded-full border ${selectedColor === color
+                        className={`w-10 h-10 rounded-full border focus:outline-none ${selectedColor === color
                           ? 'border-blue-500 ring-2 ring-blue-300'
                           : 'border-gray-300'
                           }`}
-                        style={{ backgroundColor: color }}
+                        style={{
+                          backgroundColor: color,
+                          boxShadow: selectedColor === color ? '0 0 5px rgba(59, 130, 246, 0.5)' : 'none',
+                        }}
                         disabled={!selectedSize}
                       ></button>
                     ))}
                 </div>
+                {selectedColor && (
+                  <p className="mt-2 text-sm text-gray-600">
+                    Màu đã chọn: <span className="font-bold">{selectedColor}</span>
+                  </p>
+                )}
               </div>
 
 
-              {/* Quantity and Add to Cart */}
+
+
+
               <div className="mb-4 flex items-center gap-5">
-                <div>Quantity</div>
+                <div>Số lượng</div>
                 <div>
                   <button
                     className="rounded border border-gray-300 p-2"
@@ -405,6 +420,33 @@ function DetailProduct() {
                   </button>
                 </div>
               </div>
+              {/* <div className="mb-4 flex items-center gap-5">
+                <div>Quantity</div>
+                <div className="flex items-center justify-center">
+                  <button
+                    onClick={() => decrementQuantity(index)}
+                    className="border px-2 hover:bg-blue-400"
+                  >
+                    -
+                  </button>
+                  <input
+                    type="text"
+                    min="1"
+                    value={quantities[index] || product.quantity}
+                    onChange={e =>
+                      handleQuantityChange(index, e.target.value)
+                    }
+                    className="w-12 border text-center"
+                  />
+                  <button
+                    onClick={() => incrementQuantity(index)}
+                    className="border px-2 hover:bg-blue-400"
+                  >
+                    +
+                  </button>
+                </div>
+              </div> */}
+
               {/* Add to cart button */}
               <button
                 className="mt-3 rounded-md bg-blue-500 px-5 py-2 text-sm text-white transition hover:bg-gray-800 sm:px-6 sm:py-3 sm:text-lg"

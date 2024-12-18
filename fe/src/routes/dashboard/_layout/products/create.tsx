@@ -433,7 +433,7 @@ function AddBrand() {
 
               <div className="flex flex-col">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Nội dung
+                  <span className="text-ui-tag-red-text">*</span> Content
                 </label>
                 <div className="mt-2 flex flex-1 flex-col">
                   <Controller
@@ -459,6 +459,7 @@ function AddBrand() {
                   )}
                 </div>
               </div>
+
             </div>
             {/* Variants */}
             <div>

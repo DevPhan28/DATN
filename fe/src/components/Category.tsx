@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import banner1 from '../assets/images/banner-01.png';
-import banner2 from '../assets/images/banner-02.png';
-import banner3 from '../assets/images/banner-03.jpg';
+import banner1 from '../assets/images/hhh.jpg';
+import banner2 from '../assets/images/fh.jpg';
+import banner3 from '../assets/images/f.jpg';
 import instance from '@/api/axiosIntance';
 import { Link } from '@tanstack/react-router';
 import Slider from 'react-slick';
@@ -106,10 +106,17 @@ const Category = () => {
               }}
             >
               <img
-                src={index === 0 ? banner1 : index === 1 ? banner2 : banner3}
+                src={
+                  index % 3 === 0
+                    ? banner1
+                    : index % 3 === 1
+                      ? banner2
+                      : banner3
+                }
                 alt={category.name}
-                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                className="h-60 w-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
+
               <div className="absolute left-4 top-4">
                 <span className="pb-2 text-3xl font-bold transition duration-500">
                   {category.name}

@@ -66,7 +66,7 @@ function DetailOrderUser() {
     <div className="bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-md p-6">
         <div className="text-right text-red-500 font-semibold text-sm mb-4">MÃ ĐƠN HÀNG: {orderNumber}</div>
-        <div className="text-right text-green-600 font-bold mb-6">ĐƠN HÀNG ĐÃ HOÀN THÀNH</div>
+        {/* <div className="text-right text-green-600 font-bold mb-6">ĐƠN HÀNG ĐÃ HOÀN THÀNH</div>
 
         <div className="flex items-center justify-between mb-6">
           <div className="text-center">
@@ -96,17 +96,7 @@ function DetailOrderUser() {
           </div>
         </div>
 
-        <div className="bg-gray-100 p-4 rounded-md mb-6 text-gray-600 text-sm">
-          Nếu hàng nhận được có vấn đề, bạn có thể gửi yêu cầu Trả hàng/Hoàn tiền trước <span className="text-red-500">25-12-2024</span>. <br />
-          <span className="text-blue-500">Giao nhanh đúng hẹn:</span> nhận Voucher ₫15.000 nếu đơn hàng được giao đến bạn sau ngày 10-12-2024. <a href="#" className="text-blue-500 underline">Xem thêm</a>
-        </div>
-
-        <div className="flex-col gap-4 flex items-end">
-          <button className="bg-red-500 text-white font-bold py-2 rounded-md w-80">Đánh Giá</button>
-          <button className="bg-gray-200 text-gray-600 font-bold py-2 rounded-md w-80">Yêu Cầu Trả Hàng/Hoàn Tiền</button>
-          <button className="bg-gray-200 text-gray-600 font-bold py-2 rounded-md w-80">Liên Hệ Người Bán</button>
-          <button className="bg-gray-200 text-gray-600 font-bold py-2 rounded-md w-80">Mua Lại</button>
-        </div>
+        <hr /> */}
 
         <div className="mt-10">
           <div className="flex items-center gap-10">

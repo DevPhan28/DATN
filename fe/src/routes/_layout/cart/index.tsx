@@ -58,7 +58,7 @@ function Cart() {
     <div>
       <div className="main-content flex h-48 w-full flex-col items-center justify-center">
         <div className="text-content">
-          <div className="text-center text-4xl font-semibold">Cart</div>
+          <div className="text-center text-4xl font-semibold">Giỏ hàng</div>
           <div className="link caption1 mt-3 flex items-center justify-center gap-1">
             <div className="flex items-center justify-center">
               <a href="/">Trang chủ</a>

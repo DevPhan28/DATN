@@ -582,7 +582,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
                 <div className="flex justify-between gap-24">
                   <h5 className="text-xl text-gray-500">Số tiền giảm:</h5>
                   <div className="text-right">
-                    <CurrencyVND amount={calculateDiscountedTotal()} />
+                    -<CurrencyVND amount={calculateDiscountedTotal()} />
                   </div>
                 </div>
                 <div className="flex justify-between gap-24">
