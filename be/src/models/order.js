@@ -66,6 +66,12 @@ const OrderSchema = new mongoose.Schema(
       ],
       default: "pending",
     },
+    statusHistory: [
+      {
+        status: { type: String, required: true },
+        time: { type: Date, required: true },
+      },
+    ],
     returnReason: String,
     complaintDetails: String, // Thêm thông tin khiếu nại nếu cần
     paymentCode: String,

@@ -76,7 +76,6 @@ export const fetchCategory = async () => {
       data: Category[];
     }>('/categories');
 
-    console.log('Response from server:', res); // Log chi tiết response từ server
 
     // Kiểm tra mã trạng thái
     if (res.status !== 200 && res.status !== 201) {

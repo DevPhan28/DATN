@@ -2,11 +2,10 @@ import instance from '@/api/axiosIntance';
 import CurrencyVND from '@/components/config/vnd';
 import ProductRecommendations from '@/components/ProductRecommendations';
 import useCommentMutation from '@/data/Comment/useCommentMutation';
+import { useSocket } from '@/data/socket/useSocket';
 import {
-  ArrowUpRightOnBox,
   ChevronRightMini,
   EllipsisHorizontal,
-  RocketLaunch,
   StarSolid,
   ThumbUp,
   Trash,
@@ -37,7 +36,7 @@ function DetailProduct() {
 
   const { slug } = useParams({ from: '/_layout/$slug/quickviewProduct' });
   const queryClient = useQueryClient();
-
+  const socket = useSocket();  
   // Fetch product information from API
   useEffect(() => {
     const fetchProduct = async () => {
@@ -46,7 +45,7 @@ function DetailProduct() {
         const response = await instance.get(`/products/slug/${slug}`);
         if (response.data && response.data.product) {
           setProduct(response.data.product);
-          setCurrentImage(response.data.product.image); // Set initial current image
+          setCurrentImage(response.data.product.image);
         } else {
           throw new Error('Dữ liệu sản phẩm không có');
         }
@@ -56,9 +55,24 @@ function DetailProduct() {
         setLoading(false);
       }
     };
-
+  
     fetchProduct();
+  
+    const handleCartUpdate = async () => {
+      // Tải lại dữ liệu sản phẩm ngay khi có sự kiện
+      await fetchProduct();
+    };
+  
+    socket.on('update-cart', handleCartUpdate);
+  
+    // Hủy đăng ký khi component unmount hoặc slug thay đổi
+    return () => {
+      socket.off('update-cart', handleCartUpdate);
+    };
   }, [slug]);
+  
+  
+  
   useEffect(() => {
     if (product) {
       const fetchComments = async () => {

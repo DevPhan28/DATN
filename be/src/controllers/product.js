@@ -1,24 +1,30 @@
 const CreateSlugByTitle = require("../config/slug"); // Không sử dụng destructuring
 const Category = require("../models/category");
 const Product = require("../models/product");
+
 const getProduct = async (req, res) => {
   const { limit = 10, page = 1 } = req.query;
   const skip = (page - 1) * limit;
 
   try {
-    // Lọc chỉ những sản phẩm có ít nhất một variant có countInStock > 0
-    const products = await Product.find({
-      "variants.countInStock": { $gt: 0 }
-    })
+    // Lấy tất cả các sản phẩm và kiểm tra trạng thái tồn kho
+    const products = await Product.find()
       .limit(Number(limit))
       .skip(Number(skip))
       .populate("category", "name");
 
-    const totalItems = await Product.countDocuments({
-      "variants.countInStock": { $gt: 0 }
+    const totalItems = await Product.countDocuments();
+
+    // Cập nhật thêm tag 'Hết hàng' nếu tất cả các variant của sản phẩm có countInStock = 0
+    const productsWithTags = products.map(product => {
+      const isOutOfStock = product.variants.every(variant => variant.countInStock === 0);
+      return {
+        ...product.toObject(),
+        tags: isOutOfStock ? ["Hết hàng"] : []
+      };
     });
 
-    if (products.length === 0) {
+    if (productsWithTags.length === 0) {
       return res.status(200).json({
         meta: {
           totalItems: 0,
@@ -37,7 +43,7 @@ const getProduct = async (req, res) => {
         currentPage: Number(page),
         limit: Number(limit),
       },
-      data: products,
+      data: productsWithTags,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -72,7 +78,13 @@ const getProductBySlug = async (req, res) => {
       return res.status(404).json({ message: "Product not found." });
     }
 
-    return res.status(200).json({ product });
+    // Kiểm tra tồn kho và thêm tag nếu cần
+    const isOutOfStock = product.variants?.every(
+      (variant) => variant.countInStock === 0
+    );
+    const tags = isOutOfStock ? ["Hết hàng"] : [];
+    // Thêm tag vào phản hồi
+    return res.status(200).json({ product: { ...product.toObject(), tags } });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -206,20 +218,32 @@ const uploadGallery = async (req, res) => {
   }
 };
 const getProductAll = async (req, res) => {
+  const { limit = 10, page = 1 } = req.query;
+  const skip = (page - 1) * limit;
   try {
-    const products = await Product.find({
-      "variants.countInStock": { $gt: 0 }
-    })
+    const products = await Product.find()
+      .limit(Number(limit))
+      .skip(Number(skip))
       .populate("category", "name");
 
-    const totalItems = await Product.countDocuments({
-      "variants.countInStock": { $gt: 0 }
+    const totalItems = await Product.countDocuments();
+
+    // Cập nhật thêm tag 'Hết hàng' nếu tất cả các variant của sản phẩm có countInStock = 0
+    const productsWithTags = products.map(product => {
+      const isOutOfStock = product.variants.every(variant => variant.countInStock === 0);
+      return {
+        ...product.toObject(),
+        tags: isOutOfStock ? ["Hết hàng"] : []
+      };
     });
 
-    if (products.length === 0) {
+    if (productsWithTags.length === 0) {
       return res.status(200).json({
         meta: {
           totalItems: 0,
+          totalPages: 0,
+          currentPage: Number(page),
+          limit: Number(limit),
         },
         data: [],
       });

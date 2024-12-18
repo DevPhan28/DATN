@@ -37,10 +37,18 @@ const io = new Server(server, {
 io.on('connection', (socket) => {
     console.log('A client connected:', socket.id);
 
+    // Lắng nghe khi admin cập nhật sản phẩm
     socket.on('admin-update-product', (data) => {
         io.emit('update-cart', data);
     });
-    
+
+    // Lắng nghe khi người dùng thay đổi số lượng trong quá trình checkout
+    socket.on('checkout-update-quantity', (data) => {
+        console.log('Checkout quantity updated:', data);
+        io.emit('notify-quantity-change', data); 
+    });
+
+    // Xử lý khi client ngắt kết nối
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
     });

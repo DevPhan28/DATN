@@ -8,6 +8,7 @@ const moment = require("moment");
 const axios = require("axios");
 require("dotenv").config();
 const { config, order2 } = require("../zalo_pay/config");
+const cron = require('node-cron');
 
 const ZALOPAY_ID_APP = process.env.ZALOPAY_ID_APP;
 console.log("🚀 =====  ZALOPAY_ID_APP:", ZALOPAY_ID_APP);
@@ -520,41 +521,245 @@ const returnOrder = async (req, res) => {
   }
 };
 
-const updateReturnReason = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { returnReason, status } = req.body;
+// const updateReturnReason = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const { returnReason, status } = req.body;
 
-    // Kiểm tra xem lý do và trạng thái có hợp lệ không
+//     // Kiểm tra xem lý do và trạng thái có hợp lệ không
+//     if (!returnReason) {
+//       return res.status(400).json({ message: "Return reason is required." });
+//     }
+//     if (!["complaint", "return_completed"].includes(status)) {
+//       return res.status(400).json({ message: "Invalid status for return." });
+//     }
+
+//     // Tìm và cập nhật đơn hàng với lý do trả hàng và trạng thái
+//     const order = await Order.findById(id);
+//     if (!order) {
+//       return res.status(404).json({ message: "Order not found." });
+//     }
+
+//     // Cập nhật lý do và trạng thái trả hàng
+//     order.returnReason = returnReason;
+//     order.status = status;
+//     order.statusHistory.push(status); 
+
+//     await order.save();
+
+//     res.status(200).json({
+//       message: "Order updated with return reason and status.",
+//       order,
+//     });
+//   } catch (error) {
+//     console.error("Error updating return reason:", error);
+//     res.status(500).json({ message: "Internal server error." });
+//   }
+// };
+// const updateReturnReason = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const { returnReason, status } = req.body;
+
+//     // Kiểm tra xem lý do và trạng thái có hợp lệ không
+//     if (!returnReason) {
+//       return res.status(400).json({ message: "Return reason is required." });
+//     }
+//     if (!["complaint", "return_completed", "pendingPayment"].includes(status)) {
+//       return res.status(400).json({ message: "Invalid status for return." });
+//     }
+
+//     if (status === "canceled" && order.status !== "canceled") {
+//       for (const item of order.items) {
+//         const product = await Product.findById(item.productId);
+
+//         if (product) {
+//           // Tìm variant bằng cách khớp color và size thay vì variantId
+//           const variantIndex = product.variants.findIndex(
+//             (v) => v.color === item.color && v.size === item.size
+//           );
+
+//           if (variantIndex >= 0) {
+//             // Tăng số lượng cho biến thể được tìm thấy
+//             product.variants[variantIndex].countInStock += item.quantity;
+//           } else {
+//             // Nếu không có variant, tăng countInStock cho sản phẩm
+//             product.countInStock += item.quantity;
+//           }
+
+//           await product.save(); // Lưu thay đổi
+//         }
+//       }
+//     }
+
+//     // Tìm và cập nhật đơn hàng với lý do trả hàng và trạng thái
+//     const order = await Order.findById(id);
+//     if (!order) {
+//       return res.status(404).json({ message: "Order not found." });
+//     }
+
+//     // Cập nhật lý do và trạng thái trả hàng
+//     order.returnReason = returnReason;
+//     order.status = status;
+//     order.statusHistory.push({ status, time: new Date() });
+
+//     await order.save();
+
+//     res.status(200).json({
+//       message: "Order updated with return reason and status.",
+//       order,
+//     });
+//   } catch (error) {
+//     console.error("Error updating return reason:", error);
+//     res.status(500).json({ message: "Internal server error." });
+//   }
+// };
+
+
+// Cron job tự động cập nhật trạng thái `pendingPayment` sang `canceled`
+
+const updateReturnReason = async (req, res) => {
+  const { id } = req.params;
+  const { returnReason, status } = req.body;
+
+  // Kiểm tra định dạng id
+  if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Thiếu hoặc sai định dạng id" });
+  }
+
+  try {
+    const order = await Order.findById(id);
+
+    // Kiểm tra nếu đơn hàng không tồn tại
+    if (!order) {
+      return res.status(404).json({ message: "Đơn hàng không tồn tại" });
+    }
+
+    // Kiểm tra lý do trả hàng
     if (!returnReason) {
       return res.status(400).json({ message: "Return reason is required." });
     }
-    if (!["complaint", "return_completed"].includes(status)) {
+
+    // Kiểm tra trạng thái có hợp lệ không
+    if (!["complaint", "return_completed", "pendingPayment", "canceled"].includes(status)) {
       return res.status(400).json({ message: "Invalid status for return." });
     }
 
-    // Tìm và cập nhật đơn hàng với lý do trả hàng và trạng thái
-    const order = await Order.findById(id);
-    if (!order) {
-      return res.status(404).json({ message: "Order not found." });
-    }
-
-    // Cập nhật lý do và trạng thái trả hàng
+    // Nếu trạng thái chuyển thành "canceled" và trước đó không phải "canceled"
+   
+    // Cập nhật trạng thái và lý do trả hàng
     order.returnReason = returnReason;
     order.status = status;
-    order.statusHistory.push(status); 
+
+    // Thêm trạng thái mới vào lịch sử trạng thái
+    order.statusHistory.push({ status, time: new Date() });
 
     await order.save();
 
+    // Gửi email thông báo nếu cần
+    if (order.customerInfo && order.customerInfo.email) {
+      await Mail.sendOrderStatusUpdate(order.customerInfo.email, order);
+    }
+   
+    
     res.status(200).json({
       message: "Order updated with return reason and status.",
       order,
     });
   } catch (error) {
-    console.error("Error updating return reason:", error);
-    res.status(500).json({ message: "Internal server error." });
+    console.error("Lỗi khi cập nhật trạng thái đơn hàng:", error.message);
+    res.status(500).json({
+      message: "Có lỗi xảy ra khi cập nhật trạng thái đơn hàng",
+      error: error.message || error,
+    });
   }
 };
+
+// cron.schedule('* * * * *', async () => {
+//   try {
+//     console.log("Cron job triggered at:", new Date());
+
+//     const now = new Date();
+//     const oneMinuteAgo = new Date(now.getTime() - 1 * 60 * 1000);
+
+//     // Tìm các đơn hàng cần cập nhật
+//     const orders = await Order.find({
+//       status: 'pendingPayment',
+//       updatedAt: { $lt: oneMinuteAgo },
+//     });
+
+//     console.log("Orders to update:", orders.length);
+
+//     for (const order of orders) {
+//       order.status = 'canceled';
+//       order.statusHistory.push(JSON.stringify({ status: 'canceled', time: new Date() }));
+//       await order.save();
+//       console.log(`Order ${order._id} status updated to canceled.`);
+//     }
+//   } catch (error) {
+//     console.error("Error running cron job:", error);
+//   }
+// });
+
+cron.schedule('* * * * *', async () => {
+  try {
+    console.log("Cron job triggered at:", new Date());
+
+    const now = new Date();
+    const oneMinuteAgo = new Date(now.getTime() - 10 * 1000);
+
+    // Tìm các đơn hàng có trạng thái 'pendingPayment' quá 1 phút
+    const orders = await Order.find({
+      status: 'pendingPayment',
+      updatedAt: { $lt: oneMinuteAgo },
+    });
+
+    console.log("Orders to update:", orders.length);
+
+    for (const order of orders) {
+      console.log(`Processing order: ${order._id}`);
+
+      // Tăng số lượng tồn kho cho các sản phẩm trong đơn hàng
+      for (const item of order.items) {
+        const product = await Product.findById(item.productId);
+
+        if (product) {
+          const variantIndex = product.variants.findIndex(
+            (v) => v.color === item.color && v.size === item.size
+          );
+
+          if (variantIndex >= 0) {
+            product.variants[variantIndex].countInStock += item.quantity;
+            console.log(
+              `Updated variant stock for product ${product._id}:`,
+              product.variants[variantIndex]
+            );
+          } else {
+            product.countInStock += item.quantity;
+            console.log(
+              `Updated main product stock for product ${product._id}:`,
+              product.countInStock
+            );
+          }
+
+          // Lưu sản phẩm
+          await product.save();
+        } else {
+          console.log(`Product not found for item: ${item.productId}`);
+        }
+      }
+
+      // Cập nhật trạng thái đơn hàng
+      order.status = 'canceled';
+      order.statusHistory.push(JSON.stringify({ status: 'canceled', time: new Date() }));
+      await order.save();
+
+      console.log(`Order ${order._id} status updated to canceled.`);
+    }
+  } catch (error) {
+    console.error("Error running cron job:", error);
+  }
+});
 
 const countSuccessfulOrders = async (req, res) => {
   try {

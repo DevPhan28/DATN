@@ -5,7 +5,7 @@ import { io, Socket } from 'socket.io-client';
 const SocketContext = createContext<Socket | null>(null);
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
-    const socket = io('http://localhost:8080'); // Đảm bảo URL là chính xác
+    const socket = io('http://localhost:8080'); 
 
     return (
         <SocketContext.Provider value={socket}>

@@ -5,7 +5,7 @@ const Order = require("../models/order");
 cron.schedule("0 0 * * *", async () => {
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-
+  
   try {
     console.log("Cron job đang chạy...");
     console.log(`Kiểm tra các đơn hàng có receivedAt cũ hơn: ${sevenDaysAgo}`);

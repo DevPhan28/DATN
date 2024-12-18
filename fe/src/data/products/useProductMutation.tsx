@@ -59,10 +59,6 @@ const useProductMutation = () => {
       await queryClient.invalidateQueries({
         queryKey: [QUERY_KEY.FETCH_PRODUCT],
       });
-
-      // setProductId(result.data.id)
-      // setStep((prev) => Math.min(prev + 1, 2))
-
       return result;
     },
   });

@@ -4,6 +4,7 @@ type Variant = {
   price: number;
   countInStock: number;
   weight: number;
+  suk: string
 };
 
 type Category = {

@@ -29,7 +29,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
 
     const { shippingMessage, shippingFee, isFreeShipping } =
       location.state || {};
-    console.log(shippingMessage);
+    console.log('log', selectedItems);
 
     // Fetch available coupons
 

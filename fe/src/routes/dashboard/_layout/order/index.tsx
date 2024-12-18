@@ -15,9 +15,9 @@ export const Route = createFileRoute('/dashboard/_layout/order/')({
 });
 
 function OrderList() {
-   const location = useLocation();
-      const status =location.state?.status || 'all-delivery'
-      const select = location.state?.selectedGroup || 'delivery';
+  const location = useLocation();
+  const status =location.state?.status || 'all-delivery'
+  const select = location.state?.selectedGroup || 'delivery';
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedTab, setSelectedTab] = useState( status || 'all-delivery');
   const navigate = useNavigate();
