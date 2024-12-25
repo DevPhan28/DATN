@@ -10,7 +10,7 @@ const UserSchema = new mongoose.Schema(
       required: true,
       match: [
         /^[a-zA-Z0-9_]+$/,
-        "Username must contain only letters, numbers, and underscores",
+        "Tên người dùng chỉ được chứa chữ cái, số và dấu gạch dưới",
       ],
     },
     email: {
@@ -32,6 +32,16 @@ const UserSchema = new mongoose.Schema(
       type: String,
       enum: ["user", "admin"],
       default: "user",
+    },
+    phone: {
+      type: String,
+      unique: true, // Không cho phép trùng số điện thoại
+      trim: true,
+      required: true, // Bắt buộc nhập
+      match: [
+        /^[0-9]{10,11}$/,
+        "Số điện thoại không hợp lệ! Phải chứa 10-11 chữ số",
+      ],
     },
   },
   { timestamps: true, versionKey: false }

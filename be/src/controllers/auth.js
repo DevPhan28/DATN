@@ -7,18 +7,35 @@ const mongoose = require("mongoose");
 
 const signup = async (req, res) => {
   try {
-    // lấy dữ liệu từ client gửi lên : req.body
-    const { username, email, password, confirmPassword, avatar } = req.body;
+    // Lấy dữ liệu từ client gửi lên: req.body
+    const { username, email, password, confirmPassword, avatar, phone } =
+      req.body;
 
-    // Kiểm tra username không chứa dấu hoặc ký tự đặc biệt
+    // Kiểm tra username không chứa dấu hoặc ký tự đặc biệt và không vượt quá 10 ký tự
     const usernameRegex = /^[a-zA-Z0-9_]+$/; // Chỉ cho phép chữ, số và dấu gạch dưới
     if (!usernameRegex.test(username)) {
       return res.status(400).json({
-        messages: "Username không được chứa dấu hoặc ký tự đặc biệt!",
+        field: "username",
+        message: "Tên người dùng không được chứa dấu hoặc ký tự đặc biệt!",
+      });
+    }
+    if (username.length > 10) {
+      return res.status(400).json({
+        field: "username",
+        message: "Tên người dùng không được vượt quá 10 ký tự!",
       });
     }
 
-    // kiểm tra dữ liệu từ client gửi lên có đúng với schema không
+    // Kiểm tra định dạng số điện thoại
+    const phoneRegex = /^[0-9]{10,11}$/; // Chỉ cho phép số, độ dài từ 10-11
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({
+        field: "phone",
+        message: "Số điện thoại không hợp lệ! Phải chứa 10-11 chữ số.",
+      });
+    }
+
+    // Kiểm tra dữ liệu từ client gửi lên có đúng với schema không
     const { error } = registerSchema.validate(req.body, { abortEarly: false });
     if (error) {
       const messages = error.details.map(({ message }) => message);
@@ -27,76 +44,112 @@ const signup = async (req, res) => {
       });
     }
 
-    // kiểm tra email có tồn tại trong db chưa
-    const existUser = await User.findOne({ email });
-    if (existUser) {
+    // Kiểm tra username đã tồn tại
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) {
       return res.status(400).json({
-        messages: "Email đã tồn tại",
+        field: "username",
+        message: "Username đã được sử dụng",
       });
     }
 
-    // mã hóa password
+    // Kiểm tra email đã tồn tại
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({
+        field: "email",
+        message: "Email đã được sử dụng",
+      });
+    }
+
+    // Kiểm tra phone đã tồn tại
+    const existingPhone = await User.findOne({ phone });
+    if (existingPhone) {
+      return res.status(400).json({
+        field: "phone",
+        message: "Số điện thoại đã được sử dụng",
+      });
+    }
+
+    // Mã hóa password
     const hashPassword = await bcryptjs.hash(password, 10);
     const role = (await User.countDocuments({})) === 0 ? "admin" : "user";
 
-    // tạo mới user
+    // Tạo mới user
     const user = await User.create({
       username,
       email,
       password: hashPassword,
       avatar,
       role,
+      phone,
     });
 
     const token = jwt.sign({ userId: user._id }, "123456", { expiresIn: "1h" });
 
-    // trả về client thông tin user vừa tạo
+    // Trả về client thông tin user vừa tạo
     user.password = undefined;
     return res.status(201).json({
-      messages: "Đăng ký thành công",
+      message: "Đăng ký thành công",
       user,
       token,
     });
   } catch (error) {
-    return res.status(400).json({
-      messages: error.message,
+    return res.status(500).json({
+      message: "Đã xảy ra lỗi máy chủ. Vui lòng thử lại sau.",
     });
   }
 };
 
 const signin = async (req, res) => {
-  // lấy dữ liệu từ client gửi lên : req.body
-  const { email, password } = req.body;
-  // kiểm tra dữ liệu từ client gửi lên có đúng với schema không
-  const { error } = signinSchema.validate(req.body, { abortEarly: false });
-  if (error) {
-    const messages = error.details.map((error) => error.message);
-    return res.status(400).json({
-      messages,
-    });
-  }
-  const user = await User.findOne({ email });
-  // nếu đúng thì kiểm xem email có tồn tại trong db chưa
-  if (!user) {
-    return res.status(400).json({
-      messages: "Tài khoản không tồn tại",
-    });
-  }
-  const isMatch = await bcryptjs.compare(password, user.password);
-  // so sánh mật khẩu client gửi lên với mật khẩu user có khớp nhau không?
-  if (!isMatch) {
-    return res.status(400).json({
-      messages: "Password không đúng",
-    });
-  }
-  // nếu khớp thì tạo token và trả về client
-  const token = await jwt.sign({ userId: user._id }, "123456");
+  try {
+    // Lấy dữ liệu từ client gửi lên : req.body
+    const { email, password } = req.body;
 
-  return res.status(200).json({
-    message: "Đăng nhập thành công",
-    user,
-    token,
-  });
+    // Kiểm tra dữ liệu từ client gửi lên có đúng với schema không
+    const { error } = signinSchema.validate(req.body, { abortEarly: false });
+    if (error) {
+      const messages = error.details.map((error) => error.message);
+      return res.status(400).json({
+        field: "validation",
+        messages,
+      });
+    }
+
+    // Kiểm tra email có tồn tại trong DB không
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({
+        field: "email",
+        message: "Email chưa được đăng ký",
+      });
+    }
+
+    // So sánh mật khẩu từ client gửi lên với mật khẩu trong DB
+    const isMatch = await bcryptjs.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({
+        field: "password",
+        message: "Mật khẩu không đúng",
+      });
+    }
+
+    // Nếu khớp thì tạo token và trả về client
+    const token = jwt.sign({ userId: user._id }, "123456", { expiresIn: "1h" });
+
+    // Xóa mật khẩu trước khi trả về client
+    user.password = undefined;
+
+    return res.status(200).json({
+      message: "Đăng nhập thành công",
+      user,
+      token,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Đã xảy ra lỗi trên máy chủ. Vui lòng thử lại sau.",
+    });
+  }
 };
 
 let EMAIL = null;
@@ -361,6 +414,117 @@ const verifyOldPassword = async (req, res) => {
     });
   }
 };
+const updateUser = async (req, res) => {
+  try {
+    // Lấy userId từ req.user (giải mã từ token) hoặc body (frontend gửi qua localStorage)
+    const userId = req.user?.id || req.body.userId;
+    if (!userId) {
+      return res.status(400).json({ message: "User ID không được cung cấp" });
+    }
+
+    const { username, email, phone } = req.body; // Lấy các thông tin cần cập nhật
+
+    // Kiểm tra nếu không có dữ liệu nào để cập nhật
+    if (!username && !email && !phone) {
+      return res
+        .status(400)
+        .json({ message: "Không có thông tin để cập nhật" });
+    }
+
+    // **Validate dữ liệu mới**
+    const errors = {};
+
+    if (username) {
+      const usernameRegex = /^[a-zA-Z0-9_]+$/; // Chỉ cho phép chữ cái, số và dấu gạch dưới
+      if (!usernameRegex.test(username)) {
+        errors.username =
+          "Tên không hợp lệ (chỉ chứa chữ cái, số và dấu gạch dưới)";
+      }
+    }
+    if (username.length > 10) {
+      return res.status(400).json({
+        field: "username",
+        message: "Tên người dùng không được vượt quá 10 ký tự!",
+      });
+    }
+    if (email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Kiểm tra định dạng email
+      if (!emailRegex.test(email)) {
+        errors.email = "Email không hợp lệ";
+      }
+    }
+
+    if (phone) {
+      const phoneRegex = /^[0-9]{10,11}$/;
+      // Kiểm tra định dạng số điện thoại (10-11 chữ số)
+      if (!phoneRegex.test(phone)) {
+        errors.phone =
+          "Số điện thoại không hợp lệ (chỉ chứa tối đa 10-11 chữ số)";
+      }
+    }
+
+    // Nếu có lỗi validate, trả về thông báo lỗi
+    if (Object.keys(errors).length > 0) {
+      return res.status(400).json({ errors });
+    }
+
+    // Tìm người dùng theo userId
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng" });
+    }
+
+    // Kiểm tra và gán giá trị mới cho từng trường (nếu có)
+    if (username) {
+      // Kiểm tra xem username đã tồn tại trong hệ thống chưa
+      const existingUsername = await User.findOne({
+        username,
+        _id: { $ne: userId },
+      });
+      if (existingUsername) {
+        return res
+          .status(400)
+          .json({ field: "username", message: "Tên người dùng đã tồn tại" });
+      }
+      user.username = username;
+    }
+
+    if (email) {
+      // Kiểm tra xem email đã tồn tại trong hệ thống chưa
+      const existingEmail = await User.findOne({ email, _id: { $ne: userId } });
+      if (existingEmail) {
+        return res
+          .status(400)
+          .json({ field: "email", message: "Email đã được sử dụng" });
+      }
+      user.email = email;
+    }
+
+    if (phone) {
+      // Kiểm tra xem phone đã tồn tại trong hệ thống chưa
+      const existingPhone = await User.findOne({ phone, _id: { $ne: userId } });
+      if (existingPhone) {
+        return res
+          .status(400)
+          .json({ field: "phone", message: "Số điện thoại đã được sử dụng" });
+      }
+      user.phone = phone;
+    }
+
+    // Lưu thông tin người dùng sau khi cập nhật
+    const updatedUser = await user.save();
+
+    return res.status(200).json({
+      message: "Cập nhật thông tin người dùng thành công",
+      data: updatedUser,
+    });
+  } catch (error) {
+    // Xử lý lỗi hệ thống
+    return res
+      .status(500)
+      .json({ message: "Đã xảy ra lỗi. Vui lòng thử lại sau." });
+  }
+};
 
 module.exports = {
   signin,
@@ -372,4 +536,5 @@ module.exports = {
   getUserInfo,
   updateAccount,
   verifyOldPassword,
+  updateUser,
 };
