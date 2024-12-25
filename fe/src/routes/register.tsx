@@ -10,19 +10,24 @@ export const Route = createFileRoute('/register')({
 
 function Register() {
   const [registerError, setRegisterError] = useState<string | null>(null);
-  const [registerSuccess, setRegisterSuccess] = useState<string | null>(null); // Thêm trạng thái cho thành công
+  const [registerSuccess, setRegisterSuccess] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors },
     watch,
   } = useForm<Iuser>();
+
   const { registerMutation } = useRegisterMutation();
+
   const onSubmit = (data: Iuser) => {
     const userData = { ...data };
+    console.log(data); // Log dữ liệu gửi đi để kiểm tra
     setRegisterError(null);
-    setRegisterSuccess(null); // Đặt lại trạng thái thành công
+    setRegisterSuccess(null);
+
     registerMutation.mutate(userData, {
       onSuccess: () => {
         setRegisterSuccess(
@@ -30,16 +35,22 @@ function Register() {
         );
       },
       onError: (error: any) => {
-        setRegisterError(
-          error?.response?.data?.message ||
-            'Đăng ký thất bại. User hoặc email đã tồn tại'
-        );
+        if (error?.response?.data?.field && error?.response?.data?.message) {
+          const { field, message } = error.response.data;
+          setError(field as keyof Iuser, {
+            type: 'manual',
+            message,
+          });
+        } else {
+          setRegisterError('Đăng ký thất bại. Vui lòng thử lại!');
+        }
       },
     });
   };
 
   const password = watch('password');
   const usernameNoAccentRegex = /^[a-zA-Z0-9_]+$/;
+
   return (
     <div className="relative h-screen w-full overflow-y-auto">
       {/* Hình nền */}
@@ -82,14 +93,14 @@ function Register() {
             </p>
           </div>
 
-          {/* Phần form đăng ký */}
+          {/* Form đăng ký */}
           <form
             onSubmit={e => void handleSubmit(onSubmit)(e)}
             className="w-full space-y-6 md:space-y-10"
           >
             {/* Các trường nhập liệu */}
             <div className="space-y-4">
-              {/* Nhập tên người dùng */}
+              {/* Tên người dùng */}
               <div className="txt-compact-medium-plus space-y-2 text-ui-fg-subtle">
                 <label htmlFor="user">Tên người dùng</label>
                 <Input
@@ -113,7 +124,7 @@ function Register() {
                 )}
               </div>
 
-              {/* Nhập email */}
+              {/* Email */}
               <div className="txt-compact-medium-plus space-y-2 text-ui-fg-subtle">
                 <label htmlFor="email">Email</label>
                 <Input
@@ -134,7 +145,27 @@ function Register() {
                 )}
               </div>
 
-              {/* Nhập mật khẩu */}
+              {/* Số điện thoại */}
+              <div className="txt-compact-medium-plus space-y-2 text-ui-fg-subtle">
+                <label htmlFor="phone">Số điện thoại</label>
+                <Input
+                  id="phone"
+                  aria-label="Số điện thoại"
+                  {...register('phone', {
+                    required: 'Số điện thoại là bắt buộc',
+                    pattern: {
+                      value: /^[0-9]{10,11}$/,
+                      message: 'Số điện thoại không hợp lệ!',
+                    },
+                  })}
+                  placeholder="Nhập số điện thoại của bạn"
+                />
+                {errors.phone && (
+                  <p className="text-red-500">{errors.phone.message}</p>
+                )}
+              </div>
+
+              {/* Mật khẩu */}
               <div className="txt-compact-medium-plus space-y-2 text-ui-fg-subtle">
                 <label htmlFor="password">Mật khẩu</label>
                 <Input
@@ -155,7 +186,7 @@ function Register() {
                 )}
               </div>
 
-              {/* Nhập lại mật khẩu */}
+              {/* Xác nhận mật khẩu */}
               <div className="txt-compact-medium-plus space-y-2 text-ui-fg-subtle">
                 <label htmlFor="confirmPassword">Xác nhận mật khẩu</label>
                 <Input
@@ -176,14 +207,19 @@ function Register() {
                 )}
               </div>
             </div>
+
+            {/* Lỗi chung */}
             {registerError && (
               <div className="text-center text-red-500">{registerError}</div>
             )}
+
+            {/* Thành công */}
             {registerSuccess && (
               <div className="text-center text-green-500">
                 {registerSuccess}
               </div>
             )}
+
             {/* Nút đăng ký */}
             <Button
               type="submit"
@@ -205,3 +241,5 @@ function Register() {
     </div>
   );
 }
+
+export default Register;

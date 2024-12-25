@@ -149,7 +149,6 @@ function UserOrder() {
     }
   }, [data]);
 
-
   if (!userId) {
     return (
       <div className="mt-10 text-center text-gray-500">
@@ -290,15 +289,18 @@ function UserOrder() {
             <h2 className="text-lg font-semibold">{username}</h2>
             <p className="text-gray-600">{emailuser}</p>
             <div className="mt-4">
-              <a
-                href="/my-account"
+              <Link
+                to="/profile"
                 className="block text-blue-600 hover:underline"
               >
-                Tài khoản của tôi
-              </a>
-              <a href="/orders" className="block text-red-600 hover:underline">
+                Cập nhật hồ sơ
+              </Link>
+              <Link
+                to="/orderuser"
+                className="block text-red-600 hover:underline"
+              >
                 Đơn mua
-              </a>
+              </Link>
             </div>
           </div>
         </div>

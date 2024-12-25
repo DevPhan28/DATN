@@ -5,12 +5,12 @@ import instance from '@/api/axiosIntance';
 import { Button, Input, toast } from '@medusajs/ui';
 import { useForm } from 'react-hook-form';
 
-export const Route = createFileRoute('/_layout/account/')({
-  component: AccountUser,
+export const Route = createFileRoute('/_layout/change_password/')({
+  component: PasswordUser,
 });
 
-function AccountUser() {
-  const [user, setUser] = useState(null);
+function PasswordUser() {
+  const [user, setUser] = useState<Iuser | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -46,7 +46,7 @@ function AccountUser() {
       }
 
       setUser(response.data.user);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       setError(err.message);
     } finally {
@@ -58,11 +58,10 @@ function AccountUser() {
     fetchUserInfo(); // Gọi fetchUserInfo khi component mount
   }, []);
 
-  const onSubmit = async data => {
+  const onSubmit = async (data: any) => {
     const userId = localStorage.getItem('userId'); // Lấy userId từ localStorage
 
     if (!userId) {
-      setError('User ID is missing');
       toast.error('User ID is missing');
       return;
     }
@@ -110,16 +109,16 @@ function AccountUser() {
       );
 
       if (response.status >= 200 && response.status < 300) {
-        toast.success('Cập nhật tài khoản thành công!');
+        toast.success('Cập nhật mật khẩu thành công!');
         fetchUserInfo();
       } else {
-        throw new Error('Cập nhật tài khoản không thành công.');
+        throw new Error('Cập nhật mật khẩu không thành công.');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       toast.error(
         err.response?.data?.message ||
-          'Có lỗi khi cập nhật tài khoản. Vui lòng thử lại.'
+          'Có lỗi khi cập nhật mật khẩu. Vui lòng thử lại.'
       );
     } finally {
       setIsSaving(false);
@@ -128,7 +127,7 @@ function AccountUser() {
 
   // Kiểm tra mật khẩu mới có giống mật khẩu cũ không
   const newPassword = watch('newPassword');
-  const oldPassword = user?.password; // Giả sử mật khẩu cũ được lưu trữ trong `user.password`
+  const oldPassword = user?.password; //
 
   if (loading) {
     return <div>Loading...</div>;
@@ -163,7 +162,7 @@ function AccountUser() {
               <ChevronRightMini />
             </div>
             <div className="capitalize text-gray-500">
-              <Link to="/account">Cập nhật mật khẩu</Link>
+              <Link to="/change_password">Cập nhật mật khẩu</Link>
             </div>
           </div>
         </div>
@@ -273,4 +272,4 @@ function AccountUser() {
   );
 }
 
-export default AccountUser;
+export default PasswordUser;

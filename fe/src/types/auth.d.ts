@@ -3,6 +3,7 @@ type Iuser = {
   username: string;
   email: string;
   password: string;
+  phone: string;
   confirmPassword: string;
   role: string;
 };
@@ -19,4 +20,5 @@ type Iaccount = {
   newPassword: string;
   confirmPassword: string;
   avatar: string;
+  phone: string;
 };

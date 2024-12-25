@@ -15,22 +15,37 @@ export const Route = createFileRoute('/login')({
 
 function Login() {
   const [loginError, setLoginError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
+    setError, // Hàm gán lỗi vào trường cụ thể
     formState: { errors },
   } = useForm<Ilogin>();
+
   const { loginMutation } = useLoginMutation();
 
   const onSubmit = (data: Ilogin) => {
     const userData = { ...data };
-    setLoginError(null);
+    setLoginError(null); // Reset lỗi chung
+
     loginMutation.mutate(userData, {
+      onSuccess: () => {
+        console.log('Đăng nhập thành công');
+      },
       onError: (error: any) => {
-        setLoginError(
-          error?.response?.data?.message ||
-            'Đăng nhập thất bại. Vui lòng kiểm tra email hoặc mật khẩu của bạn'
-        );
+        if (error?.response?.data?.field && error?.response?.data?.message) {
+          const { field, message } = error.response.data;
+
+          // Gán lỗi vào trường tương ứng
+          setError(field as keyof Ilogin, {
+            type: 'manual',
+            message,
+          });
+        } else {
+          // Lỗi chung
+          setLoginError('Đăng nhập thất bại. Vui lòng thử lại!');
+        }
       },
     });
   };
@@ -63,7 +78,7 @@ function Login() {
           <img
             src="./fasion zone.png"
             alt="fashionzone-logo"
-            className="mb-6 w-24 object-cover md:mb-8 md:w-32"
+            className="w-40 p-4"
           />
 
           {/* Form section */}
@@ -124,6 +139,8 @@ function Login() {
                 )}
               </div>
             </div>
+
+            {/* Lỗi chung */}
             {loginError && (
               <div className="text-center text-red-500">{loginError}</div>
             )}
@@ -149,3 +166,5 @@ function Login() {
     </div>
   );
 }
+
+export default Login;
