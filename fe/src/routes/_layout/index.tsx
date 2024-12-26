@@ -1,6 +1,9 @@
 import CardProduct from '@/components/cardProduct';
 import Category from '@/components/Category';
+import Collection from '@/components/Collection';
 import FeaturedProducts from '@/components/featuredProducts';
+import Hotlist from '@/components/Hotlist';
+import Instagram from '@/components/instagram';
 import Slides from '@/components/slides';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 
@@ -13,9 +16,12 @@ function Index() {
   return (
     <>
       <Slides />
-      <Category />
+      <Hotlist />
+      {/* <Category /> */}
       <CardProduct />
+      <Collection />
       <FeaturedProducts />
+      <Instagram />
     </>
   );
 }

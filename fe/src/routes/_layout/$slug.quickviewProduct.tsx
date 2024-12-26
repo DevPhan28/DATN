@@ -37,7 +37,7 @@ function DetailProduct() {
 
   const { slug } = useParams({ from: '/_layout/$slug/quickviewProduct' });
   const queryClient = useQueryClient();
-  const socket = useSocket();  
+  const socket = useSocket();
   // Fetch product information from API
   useEffect(() => {
     const fetchProduct = async () => {
@@ -56,24 +56,24 @@ function DetailProduct() {
         setLoading(false);
       }
     };
-  
+
     fetchProduct();
-  
+
     const handleCartUpdate = async () => {
       // Tải lại dữ liệu sản phẩm ngay khi có sự kiện
       await fetchProduct();
     };
-  
+
     socket.on('update-cart', handleCartUpdate);
-  
+
     // Hủy đăng ký khi component unmount hoặc slug thay đổi
     return () => {
       socket.off('update-cart', handleCartUpdate);
     };
   }, [slug]);
-  
-  
-  
+
+
+
   useEffect(() => {
     if (product) {
       const fetchComments = async () => {
@@ -258,332 +258,359 @@ function DetailProduct() {
   // } = useCart(userId);
   return (
     <div>
-      <div className="">
-        <div className="main-content flex h-48 w-full flex-col items-center justify-center">
-          <div className="text-content">
-            <div className="text-center text-4xl font-semibold">Cửa hàng</div>
-            <div className="link caption1 mt-3 flex items-center justify-center gap-1">
-              <div className="flex items-center justify-center">
-                <a href="/">Trang chủ</a>
-                <ChevronRightMini />
-              </div>
-              <div className="flex items-center justify-center">
-                <a href="/shop">Cửa hàng</a>
-                <ChevronRightMini />
-              </div>
-              <div className="capitalize text-gray-500">
-                <a href="#">Chi tiết</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="bg-gray-50 py-10">
-        <div>{/* Hiển thị số sao trung bình */}</div>
-        <div className="m-auto max-w-7xl p-5 sm:p-5 md:p-5 lg:p-5 xl:p-0">
-          <div className="mt-5 flex flex-col justify-between bg-white p-5 shadow  lg:flex-row">
-            <div className="flex flex-col gap-5 lg:flex-row">
-              {/* Thumbnails section */}
-              <div className="flex sm:flex-row md:flex-row lg:flex-col">
-                <img
-                  alt="Main Product"
-                  className="h-20 w-28 cursor-pointer rounded-lg border border-white object-cover p-1 hover:border-black hover:opacity-75"
-                  src={product.image}
-                  onClick={() => setCurrentImage(product.image)}
-                  onMouseEnter={() => setCurrentImage(product.image)}
-                />
-                {product.gallery &&
-                  product.gallery.map((img, index) => (
+      <div>
+        <main>
+          <div className="mb-md-1 pb-md-3" />
+          <section className="product-single container px-[55px]">
+            <div className="row">
+              <div className="col-lg-7">
+                <div className="flex flex-col gap-5 lg:flex-row">
+                  {/* Thumbnails section */}
+                  <div className="flex sm:flex-row md:flex-row lg:flex-col">
                     <img
-                      key={index}
-                      alt={`Thumbnail ${index + 1}`}
+                      alt="Main Product"
                       className="h-20 w-28 cursor-pointer rounded-lg border border-white object-cover p-1 hover:border-black hover:opacity-75"
-                      src={img}
-                      onClick={() => setCurrentImage(img)}
-                      onMouseEnter={() => setCurrentImage(img)}
+                      src={product.image}
+                      onClick={() => setCurrentImage(product.image)}
+                      onMouseEnter={() => setCurrentImage(product.image)}
                     />
-                  ))}
-              </div>
-              {/* Main product image */}
-              <div className="">
-                <div className="mb-4 md:h-[300px] md:w-[500px] lg:h-[500px] lg:w-[400px]">
-                  <img
-                    src={currentImage || product.image}
-                    alt="Product"
-                    className="h-[500px] w-[600px] rounded-lg bg-slate-400 object-cover shadow-lg"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Product details and purchase section */}
-            <div className="mt-6 lg:mt-0 w-[580px]">
-              <h2 className="mb-4 w-96 text-xl font-bold sm:text-2xl lg:text-3xl">
-                {product.name}
-              </h2>{' '}
-              <div className="rating">
-                <div className="mt-1 flex items-center">
-                  {/* Hiển thị sao trung bình */}
-                  {[...Array(5)].map((_, index) => (
-                    <StarSolid
-                      key={index}
-                      className={`h-5 w-5 ${index < Math.floor(averageRating) ? 'text-yellow-400' : 'text-gray-300'}`}
-                    />
-                  ))}
-                  <span className="font-semibold">
-                    {averageRating.toFixed(1)} trên tổng {comments.length} Bình
-                    luận
-                  </span>
-                </div>
-              </div>
-              <p className="mb-2 text-sm text-gray-600 sm:text-base">
-                Mã sản phẩm: {product.sku}
-              </p>
-              <div className="mb-4 text-lg font-semibold text-red-600 sm:text-xl lg:text-2xl">
-                <CurrencyVND amount={product.price} />
-              </div>
-              <div className="mb-4 text-lg sm:text-xl">
-                <p>{product.description}</p>
-              </div>
-              {/* Size selection with boxes */}
-              <div className="mb-4">
-                <label className="block mb-2 text-gray-700">Kích cỡ</label>
-                <div className="flex gap-2">
-                  {uniqueSizes.map(size => (
-                    <button
-                      onClick={() => handleSizeChange(size)}
-                      className={`px-4 py-2 border rounded ${selectedSize === size
-                        ? 'bg-blue-500 text-white border-blue-500'
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
-                        }`}
-                    >
-                      {size}
-                    </button>
-
-                  ))}
-                </div>
-              </div>
-
-
-              <div className="mb-4 h-32">
-                <label className="block mb-2 text-gray-700 ">Màu</label>
-                <div className="flex gap-2 h-16">
-                  {availableColors &&
-                    availableColors.map((color) => (
-                      <button
-                        key={color}
-                        onClick={() => setSelectedColor(color)}
-                        className={`w-10 h-10 rounded-full border focus:outline-none ${selectedColor === color
-                          ? 'border-blue-500 ring-2 ring-blue-300'
-                          : 'border-gray-300'
-                          }`}
-                        style={{
-                          backgroundColor: color,
-                          boxShadow: selectedColor === color ? '0 0 5px rgba(59, 130, 246, 0.5)' : 'none',
-                        }}
-                        disabled={!selectedSize}
-                      ></button>
-                    ))}
-                </div>
-                {selectedColor && (
-                  <p className="mt-2 text-sm text-gray-600">
-                    Màu đã chọn: <span className="font-bold">{selectedColor}</span>
-                  </p>
-                )}
-              </div>
-
-
-
-
-
-              <div className="mb-4 flex items-center gap-5">
-                <div>Số lượng</div>
-                <div>
-                  <button
-                    className="rounded border border-gray-300 p-2"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  >
-                    -
-                  </button>
-                  <input
-                    className="mx-2 w-12 rounded border border-gray-300 p-2 text-center"
-                    type="text"
-                    min="1"
-                    value={quantity}
-                    readOnly
-                  />
-                  <button
-                    className="rounded border border-gray-300 p-2"
-                    onClick={() => setQuantity(quantity + 1)}
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
-              {/* <div className="mb-4 flex items-center gap-5">
-                <div>Quantity</div>
-                <div className="flex items-center justify-center">
-                  <button
-                    onClick={() => decrementQuantity(index)}
-                    className="border px-2 hover:bg-blue-400"
-                  >
-                    -
-                  </button>
-                  <input
-                    type="text"
-                    min="1"
-                    value={quantities[index] || product.quantity}
-                    onChange={e =>
-                      handleQuantityChange(index, e.target.value)
-                    }
-                    className="w-12 border text-center"
-                  />
-                  <button
-                    onClick={() => incrementQuantity(index)}
-                    className="border px-2 hover:bg-blue-400"
-                  >
-                    +
-                  </button>
-                </div>
-              </div> */}
-
-              {/* Add to cart button */}
-              <button
-                className="mt-3 rounded-md bg-blue-500 px-5 py-2 text-sm text-white transition hover:bg-gray-800 sm:px-6 sm:py-3 sm:text-lg"
-                onClick={handleAddToCart}
-                disabled={addItemToCart.isLoading}
-              >
-                {addItemToCart.isLoading ? 'Đang thêm...' : 'Thêm vào giỏ hàng'}
-              </button>
-            </div>
-          </div>
-          <div className="mx-auto mt-10 bg-white p-8 shadow">
-            <h2 className="text-2xl font-semibold">Mô tả chi tiết</h2>
-            <div
-              className="mt-5"
-              dangerouslySetInnerHTML={{ __html: product.detaildescription }}
-            />
-          </div>
-          <div className="mt-10 bg-white p-4 shadow">
-            <div className="flex flex-col gap-10 lg:flex-row">
-              {/* Left side - Customer Reviews lg:w-1/2*/}
-
-              <div className="w-full">
-                <div className="mt-5 flex w-full justify-between">
-                  <h2 className="text-[24px] font-semibold">
-                    Đánh Giá Sản Phẩm (
-                    {comments.length > 0 ? comments.length : 0})
-                  </h2>
-                  <div className="flex items-center text-[18px] font-normal text-[#666666]">
-                    <div>See All</div>
-                    <ChevronRightMini />
+                    {product.gallery &&
+                      product.gallery.map((img, index) => (
+                        <img
+                          key={index}
+                          alt={`Thumbnail ${index + 1}`}
+                          className="h-20 w-28 cursor-pointer rounded-lg border border-white object-cover p-1 hover:border-black hover:opacity-75"
+                          src={img}
+                          onClick={() => setCurrentImage(img)}
+                          onMouseEnter={() => setCurrentImage(img)}
+                        />
+                      ))}
+                  </div>
+                  {/* Main product image */}
+                  <div className="">
+                    <div className="mb-4 ">
+                      <img
+                        src={currentImage || product.image} width={600} height={300}
+                        alt="Product"
+                        className=" rounded-lg bg-slate-400 object-cover shadow-lg"
+                      />
+                    </div>
                   </div>
                 </div>
-
-                <div id="comments-section">
-                  <h2 className="text-2xl">Bình luận</h2>
-                  <textarea
-                    className="mt-5 w-full rounded border p-3"
-                    placeholder="Write a comment..."
-                    value={newComment}
-                    onChange={e => setNewComment(e.target.value)}
-                  />
-                  <div className="flex items-center gap-2">
-                    {[1, 2, 3, 4, 5].map(star => (
+              </div>
+              <div className="col-lg-5">
+                <div className="d-flex justify-content-between mb-4 pb-md-2">
+                  <div className="breadcrumb mb-0 d-none d-md-block flex-grow-1">
+                    <a href="#" className="menu-link menu-link_us-s text-uppercase fw-medium">Home</a>
+                    <span className="breadcrumb-separator menu-link fw-medium ps-1 pe-1">/</span>
+                    <a href="#" className="menu-link menu-link_us-s text-uppercase fw-medium">The Shop</a>
+                  </div>{/* /.breadcrumb */}
+                  <div className="product-single__prev-next d-flex align-items-center justify-content-between justify-content-md-end flex-grow-1">
+                    <a href="#" className="text-uppercase fw-medium disabled"><svg className="mb-1px" width={10} height={10} viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg"><use href="#icon_prev_md" /></svg><span className="menu-link menu-link_us-s">Prev</span></a>
+                    <a href="product2_variable.html" className="text-uppercase fw-medium"><span className="menu-link menu-link_us-s">Next</span><svg className="mb-1px" width={10} height={10} viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg"><use href="#icon_next_md" /></svg></a>
+                  </div>{/* /.shop-acs */}
+                </div>
+                <h1 className="product-single__name">{product.name}</h1>
+                <div className="product-single__rating flex gap-2">
+                  <div className="reviews-group d-flex gap-1">
+                    {[...Array(5)].map((_, index) => (
                       <StarSolid
-                        key={star}
-                        className={`cursor-pointer ${rating >= star ? 'text-orange-300' : 'text-orange-200'}`}
-                        onClick={() => handleRatingChange(star)}
+                        key={index}
+                        className={`h-5 w-5 ${index < Math.floor(averageRating) ? 'text-yellow-400' : 'text-gray-300'}`}
                       />
                     ))}
+                    <span className="font-semibold">
+                      {averageRating.toFixed(1)}  trên tổng {comments.length} Bình
+                      luận
+                    </span>
                   </div>
-                  <button
-                    onClick={handleCommentSubmit}
-                    className="mt-2 rounded bg-blue-500 px-4 py-2 text-white"
-                  >
-                    Đăng bình luận
-                  </button>
-                  <div className="mt-5 pb-5">
-                    {comments.length > 0 ? (
-                      comments.map(comment => (
-                        <div key={comment._id} className="mb-4">
-                          <div className="flex items-center gap-3">
-                            <img
-                              src={comment.userId?.avatar}
-                              alt="User Avatar"
-                              className="h-10 w-10 rounded-full"
-                            />
-                            <div>
-                              <h3 className="font-semibold">
-                                {comment.userId?.username}
-                              </h3>
-                              <div className="flex">
-                                {/* Đoạn này sẽ hiển thị sao dựa trên rating của comment */}
-                                {[1, 2, 3, 4, 5].map(star => (
-                                  <div key={star}>
-                                    {comment.rating >= star ? (
-                                      <StarSolid className="text-orange-300" />
-                                    ) : (
-                                      <StarSolid className="text-orange-200" />
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
+                </div>
+                <div className="product-single__price">
+                  <CurrencyVND amount={product.price} />
+                </div>
+                <div className="product-single__short-desc">
+                  <p>{product.description}</p>
+                </div>
+                <form name="" method="" onSubmit={(e) => e.preventDefault()}>
+                  <div className="product-single__swatches">
+                    <div className="product-swatch text-swatches">
+                      <label>Kích cỡ</label>
+                      <div className="swatch-list">
+                        {uniqueSizes.map(size => (
+                          <button
+                            type="button"
+                            onClick={() => handleSizeChange(size)}
+                            className={`px-4 py-2 border rounded ${selectedSize === size
+                              ? 'bg-blue-500 text-white border-blue-500'
+                              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'
+                              }`}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
+                      <a
+                        href="#"
+                        className="sizeguide-link"
+                        data-bs-toggle="modal"
+                        data-bs-target="#sizeGuide"
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        Size Guide
+                      </a>
+                    </div>
+                    <div className="product-swatch color-swatches h-10">
+                      <label>Color</label>
+                      <div className="swatch-list">
+                        {availableColors &&
+                          availableColors.map((color, index) => (
+                            <button
+                              type="button"
+                              key={color}
+                              onClick={() => setSelectedColor(color)}
+                              className={`w-8 h-8 rounded-full border focus:outline-none ${selectedColor === color
+                                ? 'border-blue-500 ring-2 ring-blue-500'
+                                : 'border-gray-300'
+                                }`}
+                              style={{
+                                backgroundColor: color,
+                                boxShadow: selectedColor === color ? '0 0 10px rgba(59, 130, 246, 0.7)' : 'none',
+                              }}
+                              disabled={!selectedSize}
+                            ></button>
+                          ))}
+                      </div>
+                    </div>
+                  </div>
 
-                              <p className="mt-1">{comment.commentText}</p>
-                              <small>
-                                {new Date(comment.createdAt).toLocaleString(
-                                  'vi-VN',
-                                  {
-                                    year: 'numeric',
-                                    month: '2-digit',
-                                    day: '2-digit',
-                                    hour: '2-digit',
-                                    minute: '2-digit',
-                                  }
-                                )}
-                              </small>
-                            </div>
-                          </div>
-                          <div className="mt-10 flex justify-end gap-2 text-[#767676]">
-                            <ThumbUp className="text-black" />
-                            Hữu ích
-                            <DropdownMenu>
-                              <DropdownMenu.Trigger asChild>
-                                <IconButton>
-                                  <EllipsisHorizontal />
-                                </IconButton>
-                              </DropdownMenu.Trigger>
-                              <DropdownMenu.Content>
-                                <DropdownMenu.Separator />
-                                <DropdownMenu.Item
-                                  className="gap-x-2"
-                                  onClick={() =>
-                                    handleDeleteComment(comment._id)
-                                  }
-                                >
-                                  <Trash className="text-ui-fg-subtle" />
-                                  Xóa bình luận
-                                </DropdownMenu.Item>
-                              </DropdownMenu.Content>
-                            </DropdownMenu>
-                          </div>
-                          <div className="mt-5 border-b pb-5"></div>
+                  <div className="product-single__addtocart">
+                    <div className="qty-control position-relative">
+                      <input type="number" name="quantity" defaultValue={1} min={1} value={quantity} readOnly className="qty-control__number text-center" />
+                      <div className="qty-control__reduce" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</div>
+                      <div className="qty-control__increase" onClick={() => setQuantity(quantity + 1)}>+</div>
+                    </div>{/* .qty-control */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault(); // Ngừng hành động mặc định của form
+                        handleAddToCart(); // Gọi hàm thêm sản phẩm vào giỏ hàng
+                      }}
+                      disabled={addItemToCart.isLoading}
+                      className="btn btn-primary btn-addtocart js-open-aside"
+                      data-aside="cartDrawer"
+                    >
+                      {addItemToCart.isLoading ? 'Đang thêm...' : 'Thêm vào giỏ hàng'}
+                    </button>
+                    {/* js-open-aside */}
+                  </div>
+                </form>
+
+
+                <div className="product-single__addtolinks">
+                  <a href="#" className="menu-link menu-link_us-s add-to-wishlist"><svg width={16} height={16} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><use href="#icon_heart" /></svg><span>Add to Wishlist</span></a>
+                  <share-button className="share-button">
+                    <button className="menu-link menu-link_us-s to-share border-0 bg-transparent d-flex align-items-center">
+                      <svg width={16} height={19} viewBox="0 0 16 19" fill="none" xmlns="http://www.w3.org/2000/svg"><use href="#icon_sharing" /></svg>
+                      <span>Share</span>
+                    </button>
+                    <details id="Details-share-template__main" className="m-1 xl:m-1.5" hidden>
+                      <summary className="btn-solid m-1 xl:m-1.5 pt-3.5 pb-3 px-5">+</summary>
+                      <div id="Article-share-template__main" className="share-button__fallback flex items-center absolute top-full left-0 w-full px-2 py-4 bg-container shadow-theme border-t z-10">
+                        <div className="field grow mr-4">
+                          <label className="field__label sr-only" htmlFor="url">Link</label>
+                          <input type="text" className="field__input w-full" id="url" defaultValue="https://uomo-crystal.myshopify.com/blogs/news/go-to-wellness-tips-for-mental-health" placeholder="Link" onclick="this.select();" readOnly />
                         </div>
-                      ))
-                    ) : (
-                      <p>Chưa có bình luận nào</p>
-                    )}
+                        <button className="share-button__copy no-js-hidden">
+                          <svg className="icon icon-clipboard inline-block mr-1" width={11} height={13} fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" viewBox="0 0 11 13">
+                            <path fillRule="evenodd" clipRule="evenodd" d="M2 1a1 1 0 011-1h7a1 1 0 011 1v9a1 1 0 01-1 1V1H2zM1 2a1 1 0 00-1 1v9a1 1 0 001 1h7a1 1 0 001-1V3a1 1 0 00-1-1H1zm0 10V3h7v9H1z" fill="currentColor" />
+                          </svg>
+                          <span className="sr-only">Copy link</span>
+                        </button>
+                      </div>
+                    </details>
+                  </share-button>
+                </div>
+                <div className="product-single__meta-info">
+                  <div className="meta-item">
+                    <label>SKU:</label>
+                    <span>N/A</span>
+                  </div>
+                  <div className="meta-item">
+                    <label>Categories:</label>
+                    <span>Casual &amp; Urban Wear, Jackets, Men</span>
+                  </div>
+                  <div className="meta-item">
+                    <label>Tags:</label>
+                    <span>biker, black, bomber, leather</span>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
+            <div className="product-single__details-tab">
+              <ul className="nav nav-tabs" id="myTab" role="tablist">
+                <li className="nav-item" role="presentation">
+                  <a className="nav-link nav-link_underscore active" id="tab-description-tab" data-bs-toggle="tab" href="#tab-description" role="tab" aria-controls="tab-description" aria-selected="true">Description</a>
+                </li>
+                <li className="nav-item" role="presentation">
+                  <a className="nav-link nav-link_underscore" id="tab-additional-info-tab" data-bs-toggle="tab" href="#tab-additional-info" role="tab" aria-controls="tab-additional-info" aria-selected="false">Additional Information</a>
+                </li>
+                <li className="nav-item" role="presentation">
+                  <a className="nav-link nav-link_underscore" id="tab-reviews-tab" data-bs-toggle="tab" href="#tab-reviews" role="tab" aria-controls="tab-reviews" aria-selected="false">Reviews (2)</a>
+                </li>
+              </ul>
+              <div className="tab-content">
+                <div className="tab-pane fade show active" id="tab-description" role="tabpanel" aria-labelledby="tab-description-tab">
+                  <div className="product-single__description">
+                    <h3 className="block-title mb-4">Sed do eiusmod tempor incididunt ut labore</h3>
+                    <p className="content">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+                    <div className="row">
+                      <div className="col-lg-6">
+                        <h3 className="block-title">Why choose product?</h3>
+                        <ul className="list text-list">
+                          <li>Creat by cotton fibric with soft and smooth</li>
+                          <li>Simple, Configurable (e.g. size, color, etc.), bundled</li>
+                          <li>Downloadable/Digital Products, Virtual Products</li>
+                        </ul>
+                      </div>
+                      <div className="col-lg-6">
+                        <h3 className="block-title">Sample Number List</h3>
+                        <ol className="list text-list">
+                          <li>Create Store-specific attrittbutes on the fly</li>
+                          <li>Simple, Configurable (e.g. size, color, etc.), bundled</li>
+                          <li>Downloadable/Digital Products, Virtual Products</li>
+                        </ol>
+                      </div>
+                    </div>
+                    <h3 className="block-title mb-0">Lining</h3>
+                    <p className="content">100% Polyester, Main: 100% Polyester.</p>
+                  </div>
+                </div>
+                <div className="tab-pane fade" id="tab-additional-info" role="tabpanel" aria-labelledby="tab-additional-info-tab">
+                  <div className="product-single__addtional-info">
+                    <div className="item">
+                      <label className="h6">Weight</label>
+                      <span>1.25 kg</span>
+                    </div>
+                    <div className="item">
+                      <label className="h6">Dimensions</label>
+                      <span>90 x 60 x 90 cm</span>
+                    </div>
+                    <div className="item">
+                      <label className="h6">Size</label>
+                      <span>XS, S, M, L, XL</span>
+                    </div>
+                    <div className="item">
+                      <label className="h6">Color</label>
+                      <span>Black, Orange, White</span>
+                    </div>
+                    <div className="item">
+                      <label className="h6">Storage</label>
+                      <span>Relaxed fit shirt-style dress with a rugged</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="tab-pane fade" id="tab-reviews" role="tabpanel" aria-labelledby="tab-reviews-tab">
+                  <h2 className="product-single__reviews-title">Reviews</h2>
+                  <div className="product-single__reviews-list">
+                    <div className="product-single__reviews-item">
+                      <div className="customer-avatar">
+                        <img loading="lazy" src="../images/avatar.jpg" alt />
+                      </div>
+                      <div className="customer-review">
+                        <div className="customer-name">
+                          <h6>Janice Miller</h6>
+                          <div className="reviews-group d-flex">
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg"><use href="#icon_star" /></svg>
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg"><use href="#icon_star" /></svg>
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg"><use href="#icon_star" /></svg>
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg"><use href="#icon_star" /></svg>
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg"><use href="#icon_star" /></svg>
+                          </div>
+                        </div>
+                        <div className="review-date">April 06, 2023</div>
+                        <div className="review-text">
+                          <p>Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est…</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="product-single__reviews-item">
+                      <div className="customer-avatar">
+                        <img loading="lazy" src="../images/avatar.jpg" alt />
+                      </div>
+                      <div className="customer-review">
+                        <div className="customer-name">
+                          <h6>Benjam Porter</h6>
+                          <div className="reviews-group d-flex">
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg"><use href="#icon_star" /></svg>
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg"><use href="#icon_star" /></svg>
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg"><use href="#icon_star" /></svg>
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg"><use href="#icon_star" /></svg>
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg"><use href="#icon_star" /></svg>
+                          </div>
+                        </div>
+                        <div className="review-date">April 06, 2023</div>
+                        <div className="review-text">
+                          <p>Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est…</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="product-single__review-form">
+                    <form name="customer-review-form">
+                      <h5>Be the first to review “Message Cotton T-Shirt”</h5>
+                      <p>Your email address will not be published. Required fields are marked *</p>
+                      <div className="select-star-rating">
+                        <label>Your rating *</label>
+                        <span className="star-rating">
+                          <svg className="star-rating__star-icon" width={12} height={12} fill="#ccc" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M11.1429 5.04687C11.1429 4.84598 10.9286 4.76562 10.7679 4.73884L7.40625 4.25L5.89955 1.20312C5.83929 1.07589 5.72545 0.928571 5.57143 0.928571C5.41741 0.928571 5.30357 1.07589 5.2433 1.20312L3.73661 4.25L0.375 4.73884C0.207589 4.76562 0 4.84598 0 5.04687C0 5.16741 0.0870536 5.28125 0.167411 5.3683L2.60491 7.73884L2.02902 11.0871C2.02232 11.1339 2.01563 11.1741 2.01563 11.221C2.01563 11.3951 2.10268 11.5558 2.29688 11.5558C2.39063 11.5558 2.47768 11.5223 2.56473 11.4754L5.57143 9.89509L8.57813 11.4754C8.65848 11.5223 8.75223 11.5558 8.84598 11.5558C9.04018 11.5558 9.12054 11.3951 9.12054 11.221C9.12054 11.1741 9.12054 11.1339 9.11384 11.0871L8.53795 7.73884L10.9688 5.3683C11.0558 5.28125 11.1429 5.16741 11.1429 5.04687Z" />
+                          </svg>
+                          <svg className="star-rating__star-icon" width={12} height={12} fill="#ccc" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M11.1429 5.04687C11.1429 4.84598 10.9286 4.76562 10.7679 4.73884L7.40625 4.25L5.89955 1.20312C5.83929 1.07589 5.72545 0.928571 5.57143 0.928571C5.41741 0.928571 5.30357 1.07589 5.2433 1.20312L3.73661 4.25L0.375 4.73884C0.207589 4.76562 0 4.84598 0 5.04687C0 5.16741 0.0870536 5.28125 0.167411 5.3683L2.60491 7.73884L2.02902 11.0871C2.02232 11.1339 2.01563 11.1741 2.01563 11.221C2.01563 11.3951 2.10268 11.5558 2.29688 11.5558C2.39063 11.5558 2.47768 11.5223 2.56473 11.4754L5.57143 9.89509L8.57813 11.4754C8.65848 11.5223 8.75223 11.5558 8.84598 11.5558C9.04018 11.5558 9.12054 11.3951 9.12054 11.221C9.12054 11.1741 9.12054 11.1339 9.11384 11.0871L8.53795 7.73884L10.9688 5.3683C11.0558 5.28125 11.1429 5.16741 11.1429 5.04687Z" />
+                          </svg>
+                          <svg className="star-rating__star-icon" width={12} height={12} fill="#ccc" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M11.1429 5.04687C11.1429 4.84598 10.9286 4.76562 10.7679 4.73884L7.40625 4.25L5.89955 1.20312C5.83929 1.07589 5.72545 0.928571 5.57143 0.928571C5.41741 0.928571 5.30357 1.07589 5.2433 1.20312L3.73661 4.25L0.375 4.73884C0.207589 4.76562 0 4.84598 0 5.04687C0 5.16741 0.0870536 5.28125 0.167411 5.3683L2.60491 7.73884L2.02902 11.0871C2.02232 11.1339 2.01563 11.1741 2.01563 11.221C2.01563 11.3951 2.10268 11.5558 2.29688 11.5558C2.39063 11.5558 2.47768 11.5223 2.56473 11.4754L5.57143 9.89509L8.57813 11.4754C8.65848 11.5223 8.75223 11.5558 8.84598 11.5558C9.04018 11.5558 9.12054 11.3951 9.12054 11.221C9.12054 11.1741 9.12054 11.1339 9.11384 11.0871L8.53795 7.73884L10.9688 5.3683C11.0558 5.28125 11.1429 5.16741 11.1429 5.04687Z" />
+                          </svg>
+                          <svg className="star-rating__star-icon" width={12} height={12} fill="#ccc" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M11.1429 5.04687C11.1429 4.84598 10.9286 4.76562 10.7679 4.73884L7.40625 4.25L5.89955 1.20312C5.83929 1.07589 5.72545 0.928571 5.57143 0.928571C5.41741 0.928571 5.30357 1.07589 5.2433 1.20312L3.73661 4.25L0.375 4.73884C0.207589 4.76562 0 4.84598 0 5.04687C0 5.16741 0.0870536 5.28125 0.167411 5.3683L2.60491 7.73884L2.02902 11.0871C2.02232 11.1339 2.01563 11.1741 2.01563 11.221C2.01563 11.3951 2.10268 11.5558 2.29688 11.5558C2.39063 11.5558 2.47768 11.5223 2.56473 11.4754L5.57143 9.89509L8.57813 11.4754C8.65848 11.5223 8.75223 11.5558 8.84598 11.5558C9.04018 11.5558 9.12054 11.3951 9.12054 11.221C9.12054 11.1741 9.12054 11.1339 9.11384 11.0871L8.53795 7.73884L10.9688 5.3683C11.0558 5.28125 11.1429 5.16741 11.1429 5.04687Z" />
+                          </svg>
+                          <svg className="star-rating__star-icon" width={12} height={12} fill="#ccc" viewBox="0 0 12 12" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M11.1429 5.04687C11.1429 4.84598 10.9286 4.76562 10.7679 4.73884L7.40625 4.25L5.89955 1.20312C5.83929 1.07589 5.72545 0.928571 5.57143 0.928571C5.41741 0.928571 5.30357 1.07589 5.2433 1.20312L3.73661 4.25L0.375 4.73884C0.207589 4.76562 0 4.84598 0 5.04687C0 5.16741 0.0870536 5.28125 0.167411 5.3683L2.60491 7.73884L2.02902 11.0871C2.02232 11.1339 2.01563 11.1741 2.01563 11.221C2.01563 11.3951 2.10268 11.5558 2.29688 11.5558C2.39063 11.5558 2.47768 11.5223 2.56473 11.4754L5.57143 9.89509L8.57813 11.4754C8.65848 11.5223 8.75223 11.5558 8.84598 11.5558C9.04018 11.5558 9.12054 11.3951 9.12054 11.221C9.12054 11.1741 9.12054 11.1339 9.11384 11.0871L8.53795 7.73884L10.9688 5.3683C11.0558 5.28125 11.1429 5.16741 11.1429 5.04687Z" />
+                          </svg>
+                        </span>
+                        <input type="hidden" id="form-input-rating" defaultValue />
+                      </div>
+                      <div className="mb-4">
+                        <textarea id="form-input-review" className="form-control form-control_gray" placeholder="Your Review" cols={30} rows={8} defaultValue={""} />
+                      </div>
+                      <div className="form-label-fixed mb-4">
+                        <label htmlFor="form-input-name" className="form-label">Name *</label>
+                        <input id="form-input-name" className="form-control form-control-md form-control_gray" />
+                      </div>
+                      <div className="form-label-fixed mb-4">
+                        <label htmlFor="form-input-email" className="form-label">Email address *</label>
+                        <input id="form-input-email" className="form-control form-control-md form-control_gray" />
+                      </div>
+                      <div className="form-check mb-4">
+                        <input className="form-check-input form-check-input_fill" type="checkbox" defaultValue id="remember_checkbox" />
+                        <label className="form-check-label" htmlFor="remember_checkbox">
+                          Save my name, email, and website in this browser for the next time I comment.
+                        </label>
+                      </div>
+                      <div className="form-action">
+                        <button type="submit" className="btn btn-primary">Submit</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main >
+        <div className="mb-5 pb-xl-5" />
+      </div >
 
-      <ProductRecommendations categoryId={categoryData?.category?._id || ''} />
-    </div>
+    </div >
   );
 }
 

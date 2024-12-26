@@ -1,3 +1,6 @@
+import Footer from '@/components/footer';
+import Header from '@/components/header';
+import useLoginMutation from '@/data/auth/useLoginMutation';
 import useRegisterMutation from '@/data/auth/useRegisterMutation';
 import { Button, Input } from '@medusajs/ui';
 import { createFileRoute, Link } from '@tanstack/react-router';
@@ -9,6 +12,42 @@ export const Route = createFileRoute('/register')({
 });
 
 function Register() {
+  // const [loginError, setLoginError] = useState<string | null>(null);
+
+  // const {
+  //   register,
+  //   handleSubmit,
+  //   setError, // Hàm gán lỗi vào trường cụ thể
+  //   formState: { errors },
+  // } = useForm<Ilogin>();
+
+  // const { loginMutation } = useLoginMutation();
+
+  // const onSubmit = (data: Ilogin) => {
+  //   const userData = { ...data };
+  //   setLoginError(null); // Reset lỗi chung
+
+  //   loginMutation.mutate(userData, {
+  //     onSuccess: () => {
+  //       console.log('Đăng nhập thành công');
+  //     },
+  //     onError: (error: any) => {
+  //       if (error?.response?.data?.field && error?.response?.data?.message) {
+  //         const { field, message } = error.response.data;
+
+  //         // Gán lỗi vào trường tương ứng
+  //         setError(field as keyof Ilogin, {
+  //           type: 'manual',
+  //           message,
+  //         });
+  //       } else {
+  //         // Lỗi chung
+  //         setLoginError('Đăng nhập thất bại. Vui lòng thử lại!');
+  //       }
+  //     },
+  //   });
+  // };
+  // đăng ký
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [registerSuccess, setRegisterSuccess] = useState<string | null>(null);
 
@@ -52,192 +91,105 @@ function Register() {
   const usernameNoAccentRegex = /^[a-zA-Z0-9_]+$/;
 
   return (
-    <div className="relative h-screen w-full overflow-y-auto">
-      {/* Hình nền */}
-      <img
-        src="/image.png"
-        alt="background-register"
-        className="absolute z-0 h-full w-full object-cover"
-      />
+    <div>
+      <Header />
+      <main>
+        <div className="mb-4" />
+        <section className="login-register container max-w-3xl">
+          <ul className="nav nav-tabs mb-5" id="login_register" role="tablist">
+            <li className="nav-item" role="presentation">
+              <a className="nav-link nav-link_underscore active" id="register-tab" data-bs-toggle="tab" href="#tab-item-register" role="tab" aria-controls="tab-item-register" aria-selected="false">Đăng Ký</a>
+            </li>
+          </ul>
+          <div className="tab-content pt-2" id="login_register_tab_content">
 
-      {/* Overlay với nội dung */}
-      <div className="relative flex h-full w-full flex-col items-center justify-center gap-10 px-6 py-6 md:flex-row md:items-end md:gap-40 md:pl-20 md:pr-10">
-        {/* Phần trái với nội dung */}
-        <div className="w-full space-y-5 text-center text-ui-bg-base md:mt-auto md:w-1/2 md:text-left">
-          <p className="text-header-login-1 font-bold">
-            Mua sắm trực tuyến dễ dàng tại Fashion Zone
-          </p>
-          <p className="txt-large">
-            Khám phá các bộ sưu tập thời trang mới nhất, dễ dàng mua sắm và nhận
-            hàng tại nhà. Chúng tôi cung cấp những sản phẩm chất lượng với giá
-            cả hợp lý cho mọi phong cách!
-          </p>
-        </div>
-
-        {/* Phần phải với form đăng ký */}
-        <div className="flex w-full flex-col items-center justify-center rounded-3xl bg-ui-bg-base px-8 py-10 shadow-lg md:w-1/2 md:px-16">
-          {/* Logo */}
-          <img
-            src="./fasion zone.png"
-            alt="fashionzone-logo"
-            className="w-40 p-4"
-          />
-
-          {/* Thông điệp chào mừng */}
-          <div className="mb-8 space-y-1 text-center">
-            <p className="txt-compact-large text-ui-fg-subtle">
-              Chào mừng bạn đến với Fashion Zone
-            </p>
-            <p className="text-header-web-2 font-semibold text-ui-fg-base">
-              Tạo tài khoản
-            </p>
-          </div>
-
-          {/* Form đăng ký */}
-          <form
-            onSubmit={e => void handleSubmit(onSubmit)(e)}
-            className="w-full space-y-6 md:space-y-10"
-          >
-            {/* Các trường nhập liệu */}
-            <div className="space-y-4">
-              {/* Tên người dùng */}
-              <div className="txt-compact-medium-plus space-y-2 text-ui-fg-subtle">
-                <label htmlFor="user">Tên người dùng</label>
-                <Input
-                  id="user"
-                  aria-label="Tên người dùng"
-                  {...register('username', {
-                    required: 'Tên người dùng là bắt buộc',
-                    validate: {
-                      noWhitespace: value =>
-                        !/\s/.test(value) ||
-                        'Tên người dùng không được chứa khoảng trắng',
-                      noAccent: value =>
-                        usernameNoAccentRegex.test(value) ||
-                        'Tên người dùng không được chứa dấu',
-                    },
-                  })}
-                  placeholder="Nhập tên người dùng của bạn"
-                />
-                {errors.username && (
-                  <p className="text-red-500">{errors.username.message}</p>
-                )}
-              </div>
-
-              {/* Email */}
-              <div className="txt-compact-medium-plus space-y-2 text-ui-fg-subtle">
-                <label htmlFor="email">Email</label>
-                <Input
-                  id="email"
-                  aria-label="Email"
-                  {...register('email', {
-                    required: 'Email là bắt buộc',
-                    pattern: {
-                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                      message:
-                        'Định dạng email không hợp lệ hoặc chứa khoảng trắng',
-                    },
-                  })}
-                  placeholder="Nhập email của bạn"
-                />
-                {errors.email && (
-                  <p className="text-red-500">{errors.email.message}</p>
-                )}
-              </div>
-
-              {/* Số điện thoại */}
-              <div className="txt-compact-medium-plus space-y-2 text-ui-fg-subtle">
-                <label htmlFor="phone">Số điện thoại</label>
-                <Input
-                  id="phone"
-                  aria-label="Số điện thoại"
-                  {...register('phone', {
-                    required: 'Số điện thoại là bắt buộc',
-                    pattern: {
-                      value: /^[0-9]{10,11}$/,
-                      message: 'Số điện thoại không hợp lệ!',
-                    },
-                  })}
-                  placeholder="Nhập số điện thoại của bạn"
-                />
-                {errors.phone && (
-                  <p className="text-red-500">{errors.phone.message}</p>
-                )}
-              </div>
-
-              {/* Mật khẩu */}
-              <div className="txt-compact-medium-plus space-y-2 text-ui-fg-subtle">
-                <label htmlFor="password">Mật khẩu</label>
-                <Input
-                  id="password"
-                  aria-label="Mật khẩu"
-                  type="password"
-                  {...register('password', {
-                    required: 'Mật khẩu là bắt buộc',
-                    minLength: {
-                      value: 6,
-                      message: 'Mật khẩu phải có ít nhất 6 ký tự',
-                    },
-                  })}
-                  placeholder="Nhập mật khẩu của bạn"
-                />
-                {errors.password && (
-                  <p className="text-red-500">{errors.password.message}</p>
-                )}
-              </div>
-
-              {/* Xác nhận mật khẩu */}
-              <div className="txt-compact-medium-plus space-y-2 text-ui-fg-subtle">
-                <label htmlFor="confirmPassword">Xác nhận mật khẩu</label>
-                <Input
-                  id="confirmPassword"
-                  aria-label="Xác nhận mật khẩu"
-                  type="password"
-                  {...register('confirmPassword', {
-                    required: 'Xác nhận mật khẩu là bắt buộc',
-                    validate: value =>
-                      value === password || 'Mật khẩu xác nhận không khớp',
-                  })}
-                  placeholder="Xác nhận mật khẩu của bạn"
-                />
-                {errors.confirmPassword && (
-                  <p className="text-red-500">
-                    {errors.confirmPassword.message}
-                  </p>
-                )}
+            {/* end_login */}
+            <div className="" id="" role="tabpanel" aria-labelledby="register-tab">
+              <div className="">
+                <form name="register-form" className="needs-validation" onSubmit={e => void handleSubmit(onSubmit)(e)} noValidate>
+                  <div className="form-floating mb-3">
+                    <input {...register('username', {
+                      required: 'Tên người dùng là bắt buộc',
+                      validate: {
+                        noWhitespace: value =>
+                          !/\s/.test(value) ||
+                          'Tên người dùng không được chứa khoảng trắng',
+                        noAccent: value =>
+                          usernameNoAccentRegex.test(value) ||
+                          'Tên người dùng không được chứa dấu',
+                      },
+                    })} type="text" className="form-control form-control_gray" id="user" placeholder="Nhập tên người dùng của bạn" required />
+                    {errors.username && (
+                      <p className="text-red-500">{errors.username.message}</p>
+                    )}
+                    <label htmlFor="customerNameRegisterInput">Họ & Tên</label>
+                  </div>
+                  <div className="pb-3" />
+                  <div className="form-floating mb-3">
+                    <input {...register('email', {
+                      required: 'Email là bắt buộc',
+                      pattern: {
+                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                        message:
+                          'Định dạng email không hợp lệ hoặc chứa khoảng trắng',
+                      },
+                    })} type="email" className="form-control form-control_gray" id="email" placeholder="Nhập email của bạn" required />
+                    {errors.email && (
+                      <p className="text-red-500">{errors.email.message}</p>
+                    )}
+                    <label htmlFor="customerEmailRegisterInput">Email *</label>
+                  </div>
+                  {/* <div className="form-floating mb-3">
+                    <input {...register('phone', {
+                      required: 'Số điện thoại là bắt buộc',
+                      pattern: {
+                        value: /^[0-9]{10,11}$/,
+                        message: 'Số điện thoại không hợp lệ!',
+                      },
+                    })} type="email" className="form-control form-control_gray" id="phone" placeholder="Nhập SĐT của bạn" required />
+                    {errors.phone && (
+                      <p className="text-red-500">{errors.phone.message}</p>
+                    )}
+                    <label htmlFor="customerEmailRegisterInput">SĐT *</label>
+                  </div> */}
+                  <div className="pb-3" />
+                  <div className="form-floating mb-3">
+                    <input {...register('password', {
+                      required: 'Mật khẩu là bắt buộc',
+                      minLength: {
+                        value: 6,
+                        message: 'Mật khẩu phải có ít nhất 6 ký tự',
+                      },
+                    })} type="password" className="form-control form-control_gray" id="password" placeholder="Nhập mật khẩu của bạn *" required />
+                    {errors.password && (
+                      <p className="text-red-500">{errors.password.message}</p>
+                    )}
+                    <label htmlFor="customerPasswodRegisterInput">Mật khẩu *</label>
+                  </div>
+                  <div className="form-floating mb-3">
+                    <input {...register('confirmPassword', {
+                      required: 'Xác nhận mật khẩu là bắt buộc',
+                      validate: value =>
+                        value === password || 'Mật khẩu xác nhận không khớp',
+                    })} type="password" className="form-control form-control_gray" id="confirmPassword" placeholder="Xác nhận mật khẩu của bạn" required />
+                    {errors.confirmPassword && (
+                      <p className="text-red-500">
+                        {errors.confirmPassword.message}
+                      </p>
+                    )}
+                    <label htmlFor="customerPasswodRegisterInput">Xác Nhận Mật khẩu *</label>
+                  </div>
+                  <div className="d-flex align-items-center mb-3 pb-2">
+                    <p className="m-0">Dữ liệu cá nhân của bạn sẽ được sử dụng để hỗ trợ trải nghiệm của bạn trên toàn bộ trang web này, để quản lý quyền truy cập vào tài khoản của bạn và cho các mục đích khác được mô tả trong chính sách bảo mật của chúng tôi.</p>
+                  </div>
+                  <button className="btn btn-primary w-100 text-uppercase" type="submit">Đăng Ký</button>
+                </form>
               </div>
             </div>
-
-            {/* Lỗi chung */}
-            {registerError && (
-              <div className="text-center text-red-500">{registerError}</div>
-            )}
-
-            {/* Thành công */}
-            {registerSuccess && (
-              <div className="text-center text-green-500">
-                {registerSuccess}
-              </div>
-            )}
-
-            {/* Nút đăng ký */}
-            <Button
-              type="submit"
-              className="w-full bg-blue-600 text-white hover:bg-blue-700"
-            >
-              Đăng ký
-            </Button>
-          </form>
-
-          {/* Liên kết đăng nhập */}
-          <p className="txt-compact-large mt-6 text-ui-fg-subtle">
-            Đã có tài khoản?{' '}
-            <Link to="/login" className="text-blue-600 hover:underline">
-              Đăng nhập ngay!
-            </Link>{' '}
-          </p>
-        </div>
-      </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
     </div>
   );
 }

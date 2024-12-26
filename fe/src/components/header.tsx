@@ -1,11 +1,15 @@
+import ErrorCart from '@/components/errors/error-cart';
+import LoginCart from '@/components/errors/error-login-cart';
+import { useCart } from '@/data/cart/useCartLogic';
 import { useFetchCart } from '@/data/cart/useFetchCart';
-import { BarsThree, XMark, MagnifyingGlass } from '@medusajs/icons';
 import { toast } from '@medusajs/ui';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
-import SearchBox from './SearchBox';
-
+import '../../css/plugins/swiper.min.css';
+import nav_bg from '../assets/images/nav-bg.jpg';
+import CurrencyVND from './config/vnd';
 const Header = () => {
+
   // Trạng thái hiển thị của menu
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -26,7 +30,6 @@ const Header = () => {
   };
   const userId = localStorage.getItem('userId');
   const { data: cartData, isLoading } = useFetchCart(userId); // Lấy dữ liệu giỏ hàng
-
   // Tính tổng số lượng sản phẩm trong giỏ hàng
   const totalItems =
     cartData?.products?.reduce(
@@ -66,231 +69,702 @@ const Header = () => {
   // Truy xuất tên người dùng (username)
   const username = storedData?.user?.username || 'Không có tên người dùng';
 
+  //Cart-giỏ hàng
+  const navigate = useNavigate();
+
+  // if (!userId) {
+  //   return <LoginCart />;
+  // }
+
+  const {
+
+    quantities,
+    selectedProducts,
+    selectAll,
+    handleQuantityChange,
+    incrementQuantity,
+    decrementQuantity,
+    productPrice,
+    handleDeleteSelectedProducts,
+    toggleSelectProduct,
+    toggleSelectAll,
+    totalSelectedPrice,
+    getSelectedItems,
+  } = useCart(userId);
+
+  if (isLoading) {
+    return <div>Đang tải...</div>;
+  }
+
+  // if (!cartData || !cartData.products || cartData.products.length === 0) {
+  //   return <ErrorCart />;
+  // }
+
+  const handleCheckout = () => {
+    const selectedItems = getSelectedItems() || [];
+    if (selectedItems.length === 0) {
+      toast.error('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
+      return;
+    }
+    navigate({
+      to: '/checkout',
+      state: { selectedItems },
+    });
+  };
   return (
     <>
-      <div className="sticky top-0 z-50 bg-white">
-        {' '}
-        {/* Added sticky and top-0 classes */}
-        <div className="m-auto max-w-7xl p-5 sm:p-5 md:p-5 lg:p-5 xl:p-0">
-          <nav className="relative">
-            <div className="flex h-16 items-center justify-between">
-              <div className="flex gap-x-14">
-                <div className="flex items-center">
-                  <img
-                    className="w-40"
-                    src="/fasion zone.png"
-                    alt="Your Company"
-                  />
-                </div>
+      <header id="header" className="header header_sticky">
+        <div className="container px-[55px]">
+          <div className="header-desk header-desk_type_1">
+            <div className="logo">
+              <a href="/">
+                <img src="/fasion zone.png" alt="Uomo" className="logo__image d-block w-40" />
+              </a>
+            </div>{/* /.logo */}
+            <nav className="navigation">
+              <ul className="navigation__list list-unstyled d-flex">
+                <li className="navigation__item">
+                  <a href="#" className="navigation__link">Home</a>
+                  <div className="box-menu" style={{ width: 800 }}>
+                    <div className="col pe-4">
+                      <ul className="sub-menu__list list-unstyled">
+                        <li className="sub-menu__item"><a href="index.html" className="menu-link menu-link_us-s">Home 1</a></li>
+                        <li className="sub-menu__item"><a href="https://uomo-html.flexkitux.com/Demo2/index.html" className="menu-link menu-link_us-s">Home 2</a></li>
+                        <li className="sub-menu__item"><a href="https://uomo-html.flexkitux.com/Demo3/index.html" className="menu-link menu-link_us-s">Home 3</a></li>
 
-                {/* Main Menu */}
-                <div className="hidden flex-wrap sm:flex sm:gap-1 sm:text-[10px] md:text-[14px] lg:gap-5 lg:text-[16px]">
-                  <Link
-                    to="/"
-                    className="px-2 py-2 font-medium hover:text-blue-400"
-                  >
-                    Trang chủ
-                  </Link>
-                  <Link
-                    to="/shop"
-                    className="px-2 py-2 font-medium hover:text-blue-400"
-                  >
-                    Cửa hàng
-                  </Link>
-                  <a
-                    href="/featuredProducts"
-                    className="relative px-2 py-2 font-medium hover:text-blue-400"
-                  >
-                    Nổi bật
-                    <span className="absolute left-14 mt-[-8px] w-9 rounded-xl bg-red-400 text-center text-xs uppercase text-white">
-                      Hot
-                    </span>
-                  </a>
-                  <Link
-                    to="/blog"
-                    className="px-2 py-2 font-medium hover:text-blue-400"
-                  >
-                    Blog
-                  </Link>
-                  <a
-                    href="#"
-                    className="px-2 py-2 font-medium hover:text-blue-400"
-                  >
-                    Về chúng tôi
-                  </a>
-                  <a
-                    href="#"
-                    className="px-2 py-2 font-medium hover:text-blue-400"
-                  >
-                    Liên hệ
+                      </ul>
+                    </div>
+                    <div className="col pe-4">
+                      <ul className="sub-menu__list list-unstyled">
+                        <li className="sub-menu__item"><a href="https://uomo-html.flexkitux.com/Demo7/index.html" className="menu-link menu-link_us-s">Home 7</a></li>
+                        <li className="sub-menu__item"><a href="https://uomo-html.flexkitux.com/Demo8/index.html" className="menu-link menu-link_us-s">Home 8</a></li>
+                        <li className="sub-menu__item"><a href="https://uomo-html.flexkitux.com/Demo9/index.html" className="menu-link menu-link_us-s">Home 9</a></li>
+
+                      </ul>
+                    </div>
+                  </div>{/* /.box-menu */}
+                </li>
+                <li className="navigation__item">
+                  <a href="" className="navigation__link">Shop</a>
+                </li>
+                <li className="navigation__item">
+                  <a href="#" className="navigation__link">Blog</a>
+                </li>
+                <li className="navigation__item">
+                  <a href="#" className="navigation__link">Pages</a>
+                </li>
+                <li className="navigation__item">
+                  <a href="about.html" className="navigation__link">About</a>
+                </li>
+                <li className="navigation__item">
+                  <a href="contact.html" className="navigation__link">Contact</a>
+                </li>
+              </ul>{/* /.navigation__list */}
+            </nav>{/* /.navigation */}
+            <div className="header-tools d-flex align-items-center">
+              <div className="header-tools__item hover-container">
+                <div className="js-hover__open position-relative">
+                  <a className="js-search-popup search-field__actor" href="#">
+                    <i className="fa-solid fa-magnifying-glass text-xl"></i>
                   </a>
                 </div>
-              </div>
-
-              {/* Icons and menu toggle button */}
-              <div className="flex items-center space-x-2 text-[19px]">
-                {/* Icon search */}
-                <div className="mx-auto flex max-w-md items-center space-x-2">
-                  <button
-                    onClick={toggleSearch} // Đảo ngược trạng thái hiển thị
-                    type="button"
-                    className="rounded-full px-5 py-2 text-sm transition-all hover:opacity-90"
-                  >
-                    <MagnifyingGlass />
-                  </button>
-                </div>
-
-                <Link to="/cart" className="relative">
-                  <i className="fa-solid fa-cart-shopping text-[20px] hover:text-blue-400"></i>
-                  {/* Display total items in the cart */}
-                  {!isLoading && totalItems > 0 && (
-                    <span className="absolute -right-3 -top-3 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
-                      {totalItems}
-                    </span>
-                  )}
-                </Link>
-                <div className="flex items-center sm:hidden">
-                  <button
-                    onClick={toggleMenu}
-                    className="flex items-center justify-center p-2 text-gray-500 hover:text-blue-400 focus:outline-none"
-                  >
-                    {isMenuOpen ? (
-                      <XMark className="hover:text-blue-400" />
-                    ) : (
-                      <BarsThree className="hover:text-blue-400" />
-                    )}
-                  </button>
-                </div>
-                <div className="group relative z-10" ref={menuRef}>
+                <div className="search-popup js-hidden-content">
+                  <form action="https://uomo-html.flexkitux.com/Demo1/search_result.html" method="GET" className="search-field container">
+                    <p className="text-uppercase text-secondary fw-medium mb-4">What are you looking for?</p>
+                    <div className="position-relative">
+                      <input className="search-field__input search-popup__input w-100 fw-medium" type="text" name="search-keyword" placeholder="Search products" />
+                      <button className="btn-icon search-popup__submit" type="submit">
+                        <svg className="d-block" width={20} height={20} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <use href="#icon_search" />
+                        </svg>
+                      </button>
+                      <button className="btn-icon btn-close-lg search-popup__reset" type="reset" />
+                    </div>
+                    <div className="search-popup__results">
+                      <div className="sub-menu search-suggestion">
+                        <h6 className="sub-menu__title fs-base">Quicklinks</h6>
+                        <ul className="sub-menu__list list-unstyled">
+                          <li className="sub-menu__item"><a href="shop2.html" className="menu-link menu-link_us-s">New Arrivals</a>
+                          </li>
+                          <li className="sub-menu__item"><a href="#" className="menu-link menu-link_us-s">Dresses</a></li>
+                          <li className="sub-menu__item"><a href="shop3.html" className="menu-link menu-link_us-s">Accessories</a>
+                          </li>
+                          <li className="sub-menu__item"><a href="#" className="menu-link menu-link_us-s">Footwear</a></li>
+                          <li className="sub-menu__item"><a href="#" className="menu-link menu-link_us-s">Sweatshirt</a></li>
+                        </ul>
+                      </div>
+                      <div className="search-result row row-cols-5" />
+                    </div>
+                  </form>{/* /.header-search */}
+                </div>{/* /.search-popup */}
+              </div>{/* /.header-tools__item hover-container */}
+              <div className="header-tools__item hover-container">
+                <a className="header-tools__item js-open-aside" href="#" data-aside="customerForms">
                   <div
                     onClick={toggleMenu}
-                    className="custom-cursor-on-hover ml-4 flex cursor-pointer items-center gap-x-2"
+                    className="custom-cursor-on-hover  flex cursor-pointer items-center "
                   >
-                    {isLoggedIn ? (
-                      <>
-                        <img
-                          src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg"
-                          alt=""
-                          className="size-8 rounded-full object-cover"
-                        />
-                        <span className="hidden text-base font-medium md:flex">
-                          {username || 'kkk'}
-                        </span>
-                      </>
-                    ) : (
-                      <i className="fa-solid fa-user text-[20px] hover:text-blue-400"></i>
-                    )}
+                    <i className="fa-solid fa-user text-xl hover:text-blue-400"></i>
                   </div>
+                </a>
+              </div>
+
+              <a className="header-tools__item" href="account_wishlist.html">
+                <i className="fa-solid fa-heart text-xl"></i>
+              </a>
+              <a href="#" className="header-tools__item header-tools__cart js-open-aside" data-aside="cartDrawer">
+                <i className="fa-solid fa-cart-shopping text-xl"></i>
+                {!isLoading && totalItems > 0 && (
+                  <span className="cart-amount d-block position-absolute js-cart-items-count">{totalItems}</span>
+                )}
+              </a>
+              <a className="header-tools__item" href="#" data-bs-toggle="modal" data-bs-target="#siteMap">
+                <i className="fa-solid fa-bars text-xl"></i>
+              </a>
+            </div>{/* /.header__tools */}
+          </div>{/* /.header-desk header-desk_type_1 */}
+        </div>{/* /.container */}
+      </header>
+      <div>
+        <div className="aside aside_right overflow-hidden customer-forms" id="customerForms">
+          <div className="customer-forms__wrapper d-flex position-relative">
+            <div className='flex flex-col justify-center items-center'>
+              <div>
+                <div className="group relative z-10" ref={menuRef}>
 
                   {isMenuOpen && (
-                    <ul className="absolute right-3 top-10 w-44 cursor-pointer rounded bg-white text-lg shadow-lg">
+                    <ul className="absolute top-10 w-96 cursor-pointer rounded-lg  transition-all duration-300 ease-in-out transform ">
                       {isLoggedIn ? (
                         <>
-                          <li className="hidden px-3 hover:bg-white hover:text-blue-400">
-                            <a className="block w-full" href="/admin">
-                              Trang quản trị
-                            </a>
+                          <div className="flex items-center justify-center flex-col py-4 px-3">
+
+                            <img
+                              src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg"
+                              alt=""
+                              className="w-16 h-16 rounded-full object-cover border-2 border-gray-200"
+                            />
+                            <div className="flex items-center gap-2 mt-2 ">
+                              <div className=" text-gray-700 text-xl">Xin chào</div>
+                              <span className="text-xl font-medium text-gray-900">{username || 'kkk'}</span>
+                            </div>
+                          </div>
+
+                          <li className="hidden md:block hover:bg-blue-100 py-2 px-4 text-lg font-medium hover:text-blue-500">
+                            <a href="/dashboard">Trang quản trị</a>
                           </li>
-                          <li className="custom-cursor-on-hover p-1 px-3 hover:bg-white hover:text-blue-400">
-                            <Link
-                              to="/profile"
-                              className="block w-full"
-                              href="#"
-                            >
-                              Cập nhật hồ sơ
-                            </Link>
+
+                          <li className="px-4 py-2 text-lg font-medium hover:bg-blue-100 hover:text-blue-500">
+                            <Link to="/profile">Cập nhật hồ sơ</Link>
                           </li>
-                          <li className="custom-cursor-on-hover p-1 px-3 hover:bg-white hover:text-blue-400">
-                            <Link
-                              to="/orderuser"
-                              className="block w-full"
-                              href="#"
-                            >
-                              Đơn mua
-                            </Link>
+
+                          <li className="px-4 py-2 text-lg font-medium hover:bg-blue-100 hover:text-blue-500">
+                            <Link to="/orderuser">Đơn mua</Link>
                           </li>
-                          <li className="custom-cursor-on-hover block w-full p-1 px-3 hover:bg-white hover:text-blue-400">
-                            <a
-                              onClick={handleLogout}
-                              href="#"
-                              className="block w-full"
-                            >
-                              Đăng xuất
-                            </a>
+
+                          <li className="px-4 py-2 text-lg font-medium hover:bg-blue-100 hover:text-blue-500">
+                            <a onClick={handleLogout} href="#">Đăng xuất</a>
                           </li>
                         </>
                       ) : (
-                        <div className="w-[300px] rounded-xl bg-[#F7F4F0] p-4 text-center">
+                        <div className="w-full p-4 text-center space-y-4">
                           <Link to="/login">
-                            <a
-                              className="button-main w-full rounded-lg bg-[#3B82F6] p-2 px-6 text-center text-white hover:bg-black"
-                              href="/buyer/login"
-                            >
+                            <button className="w-full text-lg rounded-lg btn btn-primary mt-3 d-block transition-colors duration-300">
                               Đăng nhập
-                            </a>
+                            </button>
                           </Link>
-                          <div className="mt-3 text-gray-500">
+                          <div className="text-gray-600 text-lg">
                             Bạn chưa có tài khoản?
-                            <Link
-                              className="w-full pl-1 text-black hover:underline"
-                              to="/register"
-                            >
-                              Đăng ký
-                            </Link>
+                            <Link to="/register" className="pl-1 text-black hover:underline text-lg">Đăng ký</Link>
                           </div>
                         </div>
                       )}
                     </ul>
+
+
                   )}
                 </div>
               </div>
             </div>
-            {/* Hidden menu for mobile view */}
-            {isMenuOpen && (
-              <div className="mt-2 flex flex-col space-y-2 sm:hidden">
-                <a
-                  href="#"
-                  className="block px-3 py-2 font-medium hover:text-blue-400"
-                >
-                  Trang chủ
-                </a>
-                <a
-                  href="#"
-                  className="block px-3 py-2 font-medium hover:text-blue-400"
-                >
-                  Cửa hàng
-                </a>
-                <a
-                  href="#"
-                  className="block px-3 py-2 font-medium hover:text-blue-400"
-                >
-                  Nổi bật
-                </a>
-                <a
-                  href="#"
-                  className="block px-3 py-2 font-medium hover:text-blue-400"
-                >
-                  Blog
-                </a>
-                <a
-                  href="#"
-                  className="block px-3 py-2 font-medium hover:text-blue-400"
-                >
-                  Về chúng tôi
-                </a>
-                <a
-                  href="#"
-                  className="block px-3 py-2 font-medium hover:text-blue-400"
-                >
-                  Liên hệ
-                </a>
-              </div>
-            )}
-          </nav>
+          </div>
         </div>
-      </div>
+        <div className="aside aside_right overflow-hidden cart-drawer" id="cartDrawer">
+          <div className="aside-header d-flex align-items-center">
+            {!isLoading && totalItems > 0 && (
+              <h3 className="text-uppercase fs-6 mb-0">Giỏ hàng ( <span className="cart-amount js-cart-items-count">{totalItems}</span> ) </h3>
+            )}
+            <button className="btn-close-lg js-close-aside btn-close-aside ms-auto" />
+          </div>{/* /.aside-header */}
+          <div className="aside-content cart-drawer-items-list">
+            {cartData?.products?.map((product, index) => (
+              <div className="cart-drawer-item d-flex position-relative py-2">
+                <div className="position-relative">
+                  <a href="product1_simple.html">
+                    <img loading="lazy" className="cart-drawer-item__img" src={product.image} />
+                  </a>
+                </div>
+                <div className="cart-drawer-item__info flex-grow-1">
+                  <h6 className="cart-drawer-item__title fw-normal text-black"><a href="">{product.name}</a></h6>
+                  <p className="cart-drawer-item__option text-secondary">Color: {product.color || 'Không có'}</p>
+                  <p className="cart-drawer-item__option text-secondary">Size: {product.size || 'Không có'}</p>
+                  <div className="d-flex align-items-center justify-content-between mt-1">
+                    <div className="qty-control position-relative">
+                      <input type="text" min={1} value={quantities[index] || product.quantity}
+                        onChange={e =>
+                          handleQuantityChange(index, e.target.value)
+                        } className="qty-control__number border-0 text-center" />
+                      <div className="qty-control__reduce text-start" onClick={() => decrementQuantity(index)}>-</div>
+                      <div className="qty-control__increase text-end" onClick={() => incrementQuantity(index)}>+</div>
+                    </div>{/* .qty-control */}
+                    <span className="cart-drawer-item__price money price"> <CurrencyVND
+                      amount={
+                        (quantities[index] || product.quantity) *
+                        productPrice(index)
+                      }
+                    /></span>
+                  </div>
 
-      {isSearchOpen && <SearchBox onClose={toggleSearch} />}
+                </div>
+
+                <button onClick={handleDeleteSelectedProducts} className="btn-close-xs position-absolute top-0 end-0 js-cart-item-remove py-2" />
+
+              </div>
+            ))}
+
+          </div>{/* /.aside-content */}
+          <div className="cart-drawer-actions position-absolute start-0 bottom-0 w-100">
+            <hr className="cart-drawer-divider" />
+            <div className="d-flex justify-content-between">
+              <h6 className="fs-base fw-medium">TỔNG:</h6>
+              <span className="cart-subtotal fw-medium"> <CurrencyVND amount={cartData?.products?.reduce((total, product, index) => {
+                // Tính giá trị của từng sản phẩm (số lượng * giá)
+                const productTotal = (quantities[index] || product.quantity) * productPrice(index);
+                return total + productTotal; // Cộng dồn vào tổng
+              }, 0) || '0'} /></span>
+            </div>{/* /.d-flex justify-content-between */}
+            <a href="/cart" className="btn btn-light mt-3 d-block">Xem giỏ hàng</a>
+            <a href="shop_checkout.html" className="btn btn-primary mt-3 d-block">Thanh Toán</a>
+          </div>{/* /.aside-content */}
+        </div>{/* /.aside */}
+        {/* Sitemap */}
+        <div className="modal fade" id="siteMap" tabIndex={-1}>
+          <div className="modal-dialog modal-fullscreen">
+            <div className="sitemap d-flex">
+              <div className="w-50 d-none d-lg-block">
+                <img loading="lazy" src={nav_bg} alt="Site map" className="sitemap__bg" />
+              </div>{/* /.sitemap__bg w-50 d-none d-lg-block */}
+              <div className="sitemap__links w-50 flex-grow-1">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <ul className="nav nav-pills" id="pills-tab" role="tablist">
+                      <li className="nav-item" role="presentation">
+                        <a className="nav-link active rounded-1 text-uppercase" id="pills-item-1-tab" data-bs-toggle="pill" href="#pills-item-1" role="tab" aria-controls="pills-item-1" aria-selected="true">WOMEN</a>
+                      </li>
+                      <li className="nav-item" role="presentation">
+                        <a className="nav-link rounded-1 text-uppercase" id="pills-item-2-tab" data-bs-toggle="pill" href="#pills-item-2" role="tab" aria-controls="pills-item-2" aria-selected="false">MEN</a>
+                      </li>
+                      <li className="nav-item" role="presentation">
+                        <a className="nav-link rounded-1 text-uppercase" id="pills-item-3-tab" data-bs-toggle="pill" href="#pills-item-3" role="tab" aria-controls="pills-item-3" aria-selected="false">KIDS</a>
+                      </li>
+                    </ul>
+                    <button type="button" className="btn-close-lg" data-bs-dismiss="modal" aria-label="Close" />
+                  </div>
+                  <div className="modal-body">
+                    <div className="tab-content col-12" id="pills-tabContent">
+                      <div className="tab-pane fade show active" id="pills-item-1" role="tabpanel" aria-labelledby="pills-item-1-tab">
+                        <div className="row">
+                          <ul className="nav nav-tabs list-unstyled col-5 d-block" id="myTab" role="tablist">
+                            <li className="nav-item position-relative" role="presentation">
+                              <a className="nav-link nav-link_rline active" id="tab-item-1-tab" data-bs-toggle="tab" href="#tab-item-1" role="tab" aria-controls="tab-item-1" aria-selected="true"><span className="rline-content">WOMEN</span></a>
+                            </li>
+                            <li className="nav-item position-relative" role="presentation">
+                              <a className="nav-link nav-link_rline" id="tab-item-2-tab" data-bs-toggle="tab" href="#tab-item-2" role="tab" aria-controls="tab-item-2" aria-selected="false"><span className="rline-content">MAN</span></a>
+                            </li>
+                            <li className="nav-item position-relative" role="presentation">
+                              <a className="nav-link nav-link_rline" id="tab-item-3-tab" data-bs-toggle="tab" href="#tab-item-3" role="tab" aria-controls="tab-item-3" aria-selected="false"><span className="rline-content">KIDS</span></a>
+                            </li>
+                            <li className="nav-item position-relative" role="presentation">
+                              <a className="nav-link nav-link_rline" href="#"><span className="rline-content">HOME</span></a>
+                            </li>
+                            <li className="nav-item position-relative" role="presentation">
+                              <a className="nav-link nav-link_rline" href="#"><span className="rline-content">COLLECTION</span></a>
+                            </li>
+                            <li className="nav-item position-relative" role="presentation">
+                              <a className="nav-link nav-link_rline text-red" href="#">SALE UP TO 50% OFF</a>
+                            </li>
+                            <li className="nav-item position-relative" role="presentation">
+                              <a className="nav-link nav-link_rline" href="#"><span className="rline-content">NEW</span></a>
+                            </li>
+                            <li className="nav-item position-relative" role="presentation">
+                              <a className="nav-link nav-link_rline" href="#"><span className="rline-content">SHOES</span></a>
+                            </li>
+                            <li className="nav-item position-relative" role="presentation">
+                              <a className="nav-link nav-link_rline" href="#"><span className="rline-content">ACCESSORIES</span></a>
+                            </li>
+                            <li className="nav-item position-relative" role="presentation">
+                              <a className="nav-link nav-link_rline" href="#"><span className="rline-content">JOIN LIFE</span></a>
+                            </li>
+                            <li className="nav-item position-relative" role="presentation">
+                              <a className="nav-link nav-link_rline" href="#"><span className="rline-content">#UOMOSTYLE</span></a>
+                            </li>
+                          </ul>
+                          <div className="tab-content col-7" id="myTabContent">
+                            <div className="tab-pane fade show active" id="tab-item-1" role="tabpanel" aria-labelledby="tab-item-1-tab">
+                              <ul className="sub-menu list-unstyled">
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">New</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Best Sellers</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Collaborations®</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Sets</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Denim</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Jackets &amp; Coats</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Overshirts</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Trousers</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Jeans</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Dresses</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Sweatshirts and Hoodies</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">T-shirts &amp; Tops</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Shirts &amp; Blouses</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Shorts and Bermudas</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Shoes</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="shop3.html" className="menu-link menu-link_us-s">Accessories</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Bags</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="about.html" className="menu-link menu-link_us-s">Gift Card</a>
+                                </li>
+                              </ul>{/* /.sub-menu */}
+                            </div>
+                            <div className="tab-pane fade" id="tab-item-2" role="tabpanel" aria-labelledby="tab-item-2-tab">
+                              <ul className="sub-menu list-unstyled">
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Best Sellers</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">New</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Sets</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Denim</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Collaborations®</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Trousers</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Jackets &amp; Coats</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Overshirts</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Dresses</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Jeans</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Sweatshirts and Hoodies</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="about.html" className="menu-link menu-link_us-s">Gift Card</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Shirts &amp; Blouses</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">T-shirts &amp; Tops</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Shorts and Bermudas</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="shop3.html" className="menu-link menu-link_us-s">Accessories</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Shoes</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Bags</a>
+                                </li>
+                              </ul>{/* /.sub-menu */}
+                            </div>
+                            <div className="tab-pane fade" id="tab-item-3" role="tabpanel" aria-labelledby="tab-item-3-tab">
+                              <ul className="sub-menu list-unstyled">
+                                <li className="sub-menu__item">
+                                  <a href="about.html" className="menu-link menu-link_us-s">Gift Card</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Collaborations®</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Sets</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Denim</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">New</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Best Sellers</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Overshirts</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Jackets &amp; Coats</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Jeans</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Trousers</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Shorts and Bermudas</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Shoes</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="shop3.html" className="menu-link menu-link_us-s">Accessories</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Dresses</a>
+                                </li>
+                                <li className="sub-menu__item">
+                                  <a href="#" className="menu-link menu-link_us-s">Bags</a>
+                                </li>
+                              </ul>{/* /.sub-menu */}
+                            </div>
+                          </div>
+                        </div>{/* /.row */}
+                      </div>
+                      <div className="tab-pane fade" id="pills-item-2" role="tabpanel" aria-labelledby="pills-item-2-tab">
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
+                          et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+                          aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                          cillum dolore eu fugiat nulla pariatur.</p>
+                        Elementum lectus a porta commodo suspendisse arcu, aliquam lectus faucibus.
+                      </div>
+                      <div className="tab-pane fade" id="pills-item-3" role="tabpanel" aria-labelledby="pills-item-3-tab">
+                        <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium,
+                          totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae
+                          dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit,
+                          sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+                        Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut
+                        aliquid ex ea commodi consequatur?
+                      </div>
+                    </div>
+                  </div>{/* /.modal-body */}
+                </div>{/* /.modal-content */}
+              </div>{/* /.sitemap__links w-50 flex-grow-1 */}
+            </div>
+          </div>{/* /.modal-dialog modal-fullscreen */}
+        </div>{/* /.sitemap position-fixed w-100 */}
+        {/* Quick View */}
+        <div className="modal fade" id="quickView" tabIndex={-1}>
+          <div className="modal-dialog quick-view modal-dialog-centered">
+            <div className="modal-content">
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+              <div className="product-single">
+                <div className="product-single__media m-0">
+                  <div className="product-single__image position-relative w-100">
+                    <div className="swiper-container js-swiper-slider" data-settings="{
+            &quot;slidesPerView&quot;: 1,
+            &quot;slidesPerGroup&quot;: 1,
+            &quot;effect&quot;: &quot;none&quot;,
+            &quot;loop&quot;: false,
+            &quot;navigation&quot;: {
+              &quot;nextEl&quot;: &quot;.modal-dialog.quick-view .product-single__media .swiper-button-next&quot;,
+              &quot;prevEl&quot;: &quot;.modal-dialog.quick-view .product-single__media .swiper-button-prev&quot;
+            }
+          }">
+                      <div className="swiper-wrapper">
+                        <div className="swiper-slide product-single__image-item">
+                          <img loading="lazy" src="../images/products/quickview_1.jpg" />
+                        </div>
+                        <div className="swiper-slide product-single__image-item">
+                          <img loading="lazy" src="../images/products/quickview_2.jpg" />
+                        </div>
+                        <div className="swiper-slide product-single__image-item">
+                          <img loading="lazy" src="../images/products/quickview_3.jpg" />
+                        </div>
+                        <div className="swiper-slide product-single__image-item">
+                          <img loading="lazy" src="../images/products/quickview_4.jpg" />
+                        </div>
+                      </div>
+                      <div className="swiper-button-prev"><svg width={7} height={11} viewBox="0 0 7 11" xmlns="http://www.w3.org/2000/svg">
+                        <use href="#icon_prev_sm" />
+                      </svg></div>
+                      <div className="swiper-button-next"><svg width={7} height={11} viewBox="0 0 7 11" xmlns="http://www.w3.org/2000/svg">
+                        <use href="#icon_next_sm" />
+                      </svg></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="product-single__detail">
+                  <h1 className="product-single__name">Lightweight Puffer Jacket With a Hood</h1>
+                  <div className="product-single__price">
+                    <span className="current-price">$449</span>
+                  </div>
+                  <div className="product-single__short-desc">
+                    <p>Phasellus sed volutpat orci. Fusce eget lore mauris vehicula elementum gravida nec dui. Aenean aliquam
+                      varius ipsum, non ultricies tellus sodales eu. Donec dignissim viverra nunc, ut aliquet magna posuere
+                      eget.</p>
+                  </div>
+                  <form name="addtocart-form" method="post">
+                    <div className="product-single__swatches">
+                      <div className="product-swatch text-swatches">
+                        <label>Sizes</label>
+                        <div className="swatch-list">
+                          <input type="radio" name="size" id="swatch-1" />
+                          <label className="swatch js-swatch" htmlFor="swatch-1" aria-label="Extra Small" data-bs-toggle="tooltip" data-bs-placement="top" title="Extra Small">XS</label>
+                          <input type="radio" name="size" id="swatch-2" defaultChecked />
+                          <label className="swatch js-swatch" htmlFor="swatch-2" aria-label="Small" data-bs-toggle="tooltip" data-bs-placement="top" title="Small">S</label>
+                          <input type="radio" name="size" id="swatch-3" />
+                          <label className="swatch js-swatch" htmlFor="swatch-3" aria-label="Middle" data-bs-toggle="tooltip" data-bs-placement="top" title="Middle">M</label>
+                          <input type="radio" name="size" id="swatch-4" />
+                          <label className="swatch js-swatch" htmlFor="swatch-4" aria-label="Large" data-bs-toggle="tooltip" data-bs-placement="top" title="Large">L</label>
+                          <input type="radio" name="size" id="swatch-5" />
+                          <label className="swatch js-swatch" htmlFor="swatch-5" aria-label="Extra Large" data-bs-toggle="tooltip" data-bs-placement="top" title="Extra Large">XL</label>
+                        </div>
+                        <a href="#" className="sizeguide-link" data-bs-toggle="modal" data-bs-target="#sizeGuide">Size Guide</a>
+                      </div>
+                      <div className="product-swatch color-swatches">
+                        <label>Color</label>
+                        <div className="swatch-list">
+                          <input type="radio" name="color" id="swatch-11" />
+                          <label className="swatch swatch-color js-swatch" htmlFor="swatch-11" aria-label="Black" data-bs-toggle="tooltip" data-bs-placement="top" title="Black" style={{ color: '#222' }} />
+                          <input type="radio" name="color" id="swatch-12" defaultChecked />
+                          <label className="swatch swatch-color js-swatch" htmlFor="swatch-12" aria-label="Red" data-bs-toggle="tooltip" data-bs-placement="top" title="Red" style={{ color: '#C93A3E' }} />
+                          <input type="radio" name="color" id="swatch-13" />
+                          <label className="swatch swatch-color js-swatch" htmlFor="swatch-13" aria-label="Grey" data-bs-toggle="tooltip" data-bs-placement="top" title="Grey" style={{ color: '#E4E4E4' }} />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="product-single__addtocart">
+                      <div className="qty-control position-relative">
+                        <input type="number" name="quantity" defaultValue={1} min={1} className="qty-control__number text-center" />
+                        <div className="qty-control__reduce">-</div>
+                        <div className="qty-control__increase">+</div>
+                      </div>{/* .qty-control */}
+                      <button type="submit" className="btn btn-primary btn-addtocart js-open-aside" data-aside="cartDrawer">Add to
+                        Cart</button>
+                    </div>
+                  </form>
+                  <div className="product-single__addtolinks">
+                    <a href="#" className="menu-link menu-link_us-s add-to-wishlist"><svg width={16} height={16} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <use href="#icon_heart" />
+                    </svg><span>Add to Wishlist</span></a>
+                    <share-button className="share-button">
+                      <button className="menu-link menu-link_us-s to-share border-0 bg-transparent d-flex align-items-center">
+                        <svg width={16} height={19} viewBox="0 0 16 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <use href="#icon_sharing" />
+                        </svg>
+                      </button>
+                      <details id="Details-share-template__main" className="m-1 xl:m-1.5" hidden>
+                        <summary className="btn-solid m-1 xl:m-1.5 pt-3.5 pb-3 px-5">+</summary>
+                        <div id="Article-share-template__main" className="share-button__fallback flex items-center absolute top-full left-0 w-full px-2 py-4 bg-container shadow-theme border-t z-10">
+                          <div className="field grow mr-4">
+                            <label className="field__label sr-only" htmlFor="url">Link</label>
+                            <input type="text" className="field__input w-full" id="url" defaultValue="https://uomo-crystal.myshopify.com/blogs/news/go-to-wellness-tips-for-mental-health" placeholder="Link" onclick="this.select();" readOnly />
+                          </div>
+                          <button className="share-button__copy no-js-hidden">
+                            <svg className="icon icon-clipboard inline-block mr-1" width={11} height={13} fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" viewBox="0 0 11 13">
+                              <path fillRule="evenodd" clipRule="evenodd" d="M2 1a1 1 0 011-1h7a1 1 0 011 1v9a1 1 0 01-1 1V1H2zM1 2a1 1 0 00-1 1v9a1 1 0 001 1h7a1 1 0 001-1V3a1 1 0 00-1-1H1zm0 10V3h7v9H1z" fill="currentColor" />
+                            </svg>
+                            <span className="sr-only">Copy link</span>
+                          </button>
+                        </div>
+                      </details>
+                    </share-button>
+                  </div>
+                  <div className="product-single__meta-info mb-0">
+                    <div className="meta-item">
+                      <label>SKU:</label>
+                      <span>N/A</span>
+                    </div>
+                    <div className="meta-item">
+                      <label>Categories:</label>
+                      <span>Casual &amp; Urban Wear, Jackets, Men</span>
+                    </div>
+                    <div className="meta-item">
+                      <label>Tags:</label>
+                      <span>biker, black, bomber, leather</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>{/* /.modal-dialog */}
+        </div>{/* /.quickview position-fixed */}
+        {/* Newsletter Popup */}
+        <div className="modal fade" id="newsletterPopup" tabIndex={-1} aria-hidden="true">
+          <div className="modal-dialog newsletter-popup modal-dialog-centered">
+            <div className="modal-content">
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
+              <div className="row p-0 m-0">
+                <div className="col-md-6 p-0 d-none d-md-block">
+                  <div className="newsletter-popup__bg h-100 w-100">
+                    <img loading="lazy" src="../images/newsletter-popup.jpg" className="h-100 w-100 object-fit-cover d-block" alt />
+                  </div>
+                </div>
+                <div className="col-md-6 p-0 d-flex align-items-center">
+                  <div className="block-newsletter w-100">
+                    <h3 className="block__title">Sign Up to Our Newsletter</h3>
+                    <p>Be the first to get the latest news about trends, promotions, and much more!</p>
+                    <form action="https://uomo-html.flexkitux.com/Demo1/index.html" className="footer-newsletter__form position-relative bg-body">
+                      <input className="form-control border-2" type="email" name="email" placeholder="Your email address" />
+                      <input className="btn-link fw-medium bg-transparent position-absolute top-0 end-0 h-100" type="submit" defaultValue="JOIN" />
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>{/* /.newsletter-popup position-fixed */}
+        {/* Go To Top */}
+        <div id="scrollTop" className="visually-hidden end-0" />
+        {/* Page Overlay */}
+        <div className="page-overlay" />{/* /.page-overlay */}
+      </div>
     </>
   );
 };

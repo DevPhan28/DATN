@@ -1,144 +1,165 @@
-import useCartMutation from '@/data/cart/useCartMutation';
-import { useFetchProductAll } from '@/data/products/useProductList';
-import { Link } from '@tanstack/react-router';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick-theme.css';
-import 'slick-carousel/slick/slick.css';
-
-const NextArrow = ({ onClick }: any) => (
-  <div
-    className="custom-arrow custom-next rounded-full p-2 transition-all hover:bg-gray-300"
-    onClick={onClick}
-    style={{
-      display: 'block',
-      right: '-26px',
-      position: 'absolute',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      zIndex: 1,
-      fontSize: '24px',
-    }}
-  >
-    <i className="fa-solid fa-chevron-right"></i>
-  </div>
-);
-
-const PrevArrow = ({ onClick }: any) => (
-  <div
-    className="custom-arrow custom-prev rounded-full p-2 transition-all hover:bg-gray-300"
-    onClick={onClick}
-    style={{
-      display: 'block',
-      left: '-26px',
-      position: 'absolute',
-      top: '50%',
-      transform: 'translateY(-50%)',
-      zIndex: 1,
-      fontSize: '24px',
-    }}
-  >
-    <i className="fa-solid fa-chevron-left"></i>
-  </div>
-);
+import React from 'react'
 
 const FeaturedProducts = () => {
-  const { addItemToCart } = useCartMutation();
-  const { listProduct, loading, error } = useFetchProductAll();
-
-  const handleAddToCart = (product: any) => {
-    const userId = localStorage.getItem('userId') ?? '';
-    if (!userId) {
-      console.error('User ID is missing');
-      return;
-    }
-    addItemToCart.mutate({
-      userId: userId,
-      products: [
-        {
-          productId: product._id,
-          variantId: product.variantId ?? '',
-          quantity: 1,
-        },
-      ],
-    });
-  };
-
-  const displayedProducts = listProduct || [];
-
-  // Slider settings for continuous, smooth scroll
-  const settings = {
-    dots: false,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 4,
-    autoplay: true,
-    autoplaySpeed: 2000,
-    arrows: true,
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
-    cssEase: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 3,
-          slidesToScroll: 3,
-        },
-      },
-      {
-        breakpoint: 768,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 2,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-        },
-      },
-    ],
-  };
-
   return (
-    <div className="relative sm:p-5 md:p-5 lg:p-5 xl:p-0">
-      <div className="m-auto max-w-7xl">
-        <h2 className="relative mb-5 text-left text-4xl font-bold uppercase">
-          Sản phẩm nổi bật
-        </h2>
-      </div>
-      {loading && <p>Loading products...</p>}
-      {error && <p className="text-red-500">{error}</p>}
-
-      {displayedProducts.length > 0 ? (
-        <Slider {...settings}>
-          {displayedProducts.map((product: any) => (
-            <div
-              key={product._id}
-              className="group relative overflow-hidden text-center"
-            >
-              <img
-                src={product.image}
-                alt={product.name}
-                className="h-80 w-full transform object-cover transition-transform duration-500"
-              />
-              <Link
-                to={`/${product.slug ? product.slug : product._id}/quickviewProduct`}
-                className="quick-view duration-900 absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-full bg-blue-400 px-4 py-2 opacity-0 shadow transition-all hover:bg-black hover:text-white group-hover:translate-y-[-100px] group-hover:opacity-100"
-              >
-                Xem nhanh
-              </Link>
-            </div>
-          ))}
-        </Slider>
-      ) : (
-        !loading && <p>No products found.</p>
-      )}
+    <div>
+      <section className="products-carousel container px-[55px]">
+        <h2 className="section-title text-uppercase text-center mb-4 pb-xl-2 mb-xl-4">Limited <strong>Edition</strong></h2>
+        <div id="product_carousel" className="position-relative">
+          <div className="swiper-container js-swiper-slider" data-settings="{
+      &quot;autoplay&quot;: {
+        &quot;delay&quot;: 5000
+      },
+      &quot;slidesPerView&quot;: 4,
+      &quot;slidesPerGroup&quot;: 4,
+      &quot;effect&quot;: &quot;none&quot;,
+      &quot;loop&quot;: true,
+      &quot;pagination&quot;: {
+        &quot;el&quot;: &quot;#product_carousel .products-pagination&quot;,
+        &quot;type&quot;: &quot;bullets&quot;,
+        &quot;clickable&quot;: true
+      },
+      &quot;navigation&quot;: {
+        &quot;nextEl&quot;: &quot;#product_carousel .products-carousel__next&quot;,
+        &quot;prevEl&quot;: &quot;#product_carousel .products-carousel__prev&quot;
+      },
+      &quot;breakpoints&quot;: {
+        &quot;320&quot;: {
+          &quot;slidesPerView&quot;: 2,
+          &quot;slidesPerGroup&quot;: 2,
+          &quot;spaceBetween&quot;: 14
+        },
+        &quot;768&quot;: {
+          &quot;slidesPerView&quot;: 3,
+          &quot;slidesPerGroup&quot;: 3,
+          &quot;spaceBetween&quot;: 24
+        },
+        &quot;992&quot;: {
+          &quot;slidesPerView&quot;: 4,
+          &quot;slidesPerGroup&quot;: 1,
+          &quot;spaceBetween&quot;: 30
+        }
+      }
+    }">
+            <div className="swiper-wrapper">
+              <div className="swiper-slide product-card">
+                <div className="pc__img-wrapper">
+                  <a href="product1_simple.html">
+                    <img loading="lazy" src="https://picsum.photos/200/300" width={330} height={400} alt="Cropped Faux leather Jacket" className="pc__img" />
+                  </a>
+                  <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside" data-aside="cartDrawer" title="Add To Cart">Add To Cart</button>
+                </div>
+                <div className="pc__info position-relative">
+                  <p className="pc__category">Dresses</p>
+                  <h6 className="pc__title"><a href="product1_simple.html">Hub Accent Mirror</a></h6>
+                  <div className="product-card__price d-flex">
+                    <span className="money price">$17</span>
+                  </div>
+                  <button className="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist" title="Add To Wishlist">
+                    <svg width={16} height={16} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <use href="#icon_heart" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div className="swiper-slide product-card">
+                <div className="pc__img-wrapper">
+                  <a href="product1_simple.html">
+                    <img loading="lazy" src="https://picsum.photos/200/300" width={330} height={400} alt="Cropped Faux leather Jacket" className="pc__img" />
+                  </a>
+                  <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside" data-aside="cartDrawer" title="Add To Cart">Add To Cart</button>
+                </div>
+                <div className="pc__info position-relative">
+                  <p className="pc__category">Dresses</p>
+                  <h6 className="pc__title"><a href="product1_simple.html">Hosking Blue Area Rug</a></h6>
+                  <div className="product-card__price d-flex">
+                    <span className="money price">$29</span>
+                  </div>
+                  <div className="product-card__review d-flex align-items-center">
+                    <div className="reviews-group d-flex">
+                      <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
+                        <use href="#icon_star" />
+                      </svg>
+                      <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
+                        <use href="#icon_star" />
+                      </svg>
+                      <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
+                        <use href="#icon_star" />
+                      </svg>
+                      <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
+                        <use href="#icon_star" />
+                      </svg>
+                      <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
+                        <use href="#icon_star" />
+                      </svg>
+                    </div>
+                    <span className="reviews-note text-lowercase text-secondary ms-1">8k+ reviews</span>
+                  </div>
+                  <button className="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist" title="Add To Wishlist">
+                    <svg width={16} height={16} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <use href="#icon_heart" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div className="swiper-slide product-card">
+                <div className="pc__img-wrapper">
+                  <a href="product1_simple.html">
+                    <img loading="lazy" src="https://picsum.photos/200/300" width={330} height={400} alt="Cropped Faux leather Jacket" className="pc__img" />
+                  </a>
+                  <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside" data-aside="cartDrawer" title="Add To Cart">Add To Cart</button>
+                </div>
+                <div className="pc__info position-relative">
+                  <p className="pc__category">Dresses</p>
+                  <h6 className="pc__title"><a href="product1_simple.html">Hanneman Pouf</a></h6>
+                  <div className="product-card__price d-flex">
+                    <span className="money price">$62</span>
+                  </div>
+                  <button className="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist" title="Add To Wishlist">
+                    <svg width={16} height={16} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <use href="#icon_heart" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div className="swiper-slide product-card">
+                <div className="pc__img-wrapper">
+                  <a href="product1_simple.html">
+                    <img loading="lazy" src="https://picsum.photos/200/300" width={330} height={400} alt="Cropped Faux leather Jacket" className="pc__img" />
+                  </a>
+                  <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside" data-aside="cartDrawer" title="Add To Cart">Add To Cart</button>
+                </div>
+                <div className="pc__info position-relative">
+                  <p className="pc__category">Dresses</p>
+                  <h6 className="pc__title"><a href="product1_simple.html">Cushion Futon Slipcover</a></h6>
+                  <div className="product-card__price d-flex">
+                    <span className="money price">$62</span>
+                  </div>
+                  <button className="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist" title="Add To Wishlist">
+                    <svg width={16} height={16} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <use href="#icon_heart" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>{/* /.swiper-wrapper */}
+          </div>{/* /.swiper-container js-swiper-slider */}
+          <div className="products-carousel__prev position-absolute top-50 d-flex align-items-center justify-content-center">
+            <svg width={25} height={25} viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
+              <use href="#icon_prev_md" />
+            </svg>
+          </div>{/* /.products-carousel__prev */}
+          <div className="products-carousel__next position-absolute top-50 d-flex align-items-center justify-content-center">
+            <svg width={25} height={25} viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
+              <use href="#icon_next_md" />
+            </svg>
+          </div>{/* /.products-carousel__next */}
+          <div className="products-pagination mt-4 mb-5 d-flex align-items-center justify-content-center" />
+          {/* /.products-pagination */}
+        </div>{/* /.position-relative */}
+      </section>{/* /.products-carousel container */}
     </div>
-  );
-};
+  )
+}
 
-export default FeaturedProducts;
+export default FeaturedProducts

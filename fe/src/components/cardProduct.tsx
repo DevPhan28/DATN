@@ -15,15 +15,6 @@ import FilterBar from './FilterBar';
 import { toast } from '@medusajs/ui';
 import CurrencyVND from './config/vnd';
 
-type Product = {
-  slug: string;
-  _id: string;
-  name: string;
-  price: number;
-  image: string;
-  category: { _id: string; name: string };
-  variantId?: string;
-};
 
 const CardProduct: React.FC = () => {
   const [isFavorite, setIsFavorite] = useState(false);
@@ -114,61 +105,191 @@ const CardProduct: React.FC = () => {
   };
 
   return (
-    <div className="m-auto mt-10 max-w-7xl p-5 sm:p-5 md:p-5 lg:p-5 xl:p-0">
-      <h1 className="mb-10 text-2xl font-bold sm:mb-8 sm:text-4xl">
-        TỔNG QUAN SẢN PHẨM
-      </h1>
-    
-      {loading && <p>Loading products...</p>}
-      {error && <p className="text-red-500">{error}</p>}
-
-      {displayedProducts.length > 0 ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-8 md:grid-cols-3 lg:grid-cols-4">
-          {displayedProducts.map((product: Product) => (
-            <div
-              key={product._id}
-              className="product-card group relative overflow-hidden text-center"
-            >
-              <img
-                src={product.image}
-                alt={product.name}
-                className="h-80 w-full transform transition-transform duration-500"
-              />
-              <Link
-                to={`${product.slug ? product.slug : product._id}/quickviewProduct`}
-                className="quick-view duration-900 absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-full bg-white px-4 py-2 opacity-0 shadow transition-all hover:bg-black hover:text-white group-hover:translate-y-[-100px] group-hover:opacity-100"
-              >
-                Chi tiết sản phẩm
-              </Link>
-              <h2 className="mt-2 flex items-center justify-between text-gray-500">
-                {product.name}
-                <div className="flex gap-1 space-x-2">
-                  <Link
-                    to={`/${product.slug ? product.slug : product._id}/detailproduct`}
-                    className="hover:text-blue-300"
-                  >
-                    <ShoppingCartSolid />
-                  </Link>
-                </div>
-              </h2>
-              <p className="mt-2 flex justify-start text-gray-600">
-                <CurrencyVND amount={product.price} />
-              </p>
-            </div>
+    <div>
+      <section className="products-grid container px-[55px]">
+        <h2 className="section-title text-uppercase text-center mb-1 mb-md-3 pb-xl-2 mb-xl-4">Our Trendy
+          <strong>Products</strong></h2>
+        <ul className="nav nav-tabs mb-3 text-uppercase justify-content-center" id="collections-tab" role="tablist">
+          <li className="nav-item" role="presentation">
+            <a onClick={() => setSelectedCategory(null)} className="nav-link nav-link_underscore active" id="collections-tab-1-trigger" data-bs-toggle="tab" href="#collections-tab-1" role="tab" aria-controls="collections-tab-1" aria-selected="true">All</a>
+          </li>
+          {categories?.map((category: { _id: string; name: string }) => (
+            <li className="nav-item" role="presentation">
+              <a key={category._id} onClick={e => {
+                e.preventDefault();
+                setSelectedCategory(category._id); // Gọi hàm để cập nhật danh mục
+              }} className={`nav-link nav-link_underscore ${selectedCategory === category._id}`} id="collections-tab-2-trigger" data-bs-toggle="tab" href="#collections-tab-2" role="tab" aria-controls="collections-tab-2" aria-selected="true"> {category.name}</a>
+            </li>
           ))}
-        </div>
-      ) : (
-        !loading && <p>No products found.</p>
-      )}
+        </ul>
 
-      <div className="m-auto max-w-6xl p-10 text-center">
-        <button
-          onClick={() => navigate({ to: '/shop' })}
-          className="rounded-2xl border border-gray-300 bg-blue-500 px-6 py-2 text-white hover:bg-black"
-        >
-          Xem thêm
-        </button>
-      </div>
+        <div className="tab-content pt-2" id="collections-tab-content">
+          {/* ALL */}
+          <div className="tab-pane fade show active" id="collections-tab-1" role="tabpanel" aria-labelledby="collections-tab-1-trigger">
+            {displayedProducts.length > 0 ? (
+              <div className="row">
+                {displayedProducts.map((product: Product) => (
+                  <div className="col-6 col-md-4 col-lg-3">
+
+                    <div className="product-card mb-3 mb-md-4 mb-xxl-5">
+                      <div className="pc__img-wrapper">
+                        <a href="product1_simple.html">
+                          <img
+                            loading="lazy"
+                            src={product.image}
+                            width={330}
+                            height={400}
+                            alt="Cropped Faux leather Jacket"
+                            className="pc__img"
+                          />
+                          <img
+                            loading="lazy"
+                            src={product.gallery[0]} // Dùng ảnh đầu tiên từ gallery
+                            width={330}
+                            height={400}
+                            alt="Cropped Faux leather Jacket"
+                            className="pc__img pc__img-second"
+                          />
+                        </a>
+                        <Link to={`${product.slug ? product.slug : product._id}/quickviewProduct`}>
+                          <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium" data-aside="cartDrawer" title="Add To Cart">Chi Tiết</button>
+                        </Link>
+                      </div>
+                      <div className="pc__info position-relative">
+                        {/* <p className="pc__category">Dresses</p> */}
+                        <h6 className="pc__title"><a href="product1_simple.html"> {product.name}</a></h6>
+                        <div className="product-card__price d-flex">
+                          <span className="money price"> <CurrencyVND amount={product.price} /></span>
+
+                        </div>
+                        <div className='product-card__price d-flex'>
+                          <Link
+                            to={`/${product.slug ? product.slug : product._id}/detailproduct`}
+                            className="hover:text-blue-300"
+                          >
+                            <ShoppingCartSolid />
+                          </Link>
+                        </div>
+                        <div className="product-card__review d-flex align-items-center">
+                          <div className="reviews-group d-flex">
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
+                              <use href="#icon_star" />
+                            </svg>
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
+                              <use href="#icon_star" />
+                            </svg>
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
+                              <use href="#icon_star" />
+                            </svg>
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
+                              <use href="#icon_star" />
+                            </svg>
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
+                              <use href="#icon_star" />
+                            </svg>
+                          </div>
+                          <span className="reviews-note text-lowercase text-secondary ms-1">8k+ reviews</span>
+                        </div>
+                        <button className="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist" title="Add To Wishlist">
+                          <svg width={16} height={16} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <use href="#icon_heart" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
+                ))
+                }
+
+              </div>
+            ) : (
+              !loading && <p>No products found.</p>
+            )}
+            <div className="text-center mt-2">
+              <a className="btn-link btn-link_lg default-underline text-uppercase fw-medium" href="shop1.html">Discover
+                More</a>
+            </div>
+          </div>{/* /.tab-pane fade show*/}
+          <div className="tab-pane fade show" id="collections-tab-2" role="tabpanel" aria-labelledby="collections-tab-2-trigger">
+            {displayedProducts.length > 0 ? (
+              <div className="row">
+                {displayedProducts.map((product: Product) => (
+                  <div className="col-6 col-md-4 col-lg-3">
+
+                    <div className="product-card mb-3 mb-md-4 mb-xxl-5">
+                      <div className="pc__img-wrapper">
+                        <a href="product1_simple.html">
+                          <img
+                            loading="lazy"
+                            src={product.image}
+                            width={330}
+                            height={400}
+                            alt="Cropped Faux leather Jacket"
+                            className="pc__img"
+                          />
+                          <img
+                            loading="lazy"
+                            src={product.gallery[0]} // Dùng ảnh đầu tiên từ gallery
+                            width={330}
+                            height={400}
+                            alt="Cropped Faux leather Jacket"
+                            className="pc__img pc__img-second"
+                          />
+                        </a>
+
+                        <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside" data-aside="cartDrawer" title="Add To Cart">Add To Cart</button>
+                      </div>
+                      <div className="pc__info position-relative">
+                        {/* <p className="pc__category">Dresses</p> */}
+                        <h6 className="pc__title"><a href="product1_simple.html"> {product.name}</a></h6>
+                        <div className="product-card__price d-flex">
+                          <span className="money price"> <CurrencyVND amount={product.price} /></span>
+                        </div>
+                        <div className="product-card__review d-flex align-items-center">
+                          <div className="reviews-group d-flex">
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
+                              <use href="#icon_star" />
+                            </svg>
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
+                              <use href="#icon_star" />
+                            </svg>
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
+                              <use href="#icon_star" />
+                            </svg>
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
+                              <use href="#icon_star" />
+                            </svg>
+                            <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
+                              <use href="#icon_star" />
+                            </svg>
+                          </div>
+                          <span className="reviews-note text-lowercase text-secondary ms-1">8k+ reviews</span>
+                        </div>
+                        <button className="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist" title="Add To Wishlist">
+                          <svg width={16} height={16} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <use href="#icon_heart" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
+                ))
+                }
+
+              </div>
+            ) : (
+              !loading && <p>No products found.</p>
+            )}
+            <div className="text-center mt-2">
+              <a className="btn-link btn-link_lg default-underline text-uppercase fw-medium" href="shop1.html">Discover
+                More</a>
+            </div>
+          </div>{/* /.tab-pane fade show*/}
+        </div>{/* /.tab-content pt-2 */}
+      </section>{/* /.products-grid */}
+      <div className="mb-3 mb-xl-5 pb-1 pb-xl-5" />
     </div>
   );
 };

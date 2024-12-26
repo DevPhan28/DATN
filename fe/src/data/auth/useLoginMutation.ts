@@ -62,7 +62,7 @@ export default function useLoginMutation() {
           duration: 1000,
         });
         setTimeout(() => {
-          void navigate({ to: '/dashboard' });
+          void navigate({ to: '/' });
         }, 2000); // Hoãn điều hướng để thông báo có thời gian hiển thị
       } else {
         void navigate({ to: '/' });
