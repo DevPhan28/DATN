@@ -3,23 +3,24 @@ const CustomerInfo = require("../models/customerInfor");
 // Tạo mới khách hàng
 const createCustomer = async (req, res) => {
     try {
-      const { name, phone, email, city, districts, wards, address, zipcode, isDefault } = req.body;
+      const { userId, name, phone, email, city, districts, wards, address, zipcode, isDefault } = req.body;
   
       // Kiểm tra các trường bắt buộc
-      if (!name || !phone || !email || !city || !districts || !wards || !address) {
+      if (!userId || !name || !phone || !email || !city || !districts || !wards || !address) {
         return res.status(400).json({
           success: false,
-          message: "Các trường name, phone, email, city, districts, wards, address là bắt buộc!",
+          message: "Các trường userId, name, phone, email, city, districts, wards, address là bắt buộc!",
         });
       }
   
-      // Nếu isDefault là true, cập nhật tất cả các địa chỉ khác thành isDefault: false
+      // Kiểm tra nếu địa chỉ mặc định, cập nhật tất cả các địa chỉ của người dùng này thành không mặc định
       if (isDefault) {
-        await CustomerInfo.updateMany({}, { isDefault: false });
+        await CustomerInfo.updateMany({ userId }, { isDefault: false });
       }
   
       // Tạo mới khách hàng
       const newCustomer = new CustomerInfo({
+        userId,
         name,
         phone,
         email,
@@ -47,14 +48,18 @@ const createCustomer = async (req, res) => {
       });
     }
   };
+  
 
   const getCustomers = async (req, res) => {
     try {
-      const customers = await CustomerInfo.find();
+      const { userId } = req.params; // Lấy userId từ tham số URL
+  
+      // Tìm tất cả các địa chỉ của khách hàng với userId
+      const customers = await CustomerInfo.find({ userId });
   
       return res.status(200).json({
         success: true,
-        message: "Danh sách địa chỉ khách hàng!",
+        message: "Danh sách địa chỉ của khách hàng!",
         data: customers,
       });
     } catch (error) {
@@ -65,14 +70,15 @@ const createCustomer = async (req, res) => {
       });
     }
   };
+  
 
   const editCustomer = async (req, res) => {
     try {
-      const { id } = req.params; // Lấy id từ params
+      const { userId, id } = req.params; // Lấy userId và id từ params
       const { name, phone, email, city, districts, wards, address, zipcode, isDefault } = req.body;
   
       // Kiểm tra xem địa chỉ có tồn tại không
-      const customer = await CustomerInfo.findById(id);
+      const customer = await CustomerInfo.findOne({ _id: id, userId });
       if (!customer) {
         return res.status(404).json({
           success: false,
@@ -82,7 +88,7 @@ const createCustomer = async (req, res) => {
   
       // Nếu isDefault là true, cập nhật các địa chỉ khác thành isDefault: false
       if (isDefault) {
-        await CustomerInfo.updateMany({}, { isDefault: false });
+        await CustomerInfo.updateMany({ userId }, { isDefault: false });
       }
   
       // Cập nhật thông tin địa chỉ
@@ -112,5 +118,33 @@ const createCustomer = async (req, res) => {
       });
     }
   };
+  
+  const getCustomerById = async (req, res) => {
+    try {
+      const { userId } = req.params; 
+  
+      const customerInfo = await CustomerInfo.findOne({ userId, isDefault: true });
+  
+      if (!customerInfo) {
+        return res.status(404).json({
+          success: false,
+          message: "Không tìm thấy địa chỉ mặc định cho khách hàng.",
+        });
+      }
+  
+      return res.status(200).json({
+        success: true,
+        message: "Địa chỉ mặc định của khách hàng.",
+        data: customerInfo,
+      });
+    } catch (error) {
+      console.error("Lỗi khi lấy địa chỉ khách hàng:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Có lỗi xảy ra khi lấy địa chỉ khách hàng.",
+      });
+    }
+  };
+  
 
-module.exports = { createCustomer, getCustomers, editCustomer };
+module.exports = { createCustomer, getCustomers, editCustomer, getCustomerById};

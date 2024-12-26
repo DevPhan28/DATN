@@ -1,23 +1,48 @@
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
 
-const CustomerInfoSchema = new Schema(
-  {
-    name: { type: String, required: true },
-    phone: { type: String, required: true },
-    email: { type: String, required: true },
-    city: { type: String, required: true },
-    districts: { type: String, required: true },
-    wards: { type: String, required: true },
-    address: { type: String, required: true },
-    zipcode: { type: String },
-    isDefault: { type: Boolean, default: false }, // Địa chỉ mặc định
+const customerInfoSchema = new mongoose.Schema({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,  
+    ref: "User", 
   },
-  { timestamps: true, versionKey: false }
-);
+  name: {
+    type: String,
+    required: true,
+  },
+  phone: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+  },
+  city: {
+    type: String,
+    required: true,
+  },
+  districts: {
+    type: String,
+    required: true,
+  },
+  wards: {
+    type: String,
+    required: true,
+  },
+  address: {
+    type: String,
+    required: true,
+  },
+  zipcode: {
+    type: String,
+  },
+  isDefault: {
+    type: Boolean,
+    default: false,
+  },
+}, { timestamps: true });
 
-const CustomerInfo =
-  mongoose.models.CustomerInfo ||
-  mongoose.model("CustomerInfo", CustomerInfoSchema);
+const CustomerInfo = mongoose.model("CustomerInfo", customerInfoSchema);
 
 module.exports = CustomerInfo;
