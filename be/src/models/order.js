@@ -4,7 +4,6 @@ const { Schema } = mongoose;
 // Định nghĩa Schema cho Order Item
 const OrderItemSchema = new Schema({
   productId: { type: Schema.Types.ObjectId, required: true, ref: "Product" },
-
   slug: {
     type: String,
     unique: true,
