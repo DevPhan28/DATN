@@ -18,10 +18,10 @@ const ModalCreateCustomInfor = ({
           <p className="font-semibold">Thêm Địa Chỉ Mới</p>
         </FocusModal.Header>
         <div className="flex h-full flex-col justify-between overflow-y-auto p-8">
-          <div className="flex flex-wrap justify-between gap-4">
+          <div className="gap- flex flex-wrap justify-between gap-y-4">
             <div className="space-y-2">
               <Label>Tên Người Nhận</Label>
-              <div className="relative z-50 w-[256px]">
+              <div className="relative z-50 w-[276px]">
                 <Input
                   placeholder="Sales Channel Name"
                   id="sales-channel-name"
@@ -30,7 +30,7 @@ const ModalCreateCustomInfor = ({
             </div>
             <div className="space-y-2">
               <Label>Số Điện Thoại</Label>
-              <div className="relative z-50 w-[256px]">
+              <div className="relative z-50 w-[276px]">
                 <Input
                   placeholder="Sales Channel Name"
                   id="sales-channel-name"
@@ -39,7 +39,7 @@ const ModalCreateCustomInfor = ({
             </div>
             <div className="space-y-2">
               <Label>Xã/Phường</Label>
-              <div className="relative z-50 w-[256px]">
+              <div className="relative z-50 w-[276px]">
                 <Select>
                   <Select.Trigger>
                     <Select.Value placeholder="Select a currency" />
@@ -56,7 +56,7 @@ const ModalCreateCustomInfor = ({
             </div>
             <div className="space-y-2">
               <Label>Quận/Huyện</Label>
-              <div className="relative z-50 w-[256px]">
+              <div className="relative z-50 w-[276px]">
                 <Select>
                   <Select.Trigger>
                     <Select.Value placeholder="Select a currency" />
@@ -73,7 +73,7 @@ const ModalCreateCustomInfor = ({
             </div>
             <div className="space-y-2">
               <Label>Tính/Thành Phố</Label>
-              <div className="relative z-50 w-[256px]">
+              <div className="relative z-50 w-[276px]">
                 <Select>
                   <Select.Trigger>
                     <Select.Value placeholder="Select a currency" />
@@ -90,7 +90,7 @@ const ModalCreateCustomInfor = ({
             </div>
             <div className="space-y-2">
               <Label>Địa Chỉ Cụ Thể</Label>
-              <div className="relative z-50 w-[256px]">
+              <div className="relative z-50 w-[276px]">
                 <Input
                   placeholder="Sales Channel Name"
                   id="sales-channel-name"

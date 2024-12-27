@@ -1,9 +1,17 @@
 import instance from '@/api/axiosIntance';
 import CurrencyVND, { CreateSlugByTitle } from '@/components/config/vnd';
+import CustomUser from '@/components/useroder/custom-menu';
 import { useFetchOrdersByUserId } from '@/data/oder/useOderList';
 import { retryPayment } from '@/data/oder/usePayment';
-import { ChevronRightMini } from '@medusajs/icons';
-import { toast, usePrompt } from '@medusajs/ui';
+import {
+  ChevronRightMini,
+  CurrencyDollar,
+  ListBullet,
+  LockClosedSolid,
+  MapPin,
+  User,
+} from '@medusajs/icons';
+import { DropdownMenu, toast, usePrompt } from '@medusajs/ui';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
@@ -243,10 +251,10 @@ function UserOrder() {
     }
   };
 
-  const storedData = JSON.parse(localStorage.getItem('user') || '{}');
+  // const storedData = JSON.parse(localStorage.getItem('user') || '{}');
 
-  const username = storedData?.user?.username || 'Không có tên người dùng';
-  const emailuser = storedData?.user?.email || 'Không có tên người dùng';
+  // const username = storedData?.user?.username || 'Không có tên người dùng';
+  // const emailuser = storedData?.user?.email || 'Không có tên người dùng';
   // tổng tiền sản phẩm
   const total = ordersToDisplay
     .map(item => (item.price || 0) * (item.quantity || 0))
@@ -277,33 +285,65 @@ function UserOrder() {
         </div>
       </div>
       <div className="mx-auto flex max-w-7xl bg-gray-50 py-10 pt-10">
-        <div className="h-full w-1/4 rounded-lg bg-gray-100 p-6 shadow-md">
-          <div className="flex flex-col items-center space-y-4">
-            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-300">
-              <img
-                src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg"
-                alt="Profile"
-                className="rounded-full object-cover"
-              />
-            </div>
-            <h2 className="text-lg font-semibold">{username}</h2>
-            <p className="text-gray-600">{emailuser}</p>
-            <div className="mt-4">
-              <Link
-                to="/profile"
-                className="block text-blue-600 hover:underline"
-              >
-                Cập nhật hồ sơ
-              </Link>
-              <Link
-                to="/orderuser"
-                className="block text-red-600 hover:underline"
-              >
-                Đơn mua
-              </Link>
+        {/* user */}
+        {/* <div className="h-full w-1/4">
+          <div className="flex flex-col items-center">
+            <div className="flex flex-col gap-4 rounded-lg">
+              <div className="flex items-center gap-3">
+                <img
+                  src="/anh.jpg"
+                  alt="User avatar"
+                  className="h-12 w-12 rounded-full"
+                />
+                <div>
+                  <h4 className="text-lg font-bold">{username}</h4>
+                  <Link to="/profile" className="text-sm text-blue-500">
+                    Sửa hồ sơ
+                  </Link>
+                </div>
+              </div>
+              <div className="mt-4 flex flex-col gap-3">
+                <Link
+                  to="/profile"
+                  className="flex items-center gap-2 text-gray-700 hover:text-blue-500"
+                >
+                  <User />
+                  Hồ sơ
+                </Link>
+                <Link
+                  to="/change_password"
+                  className="flex items-center gap-2 text-gray-700 hover:text-blue-500"
+                >
+                  <LockClosedSolid />
+                  Đổi mật khẩu
+                </Link>
+                <Link
+                  to="/blog"
+                  className="flex items-center gap-2 text-gray-700 hover:text-blue-500"
+                >
+                  <MapPin />
+                  Địa chỉ
+                </Link>
+                <Link
+                  to="/orderuser"
+                  className="flex items-center gap-2 text-gray-700 hover:text-blue-500"
+                >
+                  <ListBullet />
+                  Đơn hàng
+                </Link>
+                <Link
+                  to="/"
+                  className="flex items-center gap-2 text-gray-700 hover:text-blue-500"
+                >
+                  <CurrencyDollar />
+                  Giao dịch
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
+        </div> */}
+        {/* user */}
+        <CustomUser />
 
         <div className="ml-6 w-3/4">
           <div className="mb-2 flex flex-wrap justify-start border-b bg-white shadow sm:space-x-0">

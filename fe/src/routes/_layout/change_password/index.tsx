@@ -4,6 +4,7 @@ import { ChevronRightMini } from '@medusajs/icons';
 import instance from '@/api/axiosIntance';
 import { Button, Input, toast } from '@medusajs/ui';
 import { useForm } from 'react-hook-form';
+import CustomUser from '@/components/useroder/custom-menu';
 
 export const Route = createFileRoute('/_layout/change_password/')({
   component: PasswordUser,
@@ -142,21 +143,13 @@ function PasswordUser() {
   }
 
   return (
-    <div className="main-content flex h-auto w-full flex-col items-center justify-center bg-gray-50 p-5">
-      {loading && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
-          <div className="flex items-center justify-center space-x-2 rounded-lg bg-white p-6 py-4 shadow-lg">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-t-4 border-solid border-gray-200 border-t-indigo-600" />
-            <p className="text-gray-500">Đang cập nhật...</p>
-          </div>
-        </div>
-      )}
-      <div className="main-content flex h-48 w-full flex-col items-center justify-center">
+    <div>
+      <div className="flex h-48 w-full items-center justify-center">
         <div className="text-content">
           <div className="text-center text-4xl font-semibold">
             Cập nhật mật khẩu
           </div>
-          <div className="link caption1 mt-3 flex items-center justify-center gap-1">
+          <div className="mt-3 flex items-center justify-center gap-1">
             <div className="flex items-center justify-center">
               <Link to="/">Home</Link>
               <ChevronRightMini />
@@ -167,106 +160,109 @@ function PasswordUser() {
           </div>
         </div>
       </div>
+      <div className="flex h-auto w-full items-center justify-between bg-gray-50 p-5">
+        <CustomUser />
 
-      <div className="account-user mx-auto mt-8 w-full max-w-3xl rounded-lg bg-white p-8 shadow-lg">
-        <h2 className="mb-6 text-3xl font-semibold text-gray-800">
-          Cập nhật mật khẩu
-        </h2>
+        <div className="account-user w-full max-w-5xl rounded-lg bg-white p-8">
+          <h2 className="mb-6 text-3xl font-semibold text-gray-800">
+            Cập nhật mật khẩu
+          </h2>
 
-        <form
-          className="user-info-form space-y-6"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          <div className="form-group">
-            <label
-              htmlFor="old-password"
-              className="text-lg font-medium text-gray-700"
-            >
-              Mật khẩu cũ
-            </label>
-            <Input
-              type="password"
-              id="old-password"
-              {...register('oldPassword', {
-                required: 'Mật khẩu cũ là bắt buộc',
-              })}
-              className="form-control w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.oldPassword && (
-              <p className="text-sm text-red-500">
-                {errors.oldPassword.message}
-              </p>
-            )}
-          </div>
+          <form
+            className="user-info-form space-y-6"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <div className="form-group">
+              <label
+                htmlFor="old-password"
+                className="text-lg font-medium text-gray-700"
+              >
+                Mật khẩu cũ
+              </label>
+              <Input
+                type="password"
+                id="old-password"
+                {...register('oldPassword', {
+                  required: 'Mật khẩu cũ là bắt buộc',
+                })}
+                className="form-control w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.oldPassword && (
+                <p className="text-sm text-red-500">
+                  {errors.oldPassword.message}
+                </p>
+              )}
+            </div>
 
-          <div className="form-group">
-            <label
-              htmlFor="new-password"
-              className="text-lg font-medium text-gray-700"
-            >
-              Mật khẩu mới
-            </label>
-            <Input
-              type="password"
-              id="new-password"
-              {...register('newPassword', {
-                required: 'Mật khẩu mới là bắt buộc',
+            <div className="form-group">
+              <label
+                htmlFor="new-password"
+                className="text-lg font-medium text-gray-700"
+              >
+                Mật khẩu mới
+              </label>
+              <Input
+                type="password"
+                id="new-password"
+                {...register('newPassword', {
+                  required: 'Mật khẩu mới là bắt buộc',
 
-                minLength: {
-                  value: 6,
-                  message: 'Mật khẩu mới phải có ít nhất 6 ký tự',
-                },
-                validate: value => {
-                  // Kiểm tra nếu mật khẩu mới trùng với mật khẩu cũ
-                  if (value === oldPassword) {
-                    return 'Mật khẩu mới không được giống với mật khẩu cũ';
-                  }
-                },
-              })}
-              className="form-control w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.newPassword && (
-              <p className="text-sm text-red-500">
-                {errors.newPassword.message}
-              </p>
-            )}
-          </div>
+                  minLength: {
+                    value: 6,
+                    message: 'Mật khẩu mới phải có ít nhất 6 ký tự',
+                  },
+                  validate: value => {
+                    // Kiểm tra nếu mật khẩu mới trùng với mật khẩu cũ
+                    if (value === oldPassword) {
+                      return 'Mật khẩu mới không được giống với mật khẩu cũ';
+                    }
+                  },
+                })}
+                className="form-control w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.newPassword && (
+                <p className="text-sm text-red-500">
+                  {errors.newPassword.message}
+                </p>
+              )}
+            </div>
 
-          <div className="form-group">
-            <label
-              htmlFor="confirm-password"
-              className="text-lg font-medium text-gray-700"
-            >
-              Nhập lại mật khẩu mới
-            </label>
-            <Input
-              type="password"
-              id="confirm-password"
-              {...register('confirmPassword', {
-                required: 'Xác nhận mật khẩu là bắt buộc',
+            <div className="form-group">
+              <label
+                htmlFor="confirm-password"
+                className="text-lg font-medium text-gray-700"
+              >
+                Nhập lại mật khẩu mới
+              </label>
+              <Input
+                type="password"
+                id="confirm-password"
+                {...register('confirmPassword', {
+                  required: 'Xác nhận mật khẩu là bắt buộc',
 
-                validate: (value, { newPassword }) =>
-                  value === newPassword || 'Mật khẩu xác nhận không khớp',
-              })}
-              className="form-control w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {errors.confirmPassword && (
-              <p className="text-sm text-red-500">
-                {errors.confirmPassword.message}
-              </p>
-            )}
-          </div>
+                  validate: (value, { newPassword }) =>
+                    value === newPassword || 'Mật khẩu xác nhận không khớp',
+                })}
+                className="form-control w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {errors.confirmPassword && (
+                <p className="text-sm text-red-500">
+                  {errors.confirmPassword.message}
+                </p>
+              )}
+            </div>
 
-          <div className="form-group text-center">
-            <Button
-              type="submit"
-              className="w-full rounded-md bg-blue-600 py-3 font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={isSaving || !isValid}
-            >
-              {isSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
-            </Button>
-          </div>
-        </form>
+            <div className="form-group text-center">
+              <Button
+                type="submit"
+                className="w-full rounded-md bg-blue-600 py-3 font-semibold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={isSaving || !isValid}
+              >
+                {isSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );

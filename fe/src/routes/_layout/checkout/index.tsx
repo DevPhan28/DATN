@@ -36,7 +36,6 @@ export const Route = createFileRoute('/_layout/checkout/')({
     const [selectedCoupon, setSelectedCoupon] = useState(null);
     const [discountAmount, setDiscountAmount] = useState(0);
 
-
     const totalQuantity = selectedItems.reduce(
       (acc, item) => acc + item.quantity,
       0
@@ -82,7 +81,11 @@ export const Route = createFileRoute('/_layout/checkout/')({
       data: availableCoupons,
       error: couponError,
       isLoading: isCouponsLoading,
-    } = useFetchAvailableCoupons(totalAmount, userIdAddCoupon, selectedCoupon?.code );
+    } = useFetchAvailableCoupons(
+      totalAmount,
+      userIdAddCoupon,
+      selectedCoupon?.code
+    );
     // Địa chỉ
     const [cities, setCities] = useState([]);
     const [districts, setDistricts] = useState([]);
@@ -281,6 +284,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
           onSubmit={handleSubmit}
           className="w-full bg-[#F3F4F6] py-10 pt-10"
         >
+          {/* thông tin */}
           <div className="m-auto max-w-7xl bg-white p-5">
             <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
               <div className="mt-6 sm:mt-8 lg:flex lg:items-start lg:gap-12 xl:gap-16">
@@ -289,7 +293,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
                     <div className="flex gap-2 text-red-500">
                       <User className="mt-1" />
                       <h2 className="font-semibol text-xl uppercase">
-                        Thông tin giao hàng
+                        Địa chỉ nhận hàng
                       </h2>
                     </div>
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -453,6 +457,7 @@ export const Route = createFileRoute('/_layout/checkout/')({
               </div>
             </div>
           </div>
+          {/* thông tin */}
           <div className="m-auto mt-5 max-w-7xl bg-white p-5 pt-10">
             <div className="overflow-x-auto bg-white p-5">
               <div className="relative w-full overflow-auto">

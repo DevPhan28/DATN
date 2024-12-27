@@ -49,18 +49,24 @@ const createCustomer = async (req, res) => {
     }
   };
   
-
   const getCustomers = async (req, res) => {
     try {
       const { userId } = req.params; // Lấy userId từ tham số URL
-  
+    
       // Tìm tất cả các địa chỉ của khách hàng với userId
-      const customers = await CustomerInfo.find({ userId });
-  
+      const customerInfos = await CustomerInfo.find({ userId });
+    
+      if (customerInfos.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "Không tìm thấy địa chỉ nào cho khách hàng.",
+        });
+      }
+    
       return res.status(200).json({
         success: true,
-        message: "Danh sách địa chỉ của khách hàng!",
-        data: customers,
+        message: "Danh sách địa chỉ của khách hàng.",
+        data: customerInfos,
       });
     } catch (error) {
       console.error("Lỗi khi lấy danh sách địa chỉ:", error);

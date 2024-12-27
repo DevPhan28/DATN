@@ -1,8 +1,10 @@
 import instance from '@/api/axiosIntance';
+import CustomUser from '@/components/useroder/custom-menu';
 import { Input, toast } from '@medusajs/ui';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { ChevronRightMini } from '@medusajs/icons';
 
 export const Route = createFileRoute('/_layout/profile/')({
   component: ProfileUser,
@@ -111,114 +113,93 @@ function ProfileUser() {
   }
 
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <aside className="w-1/4 bg-white shadow-lg">
-        <div className="p-6">
-          <div className="mb-6 flex items-center gap-4">
-            <img
-              src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg"
-              alt=""
-              className="size-8 rounded-full object-cover"
-            />
-            <span className="font-semibold">
-              {user.username || 'Tên người dùng'}
-            </span>
+    <div className="bg-gray-50">
+      <div className="mb-6 flex h-48 w-full items-center justify-center bg-white">
+        <div className="text-content">
+          <div className="text-center text-4xl font-semibold">
+            Hồ Sơ Của Tôi
           </div>
-          <ul>
-            <li>
-              <Link
-                to="/change_password"
-                className="mb-4 cursor-pointer text-gray-600 hover:text-blue-500"
-              >
-                Đổi mật khẩu
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/"
-                className="mb-4 cursor-pointer text-gray-600 hover:text-blue-500"
-              >
-                Địa chỉ
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/orderuser"
-                className="cursor-pointer text-gray-600 hover:text-blue-500"
-              >
-                Đơn mua
-              </Link>
-            </li>
-          </ul>
+          <div className="mt-3 flex items-center justify-center gap-1">
+            <div className="flex items-center justify-center">
+              <Link to="/">Home</Link>
+              <ChevronRightMini />
+            </div>
+            <div className="capitalize text-gray-500">
+              <Link to="/change_password">Hồ Sơ Của Tôi</Link>
+            </div>
+          </div>
         </div>
-      </aside>
-      {/* Main Content */}
-      <main className="flex-1 p-10">
-        <h1 className="mb-6 text-2xl font-semibold">Hồ Sơ Của Tôi</h1>
-        <p className="mb-6 text-gray-600">
-          Quản lý thông tin hồ sơ để bảo mật tài khoản của bạn
-        </p>
-        <div className="rounded-lg bg-white p-6 shadow-lg">
-          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-            <div>
-              <label className="block font-medium text-gray-700">Tên</label>
-              <Input
-                type="text"
-                {...register('username', { required: 'Tên là bắt buộc' })}
-                className="mt-1 w-full rounded-md border border-gray-300 p-2"
-              />
-              {errors.username && (
-                <p className="text-red-500">{errors.username.message}</p>
-              )}
-            </div>
-            <div>
-              <label className="block font-medium text-gray-700">Email</label>
-              <Input
-                type="email"
-                {...register('email', {
-                  required: 'Email là bắt buộc',
-                  pattern: {
-                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: 'Email không hợp lệ',
-                  },
-                })}
-                className="mt-1 w-full rounded-md border border-gray-300 p-2"
-              />
-              {errors.email && (
-                <p className="text-red-500">{errors.email.message}</p>
-              )}
-            </div>
-            <div>
-              <label className="block font-medium text-gray-700">
-                Số điện thoại
-              </label>
-              <Input
-                type="text"
-                {...register('phone', {
-                  required: 'Số điện thoại là bắt buộc',
-                  pattern: {
-                    value: /^[0-9]{10,11}$/,
-                    message:
-                      'Số điện thoại không hợp lệ (chỉ chứa tối đa 10-11 chữ số)',
-                  },
-                })}
-                className="mt-1 w-full rounded-md border border-gray-300 p-2"
-              />
-              {errors.phone && (
-                <p className="text-red-500">{errors.phone.message}</p>
-              )}
-            </div>
-            <button
-              type="submit"
-              disabled={!isValid || isSaving}
-              className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:opacity-50"
-            >
-              {isSaving ? 'Đang lưu...' : 'Cập nhật'}
-            </button>
-          </form>
-        </div>
-      </main>
+      </div>
+      <div className="flex min-h-screen">
+        {/* Sidebar */}
+        <CustomUser />
+        {/* Main Content */}
+        <main className="flex-1">
+          <h1 className="text-2xl font-semibold">Hồ Sơ Của Tôi</h1>
+          <p className="mb-6 text-gray-600">
+            Quản lý thông tin hồ sơ để bảo mật tài khoản của bạn
+          </p>
+          <div className="rounded-lg bg-white p-6">
+            <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+              <div>
+                <label className="block font-medium text-gray-700">Tên</label>
+                <Input
+                  type="text"
+                  {...register('username', { required: 'Tên là bắt buộc' })}
+                  className="mt-1 w-full rounded-md border border-gray-300 p-2"
+                />
+                {errors.username && (
+                  <p className="text-red-500">{errors.username.message}</p>
+                )}
+              </div>
+              <div>
+                <label className="block font-medium text-gray-700">Email</label>
+                <Input
+                  type="email"
+                  {...register('email', {
+                    required: 'Email là bắt buộc',
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: 'Email không hợp lệ',
+                    },
+                  })}
+                  className="mt-1 w-full rounded-md border border-gray-300 p-2"
+                />
+                {errors.email && (
+                  <p className="text-red-500">{errors.email.message}</p>
+                )}
+              </div>
+              <div>
+                <label className="block font-medium text-gray-700">
+                  Số điện thoại
+                </label>
+                <Input
+                  type="text"
+                  {...register('phone', {
+                    required: 'Số điện thoại là bắt buộc',
+                    pattern: {
+                      value: /^[0-9]{10,11}$/,
+                      message:
+                        'Số điện thoại không hợp lệ (chỉ chứa tối đa 10-11 chữ số)',
+                    },
+                  })}
+                  className="mt-1 w-full rounded-md border border-gray-300 p-2"
+                />
+                {errors.phone && (
+                  <p className="text-red-500">{errors.phone.message}</p>
+                )}
+              </div>
+              <button
+                type="submit"
+                disabled={!isValid || isSaving}
+                className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:opacity-50"
+              >
+                {isSaving ? 'Đang lưu...' : 'Cập nhật'}
+              </button>
+            </form>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
