@@ -357,11 +357,11 @@ function pureFadeOut(e) {
 
       _initCloseActions: function () {
         const _this = this;
-        this.$closeBtns.forEach(el => {
-          el.addEventListener('click', (event) => {
+        document.addEventListener('click', (event) => {
+          if (event.target.matches(_this.selectors.closeBtn)) {
             event.preventDefault();
             _this._closeAside();
-          });
+          }
         });
       },
 
@@ -1296,12 +1296,16 @@ function pureFadeOut(e) {
       });
     }
   }
-
-  document.addEventListener("DOMContentLoaded", function () {
-    // Init theme
+  document.addEventListener("DOMContentLoaded", () => {
     UomoHelpers.isMobile = UomoHelpers.updateDeviceSize();
-    new Uomo();
+  
+    if (typeof Uomo === "function") {
+      new Uomo(); 
+    } else {
+      console.error("Uomo is not defined. Please check the script initialization.");
+    }
   });
+  
 
   $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
     var paneTarget = $(e.target).attr('href');
