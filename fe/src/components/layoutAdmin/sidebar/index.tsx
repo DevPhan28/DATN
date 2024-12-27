@@ -219,17 +219,6 @@ const Sidebar = () => {
           </div>
         </div>
       </nav>
-      <div className="absolute bottom-6 w-fit">
-        <button
-          type="button"
-          className="flex w-full items-center rounded-md px-2 py-1.5 font-medium text-ui-fg-subtle hover:bg-ui-bg-base-hover"
-        >
-          <div className="flex items-center gap-2">
-            <ArrowRightOnRectangle />
-            Log out
-          </div>
-        </button>
-      </div>
     </aside>
   );
 };

@@ -15,7 +15,7 @@ const ItemSidebar = ({ href, id, name, icon }: MenuItem) => {
       <Link
         to={href}
         className={clx(
-          'txt-compact-small-plus flex w-full items-center rounded-md border border-ui-bg-base px-2 py-1.5 text-ui-fg-subtle hover:bg-ui-bg-base-hover',
+          'txt-compact-small-plus flex w-full items-center rounded-md border-ui-bg-base px-2 py-1.5 text-ui-fg-subtle hover:bg-ui-bg-base-hover',
           {
             'border-ui-border-base bg-ui-bg-base-pressed': isActive,
           }
