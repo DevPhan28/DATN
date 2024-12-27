@@ -69,7 +69,7 @@ const Slides = () => {
 
                             <div className="slideshow-text container position-absolute start-50 top-50 translate-middle">
                                 <h6 className="text_dash text-uppercase text-red fs-base fw-medium animate animate_fade animate_btt animate_delay-3">
-                                    Summer 2024
+                                    năm 2024
                                 </h6>
                                 <h2 className="text-uppercase h1 fw-bold animate animate_fade animate_btt animate_delay-3">
                                     Hello New Season

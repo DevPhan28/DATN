@@ -90,9 +90,7 @@ const Header = () => {
     getSelectedItems,
   } = useCart(userId);
 
-  if (isLoading) {
-    return <div>Đang tải...</div>;
-  }
+
 
   // if (!cartData || !cartData.products || cartData.products.length === 0) {
   //   return <ErrorCart />;
@@ -128,12 +126,17 @@ const Header = () => {
               <ul className="navigation__list list-unstyled d-flex">
                 <li className="navigation__item">
                   <Link to="/" className="navigation__link">
-                    Home
+                    Trang Chủ
                   </Link>
                 </li>
                 <li className="navigation__item">
                   <a href="" className="navigation__link">
-                    Shop
+                    Cửa hàng
+                  </a>
+                </li>
+                <li className="navigation__item">
+                  <a href="#" className="navigation__link">
+                    Nổi bật
                   </a>
                 </li>
                 <li className="navigation__item">
@@ -142,18 +145,13 @@ const Header = () => {
                   </a>
                 </li>
                 <li className="navigation__item">
-                  <a href="#" className="navigation__link">
-                    Pages
-                  </a>
-                </li>
-                <li className="navigation__item">
                   <a href="about.html" className="navigation__link">
-                    About
+                    Về Chúng Tôi
                   </a>
                 </li>
                 <li className="navigation__item">
                   <a href="contact.html" className="navigation__link">
-                    Contact
+                    Liên hệ
                   </a>
                 </li>
               </ul>
@@ -306,11 +304,13 @@ const Header = () => {
                     <ul className="absolute top-10 w-96 transform cursor-pointer rounded-lg transition-all duration-300 ease-in-out">
                       {isLoggedIn ? (
                         <>
+
                           <div className="flex flex-col items-center justify-center px-3 py-4">
+                            <button className="js-close-aside btn-close-lg btn-close-aside ms-auto mt-[-50px]" />
                             <img
                               src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg"
                               alt=""
-                              className="h-16 w-16 rounded-full border-2 border-gray-200 object-cover"
+                              className="h-16 w-16 rounded-full border-2 border-gray-200 object-cover mt-5"
                             />
                             <div className="mt-2 flex items-center gap-2">
                               <div className="text-xl text-gray-700">
@@ -341,20 +341,24 @@ const Header = () => {
                           </li>
                         </>
                       ) : (
-                        <div className="w-full space-y-4 p-4 text-center">
-                          <Link to="/login">
-                            <button className="btn btn-primary d-block mt-3 w-full rounded-lg text-lg transition-colors duration-300">
-                              Đăng nhập
-                            </button>
-                          </Link>
-                          <div className="text-lg text-gray-600">
-                            Bạn chưa có tài khoản?
-                            <Link
-                              to="/register"
-                              className="pl-1 text-lg text-black hover:underline"
-                            >
-                              Đăng ký
+                        <div className="w-full ">
+                          <button className="js-close-aside btn-close-lg btn-close-aside ms-auto  flex justify-end" />
+                          <div className='space-y-4 p-4 text-center'>
+                            <Link to="/login">
+                              <button className="btn btn-primary d-block mt-3 w-full rounded-lg text-lg transition-colors duration-300">
+                                Đăng nhập
+                              </button>
                             </Link>
+                            <div className="text-lg text-gray-600">
+                              Bạn chưa có tài khoản?
+                              <Link
+                                to="/register"
+                                className="pl-1 text-lg text-black hover:underline"
+                              >
+                                Đăng ký
+                              </Link>
+                            </div>
+
                           </div>
                         </div>
                       )}
@@ -472,12 +476,12 @@ const Header = () => {
             <Link to="/cart" className="btn btn-light d-block mt-3">
               Xem giỏ hàng
             </Link>
-            <a
-              href="shop_checkout.html"
+            <Link
+              to="/checkoutNew"
               className="btn btn-primary d-block mt-3"
             >
               Thanh Toán
-            </a>
+            </Link>
           </div>
           {/* /.aside-content */}
         </div>

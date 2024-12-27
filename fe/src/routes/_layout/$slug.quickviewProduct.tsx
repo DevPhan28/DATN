@@ -86,7 +86,7 @@ function DetailProduct() {
           );
           const average = totalRating / response.data.length;
           setAverageRating(average); // Cập nhật số sao trung bình
-        } catch (err) {}
+        } catch (err) { }
       };
       fetchComments();
     }
@@ -305,7 +305,7 @@ function DetailProduct() {
                       href="#"
                       className="menu-link menu-link_us-s text-uppercase fw-medium"
                     >
-                      Home
+                      Trang Chủ
                     </a>
                     <span className="breadcrumb-separator menu-link fw-medium pe-1 ps-1">
                       /
@@ -314,7 +314,7 @@ function DetailProduct() {
                       href="#"
                       className="menu-link menu-link_us-s text-uppercase fw-medium"
                     >
-                      The Shop
+                      Chi tiết
                     </a>
                   </div>
                   {/* /.breadcrumb */}
@@ -329,13 +329,13 @@ function DetailProduct() {
                       >
                         <use href="#icon_prev_md" />
                       </svg>
-                      <span className="menu-link menu-link_us-s">Prev</span>
+                      <span className="menu-link menu-link_us-s">Quay lại</span>
                     </a>
                     <a
                       href="product2_variable.html"
                       className="text-uppercase fw-medium"
                     >
-                      <span className="menu-link menu-link_us-s">Next</span>
+                      <span className="menu-link menu-link_us-s">TIếp</span>
                       <svg
                         className="mb-1px"
                         width={10}
@@ -379,11 +379,10 @@ function DetailProduct() {
                           <button
                             type="button"
                             onClick={() => handleSizeChange(size)}
-                            className={`rounded border px-4 py-2 ${
-                              selectedSize === size
-                                ? 'border-blue-500 bg-blue-500 text-white'
-                                : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100'
-                            }`}
+                            className={`rounded border px-4 py-2 ${selectedSize === size
+                              ? 'border-blue-500 bg-blue-500 text-white'
+                              : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100'
+                              }`}
                           >
                             {size}
                           </button>
@@ -396,11 +395,11 @@ function DetailProduct() {
                         data-bs-target="#sizeGuide"
                         onClick={e => e.preventDefault()}
                       >
-                        Size Guide
+                        Hướng dẫn kích cỡ
                       </a>
                     </div>
                     <div className="product-swatch color-swatches h-10">
-                      <label>Color</label>
+                      <label>Màu</label>
                       <div className="swatch-list">
                         {availableColors &&
                           availableColors.map((color, index) => (
@@ -408,11 +407,10 @@ function DetailProduct() {
                               type="button"
                               key={color}
                               onClick={() => setSelectedColor(color)}
-                              className={`h-8 w-8 rounded-full border focus:outline-none ${
-                                selectedColor === color
-                                  ? 'border-blue-500 ring-2 ring-blue-500'
-                                  : 'border-gray-300'
-                              }`}
+                              className={`h-8 w-8 rounded-full border focus:outline-none ${selectedColor === color
+                                ? 'border-blue-500 ring-2 ring-blue-500'
+                                : 'border-gray-300'
+                                }`}
                               style={{
                                 backgroundColor: color,
                                 boxShadow:
@@ -577,7 +575,7 @@ function DetailProduct() {
                     aria-controls="tab-description"
                     aria-selected="true"
                   >
-                    Description
+                    Mô tả chi tiết
                   </a>
                 </li>
                 <li className="nav-item" role="presentation">
@@ -590,7 +588,7 @@ function DetailProduct() {
                     aria-controls="tab-additional-info"
                     aria-selected="false"
                   >
-                    Additional Information
+                    Hướng dẫn kích thước
                   </a>
                 </li>
                 <li className="nav-item" role="presentation">
@@ -603,7 +601,7 @@ function DetailProduct() {
                     aria-controls="tab-reviews"
                     aria-selected="false"
                   >
-                    Reviews (2)
+                    Đánh Giá ({comments.length}{' '})
                   </a>
                 </li>
               </ul>
@@ -615,55 +613,10 @@ function DetailProduct() {
                   aria-labelledby="tab-description-tab"
                 >
                   <div className="product-single__description">
-                    <h3 className="block-title mb-4">
-                      Sed do eiusmod tempor incididunt ut labore
-                    </h3>
-                    <p className="content">
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit,
-                      sed do eiusmod tempor incididunt ut labore et dolore magna
-                      aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                      ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                      Duis aute irure dolor in reprehenderit in voluptate velit
-                      esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                      sint occaecat cupidatat non proident, sunt in culpa qui
-                      officia deserunt mollit anim id est laborum. Sed ut
-                      perspiciatis unde omnis iste natus error sit voluptatem
-                      accusantium doloremque laudantium, totam rem aperiam,
-                      eaque ipsa quae ab illo inventore veritatis et quasi
-                      architecto beatae vitae dicta sunt explicabo.
-                    </p>
-                    <div className="row">
-                      <div className="col-lg-6">
-                        <h3 className="block-title">Why choose product?</h3>
-                        <ul className="list text-list">
-                          <li>Creat by cotton fibric with soft and smooth</li>
-                          <li>
-                            Simple, Configurable (e.g. size, color, etc.),
-                            bundled
-                          </li>
-                          <li>
-                            Downloadable/Digital Products, Virtual Products
-                          </li>
-                        </ul>
-                      </div>
-                      <div className="col-lg-6">
-                        <h3 className="block-title">Sample Number List</h3>
-                        <ol className="list text-list">
-                          <li>Create Store-specific attrittbutes on the fly</li>
-                          <li>
-                            Simple, Configurable (e.g. size, color, etc.),
-                            bundled
-                          </li>
-                          <li>
-                            Downloadable/Digital Products, Virtual Products
-                          </li>
-                        </ol>
-                      </div>
-                    </div>
-                    <h3 className="block-title mb-0">Lining</h3>
-                    <p className="content">
-                      100% Polyester, Main: 100% Polyester.
-                    </p>
+                    <div
+                      className="mt-5"
+                      dangerouslySetInnerHTML={{ __html: product.detaildescription }}
+                    />
                   </div>
                 </div>
                 <div
@@ -674,25 +627,28 @@ function DetailProduct() {
                 >
                   <div className="product-single__addtional-info">
                     <div className="item">
-                      <label className="h6">Weight</label>
+                      <label className="h6">Cân nặng</label>
                       <span>1.25 kg</span>
                     </div>
                     <div className="item">
-                      <label className="h6">Dimensions</label>
+                      <label className="h6">Kích thước</label>
                       <span>90 x 60 x 90 cm</span>
                     </div>
                     <div className="item">
-                      <label className="h6">Size</label>
-                      <span>XS, S, M, L, XL</span>
+                      <label className="h6">Kích cỡ</label>
+                      {uniqueSizes.map(size => (
+                        <span className='p-2'>{size}</span>
+                      ))}
                     </div>
                     <div className="item">
-                      <label className="h6">Color</label>
+                      <label className="h6">Màu</label>
+                      {availableColors &&
+                        availableColors.map((color, index) => (
+                          <div></div>
+                        ))}
                       <span>Black, Orange, White</span>
                     </div>
-                    <div className="item">
-                      <label className="h6">Storage</label>
-                      <span>Relaxed fit shirt-style dress with a rugged</span>
-                    </div>
+
                   </div>
                 </div>
                 <div
@@ -701,220 +657,100 @@ function DetailProduct() {
                   role="tabpanel"
                   aria-labelledby="tab-reviews-tab"
                 >
-                  <h2 className="product-single__reviews-title">Reviews</h2>
+                  <h2 className="product-single__reviews-title">Đánh giá sản phẩm (
+                    {comments.length > 0 ? comments.length : 0})</h2>
                   <div className="product-single__reviews-list">
-                    <div className="product-single__reviews-item">
-                      <div className="customer-avatar">
-                        <img loading="lazy" src="../images/avatar.jpg" alt />
-                      </div>
-                      <div className="customer-review">
-                        <div className="customer-name">
-                          <h6>Janice Miller</h6>
-                          <div className="reviews-group d-flex">
-                            <svg
-                              className="review-star"
-                              viewBox="0 0 9 9"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <use href="#icon_star" />
-                            </svg>
-                            <svg
-                              className="review-star"
-                              viewBox="0 0 9 9"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <use href="#icon_star" />
-                            </svg>
-                            <svg
-                              className="review-star"
-                              viewBox="0 0 9 9"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <use href="#icon_star" />
-                            </svg>
-                            <svg
-                              className="review-star"
-                              viewBox="0 0 9 9"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <use href="#icon_star" />
-                            </svg>
-                            <svg
-                              className="review-star"
-                              viewBox="0 0 9 9"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <use href="#icon_star" />
-                            </svg>
+
+                    {comments.length > 0 ? (comments.map(comment => (
+                      <div className="product-single__reviews-item">
+                        <div className="customer-avatar">
+                          <img loading="lazy" src={comment.userId?.avatar} />
+                        </div>
+                        <div className="customer-review">
+                          <div className="customer-name">
+                            <h6>{comment.userId?.username}</h6>
+                            <div className="reviews-group d-flex">
+                              {[1, 2, 3, 4, 5].map(star => (
+                                <div key={star}>
+                                  {comment.rating >= star ? (
+                                    <StarSolid className="text-orange-300" />
+                                  ) : (
+                                    <StarSolid className="text-orange-200" />
+                                  )}
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                        <div className="review-date">April 06, 2023</div>
-                        <div className="review-text">
-                          <p>
-                            Nam libero tempore, cum soluta nobis est eligendi
-                            optio cumque nihil impedit quo minus id quod maxime
-                            placeat facere possimus, omnis voluptas assumenda
-                            est…
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="product-single__reviews-item">
-                      <div className="customer-avatar">
-                        <img loading="lazy" src="../images/avatar.jpg" alt />
-                      </div>
-                      <div className="customer-review">
-                        <div className="customer-name">
-                          <h6>Benjam Porter</h6>
-                          <div className="reviews-group d-flex">
-                            <svg
-                              className="review-star"
-                              viewBox="0 0 9 9"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <use href="#icon_star" />
-                            </svg>
-                            <svg
-                              className="review-star"
-                              viewBox="0 0 9 9"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <use href="#icon_star" />
-                            </svg>
-                            <svg
-                              className="review-star"
-                              viewBox="0 0 9 9"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <use href="#icon_star" />
-                            </svg>
-                            <svg
-                              className="review-star"
-                              viewBox="0 0 9 9"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <use href="#icon_star" />
-                            </svg>
-                            <svg
-                              className="review-star"
-                              viewBox="0 0 9 9"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <use href="#icon_star" />
-                            </svg>
+                          <div className="review-date">{new Date(comment.createdAt).toLocaleString(
+                            'vi-VN',
+                            {
+                              year: 'numeric',
+                              month: '2-digit',
+                              day: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            }
+                          )}</div>
+                          <div className="review-text">
+                            <p>
+                              {comment.commentText}
+                            </p>
                           </div>
-                        </div>
-                        <div className="review-date">April 06, 2023</div>
-                        <div className="review-text">
-                          <p>
-                            Nam libero tempore, cum soluta nobis est eligendi
-                            optio cumque nihil impedit quo minus id quod maxime
-                            placeat facere possimus, omnis voluptas assumenda
-                            est…
-                          </p>
+                          <DropdownMenu>
+                            <DropdownMenu.Trigger asChild>
+                              <IconButton>
+                                <EllipsisHorizontal />
+                              </IconButton>
+                            </DropdownMenu.Trigger>
+                            <DropdownMenu.Content>
+                              <DropdownMenu.Separator />
+                              <DropdownMenu.Item
+                                className="gap-x-2"
+                                onClick={() =>
+                                  handleDeleteComment(comment._id)
+                                }
+                              >
+                                <Trash className="text-ui-fg-subtle" />
+                                Xóa bình luận
+                              </DropdownMenu.Item>
+                            </DropdownMenu.Content>
+                          </DropdownMenu>
                         </div>
                       </div>
-                    </div>
+                    ))) : (
+                      <p>Chưa có bình luận nào</p>
+                    )}
+
                   </div>
                   <div className="product-single__review-form">
                     <form name="customer-review-form">
-                      <h5>Be the first to review “Message Cotton T-Shirt”</h5>
-                      <p>
-                        Your email address will not be published. Required
-                        fields are marked *
-                      </p>
+                      <h5>Hãy đánh giá “{product.name}”</h5>
                       <div className="select-star-rating">
-                        <label>Your rating *</label>
-                        <span className="star-rating">
-                          <svg
-                            className="star-rating__star-icon"
-                            width={12}
-                            height={12}
-                            fill="#ccc"
-                            viewBox="0 0 12 12"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M11.1429 5.04687C11.1429 4.84598 10.9286 4.76562 10.7679 4.73884L7.40625 4.25L5.89955 1.20312C5.83929 1.07589 5.72545 0.928571 5.57143 0.928571C5.41741 0.928571 5.30357 1.07589 5.2433 1.20312L3.73661 4.25L0.375 4.73884C0.207589 4.76562 0 4.84598 0 5.04687C0 5.16741 0.0870536 5.28125 0.167411 5.3683L2.60491 7.73884L2.02902 11.0871C2.02232 11.1339 2.01563 11.1741 2.01563 11.221C2.01563 11.3951 2.10268 11.5558 2.29688 11.5558C2.39063 11.5558 2.47768 11.5223 2.56473 11.4754L5.57143 9.89509L8.57813 11.4754C8.65848 11.5223 8.75223 11.5558 8.84598 11.5558C9.04018 11.5558 9.12054 11.3951 9.12054 11.221C9.12054 11.1741 9.12054 11.1339 9.11384 11.0871L8.53795 7.73884L10.9688 5.3683C11.0558 5.28125 11.1429 5.16741 11.1429 5.04687Z" />
-                          </svg>
-                          <svg
-                            className="star-rating__star-icon"
-                            width={12}
-                            height={12}
-                            fill="#ccc"
-                            viewBox="0 0 12 12"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M11.1429 5.04687C11.1429 4.84598 10.9286 4.76562 10.7679 4.73884L7.40625 4.25L5.89955 1.20312C5.83929 1.07589 5.72545 0.928571 5.57143 0.928571C5.41741 0.928571 5.30357 1.07589 5.2433 1.20312L3.73661 4.25L0.375 4.73884C0.207589 4.76562 0 4.84598 0 5.04687C0 5.16741 0.0870536 5.28125 0.167411 5.3683L2.60491 7.73884L2.02902 11.0871C2.02232 11.1339 2.01563 11.1741 2.01563 11.221C2.01563 11.3951 2.10268 11.5558 2.29688 11.5558C2.39063 11.5558 2.47768 11.5223 2.56473 11.4754L5.57143 9.89509L8.57813 11.4754C8.65848 11.5223 8.75223 11.5558 8.84598 11.5558C9.04018 11.5558 9.12054 11.3951 9.12054 11.221C9.12054 11.1741 9.12054 11.1339 9.11384 11.0871L8.53795 7.73884L10.9688 5.3683C11.0558 5.28125 11.1429 5.16741 11.1429 5.04687Z" />
-                          </svg>
-                          <svg
-                            className="star-rating__star-icon"
-                            width={12}
-                            height={12}
-                            fill="#ccc"
-                            viewBox="0 0 12 12"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M11.1429 5.04687C11.1429 4.84598 10.9286 4.76562 10.7679 4.73884L7.40625 4.25L5.89955 1.20312C5.83929 1.07589 5.72545 0.928571 5.57143 0.928571C5.41741 0.928571 5.30357 1.07589 5.2433 1.20312L3.73661 4.25L0.375 4.73884C0.207589 4.76562 0 4.84598 0 5.04687C0 5.16741 0.0870536 5.28125 0.167411 5.3683L2.60491 7.73884L2.02902 11.0871C2.02232 11.1339 2.01563 11.1741 2.01563 11.221C2.01563 11.3951 2.10268 11.5558 2.29688 11.5558C2.39063 11.5558 2.47768 11.5223 2.56473 11.4754L5.57143 9.89509L8.57813 11.4754C8.65848 11.5223 8.75223 11.5558 8.84598 11.5558C9.04018 11.5558 9.12054 11.3951 9.12054 11.221C9.12054 11.1741 9.12054 11.1339 9.11384 11.0871L8.53795 7.73884L10.9688 5.3683C11.0558 5.28125 11.1429 5.16741 11.1429 5.04687Z" />
-                          </svg>
-                          <svg
-                            className="star-rating__star-icon"
-                            width={12}
-                            height={12}
-                            fill="#ccc"
-                            viewBox="0 0 12 12"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M11.1429 5.04687C11.1429 4.84598 10.9286 4.76562 10.7679 4.73884L7.40625 4.25L5.89955 1.20312C5.83929 1.07589 5.72545 0.928571 5.57143 0.928571C5.41741 0.928571 5.30357 1.07589 5.2433 1.20312L3.73661 4.25L0.375 4.73884C0.207589 4.76562 0 4.84598 0 5.04687C0 5.16741 0.0870536 5.28125 0.167411 5.3683L2.60491 7.73884L2.02902 11.0871C2.02232 11.1339 2.01563 11.1741 2.01563 11.221C2.01563 11.3951 2.10268 11.5558 2.29688 11.5558C2.39063 11.5558 2.47768 11.5223 2.56473 11.4754L5.57143 9.89509L8.57813 11.4754C8.65848 11.5223 8.75223 11.5558 8.84598 11.5558C9.04018 11.5558 9.12054 11.3951 9.12054 11.221C9.12054 11.1741 9.12054 11.1339 9.11384 11.0871L8.53795 7.73884L10.9688 5.3683C11.0558 5.28125 11.1429 5.16741 11.1429 5.04687Z" />
-                          </svg>
-                          <svg
-                            className="star-rating__star-icon"
-                            width={12}
-                            height={12}
-                            fill="#ccc"
-                            viewBox="0 0 12 12"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M11.1429 5.04687C11.1429 4.84598 10.9286 4.76562 10.7679 4.73884L7.40625 4.25L5.89955 1.20312C5.83929 1.07589 5.72545 0.928571 5.57143 0.928571C5.41741 0.928571 5.30357 1.07589 5.2433 1.20312L3.73661 4.25L0.375 4.73884C0.207589 4.76562 0 4.84598 0 5.04687C0 5.16741 0.0870536 5.28125 0.167411 5.3683L2.60491 7.73884L2.02902 11.0871C2.02232 11.1339 2.01563 11.1741 2.01563 11.221C2.01563 11.3951 2.10268 11.5558 2.29688 11.5558C2.39063 11.5558 2.47768 11.5223 2.56473 11.4754L5.57143 9.89509L8.57813 11.4754C8.65848 11.5223 8.75223 11.5558 8.84598 11.5558C9.04018 11.5558 9.12054 11.3951 9.12054 11.221C9.12054 11.1741 9.12054 11.1339 9.11384 11.0871L8.53795 7.73884L10.9688 5.3683C11.0558 5.28125 11.1429 5.16741 11.1429 5.04687Z" />
-                          </svg>
+                        {/* <label>Your rating *</label> */}
+                        <span className="star-rating flex">
+                          {[1, 2, 3, 4, 5].map(star => (
+                            <StarSolid
+                              key={star}
+                              className={`cursor-pointer ${rating >= star ? 'text-orange-300' : 'text-orange-200'}`}
+                              onClick={() => handleRatingChange(star)}
+                            />
+                          ))}
                         </span>
-                        <input
-                          type="hidden"
-                          id="form-input-rating"
-                          defaultValue
-                        />
                       </div>
                       <div className="mb-4">
                         <textarea
                           id="form-input-review"
                           className="form-control form-control_gray"
-                          placeholder="Your Review"
+                          placeholder="Đánh giá của bạn"
                           cols={30}
                           rows={8}
+                          value={newComment}
+                          onChange={e => setNewComment(e.target.value)}
                           defaultValue={''}
                         />
                       </div>
-                      <div className="form-label-fixed mb-4">
-                        <label htmlFor="form-input-name" className="form-label">
-                          Name *
-                        </label>
-                        <input
-                          id="form-input-name"
-                          className="form-control form-control-md form-control_gray"
-                        />
-                      </div>
-                      <div className="form-label-fixed mb-4">
-                        <label
-                          htmlFor="form-input-email"
-                          className="form-label"
-                        >
-                          Email address *
-                        </label>
-                        <input
-                          id="form-input-email"
-                          className="form-control form-control-md form-control_gray"
-                        />
-                      </div>
-                      <div className="form-check mb-4">
+
+                      {/* <div className="form-check mb-4">
                         <input
                           className="form-check-input form-check-input_fill"
                           type="checkbox"
@@ -928,10 +764,10 @@ function DetailProduct() {
                           Save my name, email, and website in this browser for
                           the next time I comment.
                         </label>
-                      </div>
+                      </div> */}
                       <div className="form-action">
-                        <button type="submit" className="btn btn-primary">
-                          Submit
+                        <button type="submit" onClick={handleCommentSubmit} className="btn btn-primary">
+                          Đăng bình luận
                         </button>
                       </div>
                     </form>
