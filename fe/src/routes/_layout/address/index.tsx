@@ -5,6 +5,9 @@ import { Badge, Button } from '@medusajs/ui';
 import ModalCreateCustomInfor from '@/components/custom-infor/modal-create-custom-infor';
 import { useEffect, useState } from 'react';
 import { useFetchAddress } from '@/data/address/useFetchAddress';
+import useCustomerMutation from '@/data/address/useAddressMutation';
+import { toast } from '@medusajs/ui';
+import ModalUpdateCustomInfor from '@/components/custom-infor/modal-edit-custom-infor';
 
 export const Route = createFileRoute('/_layout/address/')({
   component: Address,
@@ -12,22 +15,48 @@ export const Route = createFileRoute('/_layout/address/')({
 
 function Address() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false); // Thêm trạng thái cho modal cập nhật
   const [userId, setUserId] = useState(null);
+  const [currentAddress, setCurrentAddress] = useState(null);
+  const { createCustomer, deleteCustomer } = useCustomerMutation();
+
   useEffect(() => {
     const storedUserId = localStorage.getItem('userId');
     if (storedUserId) {
       setUserId(storedUserId);
     }
   }, []);
+
   const { data, isLoading, error, refetch } = useFetchAddress(userId);
 
-  const openModal = () => {
+  const openCreateModal = () => {
+    setCurrentAddress(null);
     setIsModalOpen(true);
   };
 
-  const closeModal = () => {
+  const closeCreateModal = () => {
     setIsModalOpen(false);
     refetch();
+  };
+
+  const openUpdateModal = (address) => {
+    setCurrentAddress(address);
+    setIsUpdateModalOpen(true);
+  };
+
+  const closeUpdateModal = () => {
+    setIsUpdateModalOpen(false);
+    refetch();
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteCustomer.mutateAsync({ id });
+      toast.success('Xóa địa chỉ thành công!');
+      refetch();
+    } catch (error) {
+      toast.error(`Lỗi khi xóa địa chỉ: ${error.message}`);
+    }
   };
 
   // Sắp xếp địa chỉ sao cho địa chỉ mặc định đứng đầu
@@ -62,11 +91,21 @@ function Address() {
         <div className="ml-6 w-3/4">
           <div className="mb-2 flex justify-between">
             <h1 className="text-xl">Địa chỉ của bạn</h1>
-            <Button onClick={openModal}>
+            <Button onClick={openCreateModal}>
               <Plus />
               Thêm địa chỉ
             </Button>
-            <ModalCreateCustomInfor isOpen={isModalOpen} onClose={closeModal} />
+            <ModalCreateCustomInfor
+              isOpen={isModalOpen}
+              onClose={closeCreateModal}
+            />
+            {currentAddress && (
+              <ModalUpdateCustomInfor
+                isOpen={isUpdateModalOpen}
+                onClose={closeUpdateModal}
+                address={currentAddress}
+              />
+            )}
           </div>
           {isLoading ? (
             <div>Đang tải...</div>
@@ -74,7 +113,7 @@ function Address() {
             <div>Có lỗi xảy ra khi tải địa chỉ!</div>
           ) : (
             <div>
-              {sortedAddresses?.map(address => (
+              {sortedAddresses?.map((address) => (
                 <div
                   key={address.id}
                   className="mb-2 justify-start rounded-lg border-b bg-white shadow sm:space-x-0"
@@ -86,20 +125,23 @@ function Address() {
                       </h1>
                       <h1 className="mt-2 text-sm">{address.address}</h1>
                       <h1 className="mb-2">
-                        {address.wards}, {address.districts}, {address.city}
+                        {address.ward}, {address.district}, {address.city}
                       </h1>
                       {address.isDefault && <Badge color="red">Mặc Định</Badge>}
                     </div>
                     <div className="mt-2 flex flex-col items-center">
                       <p
                         className="cursor-pointer text-blue-400"
-                        onClick={openModal}
+                        onClick={() => openUpdateModal(address)}
                       >
                         Cập Nhật
                       </p>
-                      <a href="#" className="text-red-500">
+                      <p
+                        className="cursor-pointer text-red-500"
+                        onClick={() => handleDelete(address._id)}
+                      >
                         Xoá
-                      </a>
+                      </p>
                     </div>
                   </div>
                 </div>

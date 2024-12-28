@@ -22,17 +22,22 @@ interface City {
   Districts: District[];
 }
 
-const ModalCreateCustomInfor = ({
+const ModalUpdateCustomInfor = ({
   isOpen,
   onClose,
+  address,
 }: {
   isOpen: boolean;
   onClose: () => void;
+  address: any;
 }) => {
   const [cities, setCities] = useState<City[]>([]);
   const [districts, setDistricts] = useState<District[]>([]);
   const [wards, setWards] = useState<Ward[]>([]);
+  const [isUpdating, setIsUpdating] = useState(false);
+
   const [formData, setFormData] = useState({
+    id: '',
     userId: '',
     name: '',
     phone: '',
@@ -42,7 +47,7 @@ const ModalCreateCustomInfor = ({
     address: '',
   });
 
-  const { createCustomer } = useCustomerMutation();
+  const { editCustomer } = useCustomerMutation();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,6 +64,28 @@ const ModalCreateCustomInfor = ({
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (address) {
+      setFormData({
+        id: address._id,
+        userId: address.userId || '',
+        name: address.name || '',
+        phone: address.phone || '',
+        city: address.city || '',
+        district: address.district || '',
+        ward: address.ward || '',
+        address: address.address || '',
+      });
+
+      const selectedCity = cities.find(city => city.Name === address.city);
+      setDistricts(selectedCity?.Districts || []);
+      const selectedDistrict = selectedCity?.Districts.find(
+        district => district.Name === address.district
+      );
+      setWards(selectedDistrict?.Wards || []);
+    }
+  }, [address, cities]);
+
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -67,65 +94,61 @@ const ModalCreateCustomInfor = ({
   };
 
   const handleCityChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const cityId = event.target.value;
-    setFormData({ ...formData, city: cityId, district: '', ward: '' });
-    const selectedCity = cities.find((city) => city.Id === cityId);
+    const cityName = event.target.value;
+    setFormData({ ...formData, city: cityName, district: '', ward: '' });
+    const selectedCity = cities.find(city => city.Name === cityName);
     setDistricts(selectedCity ? selectedCity.Districts : []);
     setWards([]);
   };
 
   const handleDistrictChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const districtId = event.target.value;
-    setFormData({ ...formData, district: districtId, ward: '' });
-    const selectedDistrict = districts.find((district) => district.Id === districtId);
+    const districtName = event.target.value;
+    setFormData({ ...formData, district: districtName, ward: '' });
+    const selectedDistrict = districts.find(
+      district => district.Name === districtName
+    );
     setWards(selectedDistrict ? selectedDistrict.Wards : []);
   };
 
-  const getCityName = (cityId: string) =>
-    cities.find(city => city.Id === cityId)?.Name || '';
+  const handleUpdateAddress = async () => {
+    const { id, userId, name, phone, city, district, ward, address } = formData;
 
-  const getDistrictName = (cityId: string, districtId: string) =>
-    cities
-      .find(city => city.Id === cityId)
-      ?.Districts.find(district => district.Id === districtId)?.Name || '';
-
-  const getWardName = (cityId: string, districtId: string, wardId: string) =>
-    cities
-      .find(city => city.Id === cityId)
-      ?.Districts.find(district => district.Id === districtId)
-      ?.Wards.find(ward => ward.Id === wardId)?.Name || '';
-
-  const handleAddAddress = () => {
-    const { name, phone, city, district, ward, address } = formData;
+    if (!userId) {
+      toast.error('Lỗi: Thiếu thông tin người dùng.');
+      return;
+    }
 
     if (!name || !phone || !city || !district || !ward || !address) {
       toast.error('Vui lòng điền đầy đủ thông tin.');
       return;
     }
 
-    const userId = localStorage.getItem('userId');
-    const cityName = getCityName(city);
-    const districtName = getDistrictName(city, district);
-    const wardName = getWardName(city, district, ward);
-
-    createCustomer.mutate({
-      userId,
-      name,
-      phone,
-      city: cityName,
-      district: districtName,
-      ward: wardName,
-      address,
-    });
-
-    onClose();
+    setIsUpdating(true);
+    try {
+      await editCustomer.mutateAsync({
+        id,
+        userId,
+        name,
+        phone,
+        city,
+        district,
+        ward,
+        address,
+      });
+      toast.success('Cập nhật thông tin thành công!');
+      onClose();
+    } catch (error) {
+      toast.error(`Cập nhật thất bại: ${error.message}`);
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   return (
     <FocusModal open={isOpen} onOpenChange={onClose}>
       <FocusModal.Content className="m-auto h-fit max-h-[80%] w-[calc(100%-24px)] max-w-[650px] overflow-visible">
         <FocusModal.Header className="flex flex-row-reverse px-8 py-6 [&_kbd]:hidden">
-          <p className="font-semibold">Thêm Địa Chỉ Mới</p>
+          <p className="font-semibold">Cập Nhật Địa Chỉ</p>
         </FocusModal.Header>
         <div className="flex h-full flex-col justify-between overflow-y-auto p-8">
           <div className="gap- flex flex-wrap justify-between gap-y-4">
@@ -161,7 +184,7 @@ const ModalCreateCustomInfor = ({
               >
                 <option value="">Chọn tỉnh/thành phố</option>
                 {cities.map((city) => (
-                  <option key={city.Id} value={city.Id}>
+                  <option key={city.Id} value={city.Name}>
                     {city.Name}
                   </option>
                 ))}
@@ -177,7 +200,7 @@ const ModalCreateCustomInfor = ({
               >
                 <option value="">Chọn quận/huyện</option>
                 {districts.map((district) => (
-                  <option key={district.Id} value={district.Id}>
+                  <option key={district.Id} value={district.Name}>
                     {district.Name}
                   </option>
                 ))}
@@ -193,7 +216,7 @@ const ModalCreateCustomInfor = ({
               >
                 <option value="">Chọn xã/phường</option>
                 {wards.map((ward) => (
-                  <option key={ward.Id} value={ward.Id}>
+                  <option key={ward.Id} value={ward.Name}>
                     {ward.Name}
                   </option>
                 ))}
@@ -213,8 +236,13 @@ const ModalCreateCustomInfor = ({
           </div>
         </div>
         <div className="flex justify-end gap-x-2 border-t border-ui-border-base pb-6 pr-8 pt-4">
-          <Button variant="primary" type="button" onClick={handleAddAddress}>
-            Thêm Địa Chỉ
+          <Button
+            variant="primary"
+            type="button"
+            onClick={handleUpdateAddress}
+            disabled={isUpdating}
+          >
+            {isUpdating ? 'Đang cập nhật...' : 'Cập Nhật'}
           </Button>
         </div>
       </FocusModal.Content>
@@ -222,4 +250,4 @@ const ModalCreateCustomInfor = ({
   );
 };
 
-export default ModalCreateCustomInfor;
+export default ModalUpdateCustomInfor;

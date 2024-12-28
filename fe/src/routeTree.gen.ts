@@ -26,14 +26,18 @@ import { Route as DashboardLayoutIndexImport } from './routes/dashboard/_layout/
 import { Route as LayoutThanksIndexImport } from './routes/_layout/thanks/index'
 import { Route as LayoutShopIndexImport } from './routes/_layout/shop/index'
 import { Route as LayoutSearchListIndexImport } from './routes/_layout/searchList/index'
+import { Route as LayoutProfileIndexImport } from './routes/_layout/profile/index'
 import { Route as LayoutOrderuserIndexImport } from './routes/_layout/orderuser/index'
+import { Route as LayoutCheckoutNewIndexImport } from './routes/_layout/checkoutNew/index'
 import { Route as LayoutCheckoutIndexImport } from './routes/_layout/checkout/index'
+import { Route as LayoutChangepasswordIndexImport } from './routes/_layout/change_password/index'
 import { Route as LayoutCartIndexImport } from './routes/_layout/cart/index'
 import { Route as LayoutBlogIndexImport } from './routes/_layout/blog/index'
-import { Route as LayoutAccountIndexImport } from './routes/_layout/account/index'
+import { Route as LayoutAddressIndexImport } from './routes/_layout/address/index'
 import { Route as LayoutAboutIndexImport } from './routes/_layout/about/index'
 import { Route as LayoutDetailblogSlugImport } from './routes/_layout/detailblog/$slug'
 import { Route as LayoutCategoriesSlugImport } from './routes/_layout/categories/$slug'
+import { Route as LayoutBlogTextImport } from './routes/_layout/blog/text'
 import { Route as LayoutSlugQuickviewProductImport } from './routes/_layout/$slug.quickviewProduct'
 import { Route as LayoutSlugDetailproductImport } from './routes/_layout/$slug.detailproduct'
 import { Route as DashboardLayoutUsersIndexImport } from './routes/dashboard/_layout/users/index'
@@ -52,6 +56,7 @@ import { Route as LayoutExchangeUserIdOrderIdImport } from './routes/_layout/exc
 import { Route as DashboardLayoutProductsSlugViewdetailImport } from './routes/dashboard/_layout/products/$slug.viewdetail'
 import { Route as DashboardLayoutProductsIdEditImport } from './routes/dashboard/_layout/products/$id.edit'
 import { Route as DashboardLayoutDetailorderIdDetailorderImport } from './routes/dashboard/_layout/detailorder/$id.detailorder'
+import { Route as DashboardLayoutCouponIdShowUserImport } from './routes/dashboard/_layout/coupon/$id.showUser'
 import { Route as DashboardLayoutCouponIdEditImport } from './routes/dashboard/_layout/coupon/$id.edit'
 import { Route as DashboardLayoutCommentIdCommentImport } from './routes/dashboard/_layout/comment/$id.comment'
 import { Route as DashboardLayoutCategoryIdEditImport } from './routes/dashboard/_layout/category/$id.edit'
@@ -132,13 +137,28 @@ const LayoutSearchListIndexRoute = LayoutSearchListIndexImport.update({
   getParentRoute: () => LayoutRoute,
 } as any)
 
+const LayoutProfileIndexRoute = LayoutProfileIndexImport.update({
+  path: '/profile/',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
 const LayoutOrderuserIndexRoute = LayoutOrderuserIndexImport.update({
   path: '/orderuser/',
   getParentRoute: () => LayoutRoute,
 } as any)
 
+const LayoutCheckoutNewIndexRoute = LayoutCheckoutNewIndexImport.update({
+  path: '/checkoutNew/',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
 const LayoutCheckoutIndexRoute = LayoutCheckoutIndexImport.update({
   path: '/checkout/',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutChangepasswordIndexRoute = LayoutChangepasswordIndexImport.update({
+  path: '/change_password/',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -152,8 +172,8 @@ const LayoutBlogIndexRoute = LayoutBlogIndexImport.update({
   getParentRoute: () => LayoutRoute,
 } as any)
 
-const LayoutAccountIndexRoute = LayoutAccountIndexImport.update({
-  path: '/account/',
+const LayoutAddressIndexRoute = LayoutAddressIndexImport.update({
+  path: '/address/',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -169,6 +189,11 @@ const LayoutDetailblogSlugRoute = LayoutDetailblogSlugImport.update({
 
 const LayoutCategoriesSlugRoute = LayoutCategoriesSlugImport.update({
   path: '/categories/$slug',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutBlogTextRoute = LayoutBlogTextImport.update({
+  path: '/blog/text',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -272,6 +297,12 @@ const DashboardLayoutProductsIdEditRoute =
 const DashboardLayoutDetailorderIdDetailorderRoute =
   DashboardLayoutDetailorderIdDetailorderImport.update({
     path: '/detailorder/$id/detailorder',
+    getParentRoute: () => DashboardLayoutRoute,
+  } as any)
+
+const DashboardLayoutCouponIdShowUserRoute =
+  DashboardLayoutCouponIdShowUserImport.update({
+    path: '/coupon/$id/showUser',
     getParentRoute: () => DashboardLayoutRoute,
   } as any)
 
@@ -381,6 +412,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutSlugQuickviewProductImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/blog/text': {
+      id: '/_layout/blog/text'
+      path: '/blog/text'
+      fullPath: '/blog/text'
+      preLoaderRoute: typeof LayoutBlogTextImport
+      parentRoute: typeof LayoutImport
+    }
     '/_layout/categories/$slug': {
       id: '/_layout/categories/$slug'
       path: '/categories/$slug'
@@ -402,11 +440,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutAboutIndexImport
       parentRoute: typeof LayoutImport
     }
-    '/_layout/account/': {
-      id: '/_layout/account/'
-      path: '/account'
-      fullPath: '/account'
-      preLoaderRoute: typeof LayoutAccountIndexImport
+    '/_layout/address/': {
+      id: '/_layout/address/'
+      path: '/address'
+      fullPath: '/address'
+      preLoaderRoute: typeof LayoutAddressIndexImport
       parentRoute: typeof LayoutImport
     }
     '/_layout/blog/': {
@@ -423,6 +461,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutCartIndexImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/change_password/': {
+      id: '/_layout/change_password/'
+      path: '/change_password'
+      fullPath: '/change_password'
+      preLoaderRoute: typeof LayoutChangepasswordIndexImport
+      parentRoute: typeof LayoutImport
+    }
     '/_layout/checkout/': {
       id: '/_layout/checkout/'
       path: '/checkout'
@@ -430,11 +475,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutCheckoutIndexImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/checkoutNew/': {
+      id: '/_layout/checkoutNew/'
+      path: '/checkoutNew'
+      fullPath: '/checkoutNew'
+      preLoaderRoute: typeof LayoutCheckoutNewIndexImport
+      parentRoute: typeof LayoutImport
+    }
     '/_layout/orderuser/': {
       id: '/_layout/orderuser/'
       path: '/orderuser'
       fullPath: '/orderuser'
       preLoaderRoute: typeof LayoutOrderuserIndexImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/profile/': {
+      id: '/_layout/profile/'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof LayoutProfileIndexImport
       parentRoute: typeof LayoutImport
     }
     '/_layout/searchList/': {
@@ -577,6 +636,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLayoutCouponIdEditImport
       parentRoute: typeof DashboardLayoutImport
     }
+    '/dashboard/_layout/coupon/$id/showUser': {
+      id: '/dashboard/_layout/coupon/$id/showUser'
+      path: '/coupon/$id/showUser'
+      fullPath: '/dashboard/coupon/$id/showUser'
+      preLoaderRoute: typeof DashboardLayoutCouponIdShowUserImport
+      parentRoute: typeof DashboardLayoutImport
+    }
     '/dashboard/_layout/detailorder/$id/detailorder': {
       id: '/dashboard/_layout/detailorder/$id/detailorder'
       path: '/detailorder/$id/detailorder'
@@ -607,14 +673,18 @@ interface LayoutRouteChildren {
   LayoutIndexRoute: typeof LayoutIndexRoute
   LayoutSlugDetailproductRoute: typeof LayoutSlugDetailproductRoute
   LayoutSlugQuickviewProductRoute: typeof LayoutSlugQuickviewProductRoute
+  LayoutBlogTextRoute: typeof LayoutBlogTextRoute
   LayoutCategoriesSlugRoute: typeof LayoutCategoriesSlugRoute
   LayoutDetailblogSlugRoute: typeof LayoutDetailblogSlugRoute
   LayoutAboutIndexRoute: typeof LayoutAboutIndexRoute
-  LayoutAccountIndexRoute: typeof LayoutAccountIndexRoute
+  LayoutAddressIndexRoute: typeof LayoutAddressIndexRoute
   LayoutBlogIndexRoute: typeof LayoutBlogIndexRoute
   LayoutCartIndexRoute: typeof LayoutCartIndexRoute
+  LayoutChangepasswordIndexRoute: typeof LayoutChangepasswordIndexRoute
   LayoutCheckoutIndexRoute: typeof LayoutCheckoutIndexRoute
+  LayoutCheckoutNewIndexRoute: typeof LayoutCheckoutNewIndexRoute
   LayoutOrderuserIndexRoute: typeof LayoutOrderuserIndexRoute
+  LayoutProfileIndexRoute: typeof LayoutProfileIndexRoute
   LayoutSearchListIndexRoute: typeof LayoutSearchListIndexRoute
   LayoutShopIndexRoute: typeof LayoutShopIndexRoute
   LayoutThanksIndexRoute: typeof LayoutThanksIndexRoute
@@ -627,14 +697,18 @@ const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutIndexRoute: LayoutIndexRoute,
   LayoutSlugDetailproductRoute: LayoutSlugDetailproductRoute,
   LayoutSlugQuickviewProductRoute: LayoutSlugQuickviewProductRoute,
+  LayoutBlogTextRoute: LayoutBlogTextRoute,
   LayoutCategoriesSlugRoute: LayoutCategoriesSlugRoute,
   LayoutDetailblogSlugRoute: LayoutDetailblogSlugRoute,
   LayoutAboutIndexRoute: LayoutAboutIndexRoute,
-  LayoutAccountIndexRoute: LayoutAccountIndexRoute,
+  LayoutAddressIndexRoute: LayoutAddressIndexRoute,
   LayoutBlogIndexRoute: LayoutBlogIndexRoute,
   LayoutCartIndexRoute: LayoutCartIndexRoute,
+  LayoutChangepasswordIndexRoute: LayoutChangepasswordIndexRoute,
   LayoutCheckoutIndexRoute: LayoutCheckoutIndexRoute,
+  LayoutCheckoutNewIndexRoute: LayoutCheckoutNewIndexRoute,
   LayoutOrderuserIndexRoute: LayoutOrderuserIndexRoute,
+  LayoutProfileIndexRoute: LayoutProfileIndexRoute,
   LayoutSearchListIndexRoute: LayoutSearchListIndexRoute,
   LayoutShopIndexRoute: LayoutShopIndexRoute,
   LayoutThanksIndexRoute: LayoutThanksIndexRoute,
@@ -661,6 +735,7 @@ interface DashboardLayoutRouteChildren {
   DashboardLayoutCategoryIdEditRoute: typeof DashboardLayoutCategoryIdEditRoute
   DashboardLayoutCommentIdCommentRoute: typeof DashboardLayoutCommentIdCommentRoute
   DashboardLayoutCouponIdEditRoute: typeof DashboardLayoutCouponIdEditRoute
+  DashboardLayoutCouponIdShowUserRoute: typeof DashboardLayoutCouponIdShowUserRoute
   DashboardLayoutDetailorderIdDetailorderRoute: typeof DashboardLayoutDetailorderIdDetailorderRoute
   DashboardLayoutProductsIdEditRoute: typeof DashboardLayoutProductsIdEditRoute
   DashboardLayoutProductsSlugViewdetailRoute: typeof DashboardLayoutProductsSlugViewdetailRoute
@@ -681,6 +756,7 @@ const DashboardLayoutRouteChildren: DashboardLayoutRouteChildren = {
   DashboardLayoutCategoryIdEditRoute: DashboardLayoutCategoryIdEditRoute,
   DashboardLayoutCommentIdCommentRoute: DashboardLayoutCommentIdCommentRoute,
   DashboardLayoutCouponIdEditRoute: DashboardLayoutCouponIdEditRoute,
+  DashboardLayoutCouponIdShowUserRoute: DashboardLayoutCouponIdShowUserRoute,
   DashboardLayoutDetailorderIdDetailorderRoute:
     DashboardLayoutDetailorderIdDetailorderRoute,
   DashboardLayoutProductsIdEditRoute: DashboardLayoutProductsIdEditRoute,
@@ -718,14 +794,18 @@ export interface FileRoutesByFullPath {
   '/': typeof LayoutIndexRoute
   '/$slug/detailproduct': typeof LayoutSlugDetailproductRoute
   '/$slug/quickviewProduct': typeof LayoutSlugQuickviewProductRoute
+  '/blog/text': typeof LayoutBlogTextRoute
   '/categories/$slug': typeof LayoutCategoriesSlugRoute
   '/detailblog/$slug': typeof LayoutDetailblogSlugRoute
   '/about': typeof LayoutAboutIndexRoute
-  '/account': typeof LayoutAccountIndexRoute
+  '/address': typeof LayoutAddressIndexRoute
   '/blog': typeof LayoutBlogIndexRoute
   '/cart': typeof LayoutCartIndexRoute
+  '/change_password': typeof LayoutChangepasswordIndexRoute
   '/checkout': typeof LayoutCheckoutIndexRoute
+  '/checkoutNew': typeof LayoutCheckoutNewIndexRoute
   '/orderuser': typeof LayoutOrderuserIndexRoute
+  '/profile': typeof LayoutProfileIndexRoute
   '/searchList': typeof LayoutSearchListIndexRoute
   '/shop': typeof LayoutShopIndexRoute
   '/thanks': typeof LayoutThanksIndexRoute
@@ -746,6 +826,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/category/$id/edit': typeof DashboardLayoutCategoryIdEditRoute
   '/dashboard/comment/$id/comment': typeof DashboardLayoutCommentIdCommentRoute
   '/dashboard/coupon/$id/edit': typeof DashboardLayoutCouponIdEditRoute
+  '/dashboard/coupon/$id/showUser': typeof DashboardLayoutCouponIdShowUserRoute
   '/dashboard/detailorder/$id/detailorder': typeof DashboardLayoutDetailorderIdDetailorderRoute
   '/dashboard/products/$id/edit': typeof DashboardLayoutProductsIdEditRoute
   '/dashboard/products/$slug/viewdetail': typeof DashboardLayoutProductsSlugViewdetailRoute
@@ -762,14 +843,18 @@ export interface FileRoutesByTo {
   '/': typeof LayoutIndexRoute
   '/$slug/detailproduct': typeof LayoutSlugDetailproductRoute
   '/$slug/quickviewProduct': typeof LayoutSlugQuickviewProductRoute
+  '/blog/text': typeof LayoutBlogTextRoute
   '/categories/$slug': typeof LayoutCategoriesSlugRoute
   '/detailblog/$slug': typeof LayoutDetailblogSlugRoute
   '/about': typeof LayoutAboutIndexRoute
-  '/account': typeof LayoutAccountIndexRoute
+  '/address': typeof LayoutAddressIndexRoute
   '/blog': typeof LayoutBlogIndexRoute
   '/cart': typeof LayoutCartIndexRoute
+  '/change_password': typeof LayoutChangepasswordIndexRoute
   '/checkout': typeof LayoutCheckoutIndexRoute
+  '/checkoutNew': typeof LayoutCheckoutNewIndexRoute
   '/orderuser': typeof LayoutOrderuserIndexRoute
+  '/profile': typeof LayoutProfileIndexRoute
   '/searchList': typeof LayoutSearchListIndexRoute
   '/shop': typeof LayoutShopIndexRoute
   '/thanks': typeof LayoutThanksIndexRoute
@@ -789,6 +874,7 @@ export interface FileRoutesByTo {
   '/dashboard/category/$id/edit': typeof DashboardLayoutCategoryIdEditRoute
   '/dashboard/comment/$id/comment': typeof DashboardLayoutCommentIdCommentRoute
   '/dashboard/coupon/$id/edit': typeof DashboardLayoutCouponIdEditRoute
+  '/dashboard/coupon/$id/showUser': typeof DashboardLayoutCouponIdShowUserRoute
   '/dashboard/detailorder/$id/detailorder': typeof DashboardLayoutDetailorderIdDetailorderRoute
   '/dashboard/products/$id/edit': typeof DashboardLayoutProductsIdEditRoute
   '/dashboard/products/$slug/viewdetail': typeof DashboardLayoutProductsSlugViewdetailRoute
@@ -808,14 +894,18 @@ export interface FileRoutesById {
   '/_layout/': typeof LayoutIndexRoute
   '/_layout/$slug/detailproduct': typeof LayoutSlugDetailproductRoute
   '/_layout/$slug/quickviewProduct': typeof LayoutSlugQuickviewProductRoute
+  '/_layout/blog/text': typeof LayoutBlogTextRoute
   '/_layout/categories/$slug': typeof LayoutCategoriesSlugRoute
   '/_layout/detailblog/$slug': typeof LayoutDetailblogSlugRoute
   '/_layout/about/': typeof LayoutAboutIndexRoute
-  '/_layout/account/': typeof LayoutAccountIndexRoute
+  '/_layout/address/': typeof LayoutAddressIndexRoute
   '/_layout/blog/': typeof LayoutBlogIndexRoute
   '/_layout/cart/': typeof LayoutCartIndexRoute
+  '/_layout/change_password/': typeof LayoutChangepasswordIndexRoute
   '/_layout/checkout/': typeof LayoutCheckoutIndexRoute
+  '/_layout/checkoutNew/': typeof LayoutCheckoutNewIndexRoute
   '/_layout/orderuser/': typeof LayoutOrderuserIndexRoute
+  '/_layout/profile/': typeof LayoutProfileIndexRoute
   '/_layout/searchList/': typeof LayoutSearchListIndexRoute
   '/_layout/shop/': typeof LayoutShopIndexRoute
   '/_layout/thanks/': typeof LayoutThanksIndexRoute
@@ -836,6 +926,7 @@ export interface FileRoutesById {
   '/dashboard/_layout/category/$id/edit': typeof DashboardLayoutCategoryIdEditRoute
   '/dashboard/_layout/comment/$id/comment': typeof DashboardLayoutCommentIdCommentRoute
   '/dashboard/_layout/coupon/$id/edit': typeof DashboardLayoutCouponIdEditRoute
+  '/dashboard/_layout/coupon/$id/showUser': typeof DashboardLayoutCouponIdShowUserRoute
   '/dashboard/_layout/detailorder/$id/detailorder': typeof DashboardLayoutDetailorderIdDetailorderRoute
   '/dashboard/_layout/products/$id/edit': typeof DashboardLayoutProductsIdEditRoute
   '/dashboard/_layout/products/$slug/viewdetail': typeof DashboardLayoutProductsSlugViewdetailRoute
@@ -855,14 +946,18 @@ export interface FileRouteTypes {
     | '/'
     | '/$slug/detailproduct'
     | '/$slug/quickviewProduct'
+    | '/blog/text'
     | '/categories/$slug'
     | '/detailblog/$slug'
     | '/about'
-    | '/account'
+    | '/address'
     | '/blog'
     | '/cart'
+    | '/change_password'
     | '/checkout'
+    | '/checkoutNew'
     | '/orderuser'
+    | '/profile'
     | '/searchList'
     | '/shop'
     | '/thanks'
@@ -883,6 +978,7 @@ export interface FileRouteTypes {
     | '/dashboard/category/$id/edit'
     | '/dashboard/comment/$id/comment'
     | '/dashboard/coupon/$id/edit'
+    | '/dashboard/coupon/$id/showUser'
     | '/dashboard/detailorder/$id/detailorder'
     | '/dashboard/products/$id/edit'
     | '/dashboard/products/$slug/viewdetail'
@@ -898,14 +994,18 @@ export interface FileRouteTypes {
     | '/'
     | '/$slug/detailproduct'
     | '/$slug/quickviewProduct'
+    | '/blog/text'
     | '/categories/$slug'
     | '/detailblog/$slug'
     | '/about'
-    | '/account'
+    | '/address'
     | '/blog'
     | '/cart'
+    | '/change_password'
     | '/checkout'
+    | '/checkoutNew'
     | '/orderuser'
+    | '/profile'
     | '/searchList'
     | '/shop'
     | '/thanks'
@@ -925,6 +1025,7 @@ export interface FileRouteTypes {
     | '/dashboard/category/$id/edit'
     | '/dashboard/comment/$id/comment'
     | '/dashboard/coupon/$id/edit'
+    | '/dashboard/coupon/$id/showUser'
     | '/dashboard/detailorder/$id/detailorder'
     | '/dashboard/products/$id/edit'
     | '/dashboard/products/$slug/viewdetail'
@@ -942,14 +1043,18 @@ export interface FileRouteTypes {
     | '/_layout/'
     | '/_layout/$slug/detailproduct'
     | '/_layout/$slug/quickviewProduct'
+    | '/_layout/blog/text'
     | '/_layout/categories/$slug'
     | '/_layout/detailblog/$slug'
     | '/_layout/about/'
-    | '/_layout/account/'
+    | '/_layout/address/'
     | '/_layout/blog/'
     | '/_layout/cart/'
+    | '/_layout/change_password/'
     | '/_layout/checkout/'
+    | '/_layout/checkoutNew/'
     | '/_layout/orderuser/'
+    | '/_layout/profile/'
     | '/_layout/searchList/'
     | '/_layout/shop/'
     | '/_layout/thanks/'
@@ -970,6 +1075,7 @@ export interface FileRouteTypes {
     | '/dashboard/_layout/category/$id/edit'
     | '/dashboard/_layout/comment/$id/comment'
     | '/dashboard/_layout/coupon/$id/edit'
+    | '/dashboard/_layout/coupon/$id/showUser'
     | '/dashboard/_layout/detailorder/$id/detailorder'
     | '/dashboard/_layout/products/$id/edit'
     | '/dashboard/_layout/products/$slug/viewdetail'
@@ -1023,14 +1129,18 @@ export const routeTree = rootRoute
         "/_layout/",
         "/_layout/$slug/detailproduct",
         "/_layout/$slug/quickviewProduct",
+        "/_layout/blog/text",
         "/_layout/categories/$slug",
         "/_layout/detailblog/$slug",
         "/_layout/about/",
-        "/_layout/account/",
+        "/_layout/address/",
         "/_layout/blog/",
         "/_layout/cart/",
+        "/_layout/change_password/",
         "/_layout/checkout/",
+        "/_layout/checkoutNew/",
         "/_layout/orderuser/",
+        "/_layout/profile/",
         "/_layout/searchList/",
         "/_layout/shop/",
         "/_layout/thanks/",
@@ -1079,6 +1189,7 @@ export const routeTree = rootRoute
         "/dashboard/_layout/category/$id/edit",
         "/dashboard/_layout/comment/$id/comment",
         "/dashboard/_layout/coupon/$id/edit",
+        "/dashboard/_layout/coupon/$id/showUser",
         "/dashboard/_layout/detailorder/$id/detailorder",
         "/dashboard/_layout/products/$id/edit",
         "/dashboard/_layout/products/$slug/viewdetail"
@@ -1100,6 +1211,10 @@ export const routeTree = rootRoute
       "filePath": "_layout/$slug.quickviewProduct.tsx",
       "parent": "/_layout"
     },
+    "/_layout/blog/text": {
+      "filePath": "_layout/blog/text.tsx",
+      "parent": "/_layout"
+    },
     "/_layout/categories/$slug": {
       "filePath": "_layout/categories/$slug.tsx",
       "parent": "/_layout"
@@ -1112,8 +1227,8 @@ export const routeTree = rootRoute
       "filePath": "_layout/about/index.tsx",
       "parent": "/_layout"
     },
-    "/_layout/account/": {
-      "filePath": "_layout/account/index.tsx",
+    "/_layout/address/": {
+      "filePath": "_layout/address/index.tsx",
       "parent": "/_layout"
     },
     "/_layout/blog/": {
@@ -1124,12 +1239,24 @@ export const routeTree = rootRoute
       "filePath": "_layout/cart/index.tsx",
       "parent": "/_layout"
     },
+    "/_layout/change_password/": {
+      "filePath": "_layout/change_password/index.tsx",
+      "parent": "/_layout"
+    },
     "/_layout/checkout/": {
       "filePath": "_layout/checkout/index.tsx",
       "parent": "/_layout"
     },
+    "/_layout/checkoutNew/": {
+      "filePath": "_layout/checkoutNew/index.tsx",
+      "parent": "/_layout"
+    },
     "/_layout/orderuser/": {
       "filePath": "_layout/orderuser/index.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/profile/": {
+      "filePath": "_layout/profile/index.tsx",
       "parent": "/_layout"
     },
     "/_layout/searchList/": {
@@ -1210,6 +1337,10 @@ export const routeTree = rootRoute
     },
     "/dashboard/_layout/coupon/$id/edit": {
       "filePath": "dashboard/_layout/coupon/$id.edit.tsx",
+      "parent": "/dashboard/_layout"
+    },
+    "/dashboard/_layout/coupon/$id/showUser": {
+      "filePath": "dashboard/_layout/coupon/$id.showUser.tsx",
       "parent": "/dashboard/_layout"
     },
     "/dashboard/_layout/detailorder/$id/detailorder": {

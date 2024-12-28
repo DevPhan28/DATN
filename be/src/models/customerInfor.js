@@ -14,28 +14,21 @@ const customerInfoSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  email: {
-    type: String,
-    required: true,
-  },
   city: {
     type: String,
     required: true,
   },
-  districts: {
+  district: {
     type: String,
     required: true,
   },
-  wards: {
+  ward: {
     type: String,
     required: true,
   },
   address: {
     type: String,
     required: true,
-  },
-  zipcode: {
-    type: String,
   },
   isDefault: {
     type: Boolean,
