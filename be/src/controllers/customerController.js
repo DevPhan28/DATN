@@ -1,7 +1,7 @@
 const CustomerInfo = require("../models/customerInfor");
 
 // Tạo mới khách hàng
-  const createCustomer = async (req, res) => {
+const createCustomer = async (req, res) => {
   try {
     const { userId, name, phone, city, district, ward, address, isDefault } = req.body;
 
@@ -13,8 +13,18 @@ const CustomerInfo = require("../models/customerInfor");
       });
     }
 
+    // Kiểm tra xem userId đã có khách hàng nào chưa
+    const existingCustomers = await CustomerInfo.find({ userId });
+
+    let isDefaultValue = !!isDefault; // Chuyển giá trị isDefault thành boolean
+
+    // Nếu chưa có khách hàng nào, đặt isDefault là true
+    if (existingCustomers.length === 0) {
+      isDefaultValue = true;
+    }
+
     // Nếu địa chỉ mới là mặc định, cập nhật tất cả các địa chỉ khác thành không mặc định
-    if (isDefault) {
+    if (isDefaultValue) {
       await CustomerInfo.updateMany({ userId }, { isDefault: false });
     }
 
@@ -27,7 +37,7 @@ const CustomerInfo = require("../models/customerInfor");
       district,
       ward,
       address,
-      isDefault: !!isDefault, // Đảm bảo giá trị là boolean
+      isDefault: isDefaultValue, // Sử dụng giá trị xác định ở trên
     });
 
     // Lưu thông tin địa chỉ vào cơ sở dữ liệu
@@ -48,7 +58,8 @@ const CustomerInfo = require("../models/customerInfor");
       error: error.message, // Gửi thông tin chi tiết lỗi để debug
     });
   }
-  };
+};
+
 
   const getCustomers = async (req, res) => {
     try {
