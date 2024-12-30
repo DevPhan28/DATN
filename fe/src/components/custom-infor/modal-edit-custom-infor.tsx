@@ -1,5 +1,5 @@
 import { FocusModal } from '@/components/ui/custom-focus-modal';
-import { Button, Label } from '@medusajs/ui';
+import { Button, Input, Label } from '@medusajs/ui';
 import { useState, useEffect } from 'react';
 import { toast } from '@medusajs/ui';
 import axios from 'axios';
@@ -45,6 +45,7 @@ const ModalUpdateCustomInfor = ({
     district: '',
     ward: '',
     address: '',
+    isDefault: false,
   });
 
   const { editCustomer } = useCustomerMutation();
@@ -75,6 +76,7 @@ const ModalUpdateCustomInfor = ({
         district: address.district || '',
         ward: address.ward || '',
         address: address.address || '',
+        isDefault: address.isDefault || false,
       });
 
       const selectedCity = cities.find(city => city.Name === address.city);
@@ -101,7 +103,9 @@ const ModalUpdateCustomInfor = ({
     setWards([]);
   };
 
-  const handleDistrictChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleDistrictChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const districtName = event.target.value;
     setFormData({ ...formData, district: districtName, ward: '' });
     const selectedDistrict = districts.find(
@@ -110,8 +114,22 @@ const ModalUpdateCustomInfor = ({
     setWards(selectedDistrict ? selectedDistrict.Wards : []);
   };
 
+  const handleCheckboxChange = () => {
+    setFormData({ ...formData, isDefault: !formData.isDefault });
+  };
+
   const handleUpdateAddress = async () => {
-    const { id, userId, name, phone, city, district, ward, address } = formData;
+    const {
+      id,
+      userId,
+      name,
+      phone,
+      city,
+      district,
+      ward,
+      address,
+      isDefault,
+    } = formData;
 
     if (!userId) {
       toast.error('Lỗi: Thiếu thông tin người dùng.');
@@ -134,11 +152,10 @@ const ModalUpdateCustomInfor = ({
         district,
         ward,
         address,
+        isDefault,
       });
-      toast.success('Cập nhật thông tin thành công!');
       onClose();
     } catch (error) {
-      toast.error(`Cập nhật thất bại: ${error.message}`);
     } finally {
       setIsUpdating(false);
     }
@@ -183,7 +200,7 @@ const ModalUpdateCustomInfor = ({
                 className="block w-[276px] rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900"
               >
                 <option value="">Chọn tỉnh/thành phố</option>
-                {cities.map((city) => (
+                {cities.map(city => (
                   <option key={city.Id} value={city.Name}>
                     {city.Name}
                   </option>
@@ -199,7 +216,7 @@ const ModalUpdateCustomInfor = ({
                 className="block w-[276px] rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900"
               >
                 <option value="">Chọn quận/huyện</option>
-                {districts.map((district) => (
+                {districts.map(district => (
                   <option key={district.Id} value={district.Name}>
                     {district.Name}
                   </option>
@@ -215,7 +232,7 @@ const ModalUpdateCustomInfor = ({
                 className="block w-[276px] rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900"
               >
                 <option value="">Chọn xã/phường</option>
-                {wards.map((ward) => (
+                {wards.map(ward => (
                   <option key={ward.Id} value={ward.Name}>
                     {ward.Name}
                   </option>
@@ -232,6 +249,15 @@ const ModalUpdateCustomInfor = ({
                 placeholder="Địa chỉ cụ thể"
                 className="block w-[276px] rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900"
               />
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="checkbox"
+                checked={formData.isDefault}
+                onChange={handleCheckboxChange}
+                className="mt-0.5 h-4 w-4"
+              />
+              <Label>Đặt Là Địa Chỉ Mặc Định</Label>
             </div>
           </div>
         </div>

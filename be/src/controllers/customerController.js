@@ -89,11 +89,10 @@ const createCustomer = async (req, res) => {
     }
   };
   
-
   const editCustomer = async (req, res) => {
     try {
       const { id, userId } = req.params;
-      const { name, phone, city, district, ward, address } = req.body;
+      const { name, phone, city, district, ward, address, isDefault } = req.body;
   
       if (!userId || !id) {
         return res.status(400).json({
@@ -117,29 +116,37 @@ const createCustomer = async (req, res) => {
         });
       }
   
-      // Cập nhật dữ liệu
-      customer.name = name;
-      customer.phone = phone;
-      customer.city = city;
-      customer.district = district;
-      customer.ward = ward;
-      customer.address = address;
-      await customer.save();
+      if (isDefault) {
+        await CustomerInfo.updateMany(
+          { userId },
+          { $set: { isDefault: false } }
+        );
+      }
+  
+      Object.assign(customer, { name, phone, city, district, ward, address, isDefault });
+      const updatedCustomer = await customer.save();
+  
+      const hasDefault = await CustomerInfo.findOne({ userId, isDefault: true });
+      if (!hasDefault) {
+        const firstCustomer = await CustomerInfo.findOne({ userId }).sort({ _id: 1 });
+        if (firstCustomer) {
+          firstCustomer.isDefault = true;
+          await firstCustomer.save();
+        }
+      }
   
       return res.status(200).json({
         success: true,
-        message: "Cập nhật thành công!",
-        data: customer,
+        data: updatedCustomer,
       });
     } catch (error) {
-      console.error("Lỗi cập nhật khách hàng:", error);
+      console.error("Lỗi cập nhật địa chỉ:", error.message);
       return res.status(500).json({
         success: false,
-        message: "Đã xảy ra lỗi!",
+        message: "Đã xảy ra lỗi trong quá trình xử lý!",
       });
     }
   };
-  
   
   const getCustomerById = async (req, res) => {
     try {

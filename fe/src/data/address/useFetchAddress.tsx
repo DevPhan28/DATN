@@ -1,8 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import instance from '@/api/axiosIntance';
-import { QUERY_KEY } from '../stores/key';
 
-// Hàm fetch danh mục từ API, sử dụng userId trong URL
 export const fetchAddress = async (userId: string) => {
   try {
     console.log('Fetching customer data for userId:', userId);
@@ -30,7 +28,7 @@ export const fetchAddress = async (userId: string) => {
 
 export const useFetchAddress = (userId: string) => {
   return useQuery({
-    queryKey: [QUERY_KEY.FETCH_CATEGORIES, userId],
+    queryKey: ['customers'],
     queryFn: () => fetchAddress(userId),
     enabled: !!userId,
   });
