@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { toast } from '@medusajs/ui';
 import axios from 'axios';
 import useCustomerMutation from '@/data/address/useAddressMutation';
+import { useForm } from 'react-hook-form';
 
 interface Ward {
   Id: string;
@@ -69,15 +70,19 @@ const ModalCreateCustomInfor = ({
   const handleCityChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const cityId = event.target.value;
     setFormData({ ...formData, city: cityId, district: '', ward: '' });
-    const selectedCity = cities.find((city) => city.Id === cityId);
+    const selectedCity = cities.find(city => city.Id === cityId);
     setDistricts(selectedCity ? selectedCity.Districts : []);
     setWards([]);
   };
 
-  const handleDistrictChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleDistrictChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const districtId = event.target.value;
     setFormData({ ...formData, district: districtId, ward: '' });
-    const selectedDistrict = districts.find((district) => district.Id === districtId);
+    const selectedDistrict = districts.find(
+      district => district.Id === districtId
+    );
     setWards(selectedDistrict ? selectedDistrict.Wards : []);
   };
 
@@ -108,7 +113,7 @@ const ModalCreateCustomInfor = ({
     const districtName = getDistrictName(city, district);
     const wardName = getWardName(city, district, ward);
 
-    createCustomer.mutate({
+    createCustomer.mutateAsync({
       userId,
       name,
       phone,
@@ -117,7 +122,7 @@ const ModalCreateCustomInfor = ({
       ward: wardName,
       address,
     });
-
+    resetForm();
     onClose();
   };
 
@@ -160,7 +165,7 @@ const ModalCreateCustomInfor = ({
                 className="block w-[276px] rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900"
               >
                 <option value="">Chọn tỉnh/thành phố</option>
-                {cities.map((city) => (
+                {cities.map(city => (
                   <option key={city.Id} value={city.Id}>
                     {city.Name}
                   </option>
@@ -176,7 +181,7 @@ const ModalCreateCustomInfor = ({
                 className="block w-[276px] rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900"
               >
                 <option value="">Chọn quận/huyện</option>
-                {districts.map((district) => (
+                {districts.map(district => (
                   <option key={district.Id} value={district.Id}>
                     {district.Name}
                   </option>
@@ -192,7 +197,7 @@ const ModalCreateCustomInfor = ({
                 className="block w-[276px] rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900"
               >
                 <option value="">Chọn xã/phường</option>
-                {wards.map((ward) => (
+                {wards.map(ward => (
                   <option key={ward.Id} value={ward.Id}>
                     {ward.Name}
                   </option>
