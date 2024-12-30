@@ -90,8 +90,6 @@ const Header = () => {
     getSelectedItems,
   } = useCart(userId);
 
-
-
   // if (!cartData || !cartData.products || cartData.products.length === 0) {
   //   return <ErrorCart />;
   // }
@@ -130,9 +128,9 @@ const Header = () => {
                   </Link>
                 </li>
                 <li className="navigation__item">
-                  <a href="" className="navigation__link">
+                  <Link to="/shop" className="navigation__link">
                     Cửa hàng
-                  </a>
+                  </Link>
                 </li>
                 <li className="navigation__item">
                   <a href="#" className="navigation__link">
@@ -140,9 +138,9 @@ const Header = () => {
                   </a>
                 </li>
                 <li className="navigation__item">
-                  <a href="#" className="navigation__link">
+                  <Link to="/blog" className="navigation__link">
                     Blog
-                  </a>
+                  </Link>
                 </li>
                 <li className="navigation__item">
                   <a href="about.html" className="navigation__link">
@@ -261,9 +259,6 @@ const Header = () => {
                 </a>
               </div>
 
-              <a className="header-tools__item" href="account_wishlist.html">
-                <i className="fa-solid fa-heart text-xl"></i>
-              </a>
               <a
                 href="#"
                 className="header-tools__item header-tools__cart js-open-aside"
@@ -304,13 +299,12 @@ const Header = () => {
                     <ul className="absolute top-10 w-96 transform cursor-pointer rounded-lg transition-all duration-300 ease-in-out">
                       {isLoggedIn ? (
                         <>
-
                           <div className="flex flex-col items-center justify-center px-3 py-4">
                             <button className="js-close-aside btn-close-lg btn-close-aside ms-auto mt-[-50px]" />
                             <img
                               src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg"
                               alt=""
-                              className="h-16 w-16 rounded-full border-2 border-gray-200 object-cover mt-5"
+                              className="mt-5 h-16 w-16 rounded-full border-2 border-gray-200 object-cover"
                             />
                             <div className="mt-2 flex items-center gap-2">
                               <div className="text-xl text-gray-700">
@@ -341,9 +335,9 @@ const Header = () => {
                           </li>
                         </>
                       ) : (
-                        <div className="w-full ">
-                          <button className="js-close-aside btn-close-lg btn-close-aside ms-auto  flex justify-end" />
-                          <div className='space-y-4 p-4 text-center'>
+                        <div className="w-full">
+                          <button className="js-close-aside btn-close-lg btn-close-aside ms-auto flex justify-end" />
+                          <div className="space-y-4 p-4 text-center">
                             <Link to="/login">
                               <button className="btn btn-primary d-block mt-3 w-full rounded-lg text-lg transition-colors duration-300">
                                 Đăng nhập
@@ -358,7 +352,6 @@ const Header = () => {
                                 Đăng ký
                               </Link>
                             </div>
-
                           </div>
                         </div>
                       )}
@@ -476,10 +469,7 @@ const Header = () => {
             <Link to="/cart" className="btn btn-light d-block mt-3">
               Xem giỏ hàng
             </Link>
-            <Link
-              to="/checkoutNew"
-              className="btn btn-primary d-block mt-3"
-            >
+            <Link to="/checkoutNew" className="btn btn-primary d-block mt-3">
               Thanh Toán
             </Link>
           </div>

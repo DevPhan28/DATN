@@ -100,27 +100,25 @@ function Shop() {
   };
   return (
     <div>
-      <div className=''>
-        <div className="main-content w-full h-48 flex flex-col items-center justify-center ">
+      <div className="">
+        <div className="main-content flex h-48 w-full flex-col items-center justify-center">
           <div className="text-content">
-            <div className="text-4xl font-semibold text-center">
-              Cửa hàng
-            </div>
-            <div className="link flex items-center justify-center gap-1 caption1 mt-3">
+            <div className="text-center text-4xl font-semibold">Cửa hàng</div>
+            <div className="link caption1 mt-3 flex items-center justify-center gap-1">
               <div className="flex items-center justify-center">
-                <a href="/">Trang chủ</a>
+                <Link to="/">Trang chủ</Link>
                 <ChevronRightMini />
               </div>
-              <div className="text-gray-500 capitalize">
+              <div className="capitalize text-gray-500">
                 <a href="#">Cửa hàng</a>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <div className="bg-gray-50 pt-5 py-10">
-        <div className="max-w-7xl m-auto mt-10 xl:p-0 lg:p-5 md:p-5 sm:p-5 bg-white shadow">
-          <div className="mb-4 flex flex-wrap items-center justify-between sm:mb-8 mt-5 p-4">
+      <div className="bg-gray-50 py-10 pt-5">
+        <div className="m-auto mt-10 max-w-7xl bg-white shadow sm:p-5 md:p-5 lg:p-5 xl:p-0">
+          <div className="mb-4 mt-5 flex flex-wrap items-center justify-between p-4 sm:mb-8">
             <div className="flex flex-wrap space-x-4 sm:space-x-8">
               <button
                 onClick={() => setSelectedCategory(null)}
@@ -184,7 +182,7 @@ function Shop() {
 
           {/* Hiển thị danh sách sản phẩm */}
           {displayedProducts.length > 0 ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-8 md:grid-cols-3 lg:grid-cols-4 p-4">
+            <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 sm:gap-8 md:grid-cols-3 lg:grid-cols-4">
               {displayedProducts.map((product: Product) => (
                 <div
                   key={product._id}
@@ -223,6 +221,5 @@ function Shop() {
         </div>
       </div>
     </div>
-
   );
 }

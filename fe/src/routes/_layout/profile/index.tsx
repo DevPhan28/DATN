@@ -142,7 +142,9 @@ function ProfileUser() {
           <div className="rounded-lg bg-white p-6">
             <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
               <div>
-                <label className="block font-medium text-gray-700">Tên</label>
+                <label className="block font-medium text-gray-700">
+                  Tên người dùng
+                </label>
                 <Input
                   type="text"
                   {...register('username', { required: 'Tên là bắt buộc' })}

@@ -49,7 +49,7 @@ const signup = async (req, res) => {
     if (existingUsername) {
       return res.status(400).json({
         field: "username",
-        message: "Username đã được sử dụng",
+        message: "Tên người dùng đã được sử dụng",
       });
     }
 
