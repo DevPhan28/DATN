@@ -1,8 +1,9 @@
 import CurrencyVND from '@/components/config/vnd';
+import ModalCreateCustomInfor from '@/components/custom-infor/modal-create-custom-infor';
 import { useFetchAddressById } from '@/data/address/useFetchAddressByid';
 import useCartMutation from '@/data/cart/useCartMutation';
 import useCheckoutMutation from '@/data/oder/useOderMutation';
-import { toast } from '@medusajs/ui';
+import { Badge, toast } from '@medusajs/ui';
 import { createFileRoute, useLocation } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
@@ -13,6 +14,18 @@ export const Route = createFileRoute('/_layout/checkoutNew/')({
 function NewCheckout() {
   const [userId, setUserId] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState('online');
+  const [currentAddress, setCurrentAddress] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openCreateModal = () => {
+    setCurrentAddress(null);
+    setIsModalOpen(true);
+  };
+
+  const closeCreateModal = () => {
+    setIsModalOpen(false);
+    refetch();
+  };
 
   const location = useLocation();
 
@@ -106,20 +119,32 @@ function NewCheckout() {
                   <button className="text-sm text-blue-500">Thay đổi</button>
                 </div>
                 <div className="mt-2 text-sm">
-                  <p>
-                    <strong>Họ tên:</strong> {data?.data.name}
-                  </p>
-                  <p>
-                    <strong>Số điện thoại:</strong> {data?.data.phone}
-                  </p>
-                  <p>
-                    <strong>Địa chỉ:</strong> {data?.data.address}, Xã{' '}
-                    {data?.data.ward}, Huyện {data?.data.district}, Thành phố{' '}
-                    {data?.data.city}
-                  </p>
-                  <button className="mt-2 text-sm text-blue-500">
-                    Mặc định
-                  </button>
+                  {data?.data ? (
+                    <>
+                      <p>
+                        <strong>Họ tên:</strong> {data?.data.name}
+                      </p>
+                      <p>
+                        <strong>Số điện thoại:</strong> {data?.data.phone}
+                      </p>
+                      <p>
+                        <strong>Địa chỉ:</strong> {data?.data.address}, Xã{' '}
+                        {data?.data.ward}, Huyện {data?.data.district}, Thành
+                        phố {data?.data.city}
+                      </p>
+                      <Badge className="mt-3" color="red">
+                        Mặc Định
+                      </Badge>
+                    </>
+                  ) : (
+                    <p className="cursor-pointer" onClick={openCreateModal}>
+                      Thêm địa chỉ
+                    </p>
+                  )}
+                  <ModalCreateCustomInfor
+                    isOpen={isModalOpen}
+                    onClose={closeCreateModal}
+                  />
                 </div>
               </div>
 
@@ -209,20 +234,21 @@ function NewCheckout() {
                   <button
                     type="button"
                     onClick={() => handlePaymentMethodChange('cod')}
-                    className={`w-full rounded-lg border p-3 ${paymentMethod === 'cod' ? 'border-red-500 bg-red-100' : ''} focus:outline-none sm:w-auto`}
+                    className={`flex w-full justify-between rounded-lg border p-3 ${paymentMethod === 'cod' ? 'border-red-500 bg-red-100' : ''} focus:outline-none`}
                   >
-                    Thanh toán khi nhận hàng (COD)
+                    Thanh toán khi nhận hàng
+                    <p>(COD)</p>
                   </button>
                   <button
                     type="button"
                     onClick={() => handlePaymentMethodChange('online')}
-                    className={`flex w-full rounded-lg border p-3 ${paymentMethod === 'online' ? 'border-red-500 bg-red-100' : ''} focus:outline-none sm:w-auto`}
+                    className={`flex w-full justify-between rounded-lg border p-3 ${paymentMethod === 'online' ? 'border-red-500 bg-red-100' : ''} focus:outline-none`}
                   >
                     Thanh toán qua{' '}
                     <img
                       className="ml-2 mt-1 w-14"
                       src="./zalo_pay.png"
-                      alt=""
+                      alt="Zalo Pay"
                     />
                   </button>
                 </div>
