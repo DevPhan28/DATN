@@ -1,13 +1,14 @@
 import CustomUser from '@/components/useroder/custom-menu';
 import { createFileRoute } from '@tanstack/react-router';
 import { ChevronRightMini, Plus } from '@medusajs/icons';
-import { Badge, Button } from '@medusajs/ui';
+import { Badge, Button, usePrompt } from '@medusajs/ui';
 import ModalCreateCustomInfor from '@/components/custom-infor/modal-create-custom-infor';
 import { useEffect, useState } from 'react';
 import { useFetchAddress } from '@/data/address/useFetchAddress';
 import useCustomerMutation from '@/data/address/useAddressMutation';
 import { toast } from '@medusajs/ui';
 import ModalUpdateCustomInfor from '@/components/custom-infor/modal-edit-custom-infor';
+import { queryClient } from '@/main';
 
 export const Route = createFileRoute('/_layout/address/')({
   component: Address,
@@ -39,7 +40,7 @@ function Address() {
     refetch();
   };
 
-  const openUpdateModal = (address) => {
+  const openUpdateModal = address => {
     setCurrentAddress(address);
     setIsUpdateModalOpen(true);
   };
@@ -49,17 +50,19 @@ function Address() {
     refetch();
   };
 
-  const handleDelete = async (id) => {
-    try {
-      await deleteCustomer.mutateAsync({ id });
-      toast.success('Xóa địa chỉ thành công!');
-      refetch();
-    } catch (error) {
-      toast.error(`Lỗi khi xóa địa chỉ: ${error.message}`);
+  const dialog = usePrompt();
+
+  const deleteEntity = async (id: string) => {
+    const userHasConfirmed = await dialog({
+      title: 'Xoá Địa Chỉ',
+      description: 'Bạn có chắc chắn muốn xoá địa chỉ này ?',
+    });
+    if (userHasConfirmed) {
+      await deleteCustomer.mutate({ id });
+      queryClient.invalidateQueries(['cus']);
     }
   };
 
-  // Sắp xếp địa chỉ sao cho địa chỉ mặc định đứng đầu
   const sortedAddresses = data?.data.sort((a, b) =>
     a.isDefault ? -1 : b.isDefault ? 1 : 0
   );
@@ -108,12 +111,10 @@ function Address() {
             )}
           </div>
           {isLoading ? (
-            <div>Đang tải...</div>
-          ) : error ? (
-            <div>Có lỗi xảy ra khi tải địa chỉ!</div>
+            <div>Bạn chưa có địa chỉ nào !</div>
           ) : (
             <div>
-              {sortedAddresses?.map((address) => (
+              {sortedAddresses?.map(address => (
                 <div
                   key={address.id}
                   className="mb-2 justify-start rounded-lg border-b bg-white shadow sm:space-x-0"
@@ -138,7 +139,7 @@ function Address() {
                       </p>
                       <p
                         className="cursor-pointer text-red-500"
-                        onClick={() => handleDelete(address._id)}
+                        onClick={() => deleteEntity(address._id)}
                       >
                         Xoá
                       </p>
