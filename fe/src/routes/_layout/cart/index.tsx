@@ -50,7 +50,7 @@ function Cart() {
       return;
     }
     navigate({
-      to: '/checkout',
+      to: '/checkoutNew',
       state: { selectedItems },
     });
   };

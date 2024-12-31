@@ -122,7 +122,6 @@ const ModalCreateCustomInfor = ({
       ward: wardName,
       address,
     });
-    resetForm();
     onClose();
   };
 
