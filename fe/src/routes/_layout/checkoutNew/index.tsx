@@ -3,9 +3,12 @@ import ModalCreateCustomInfor from '@/components/custom-infor/modal-create-custo
 import { useFetchAddressById } from '@/data/address/useFetchAddressByid';
 import useCartMutation from '@/data/cart/useCartMutation';
 import useCheckoutMutation from '@/data/oder/useOderMutation';
+import { useFetchAvailableCoupons } from '@/data/coupon/useCouponList';
+import instance from '@/api/axiosIntance';
 import { Badge, toast } from '@medusajs/ui';
 import { createFileRoute, useLocation } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
+import VoucherModal from '@/components/VoucherModal';
 
 export const Route = createFileRoute('/_layout/checkoutNew/')({
   component: NewCheckout,
@@ -17,21 +20,14 @@ function NewCheckout() {
   const [currentAddress, setCurrentAddress] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const openCreateModal = () => {
-    setCurrentAddress(null);
-    setIsModalOpen(true);
-  };
-
-  const closeCreateModal = () => {
-    setIsModalOpen(false);
-    refetch();
-  };
+  const [selectedCoupon, setSelectedCoupon] = useState(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [calculatedShippingFee, setCalculatedShippingFee] = useState(0);
+  const [shippingMessageDisplay, setShippingMessageDisplay] = useState('');
+  const [isVoucherModalOpen, setVoucherModalOpen] = useState(false);
+  const [isCouponFreeShipping, setIsCouponFreeShipping] = useState(false);
 
   const location = useLocation();
-
-  const handlePaymentMethodChange = method => {
-    setPaymentMethod(method);
-  };
   const selectedItems = Array.isArray(location.state?.selectedItems)
     ? location.state.selectedItems
     : [];
@@ -44,19 +40,95 @@ function NewCheckout() {
     (acc, item) => acc + item.price * item.quantity,
     0
   );
+
+  const openCreateModal = () => {
+    setCurrentAddress(null);
+    setIsModalOpen(true);
+  };
+
+  const closeCreateModal = () => {
+    setIsModalOpen(false);
+    refetch();
+  };
+
+  const handlePaymentMethodChange = method => {
+    setPaymentMethod(method);
+  };
+
   useEffect(() => {
     const storedUserId = localStorage.getItem('userId');
     if (storedUserId) {
       setUserId(storedUserId);
     }
   }, []);
+
   const { data, isLoading, error, refetch } = useFetchAddressById(userId);
 
   const { createOrder } = useCheckoutMutation();
   const { deleteItemFromCart } = useCartMutation();
-  const handleSubmit = async (e: any) => {
+
+  const {
+    data: availableCoupons,
+    isLoading: isCouponsLoading,
+  } = useFetchAvailableCoupons(totalAmount, userId, selectedCoupon?.code);
+
+  const handleCouponChange = (coupon) => {
+    if (!coupon || !coupon.canApply) {
+      toast.error(coupon?.message || "Mã giảm giá không hợp lệ.");
+      setSelectedCoupon(null);
+      setDiscountAmount(0);
+      setIsCouponFreeShipping(false);
+      return;
+    }
+
+    setSelectedCoupon(coupon);
+    setDiscountAmount(
+      coupon.isFreeShipping
+        ? 0
+        : Math.min(
+          (coupon.discount / 100) * totalAmount,
+          coupon.maxDiscountAmount || Infinity
+        )
+    );
+    setIsCouponFreeShipping(coupon.isFreeShipping);
+  };
+
+  const calculateShipping = async () => {
+    try {
+      const totalWeight = selectedItems.reduce(
+        (acc, item) => acc + (item.weight || 0) * item.quantity,
+        0
+      );
+
+      const response = await instance.post('/calculate-shipping', {
+        weight: totalWeight,
+        address: {
+          district: data?.data?.district,
+        },
+        orderValue: totalAmount,
+      });
+
+      const fee = response.data.shippingFee;
+      setCalculatedShippingFee(isCouponFreeShipping ? 0 : fee);
+      setShippingMessageDisplay(
+        isCouponFreeShipping || fee === 0
+          ? 'Miễn phí vận chuyển'
+          : <CurrencyVND amount={fee} />
+      );
+    } catch (error) {
+      console.error('Error calculating shipping fee:', error);
+      setShippingMessageDisplay('Không thể tính phí vận chuyển');
+    }
+  };
+
+  useEffect(() => {
+    if (data?.data?.district) {
+      calculateShipping();
+    }
+  }, [data, totalAmount, isCouponFreeShipping]);
+
+  const handleSubmit = async e => {
     e.preventDefault();
-    const userId = localStorage.getItem('userId');
 
     const items = Array.isArray(selectedItems) ? selectedItems : [];
     const variantIds = items.map(item => item.variantId);
@@ -83,19 +155,20 @@ function NewCheckout() {
       paymentMethod,
       paymentStatus: 'pending',
       note: '',
-      totalPrice: totalAmount,
-      couponCode: 0,
-      shippingMessageDisplay: 0,
-      discount: 0,
+      totalPrice: totalAmount - discountAmount + calculatedShippingFee,
+      couponCode: selectedCoupon ? selectedCoupon.code : null,
+      shippingMessageDisplay,
+      discount: discountAmount,
+
     };
 
     try {
       await createOrder.mutateAsync(formData);
       await deleteItemFromCart.mutateAsync({
         userId: userId || '',
-        variantIds: variantIds,
+        variantIds,
       });
-      toast.success('Order placed successfully');
+      toast.success('Đặt hàng thành công!');
     } catch (error) {
       toast.error('Có lỗi xảy ra trong quá trình thanh toán');
       console.error('Error during checkout process:', error);
@@ -116,7 +189,13 @@ function NewCheckout() {
               <div className="rounded bg-white p-4 shadow">
                 <div className="flex items-center justify-between">
                   <h2 className="text-lg font-medium">Địa chỉ nhận hàng</h2>
-                  <button className="text-sm text-blue-500">Thay đổi</button>
+                  <button
+                    type="button"
+                    className="text-sm text-blue-500"
+                    onClick={openCreateModal}
+                  >
+                    Thay đổi
+                  </button>
                 </div>
                 <div className="mt-2 text-sm">
                   {data?.data ? (
@@ -151,7 +230,10 @@ function NewCheckout() {
               <div className="rounded bg-white p-4 shadow">
                 <h2 className="mb-4 text-lg font-medium">Sản phẩm</h2>
                 {selectedItems.map(product => (
-                  <div className="mb-4 flex items-center border-b pb-4">
+                  <div
+                    className="mb-4 flex items-center border-b pb-4"
+                    key={product.productId}
+                  >
                     <img
                       src={product.image}
                       alt={product.name}
@@ -192,13 +274,20 @@ function NewCheckout() {
                   </div>
                   <div className="flex justify-between">
                     <span>Phí vận chuyển</span>
-                    <span>0 đ</span>
+                    <span>{shippingMessageDisplay}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Giảm giá</span>
+                    <span>
+                      <CurrencyVND amount={discountAmount} />
+                    </span>
                   </div>
                   <div className="flex justify-between font-medium">
                     <span>Tổng thanh toán:</span>
                     <span className="text-red-500">
-                      {' '}
-                      <CurrencyVND amount={totalAmount} />
+                      <CurrencyVND
+                        amount={totalAmount - discountAmount + calculatedShippingFee}
+                      />
                     </span>
                   </div>
                 </div>
@@ -211,10 +300,28 @@ function NewCheckout() {
                     type="text"
                     className="flex-grow rounded-l border p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Nhập mã giảm giá"
+                    value={selectedCoupon?.code || null}
                   ></input>
-                  <button className="rounded-r bg-orange-500 px-4 text-white hover:bg-orange-600">
+                  <button
+                    type="button"
+                    className="rounded-r bg-orange-500 px-4 text-white hover:bg-orange-600"
+                    onClick={() => setVoucherModalOpen(true)}
+                  >
                     Áp dụng
                   </button>
+                  <VoucherModal
+                    isOpen={isVoucherModalOpen}
+                    onClose={() => setVoucherModalOpen(false)}
+                    onApplyCoupon={(coupon) => {
+                      setSelectedCoupon(coupon); // Cập nhật mã giảm giá đã chọn
+                      handleCouponChange(coupon); // Xử lý logic mã giảm giá
+                      setVoucherModalOpen(false); // Đóng modal
+                    }}
+                    totalAmount={totalAmount}
+                    userId={userId}
+                    code={selectedCoupon?.code || null}
+                  />
+
                 </div>
               </div>
 
@@ -225,7 +332,7 @@ function NewCheckout() {
                   placeholder="Thêm ghi chú..."
                 ></textarea>
               </div>
-              {/* Phương thức thanh toán */}
+
               <div className="rounded bg-white p-4 shadow">
                 <p className="mb-3 font-medium text-gray-700">
                   Phương thức thanh toán
@@ -257,7 +364,10 @@ function NewCheckout() {
                   Nhấn "Đặt hàng" đồng nghĩa với việc bạn đồng ý tuân theo Điều
                   khoản của FASHIONZONE
                 </p>
-                <button className="mt-5 w-full rounded-lg bg-orange-500 py-2 font-semibold text-white transition hover:bg-orange-600">
+                <button
+                  type="submit"
+                  className="mt-5 w-full rounded-lg bg-orange-500 py-2 font-semibold text-white transition hover:bg-orange-600"
+                >
                   Đặt hàng
                 </button>
               </div>

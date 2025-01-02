@@ -4,7 +4,7 @@ import instance from '@/api/axiosIntance';
 export const fetchAddressById = async (userId: string) => {
   try {
     console.log('Fetching customer data for userId:', userId);
-    const res = await instance.get(`/customers/${userId}`);
+    const res = await instance.get(`/create-customer/${userId}`);
 
     console.log('Response from server:', res);
 

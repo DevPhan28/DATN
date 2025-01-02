@@ -91,6 +91,7 @@ const OrderSchema = new mongoose.Schema(
     note: String,
     shippingMessageDisplay: { type: Object },
     discount: { type: String },
+    couponCode: { type: String },
     statusHistory: { type: [String], default: [] },
     receivedAt: Date,
     createdAt: { type: Date, default: Date.now },

@@ -79,33 +79,39 @@ export const fetchAvailableCoupons = async (
 };
 
 // Hook `useFetchAvailableCoupons` để lấy danh sách mã giảm giá hoặc áp dụng mã cụ thể
+// Hook sử dụng để fetch danh sách mã giảm giá khả dụng
 export const useFetchAvailableCoupons = (
   orderAmount: number,
   userId: string,
-  code?: string // Thêm tham số code không bắt buộc
+  code?: string // Tham số code không bắt buộc
 ) => {
   return useQuery({
-    queryKey: ['availableCoupons', orderAmount, userId, code], // Thêm code vào queryKey nếu có
-    queryFn: () => fetchAvailableCoupons(orderAmount, userId, code),
-    enabled: !!orderAmount && !!userId, // Kích hoạt khi orderAmount và userId tồn tại
+    queryKey: ['availableCoupons', orderAmount, userId, code], // Bao gồm code vào queryKey nếu có
+    queryFn: () => {
+      if (!orderAmount || !userId) {
+        throw new Error('orderAmount và userId là bắt buộc');
+      }
+      return fetchAvailableCoupons(orderAmount, userId, code);
+    },
+    enabled: !!orderAmount && !!userId, // Chỉ kích hoạt nếu orderAmount và userId tồn tại
     onError: (error) => {
-      console.error('Failed to fetch available coupons:', error);
+      console.error('Không thể tải mã giảm giá khả dụng:', error);
     },
   });
 };
 
-
+// Hàm fetch người dùng đã sử dụng mã giảm giá cụ thể
 export const fetchCouponUsers = async (couponId: string): Promise<User[]> => {
   try {
     const res = await instance.get<{ users: User[] }>(`/coupon/${couponId}/users`);
 
     if (res.status !== 200) {
-      throw new Error(`Error fetching coupon users - status: ${res.status}`);
+      throw new Error(`Không thể tải người dùng của mã giảm giá - trạng thái: ${res.status}`);
     }
 
     return res.data.users;
   } catch (error: any) {
-    console.error('Error fetching coupon users:', error.message);
-    throw new Error('Failed to fetch coupon users');
+    console.error('Lỗi khi tải người dùng của mã giảm giá:', error.message);
+    throw new Error('Không thể tải người dùng của mã giảm giá');
   }
 };

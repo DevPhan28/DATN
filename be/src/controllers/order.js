@@ -9,6 +9,7 @@ const axios = require("axios");
 require("dotenv").config();
 const { config, order2 } = require("../zalo_pay/config");
 const cron = require('node-cron');
+const Coupon = require("../models/coupon");
 
 const ZALOPAY_ID_APP = process.env.ZALOPAY_ID_APP;
 console.log("🚀 =====  ZALOPAY_ID_APP:", ZALOPAY_ID_APP);
@@ -20,7 +21,7 @@ console.log("🚀 ===== ZALOPAY_ENDPOINT:", ZALOPAY_ENDPOINT);
 const createOrder = async (req, res) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { userId, items, totalPrice, customerInfo, paymentMethod, shippingMessageDisplay , discount } = req.body;
+      const { userId, items, totalPrice, customerInfo, paymentMethod, shippingMessageDisplay , discount, couponCode } = req.body;
 
       const order = await Order.create({
         userId,
@@ -62,7 +63,20 @@ const createOrder = async (req, res) => {
         
       }
 
-      Mail.sendOrderConfirmation(customerInfo.email, order);
+      if (couponCode) {
+        const coupon = await Coupon.findOne({ code: couponCode });
+        if (!coupon) {
+          return res.status(400).json({ error: "Invalid coupon code" });
+        }
+      
+        if (!coupon.isActive || coupon.expirationDate < new Date()) {
+          return res.status(400).json({ error: "Coupon has expired or is inactive" });
+        }
+      
+        coupon.usageCount += 1;
+        coupon.usedBy.push(userId);
+        await coupon.save();
+      }          
 
       if (paymentMethod === "cod") {
         return res.status(200).json({ 

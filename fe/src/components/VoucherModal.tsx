@@ -1,81 +1,79 @@
 import { useFetchAvailableCoupons } from '@/data/coupon/useCouponList';
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CurrencyVND from './config/vnd';
+import { FocusModal } from '@/components/ui/custom-focus-modal';
 
 const VoucherModal = ({ isOpen, onClose, onApplyCoupon, totalAmount, userId, code }) => {
   const { data: availableCoupons, error, isLoading } = useFetchAvailableCoupons(totalAmount, userId, code);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
 
-  if (!isOpen) return null;
-
-  // Đảm bảo dữ liệu `availableCoupons` luôn là mảng
-  const coupons = Array.isArray(availableCoupons) ? availableCoupons : [];
-
+  // Xử lý chọn/bỏ chọn mã giảm giá
   const handleCouponSelect = (coupon) => {
-    if (coupon.canApply) {
-      setSelectedCoupon(coupon);
+    if (selectedCoupon?.code === coupon.code) {
+      setSelectedCoupon(null); // Bỏ chọn nếu mã đã được chọn
+    } else if (coupon.canApply) {
+      setSelectedCoupon(coupon); // Chọn mã mới
     }
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white rounded-lg w-full max-w-lg p-6 space-y-4 shadow-lg">
-        <h2 className="text-xl font-semibold text-gray-800 text-center">Chọn Voucher</h2>
+    <FocusModal open={isOpen} onOpenChange={onClose}>
+      <FocusModal.Content className="m-auto h-fit max-h-[80%] w-[calc(100%-24px)] max-w-[650px] overflow-visible">
+        <FocusModal.Header className="flex flex-row-reverse px-8 py-6">
+          <p className="font-semibold">Chọn Voucher</p>
+        </FocusModal.Header>
 
-        {/* Vùng hiển thị danh sách mã giảm giá */}
-        <div className="overflow-y-auto max-h-64">
-          {isLoading ? (
-            <p className="text-center text-gray-600">Đang tải mã giảm giá...</p>
-          ) : error ? (
-            <p className="text-center text-red-500">Lỗi tải dữ liệu mã giảm giá</p>
-          ) : coupons.length > 0 ? (
-            coupons.map((coupon) => (
-              <div
-                key={coupon.code}
-                className={`flex items-center space-x-3 p-3 border rounded-lg mb-2 cursor-pointer ${
-                  coupon.canApply ? 'hover:bg-gray-100' : 'bg-gray-200 cursor-not-allowed'
-                }`}
-                onClick={() => handleCouponSelect(coupon)}
-              >
-                <input
-                  type="radio"
-                  id={coupon.code}
-                  name="voucher"
-                  value={coupon.code}
-                  checked={selectedCoupon?.code === coupon.code}
-                  onChange={() => handleCouponSelect(coupon)}
-                  className="form-radio text-red-500"
-                  disabled={!coupon.canApply} // Chặn chọn mã không hợp lệ
-                />
-                <label htmlFor={coupon.code} className="flex-1">
-                  <p className="font-medium text-gray-700">
-                    {coupon.isFreeShipping
-                      ? 'Miễn phí vận chuyển'
-                      : `Giảm ${coupon.discount || 0}% (Tối đa  ${coupon.maxDiscountAmount || 0} đ)`}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    Điều kiện: Đơn tối thiểu <CurrencyVND amount={coupon.minOrder || 0}/> {}
-                  </p>
-                  {coupon.applicableDiscount > 0 && coupon.canApply && (
-                    <p className="text-sm text-green-500">
-                      Áp dụng giảm: <CurrencyVND amount={coupon.applicableDiscount}/> 
+        <div className="flex h-full flex-col justify-between overflow-y-auto p-8">
+          <div className="overflow-y-auto max-h-64">
+            {isLoading ? (
+              <p className="text-center text-gray-600">Đang tải mã giảm giá...</p>
+            ) : error ? (
+              <p className="text-center text-red-500">Lỗi tải dữ liệu mã giảm giá</p>
+            ) : Array.isArray(availableCoupons) && availableCoupons.length > 0 ? (
+              availableCoupons.map((coupon) => (
+                <div
+                  key={coupon.code}
+                  className={`flex items-center space-x-3 p-3 border rounded-lg mb-2 ${
+                    coupon.canApply ? 'hover:bg-gray-100' : 'bg-gray-200 cursor-not-allowed'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    id={coupon.code}
+                    name="voucher"
+                    value={coupon.code}
+                    checked={selectedCoupon?.code === coupon.code}
+                    onChange={() => handleCouponSelect(coupon)}
+                    className="form-checkbox text-red-500"
+                    disabled={!coupon.canApply}
+                  />
+                  <label htmlFor={coupon.code} className="flex-1">
+                    <p className="font-medium text-gray-700">
+                      {coupon.isFreeShipping
+                        ? 'Miễn phí vận chuyển'
+                        : `Giảm ${coupon.discount || 0}% (Tối đa ${coupon.maxDiscountAmount || 0} đ)`}
                     </p>
-                  )}
-                  {!coupon.canApply && (
-                    <p className="text-xs text-red-500">
-                      Không đủ điều kiện: {coupon.message}
+                    <p className="text-sm text-gray-500">
+                      Điều kiện: Đơn tối thiểu <CurrencyVND amount={coupon.minOrder || 0} />
                     </p>
-                  )}
-                </label>
-              </div>
-            ))
-          ) : (
-            <p className="text-center text-gray-600">Không có mã giảm giá nào</p>
-          )}
+                    {coupon.applicableDiscount > 0 && coupon.canApply && (
+                      <p className="text-sm text-green-500">
+                        Áp dụng giảm: <CurrencyVND amount={coupon.applicableDiscount} />
+                      </p>
+                    )}
+                    {!coupon.canApply && (
+                      <p className="text-xs text-red-500">{coupon.message}</p>
+                    )}
+                  </label>
+                </div>
+              ))
+            ) : (
+              <p className="text-center text-gray-600">Không có mã giảm giá nào</p>
+            )}
+          </div>
         </div>
 
-        {/* Vùng nút thao tác */}
-        <div className="flex justify-between space-x-4">
+        <div className="flex justify-end gap-x-2 border-t border-ui-border-base pb-6 pr-8 pt-4">
           <button
             onClick={onClose}
             className="flex-1 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -85,8 +83,8 @@ const VoucherModal = ({ isOpen, onClose, onApplyCoupon, totalAmount, userId, cod
           <button
             onClick={() => {
               if (selectedCoupon) {
-                onApplyCoupon(selectedCoupon);
-                onClose();
+                onApplyCoupon(selectedCoupon); // Truyền mã giảm giá đã chọn ra ngoài
+                onClose(); // Đóng modal
               }
             }}
             disabled={!selectedCoupon}
@@ -99,8 +97,8 @@ const VoucherModal = ({ isOpen, onClose, onApplyCoupon, totalAmount, userId, cod
             Áp dụng
           </button>
         </div>
-      </div>
-    </div>
+      </FocusModal.Content>
+    </FocusModal>
   );
 };
 

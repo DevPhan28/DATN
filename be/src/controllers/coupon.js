@@ -122,16 +122,17 @@ const getAvailableCoupons = async (req, res) => {
   try {
     const { orderAmount, userId, code } = req.query;
 
+    // Kiểm tra dữ liệu đầu vào
     if (!orderAmount || isNaN(Number(orderAmount))) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ error: "Số tiền đơn hàng là bắt buộc và phải là một số hợp lệ." });
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        error: "Số tiền đơn hàng là bắt buộc và phải là một số hợp lệ.",
+      });
     }
 
     if (!userId) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ error: "userId là bắt buộc." });
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        error: "userId là bắt buộc.",
+      });
     }
 
     let query = {
@@ -139,71 +140,75 @@ const getAvailableCoupons = async (req, res) => {
       expirationDate: { $gte: new Date() },
     };
 
-    // Nếu có mã cụ thể (code), chỉ tìm mã đó
-    if (code) {
-      query.code = code;
-    }
-
-    // Tìm tất cả mã hoặc mã cụ thể
+    // Truy vấn mã giảm giá từ cơ sở dữ liệu
     const coupons = await Coupon.find(query);
 
+    // Xử lý trường hợp không tìm thấy mã giảm giá
     if (!coupons || coupons.length === 0) {
       return res
         .status(StatusCodes.NOT_FOUND)
         .json({ error: "Không tìm thấy mã giảm giá nào." });
     }
 
-    const couponsWithStatus = await Promise.all(
-      coupons.map(async (coupon) => {
-        let canApply = true;
-        let message = "";
+    // Xử lý từng mã giảm giá để xác định trạng thái áp dụng
+    const couponsWithStatus = coupons.map((coupon) => {
+      let canApply = true;
+      let message = "";
 
-        // Kiểm tra nếu người dùng đã sử dụng mã này
-        if (coupon.usedBy.includes(userId)) {
-          canApply = false;
-          message = "Bạn đã sử dụng mã giảm giá này.";
+      // Kiểm tra nếu người dùng đã sử dụng mã này
+      if (coupon.usedBy.includes(userId)) {
+        canApply = false;
+        message = "Bạn đã sử dụng mã giảm giá này.";
+      }
+
+      // Kiểm tra nếu chưa đến ngày bắt đầu
+      if (canApply && coupon.startDate > new Date()) {
+        canApply = false;
+        message = `Mã giảm giá chưa đến ngày bắt đầu (${coupon.startDate.toLocaleDateString()}).`;
+      }
+
+      // Kiểm tra điều kiện đơn hàng tối thiểu
+      if (canApply && coupon.minOrder && Number(orderAmount) < Number(coupon.minOrder)) {
+        canApply = false;
+        message = `Đơn hàng tối thiểu phải đạt ${coupon.minOrder} để áp dụng mã giảm giá này.`;
+      }
+
+      let applicableDiscount = 0;
+
+      // Tính toán giảm giá
+      if (canApply) {
+        if (coupon.isFreeShipping) {
+          applicableDiscount = 0; // Miễn phí vận chuyển
+        } else {
+          const calculatedDiscount = (coupon.discount / 100) * Number(orderAmount);
+          applicableDiscount = Math.min(
+            calculatedDiscount,
+            coupon.maxDiscountAmount || calculatedDiscount
+          );
         }
+      }
 
-        // Kiểm tra nếu chưa đến ngày bắt đầu
-        if (canApply && coupon.startDate > new Date()) {
-          canApply = false;
-          message = `Mã giảm giá chưa đến ngày bắt đầu (${coupon.startDate.toLocaleDateString()}).`;
-        }
+      // Trả về thông tin mã giảm giá kèm trạng thái
+      return {
+        ...coupon.toObject(),
+        canApply,
+        message,
+        applicableDiscount,
+        isSelected: code === coupon.code, // Đánh dấu mã đã chọn nếu có `code`
+      };
+    });
 
-        // Kiểm tra điều kiện đơn hàng tối thiểu
-        if (canApply && coupon.minOrder && Number(orderAmount) < Number(coupon.minOrder)) {
-          canApply = false;
-          message = `Đơn hàng tối thiểu phải đạt ${coupon.minOrder} để áp dụng mã giảm giá này.`;
-        }
+    // Nếu `code` được truyền, đảm bảo danh sách có mã đã chọn
+    if (code) {
+      const selectedCoupon = couponsWithStatus.find((c) => c.code === code);
+      if (!selectedCoupon) {
+        return res.status(StatusCodes.NOT_FOUND).json({
+          error: "Không tìm thấy mã giảm giá được chọn.",
+        });
+      }
+    }
 
-        let applicableDiscount = 0;
-
-        // Tính giảm giá
-        if (canApply) {
-          if (coupon.isFreeShipping) {
-            applicableDiscount = 0;
-          } else {
-            const calculatedDiscount = (coupon.discount / 100) * Number(orderAmount);
-            applicableDiscount = Math.min(calculatedDiscount, coupon.maxDiscountAmount || calculatedDiscount);
-          }
-
-          // Nếu mã cụ thể được chọn và hợp lệ, cập nhật usageCount và usedBy
-          if (code) {
-            coupon.usageCount += 1;
-            coupon.usedBy.push(userId);
-            await coupon.save();
-          }
-        }
-
-        return {
-          ...coupon.toObject(),
-          canApply,
-          message,
-          applicableDiscount,
-        };
-      })
-    );
-
+    // Trả về danh sách mã giảm giá
     return res.status(StatusCodes.OK).json(couponsWithStatus);
   } catch (error) {
     console.error("Lỗi khi lấy mã giảm giá khả dụng:", error.message);
@@ -215,7 +220,7 @@ const getAvailableCoupons = async (req, res) => {
 
 const updateCoupon = async (req, res) => {
   try {
-    const { couponId } = req.params; // Lấy _id từ URL
+    const { couponId } = req.params; 
     const {
       code,
       discount,

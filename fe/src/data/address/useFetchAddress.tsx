@@ -14,7 +14,6 @@ export const fetchAddress = async (userId: string) => {
         `Error while fetching categories - status code: ${res.status}`
       );
     }
-
     return res.data;
   } catch (error: any) {
     if (error.response) {
