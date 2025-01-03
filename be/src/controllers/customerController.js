@@ -204,6 +204,66 @@ const deleteCustomer = async (req, res) => {
   }
 };
 
+const editCustomerAddress = async (req, res) => {
+  try {
+    const { id, userId } = req.params;
+    const { isDefault } = req.body; 
+    if (!userId || !id) {
+      return res.status(400).json({
+        success: false,
+        message: "Thiếu userId hoặc id trong yêu cầu!",
+      });
+    }
+
+    const customer = await CustomerInfo.findOne({ _id: id, userId });
+    if (!customer) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy địa chỉ của khách hàng!",
+      });
+    }
+
+    if (isDefault !== undefined) {
+      if (isDefault) {
+        
+        await CustomerInfo.updateMany(
+          { userId, _id: { $ne: id } },
+          { $set: { isDefault: false } }
+        );
+      }
+      customer.isDefault = isDefault; 
+    }
+
+
+    const updatedCustomer = await customer.save();
+
+    
+    const hasDefault = await CustomerInfo.exists({ userId, isDefault: true });
+    if (!hasDefault) {
+      const firstCustomer = await CustomerInfo.findOne({ userId }).sort({ _id: 1 });
+      if (firstCustomer) {
+        firstCustomer.isDefault = true;
+        await firstCustomer.save();
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: updatedCustomer,
+    });
+  } catch (error) {
+    console.error("Lỗi cập nhật địa chỉ:", error.message);
+    return res.status(500).json({
+      success: false,
+      message: "Đã xảy ra lỗi trong quá trình xử lý!",
+    });
+  }
+};
+
+
+
+
+
   
 
-module.exports = { createCustomer, getCustomers, editCustomer, getCustomerById, deleteCustomer};
+module.exports = { createCustomer, getCustomers, editCustomer, getCustomerById, deleteCustomer, editCustomerAddress};

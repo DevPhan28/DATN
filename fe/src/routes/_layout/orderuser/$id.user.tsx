@@ -70,6 +70,51 @@ function DetailOrderUser() {
     updatedAt,
   } = orderDetail;
 
+  const statusOrder = {
+    pending: 0,
+    pendingPayment: 1,
+    shipped: 2,
+    received: 3,
+    delivered: 4,
+    canceled: 5,
+    complaint: 6,
+    refund_in_progress: 7,
+    exchange_in_progress: 8,
+    refund_completed: 9,
+    exchange_completed: 10,
+    canceled_complaint: 11,
+  };
+
+  const statusIndex = statusOrder[status] || 0; // Xác định trạng thái hiện tại
+
+  const steps = [
+    {
+      label: 'Đơn Hàng Đã Đặt',
+      status: 'pending',
+      icon: <DocumentText className="h-5 w-5 text-white" />,
+    },
+    {
+      label: 'Chờ Thanh Toán',
+      status: 'pendingPayment',
+      icon: <Cash className="h-5 w-5 text-white" />,
+    },
+    {
+      label: 'Đang Vận Chuyển',
+      status: 'shipped',
+      icon: <RocketLaunch className="h-5 w-5 text-white" />,
+    },
+    {
+      label: 'Đã Nhận',
+      status: 'received',
+      icon: <Check className="h-5 w-5 text-white" />,
+    },
+    {
+      label: 'Đã Giao Hàng',
+      status: 'delivered',
+      icon: <StarSolid className="h-5 w-5 text-white" />,
+    },
+  ];
+
   const formatDate = date => new Date(date).toLocaleString();
   const total = items
     .map(item => item.price * item.quantity)
@@ -108,38 +153,46 @@ function DetailOrderUser() {
         <div className="mt-10">
           {/* Tiến trình đơn hàng */}
           <div className="mb-6 flex items-center justify-around">
-            {[
-              {
-                label: 'Đơn Hàng Đã Đặt',
-                icon: <DocumentText className="h-5 w-5 text-white" />,
-              },
-              {
-                label: 'Đã Xác Nhận',
-                icon: <Cash className="h-5 w-5 text-white" />,
-              },
-              {
-                label: 'Đang Vận Chuyển',
-                icon: <RocketLaunch className="h-5 w-5 text-white" />,
-              },
-              {
-                label: 'Đã Giao Hàng',
-                icon: <Check className="h-5 w-5 text-white" />,
-              },
-              {
-                label: 'Đã Nhận',
-                icon: <StarSolid className="h-5 w-5 text-white" />,
-              },
-            ].map((step, index) => (
-              <div key={index} className="flex flex-col items-center">
-                <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-green-500">
-                  {step.icon}
+            {steps.map((step, index) => {
+              const isActive = statusOrder[step.status] <= statusIndex; // Đã hoàn thành hoặc đang xử lý
+              const isCurrent = statusOrder[step.status] === statusIndex; // Trạng thái hiện tại
+              const isLastStep = index === steps.length - 1; // Kiểm tra nếu là bước cuối
+
+              return (
+                <div key={index} className="flex items-center">
+                  {/* Nút trạng thái */}
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`mb-2 flex h-10 w-10 items-center justify-center rounded-full ${
+                        isActive ? 'bg-green-500' : 'bg-gray-300'
+                      } ${isCurrent ? 'ring-2 ring-green-600' : ''}`}
+                    >
+                      {step.icon}
+                    </div>
+                    <span
+                      className={`text-sm font-medium ${
+                        isActive ? 'text-gray-800' : 'text-gray-400'
+                      }`}
+                    >
+                      {step.label}
+                    </span>
+                  </div>
+
+                  {/* Gạch ngang nối các bước (trừ bước cuối cùng) */}
+                  {!isLastStep && (
+                    <div
+                      className={`mx-2 mb-4 h-[2px] w-36 ${
+                        statusOrder[step.status] < statusIndex
+                          ? 'bg-green-500'
+                          : 'bg-gray-300'
+                      }`}
+                    ></div>
+                  )}
                 </div>
-                <span className="text-sm font-medium text-gray-700">
-                  {step.label}
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
+
           <hr />
           {/* Địa chỉ nhận hàng */}
           <div className="mb-6 mt-5 flex justify-between">
@@ -223,9 +276,7 @@ function DetailOrderUser() {
               </div>
             </div>
           </div>
-
           <hr />
-
           {/* Phần còn lại của mã */}
           <div className="mt-4">
             {items.length > 0 ? (

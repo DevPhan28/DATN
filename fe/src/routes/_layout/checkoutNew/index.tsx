@@ -9,6 +9,7 @@ import { Badge, toast } from '@medusajs/ui';
 import { createFileRoute, useLocation } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import VoucherModal from '@/components/VoucherModal';
+import ModalListCustomInfor from '@/components/custom-infor/modal-address-list';
 
 export const Route = createFileRoute('/_layout/checkoutNew/')({
   component: NewCheckout,
@@ -19,6 +20,7 @@ function NewCheckout() {
   const [paymentMethod, setPaymentMethod] = useState('online');
   const [currentAddress, setCurrentAddress] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalListOpen, setIsModalListOpen] = useState(false);
 
   const [selectedCoupon, setSelectedCoupon] = useState(null);
   const [discountAmount, setDiscountAmount] = useState(0);
@@ -51,6 +53,14 @@ function NewCheckout() {
     refetch();
   };
 
+  const openListModal = () => {
+    setIsModalListOpen(true);
+  };
+  const closeListModal = () => {
+    setIsModalListOpen(false);
+    refetch();
+  };
+
   const handlePaymentMethodChange = method => {
     setPaymentMethod(method);
   };
@@ -67,14 +77,12 @@ function NewCheckout() {
   const { createOrder } = useCheckoutMutation();
   const { deleteItemFromCart } = useCartMutation();
 
-  const {
-    data: availableCoupons,
-    isLoading: isCouponsLoading,
-  } = useFetchAvailableCoupons(totalAmount, userId, selectedCoupon?.code);
+  const { data: availableCoupons, isLoading: isCouponsLoading } =
+    useFetchAvailableCoupons(totalAmount, userId, selectedCoupon?.code);
 
-  const handleCouponChange = (coupon) => {
+  const handleCouponChange = coupon => {
     if (!coupon || !coupon.canApply) {
-      toast.error(coupon?.message || "Mã giảm giá không hợp lệ.");
+      toast.error(coupon?.message || 'Mã giảm giá không hợp lệ.');
       setSelectedCoupon(null);
       setDiscountAmount(0);
       setIsCouponFreeShipping(false);
@@ -86,9 +94,9 @@ function NewCheckout() {
       coupon.isFreeShipping
         ? 0
         : Math.min(
-          (coupon.discount / 100) * totalAmount,
-          coupon.maxDiscountAmount || Infinity
-        )
+            (coupon.discount / 100) * totalAmount,
+            coupon.maxDiscountAmount || Infinity
+          )
     );
     setIsCouponFreeShipping(coupon.isFreeShipping);
   };
@@ -111,9 +119,11 @@ function NewCheckout() {
       const fee = response.data.shippingFee;
       setCalculatedShippingFee(isCouponFreeShipping ? 0 : fee);
       setShippingMessageDisplay(
-        isCouponFreeShipping || fee === 0
-          ? 'Miễn phí vận chuyển'
-          : <CurrencyVND amount={fee} />
+        isCouponFreeShipping || fee === 0 ? (
+          'Miễn phí vận chuyển'
+        ) : (
+          <CurrencyVND amount={fee} />
+        )
       );
     } catch (error) {
       console.error('Error calculating shipping fee:', error);
@@ -159,7 +169,6 @@ function NewCheckout() {
       couponCode: selectedCoupon ? selectedCoupon.code : null,
       shippingMessageDisplay,
       discount: discountAmount,
-
     };
 
     try {
@@ -192,7 +201,7 @@ function NewCheckout() {
                   <button
                     type="button"
                     className="text-sm text-blue-500"
-                    onClick={openCreateModal}
+                    onClick={openListModal}
                   >
                     Thay đổi
                   </button>
@@ -207,9 +216,9 @@ function NewCheckout() {
                         <strong>Số điện thoại:</strong> {data?.data.phone}
                       </p>
                       <p>
-                        <strong>Địa chỉ:</strong> {data?.data.address}, Xã{' '}
-                        {data?.data.ward}, Huyện {data?.data.district}, Thành
-                        phố {data?.data.city}
+                        <strong>Địa chỉ:</strong> {data?.data.address},
+                        {data?.data.ward}, {data?.data.district},
+                        {data?.data.city}
                       </p>
                       <Badge className="mt-3" color="red">
                         Mặc Định
@@ -223,6 +232,10 @@ function NewCheckout() {
                   <ModalCreateCustomInfor
                     isOpen={isModalOpen}
                     onClose={closeCreateModal}
+                  />
+                  <ModalListCustomInfor
+                    isOpen={isModalListOpen}
+                    onClose={closeListModal}
                   />
                 </div>
               </div>
@@ -286,7 +299,9 @@ function NewCheckout() {
                     <span>Tổng thanh toán:</span>
                     <span className="text-red-500">
                       <CurrencyVND
-                        amount={totalAmount - discountAmount + calculatedShippingFee}
+                        amount={
+                          totalAmount - discountAmount + calculatedShippingFee
+                        }
                       />
                     </span>
                   </div>
@@ -312,7 +327,7 @@ function NewCheckout() {
                   <VoucherModal
                     isOpen={isVoucherModalOpen}
                     onClose={() => setVoucherModalOpen(false)}
-                    onApplyCoupon={(coupon) => {
+                    onApplyCoupon={coupon => {
                       setSelectedCoupon(coupon); // Cập nhật mã giảm giá đã chọn
                       handleCouponChange(coupon); // Xử lý logic mã giảm giá
                       setVoucherModalOpen(false); // Đóng modal
@@ -321,7 +336,6 @@ function NewCheckout() {
                     userId={userId}
                     code={selectedCoupon?.code || null}
                   />
-
                 </div>
               </div>
 
