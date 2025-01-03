@@ -357,7 +357,19 @@ function pureFadeOut(e) {
 
       _initCloseActions: function () {
         const _this = this;
+
         document.addEventListener('click', (event) => {
+          const asideElement = document.querySelector('.' + _this.selectors.activeClass);
+
+          // Đóng aside nếu click vào nút close hoặc ngoài khu vực aside
+          if (
+            asideElement &&
+            !asideElement.contains(event.target) &&
+            !event.target.closest(_this.selectors.activator)
+          ) {
+            _this._closeAside();
+          }
+
           if (event.target.matches(_this.selectors.closeBtn)) {
             event.preventDefault();
             _this._closeAside();
@@ -365,7 +377,7 @@ function pureFadeOut(e) {
         });
       },
 
-      _initBackDropClick() {
+      _initBackDropClick: function () {
         if (UomoSelectors.$pageBackDrop) {
           UomoSelectors.$pageBackDrop.addEventListener('click', () => {
             this._closeAside();
@@ -380,6 +392,7 @@ function pureFadeOut(e) {
         });
       }
     });
+
 
     return Aside;
   })();
@@ -1298,14 +1311,14 @@ function pureFadeOut(e) {
   }
   document.addEventListener("DOMContentLoaded", () => {
     UomoHelpers.isMobile = UomoHelpers.updateDeviceSize();
-  
+
     if (typeof Uomo === "function") {
-      new Uomo(); 
+      new Uomo();
     } else {
       console.error("Uomo is not defined. Please check the script initialization.");
     }
   });
-  
+
 
   $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
     var paneTarget = $(e.target).attr('href');

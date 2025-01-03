@@ -664,23 +664,45 @@ function DetailProduct() {
                     {comments.length > 0 ? (comments.map(comment => (
                       <div className="product-single__reviews-item">
                         <div className="customer-avatar">
-                          <img loading="lazy" src={comment.userId?.avatar} />
+                          <img loading="lazy" src="/anh.jpg" />
                         </div>
-                        <div className="customer-review">
-                          <div className="customer-name">
-                            <h6>{comment.userId?.username}</h6>
-                            <div className="reviews-group d-flex">
-                              {[1, 2, 3, 4, 5].map(star => (
-                                <div key={star}>
-                                  {comment.rating >= star ? (
-                                    <StarSolid className="text-orange-300" />
-                                  ) : (
-                                    <StarSolid className="text-orange-200" />
-                                  )}
-                                </div>
-                              ))}
+                        <div className="customer-review w-full">
+                          <div className="flex justify-between">
+                            <div className="customer-name">
+                              <h6>{comment.userId?.username}</h6>
+                              <div className="reviews-group d-flex">
+                                {[1, 2, 3, 4, 5].map(star => (
+                                  <div key={star}>
+                                    {comment.rating >= star ? (
+                                      <StarSolid className="text-orange-300" />
+                                    ) : (
+                                      <StarSolid className="text-orange-200" />
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
                             </div>
+                            <DropdownMenu>
+                              <DropdownMenu.Trigger asChild>
+                                <IconButton>
+                                  <EllipsisHorizontal />
+                                </IconButton>
+                              </DropdownMenu.Trigger>
+                              <DropdownMenu.Content>
+                                <DropdownMenu.Separator />
+                                <DropdownMenu.Item
+                                  className="gap-x-2"
+                                  onClick={() =>
+                                    handleDeleteComment(comment._id)
+                                  }
+                                >
+                                  <Trash className="text-ui-fg-subtle" />
+                                  Xóa bình luận
+                                </DropdownMenu.Item>
+                              </DropdownMenu.Content>
+                            </DropdownMenu>
                           </div>
+
                           <div className="review-date">{new Date(comment.createdAt).toLocaleString(
                             'vi-VN',
                             {
@@ -696,25 +718,7 @@ function DetailProduct() {
                               {comment.commentText}
                             </p>
                           </div>
-                          <DropdownMenu>
-                            <DropdownMenu.Trigger asChild>
-                              <IconButton>
-                                <EllipsisHorizontal />
-                              </IconButton>
-                            </DropdownMenu.Trigger>
-                            <DropdownMenu.Content>
-                              <DropdownMenu.Separator />
-                              <DropdownMenu.Item
-                                className="gap-x-2"
-                                onClick={() =>
-                                  handleDeleteComment(comment._id)
-                                }
-                              >
-                                <Trash className="text-ui-fg-subtle" />
-                                Xóa bình luận
-                              </DropdownMenu.Item>
-                            </DropdownMenu.Content>
-                          </DropdownMenu>
+
                         </div>
                       </div>
                     ))) : (

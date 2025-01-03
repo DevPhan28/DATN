@@ -249,9 +249,9 @@ const Header = () => {
                   className="header-tools__item js-open-aside"
                   href="#"
                   data-aside="customerForms"
+                  onClick={toggleMenu}
                 >
                   <div
-                    onClick={toggleMenu}
                     className="custom-cursor-on-hover flex cursor-pointer items-center"
                   >
                     <i className="fa-solid fa-user text-xl hover:text-blue-400"></i>
@@ -293,72 +293,73 @@ const Header = () => {
         >
           <div className="customer-forms__wrapper d-flex position-relative">
             <div className="flex flex-col items-center justify-center">
-              <div>
-                <div className="group relative z-10" ref={menuRef}>
-                  {isMenuOpen && (
-                    <ul className="absolute top-10 w-96 transform cursor-pointer rounded-lg transition-all duration-300 ease-in-out">
-                      {isLoggedIn ? (
-                        <>
-                          <div className="flex flex-col items-center justify-center px-3 py-4">
-                            <button className="js-close-aside btn-close-lg btn-close-aside ms-auto mt-[-50px]" />
-                            <img
-                              src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg"
-                              alt=""
-                              className="mt-5 h-16 w-16 rounded-full border-2 border-gray-200 object-cover"
-                            />
-                            <div className="mt-2 flex items-center gap-2">
-                              <div className="text-xl text-gray-700">
-                                Xin chào
-                              </div>
-                              <span className="text-xl font-medium text-gray-900">
-                                {username || 'kkk'}
-                              </span>
+              <div className="group relative z-10" ref={menuRef}>
+                {isMenuOpen && (
+                  <ul className="absolute top-10 w-96 transform cursor-pointer rounded-lg transition-all duration-300 ease-in-out">
+                    {isLoggedIn ? (
+                      <>
+
+                        <div className="flex flex-col items-center justify-center px-3 py-4">
+                          <button className="js-close-aside btn-close-lg btn-close-aside ms-auto mt-[-50px]" />
+                          <img
+                            src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg"
+                            alt=""
+                            className="h-16 w-16 rounded-full border-2 border-gray-200 object-cover mt-5"
+                          />
+                          <div className="mt-2 flex items-center gap-2">
+                            <div className="text-xl text-gray-700">
+                              Xin chào
                             </div>
-                          </div>
-
-                          <li className="hidden px-4 py-2 text-lg font-medium hover:bg-blue-100 hover:text-blue-500 md:block">
-                            <a href="/dashboard">Trang quản trị</a>
-                          </li>
-
-                          <li className="px-4 py-2 text-lg font-medium hover:bg-blue-100 hover:text-blue-500">
-                            <Link to="/profile">Cập nhật hồ sơ</Link>
-                          </li>
-
-                          <li className="px-4 py-2 text-lg font-medium hover:bg-blue-100 hover:text-blue-500">
-                            <Link to="/orderuser">Đơn mua</Link>
-                          </li>
-
-                          <li className="px-4 py-2 text-lg font-medium hover:bg-blue-100 hover:text-blue-500">
-                            <a onClick={handleLogout} href="#">
-                              Đăng xuất
-                            </a>
-                          </li>
-                        </>
-                      ) : (
-                        <div className="w-full">
-                          <button className="js-close-aside btn-close-lg btn-close-aside ms-auto flex justify-end" />
-                          <div className="space-y-4 p-4 text-center">
-                            <Link to="/login">
-                              <button className="btn btn-primary d-block mt-3 w-full rounded-lg text-lg transition-colors duration-300">
-                                Đăng nhập
-                              </button>
-                            </Link>
-                            <div className="text-lg text-gray-600">
-                              Bạn chưa có tài khoản?
-                              <Link
-                                to="/register"
-                                className="pl-1 text-lg text-black hover:underline"
-                              >
-                                Đăng ký
-                              </Link>
-                            </div>
+                            <span className="text-xl font-medium text-gray-900">
+                              {username || 'kkk'}
+                            </span>
                           </div>
                         </div>
-                      )}
-                    </ul>
-                  )}
-                </div>
+
+                        <li className="hidden px-4 py-2 text-lg font-medium hover:bg-blue-100 hover:text-blue-500 md:block">
+                          <a href="/dashboard">Trang quản trị</a>
+                        </li>
+
+                        <li className="px-4 py-2 text-lg font-medium hover:bg-blue-100 hover:text-blue-500">
+                          <Link to="/profile">Cập nhật hồ sơ</Link>
+                        </li>
+
+                        <li className="px-4 py-2 text-lg font-medium hover:bg-blue-100 hover:text-blue-500">
+                          <Link to="/orderuser">Đơn mua</Link>
+                        </li>
+
+                        <li className="px-4 py-2 text-lg font-medium hover:bg-blue-100 hover:text-blue-500">
+                          <a onClick={handleLogout} href="#">
+                            Đăng xuất
+                          </a>
+                        </li>
+                      </>
+                    ) : (
+                      <div className="w-full ">
+                        <button className="js-close-aside btn-close-lg btn-close-aside ms-auto  flex justify-end" />
+                        <div className='space-y-4 p-4 text-center'>
+                          <Link to="/login">
+                            <button className="btn btn-primary d-block mt-3 w-full rounded-lg text-lg transition-colors duration-300">
+                              Đăng nhập
+                            </button>
+                          </Link>
+                          <div className="text-lg text-gray-600">
+                            Bạn chưa có tài khoản?
+                            <Link
+                              to="/register"
+                              className="pl-1 text-lg text-black hover:underline"
+                            >
+                              Đăng ký
+                            </Link>
+                          </div>
+
+                        </div>
+                      </div>
+                    )}
+                  </ul>
+                )}
               </div>
+
             </div>
           </div>
         </div>

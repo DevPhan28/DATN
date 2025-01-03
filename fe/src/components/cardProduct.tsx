@@ -107,11 +107,11 @@ const CardProduct: React.FC = () => {
   return (
     <div>
       <section className="products-grid container px-[55px]">
-        <h2 className="section-title text-uppercase text-center mb-1 mb-md-3 pb-xl-2 mb-xl-4">Our Trendy
-          <strong>Products</strong></h2>
+        <h2 className="section-title text-uppercase text-center mb-1 mb-md-3 pb-xl-2 mb-xl-4"> <strong>Sản phẩm </strong>
+          Hợp thời trang</h2>
         <ul className="nav nav-tabs mb-3 text-uppercase justify-content-center" id="collections-tab" role="tablist">
           <li className="nav-item" role="presentation">
-            <a onClick={() => setSelectedCategory(null)} className="nav-link nav-link_underscore active" id="collections-tab-1-trigger" data-bs-toggle="tab" href="#collections-tab-1" role="tab" aria-controls="collections-tab-1" aria-selected="true">All</a>
+            <a onClick={() => setSelectedCategory(null)} className="nav-link nav-link_underscore active" id="collections-tab-1-trigger" data-bs-toggle="tab" href="#collections-tab-1" role="tab" aria-controls="collections-tab-1" aria-selected="true">Tất cả</a>
           </li>
           {categories?.map((category: { _id: string; name: string }) => (
             <li className="nav-item" role="presentation">
@@ -133,7 +133,7 @@ const CardProduct: React.FC = () => {
 
                     <div className="product-card mb-3 mb-md-4 mb-xxl-5">
                       <div className="pc__img-wrapper">
-                        <a href="product1_simple.html">
+                        <a href={`${product.slug ? product.slug : product._id}/quickviewProduct`}>
                           <img
                             loading="lazy"
                             src={product.image}
@@ -157,18 +157,22 @@ const CardProduct: React.FC = () => {
                       </div>
                       <div className="pc__info position-relative">
                         {/* <p className="pc__category">Dresses</p> */}
-                        <h6 className="pc__title"><a href="product1_simple.html"> {product.name}</a></h6>
+
+                        <div className="flex justify-between">
+                          <h6 className="pc__title"><a href={`${product.slug ? product.slug : product._id}/quickviewProduct`}> {product.name}</a></h6>
+
+                          <div className='product-card__price d-flex'>
+                            <Link
+                              to={`/${product.slug ? product.slug : product._id}/detailproduct`}
+                              className="hover:text-blue-300"
+                            >
+                              <ShoppingCartSolid />
+                            </Link>
+                          </div>
+                        </div>
                         <div className="product-card__price d-flex">
                           <span className="money price"> <CurrencyVND amount={product.price} /></span>
 
-                        </div>
-                        <div className='product-card__price d-flex'>
-                          <Link
-                            to={`/${product.slug ? product.slug : product._id}/detailproduct`}
-                            className="hover:text-blue-300"
-                          >
-                            <ShoppingCartSolid />
-                          </Link>
                         </div>
                         <div className="product-card__review d-flex align-items-center">
                           <div className="reviews-group d-flex">
@@ -188,7 +192,7 @@ const CardProduct: React.FC = () => {
                               <use href="#icon_star" />
                             </svg>
                           </div>
-                          <span className="reviews-note text-lowercase text-secondary ms-1">8k+ reviews</span>
+                          {/* <span className="reviews-note text-lowercase text-secondary ms-1">8k+ reviews</span> */}
                         </div>
                         <button className="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist" title="Add To Wishlist">
                           <svg width={16} height={16} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
