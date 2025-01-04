@@ -157,7 +157,7 @@ const CardProduct: React.FC = () => {
                       </div>
                       <div className="pc__info position-relative">
                         {/* <p className="pc__category">Dresses</p> */}
-
+                        <p className="pc__category">{product.category?.name || "N/A"}</p>
                         <div className="flex justify-between">
                           <h6 className="pc__title"><a href={`${product.slug ? product.slug : product._id}/quickviewProduct`}> {product.name}</a></h6>
 

@@ -15,7 +15,7 @@ const Instagram = () => {
     return (
         <div>
             <section className="instagram container">
-                <h2 className="section-title text-uppercase text-center mb-4 pb-xl-2 mb-xl-4">@UOMO</h2>
+                <h2 className="section-title text-uppercase text-center mb-4 pb-xl-2 mb-xl-4">@FashionZone</h2>
                 <div className="row row-cols-3 row-cols-md-4 row-cols-xl-6 px-[40px]">
                     <div className="instagram__tile">
                         <a href="https://instagram.com/" target="_blank" className="position-relative overflow-hidden d-block effect overlay-plus">
@@ -84,30 +84,24 @@ const Instagram = () => {
                 <div className="row">
                     <div className="col-md-4 text-center mb-5 mb-md-0">
                         <div className="service-promotion__icon mb-4">
-                            <svg width={52} height={52} viewBox="0 0 52 52" fill="none" xmlns="https://picsum.photos/200/300">
-                                <use href="#icon_shipping" />
-                            </svg>
+                            <i className="fa-solid fa-gift text-[40px]"></i>
                         </div>
-                        <h3 className="service-promotion__title h5 text-uppercase">Fast And Free Delivery</h3>
-                        <p className="service-promotion__content text-secondary">Free delivery for all orders over $140</p>
+                        <h3 className="service-promotion__title h5 text-uppercase">Giao hàng nhanh và miễn phí</h3>
+                        <p className="service-promotion__content text-secondary">Giao hàng miễn phí cho tất cả các đơn hàng trên 500.000đ</p>
                     </div>{/* /.col-md-4 text-center*/}
                     <div className="col-md-4 text-center mb-5 mb-md-0">
                         <div className="service-promotion__icon mb-4">
-                            <svg width={53} height={52} viewBox="0 0 53 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <use href="#icon_headphone" />
-                            </svg>
+                            <i className="fa-solid fa-headset text-[40px]"></i>
                         </div>
-                        <h3 className="service-promotion__title h5 text-uppercase">24/7 Customer Support</h3>
-                        <p className="service-promotion__content text-secondary">Friendly 24/7 customer support</p>
+                        <h3 className="service-promotion__title h5 text-uppercase">Hỗ trợ khách hàng 24/7</h3>
+                        <p className="service-promotion__content text-secondary">Hỗ trợ khách hàng thân thiện 24/7</p>
                     </div>{/* /.col-md-4 text-center*/}
                     <div className="col-md-4 text-center mb-4 pb-1 mb-md-0">
                         <div className="service-promotion__icon mb-4">
-                            <svg width={52} height={52} viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <use href="#icon_shield" />
-                            </svg>
+                            <i className="fa-solid fa-shield text-[40px]"></i>
                         </div>
-                        <h3 className="service-promotion__title h5 text-uppercase">Money Back Guarantee</h3>
-                        <p className="service-promotion__content text-secondary">We return money within 30 days</p>
+                        <h3 className="service-promotion__title h5 text-uppercase">Đảm bảo hoàn tiền</h3>
+                        <p className="service-promotion__content text-secondary">Chúng tôi trả lại tiền trong vòng 15 ngày</p>
                     </div>{/* /.col-md-4 text-center*/}
                 </div>{/* /.row */}
             </section>{/* /.service-promotion container */}

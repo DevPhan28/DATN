@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import '../../css/plugins/swiper.min.css';
 import nav_bg from '../assets/images/nav-bg.jpg';
 import CurrencyVND from './config/vnd';
+import { SeachIcon } from './icon';
 const Header = () => {
   // Trạng thái hiển thị của menu
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -295,10 +296,9 @@ const Header = () => {
             <div className="flex flex-col items-center justify-center">
               <div className="group relative z-10" ref={menuRef}>
                 {isMenuOpen && (
-                  <ul className="absolute top-10 w-96 transform cursor-pointer rounded-lg transition-all duration-300 ease-in-out">
+                  <ul className="absolute top-10 w-96 transform cursor-pointer rounded-lg transition-all duration-300 ease-in-out" >
                     {isLoggedIn ? (
                       <>
-
                         <div className="flex flex-col items-center justify-center px-3 py-4">
                           <button className="js-close-aside btn-close-lg btn-close-aside ms-auto mt-[-50px]" />
                           <img

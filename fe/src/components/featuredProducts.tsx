@@ -1,165 +1,121 @@
-import React from 'react'
+import { useFetchCategory, useFetchProductAll } from "@/data/products/useProductList";
+import { toast } from "@medusajs/ui";
+import { useEffect, useState } from "react";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import CurrencyVND from "./config/vnd";
+import { Link } from "@tanstack/react-router";
 
 const FeaturedProducts = () => {
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [showFilter, setShowFilter] = useState<boolean>(false);
+  const [showSearch, setShowSearch] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+  const { listProduct, loading, error } = useFetchProductAll();
+  const { data: categories } = useFetchCategory();
+
+  useEffect(() => {
+    const filterProducts = () => {
+      let filtered = listProduct;
+
+      // Lọc theo danh mục nếu có
+      if (selectedCategory) {
+        filtered = filtered.filter(
+          (product) => product?.category?._id === selectedCategory
+        );
+      }
+
+      if (searchTerm) {
+        filtered = filtered.filter((product) =>
+          product.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+
+      setFilteredProducts(filtered);
+    };
+
+    filterProducts();
+  }, [selectedCategory, searchTerm, listProduct]);
+
+  const displayedProducts =
+    filteredProducts.length > 0
+      ? filteredProducts.slice(0, 8)
+      : listProduct.slice(0, 8);
+
+  const handleFilterChange = (filtered: Product[]) => {
+    setFilteredProducts(filtered);
+    if (filtered.length > 0) {
+      toast.success("Sản phẩm đã được lọc thành công!");
+    } else {
+      toast.error("Không tìm thấy sản phẩm phù hợp!");
+    }
+  };
+
   return (
     <div>
       <section className="products-carousel container px-[55px]">
-        <h2 className="section-title text-uppercase text-center mb-4 pb-xl-2 mb-xl-4">Limited <strong>Edition</strong></h2>
-        <div id="product_carousel" className="position-relative">
-          <div className="swiper-container js-swiper-slider" data-settings="{
-      &quot;autoplay&quot;: {
-        &quot;delay&quot;: 5000
-      },
-      &quot;slidesPerView&quot;: 4,
-      &quot;slidesPerGroup&quot;: 4,
-      &quot;effect&quot;: &quot;none&quot;,
-      &quot;loop&quot;: true,
-      &quot;pagination&quot;: {
-        &quot;el&quot;: &quot;#product_carousel .products-pagination&quot;,
-        &quot;type&quot;: &quot;bullets&quot;,
-        &quot;clickable&quot;: true
-      },
-      &quot;navigation&quot;: {
-        &quot;nextEl&quot;: &quot;#product_carousel .products-carousel__next&quot;,
-        &quot;prevEl&quot;: &quot;#product_carousel .products-carousel__prev&quot;
-      },
-      &quot;breakpoints&quot;: {
-        &quot;320&quot;: {
-          &quot;slidesPerView&quot;: 2,
-          &quot;slidesPerGroup&quot;: 2,
-          &quot;spaceBetween&quot;: 14
-        },
-        &quot;768&quot;: {
-          &quot;slidesPerView&quot;: 3,
-          &quot;slidesPerGroup&quot;: 3,
-          &quot;spaceBetween&quot;: 24
-        },
-        &quot;992&quot;: {
-          &quot;slidesPerView&quot;: 4,
-          &quot;slidesPerGroup&quot;: 1,
-          &quot;spaceBetween&quot;: 30
-        }
-      }
-    }">
-            <div className="swiper-wrapper">
-              <div className="swiper-slide product-card">
-                <div className="pc__img-wrapper">
-                  <a href="product1_simple.html">
-                    <img loading="lazy" src="https://picsum.photos/200/300" width={330} height={400} alt="Cropped Faux leather Jacket" className="pc__img" />
-                  </a>
-                  <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside" data-aside="cartDrawer" title="Add To Cart">Add To Cart</button>
-                </div>
-                <div className="pc__info position-relative">
-                  <p className="pc__category">Dresses</p>
-                  <h6 className="pc__title"><a href="product1_simple.html">Hub Accent Mirror</a></h6>
-                  <div className="product-card__price d-flex">
-                    <span className="money price">$17</span>
-                  </div>
-                  <button className="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist" title="Add To Wishlist">
-                    <svg width={16} height={16} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <use href="#icon_heart" />
-                    </svg>
-                  </button>
-                </div>
+        <h2 className="section-title text-uppercase text-center mb-4 pb-xl-2 mb-xl-4">
+          Phiên bản <strong>Giới Hạn</strong>
+        </h2>
+        <Swiper
+          modules={[Navigation, Pagination, Autoplay]} // Import đúng modules
+          autoplay={{
+            delay: 1000, // Thời gian giữa mỗi lần chuyển slide (1 giây)
+            disableOnInteraction: false, // Tiếp tục chạy ngay cả khi người dùng tương tác
+          }}
+          slidesPerView={4}
+          spaceBetween={30}
+          breakpoints={{
+            320: { slidesPerView: 2, spaceBetween: 14 },
+            768: { slidesPerView: 3, spaceBetween: 24 },
+            992: { slidesPerView: 4, spaceBetween: 30 },
+          }}
+          loop={true}
+        >
+          {displayedProducts.map((product) => (
+            <SwiperSlide
+              key={product._id}
+              className="swiper-slide product-card"
+            >
+              <div className="pc__img-wrapper">
+                <a href={`${product.slug ? product.slug : product._id}/quickviewProduct`}>
+                  <img
+                    loading="lazy"
+                    src={product.image}
+                    width={330}
+                    height={400}
+                    className="pc__img"
+                  />
+                </a>
+                <Link to={`${product.slug ? product.slug : product._id}/quickviewProduct`}>
+                  <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium" data-aside="cartDrawer" title="Add To Cart">Chi Tiết</button>
+                </Link>
               </div>
-              <div className="swiper-slide product-card">
-                <div className="pc__img-wrapper">
-                  <a href="product1_simple.html">
-                    <img loading="lazy" src="https://picsum.photos/200/300" width={330} height={400} alt="Cropped Faux leather Jacket" className="pc__img" />
+              <div className="pc__info position-relative">
+                <p className="pc__category">{product.category?.name || "N/A"}</p>
+                <h6 className="pc__title">
+                  <a href="product1_simple.html" className="capitalize">
+                    {product.name}
                   </a>
-                  <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside" data-aside="cartDrawer" title="Add To Cart">Add To Cart</button>
-                </div>
-                <div className="pc__info position-relative">
-                  <p className="pc__category">Dresses</p>
-                  <h6 className="pc__title"><a href="product1_simple.html">Hosking Blue Area Rug</a></h6>
-                  <div className="product-card__price d-flex">
-                    <span className="money price">$29</span>
-                  </div>
-                  <div className="product-card__review d-flex align-items-center">
-                    <div className="reviews-group d-flex">
-                      <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
-                        <use href="#icon_star" />
-                      </svg>
-                      <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
-                        <use href="#icon_star" />
-                      </svg>
-                      <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
-                        <use href="#icon_star" />
-                      </svg>
-                      <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
-                        <use href="#icon_star" />
-                      </svg>
-                      <svg className="review-star" viewBox="0 0 9 9" xmlns="http://www.w3.org/2000/svg">
-                        <use href="#icon_star" />
-                      </svg>
-                    </div>
-                    <span className="reviews-note text-lowercase text-secondary ms-1">8k+ reviews</span>
-                  </div>
-                  <button className="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist" title="Add To Wishlist">
-                    <svg width={16} height={16} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <use href="#icon_heart" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              <div className="swiper-slide product-card">
-                <div className="pc__img-wrapper">
-                  <a href="product1_simple.html">
-                    <img loading="lazy" src="https://picsum.photos/200/300" width={330} height={400} alt="Cropped Faux leather Jacket" className="pc__img" />
-                  </a>
-                  <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside" data-aside="cartDrawer" title="Add To Cart">Add To Cart</button>
-                </div>
-                <div className="pc__info position-relative">
-                  <p className="pc__category">Dresses</p>
-                  <h6 className="pc__title"><a href="product1_simple.html">Hanneman Pouf</a></h6>
-                  <div className="product-card__price d-flex">
-                    <span className="money price">$62</span>
-                  </div>
-                  <button className="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist" title="Add To Wishlist">
-                    <svg width={16} height={16} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <use href="#icon_heart" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-              <div className="swiper-slide product-card">
-                <div className="pc__img-wrapper">
-                  <a href="product1_simple.html">
-                    <img loading="lazy" src="https://picsum.photos/200/300" width={330} height={400} alt="Cropped Faux leather Jacket" className="pc__img" />
-                  </a>
-                  <button className="pc__atc btn anim_appear-bottom btn position-absolute border-0 text-uppercase fw-medium js-add-cart js-open-aside" data-aside="cartDrawer" title="Add To Cart">Add To Cart</button>
-                </div>
-                <div className="pc__info position-relative">
-                  <p className="pc__category">Dresses</p>
-                  <h6 className="pc__title"><a href="product1_simple.html">Cushion Futon Slipcover</a></h6>
-                  <div className="product-card__price d-flex">
-                    <span className="money price">$62</span>
-                  </div>
-                  <button className="pc__btn-wl position-absolute top-0 end-0 bg-transparent border-0 js-add-wishlist" title="Add To Wishlist">
-                    <svg width={16} height={16} viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <use href="#icon_heart" />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            </div>{/* /.swiper-wrapper */}
-          </div>{/* /.swiper-container js-swiper-slider */}
-          <div className="products-carousel__prev position-absolute top-50 d-flex align-items-center justify-content-center">
-            <svg width={25} height={25} viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
-              <use href="#icon_prev_md" />
-            </svg>
-          </div>{/* /.products-carousel__prev */}
-          <div className="products-carousel__next position-absolute top-50 d-flex align-items-center justify-content-center">
-            <svg width={25} height={25} viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg">
-              <use href="#icon_next_md" />
-            </svg>
-          </div>{/* /.products-carousel__next */}
-          <div className="products-pagination mt-4 mb-5 d-flex align-items-center justify-content-center" />
-          {/* /.products-pagination */}
-        </div>{/* /.position-relative */}
-      </section>{/* /.products-carousel container */}
-    </div>
-  )
-}
+                </h6>
 
-export default FeaturedProducts
+                <div className="product-card__price d-flex">
+                  <span className="money price"><CurrencyVND amount={product.price} /></span>
+                </div>
+
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </section>
+      <div className="mb-3 mb-xl-5 pb-1 pb-xl-5" />
+    </div>
+  );
+};
+
+export default FeaturedProducts;

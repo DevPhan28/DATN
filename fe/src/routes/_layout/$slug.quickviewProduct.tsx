@@ -1,5 +1,6 @@
 import instance from '@/api/axiosIntance';
 import CurrencyVND from '@/components/config/vnd';
+import FeaturedProducts from '@/components/featuredProducts';
 import ProductRecommendations from '@/components/ProductRecommendations';
 import { useCart } from '@/data/cart/useCartLogic';
 import useCommentMutation from '@/data/Comment/useCommentMutation';
@@ -789,6 +790,7 @@ function DetailProduct() {
         </main>
         <div className="pb-xl-5 mb-5" />
       </div>
+      <FeaturedProducts />
     </div>
   );
 }
