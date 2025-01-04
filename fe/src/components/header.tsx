@@ -9,6 +9,7 @@ import '../../css/plugins/swiper.min.css';
 import nav_bg from '../assets/images/nav-bg.jpg';
 import CurrencyVND from './config/vnd';
 import { SeachIcon } from './icon';
+import imgCart from '../assets/images/cart_trong.jpg';
 const Header = () => {
   // Trạng thái hiển thị của menu
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -360,83 +361,102 @@ const Header = () => {
           id="cartDrawer"
         >
           <div className="aside-header d-flex align-items-center">
-            {!isLoading && totalItems > 0 && (
+            {!isLoading && totalItems > 0 ? (
               <h3 className="text-uppercase fs-6 mb-0">
                 Giỏ hàng ({' '}
                 <span className="cart-amount js-cart-items-count">
                   {totalItems}
                 </span>{' '}
-                ){' '}
+                )
               </h3>
+            ) : (
+              <h3 className="text-uppercase fs-6 mb-0">Giỏ hàng trống</h3>
             )}
             <button className="js-close-aside btn-close-lg btn-close-aside ms-auto" />
           </div>
           {/* /.aside-header */}
           <div className="aside-content cart-drawer-items-list">
-            {cartData?.products?.map((product, index) => (
-              <div className="cart-drawer-item d-flex position-relative py-2">
-                <div className="position-relative">
-                  <a href="product1_simple.html">
-                    <img
-                      loading="lazy"
-                      className="cart-drawer-item__img"
-                      src={product.image}
-                    />
-                  </a>
-                </div>
-                <div className="cart-drawer-item__info flex-grow-1">
-                  <h6 className="cart-drawer-item__title fw-normal text-black">
-                    <a href="">{product.name}</a>
-                  </h6>
-                  <p className="cart-drawer-item__option text-secondary">
-                    Color: {product.color || 'Không có'}
-                  </p>
-                  <p className="cart-drawer-item__option text-secondary">
-                    Size: {product.size || 'Không có'}
-                  </p>
-                  <div className="d-flex align-items-center justify-content-between mt-1">
-                    <div className="qty-control position-relative">
-                      <input
-                        type="text"
-                        min={1}
-                        value={quantities[index] || product.quantity}
-                        onChange={e =>
-                          handleQuantityChange(index, e.target.value)
-                        }
-                        className="qty-control__number border-0 text-center"
+            {cartData?.products?.length === 0 ? (
+              <>
+                <img src={imgCart} className="m-auto w-52" alt="" />
+                <p className="text-muted text-center">
+                  Giỏ hàng của bạn hiện đang trống.
+                </p>
+                <Link
+                  to="/shop"
+                  className="btn btn-primary d-block m-auto mt-3 w-52"
+                >
+                  Mua sắm ngay
+                </Link>
+              </>
+            ) : (
+              cartData?.products?.map((product, index) => (
+                <div
+                  className="cart-drawer-item d-flex position-relative py-2"
+                  key={product.id}
+                >
+                  <div className="position-relative">
+                    <a href="product1_simple.html">
+                      <img
+                        loading="lazy"
+                        className="cart-drawer-item__img"
+                        src={product.image}
                       />
-                      <div
-                        className="qty-control__reduce text-start"
-                        onClick={() => decrementQuantity(index)}
-                      >
-                        -
-                      </div>
-                      <div
-                        className="qty-control__increase text-end"
-                        onClick={() => incrementQuantity(index)}
-                      >
-                        +
-                      </div>
-                    </div>
-                    {/* .qty-control */}
-                    <span className="cart-drawer-item__price money price">
-                      {' '}
-                      <CurrencyVND
-                        amount={
-                          (quantities[index] || product.quantity) *
-                          productPrice(index)
-                        }
-                      />
-                    </span>
+                    </a>
                   </div>
-                </div>
+                  <div className="cart-drawer-item__info flex-grow-1">
+                    <h6 className="cart-drawer-item__title fw-normal text-black">
+                      <a href="">{product.name}</a>
+                    </h6>
+                    <p className="cart-drawer-item__option text-secondary">
+                      Color: {product.color || 'Không có'}
+                    </p>
+                    <p className="cart-drawer-item__option text-secondary">
+                      Size: {product.size || 'Không có'}
+                    </p>
+                    <div className="d-flex align-items-center justify-content-between mt-1">
+                      <div className="qty-control position-relative">
+                        <input
+                          type="text"
+                          min={1}
+                          value={quantities[index] || product.quantity}
+                          onChange={e =>
+                            handleQuantityChange(index, e.target.value)
+                          }
+                          className="qty-control__number border-0 text-center"
+                        />
+                        <div
+                          className="qty-control__reduce text-start"
+                          onClick={() => decrementQuantity(index)}
+                        >
+                          -
+                        </div>
+                        <div
+                          className="qty-control__increase text-end"
+                          onClick={() => incrementQuantity(index)}
+                        >
+                          +
+                        </div>
+                      </div>
+                      {/* .qty-control */}
+                      <span className="cart-drawer-item__price money price">
+                        <CurrencyVND
+                          amount={
+                            (quantities[index] || product.quantity) *
+                            productPrice(index)
+                          }
+                        />
+                      </span>
+                    </div>
+                  </div>
 
-                <button
-                  onClick={handleDeleteSelectedProducts}
-                  className="btn-close-xs position-absolute js-cart-item-remove end-0 top-0 py-2"
-                />
-              </div>
-            ))}
+                  <button
+                    onClick={handleDeleteSelectedProducts}
+                    className="btn-close-xs position-absolute js-cart-item-remove end-0 top-0 py-2"
+                  />
+                </div>
+              ))
+            )}
           </div>
           {/* /.aside-content */}
           <div className="cart-drawer-actions position-absolute w-100 bottom-0 start-0">
@@ -444,15 +464,13 @@ const Header = () => {
             <div className="d-flex justify-content-between">
               <h6 className="fs-base fw-medium">TỔNG:</h6>
               <span className="cart-subtotal fw-medium">
-                {' '}
                 <CurrencyVND
                   amount={
                     cartData?.products?.reduce((total, product, index) => {
-                      // Tính giá trị của từng sản phẩm (số lượng * giá)
                       const productTotal =
                         (quantities[index] || product.quantity) *
                         productPrice(index);
-                      return total + productTotal; // Cộng dồn vào tổng
+                      return total + productTotal;
                     }, 0) || '0'
                   }
                 />
@@ -464,13 +482,15 @@ const Header = () => {
             </Link>
             <button
               onClick={handleCheckout}
-              className="btn btn-primary d-block mt-3"
+              className="btn btn-primary d-block mt-3 w-full"
+              disabled={cartData?.products?.length === 0}
             >
               Thanh Toán
             </button>
           </div>
           {/* /.aside-content */}
         </div>
+
         {/* /.aside */}
         {/* Sitemap */}
         <div className="modal fade" id="siteMap" tabIndex={-1}>
