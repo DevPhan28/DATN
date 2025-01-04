@@ -134,17 +134,12 @@ const Header = () => {
                   </Link>
                 </li>
                 <li className="navigation__item">
-                  <a href="#" className="navigation__link">
-                    Nổi bật
-                  </a>
-                </li>
-                <li className="navigation__item">
                   <Link to="/blog" className="navigation__link">
-                    Blog
+                    Tin tức
                   </Link>
                 </li>
                 <li className="navigation__item">
-                  <a href="about.html" className="navigation__link">
+                  <a href="/about" className="navigation__link">
                     Về Chúng Tôi
                   </a>
                 </li>

@@ -1,140 +1,119 @@
-import { useState, useEffect } from 'react';
-import instance from '@/api/axiosIntance';
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { ChevronRightMini, Tag, TagSolid } from '@medusajs/icons';
-
-const BlogPage = () => {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1); // Trang hiện tại
-  const postsPerPage = 8; // Số bài viết mỗi trang
-
-  // Gọi API để lấy danh sách bài viết
-  const fetchPosts = async () => {
-    try {
-      const response = await instance.get('/posts'); // Gửi request GET đến API
-      setPosts(response.data.data); // Lưu danh sách bài viết vào state
-    } catch (error) {
-      console.error('Lỗi khi gọi API:', error.message);
-    } finally {
-      setLoading(false); // Dừng trạng thái loading
-    }
-  };
-
-  useEffect(() => {
-    fetchPosts(); // Gọi API khi component được mount
-  }, []);
-
-  // Tính toán bài viết trên trang hiện tại
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
-
-  // Số trang tổng cộng
-  const totalPages = Math.ceil(posts.length / postsPerPage);
-
-  // Chuyển trang
-  const paginate = pageNumber => {
-    setCurrentPage(pageNumber);
-  };
-
-  return (
-    <>
-      {/* Title page */}
-      <div className="main-content flex h-48 w-full flex-col items-center justify-center">
-        <div className="text-content">
-          <div className="text-center text-4xl font-semibold">Blog</div>
-          <div className="link caption1 mt-3 flex items-center justify-center gap-1">
-            <div className="flex items-center justify-center">
-              <Link to="/">Trang chủ</Link>
-              <ChevronRightMini />
-            </div>
-            <div className="flex items-center justify-center">
-              <Link to="/blog">Blog</Link>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Blog section */}
-      <section className="bg-gray-100 py-16">
-        <div className="m-auto max-w-7xl rounded-lg bg-white p-8 shadow-md">
-          <div className="mb-8 flex items-center justify-between">
-            <h3 className="text-2xl font-bold text-gray-800">
-              Tin tức mới nhất
-            </h3>
-          </div>
-
-          {/* Loading state */}
-          {loading ? (
-            <div className="text-center text-gray-500">Đang tải...</div>
-          ) : currentPosts.length > 0 ? (
-            <>
-              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-                {/* Dynamic blog posts */}
-                {currentPosts.map(post => (
-                  <div
-                    key={post._id}
-                    className="overflow-hidden rounded-lg bg-white shadow-md transition-shadow duration-300 hover:shadow-lg"
-                  >
-                    <Link to={`/detailblog/${post.slug}`} className="block">
-                      <img
-                        src={post.thumbnail || 'https://picsum.photos/300/200'}
-                        className="h-56 w-full rounded-t-lg object-cover"
-                      />
-                    </Link>
-                    <div className="p-4">
-                      <h5 className="mb-2 text-lg font-semibold text-gray-800">
-                        <Link
-                          to={`/detailblog/${post.slug}`}
-                          className="transition-colors duration-300 hover:text-blue-500"
-                        >
-                          {post.title}
-                        </Link>
-                      </h5>
-                      <p className="line-clamp-2 flex items-center space-x-2 text-xs text-gray-700">
-                        <Tag />
-                        <span>{post.tags}</span>
-                      </p>
-                      <i className="mb-2 text-sm text-gray-500">
-                        {new Date(post.createdAt).toLocaleDateString()}
-                      </i>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Pagination */}
-              <div className="mt-8 flex justify-center">
-                {Array.from({ length: totalPages }, (_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => paginate(index + 1)}
-                    className={`mx-1 rounded-lg px-4 py-2 ${
-                      currentPage === index + 1
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-gray-200 text-gray-700'
-                    } transition hover:bg-blue-500 hover:text-white`}
-                  >
-                    {index + 1}
-                  </button>
-                ))}
-              </div>
-            </>
-          ) : (
-            <div className="text-center text-gray-500">
-              Không có bài viết nào.
-            </div>
-          )}
-        </div>
-      </section>
-    </>
-  );
-};
-
-// Định nghĩa route cho trang Blog
+import { createFileRoute } from '@tanstack/react-router'
+import blog_banner from '../../../assets/images/blog_title_bg.jpg';
+import blog1 from '../../../assets/images/Blog/blog-1.jpg';
+import blog2 from '../../../assets/images/Blog/blog-2.jpg';
+import blog3 from '../../../assets/images/Blog/blog-3.jpg';
+import blog4 from '../../../assets/images/Blog/blog-4.jpg';
 export const Route = createFileRoute('/_layout/blog/')({
-  component: BlogPage,
-});
+  component: Blog,
+})
 
-export default BlogPage;
+function Blog() {
+  return (
+    <div className='px-[40px]'>
+      <main>
+        <section className="blog-page-title mb-4 mb-xl-5">
+          <div className="title-bg">
+            <img loading="lazy" src={blog_banner} width={1780} height={420} />
+          </div>
+          <div className="container">
+            <h2 className="page-title">Tin tức</h2>
+            <div className="blog__filter">
+              <a href="#" className="menu-link menu-link_us-s">Tất cả</a>
+              <a href="#" className="menu-link menu-link_us-s">Công ty</a>
+              <a href="#" className="menu-link menu-link_us-s menu-link_active">Thời trang</a>
+              <a href="#" className="menu-link menu-link_us-s">Phong cách</a>
+              <a href="#" className="menu-link menu-link_us-s">xu hướng</a>
+              <a href="#" className="menu-link menu-link_us-s">sắc đẹp</a>
+            </div>
+          </div>
+        </section>
+        <section className="blog-page container">
+          <h2 className="d-none">The Blog</h2>
+          <div className="blog-grid row row-cols-1 row-cols-md-2">
+            <div className="blog-grid__item">
+              <div className="blog-grid__item-image">
+                <img loading="lazy" className="h-auto" src={blog1} width={690} height={500} />
+              </div>
+              <div className="blog-grid__item-detail">
+                <div className="blog-grid__item-meta">
+                  <span className="blog-grid__item-meta__author">Bởi quản trị viên</span>
+                  <span className="blog-grid__item-meta__date">Ngày 04 tháng 01 năm 2025</span>
+                </div>
+                <div className="blog-grid__item-title">
+                  <a href="blog/text">Người phụ nữ có đôi giày đẹp không bao giờ là nơi xấu xí</a>
+                </div>
+                <div className="blog-grid__item-content">
+                  <p>Một người phụ nữ mang đôi giày đẹp không chỉ thể hiện phong cách mà còn khiến bất kỳ nơi nào cô ấy bước đến trở nên rực rỡ hơn.</p>
+                  <a href="blog/text" className="readmore-link">Tiếp tục đọc</a>
+                </div>
+              </div>
+            </div>
+            <div className="blog-grid__item">
+              <div className="blog-grid__item-image">
+                <img loading="lazy" className="h-auto" src={blog2} width={690} height={500} />
+              </div>
+              <div className="blog-grid__item-detail">
+                <div className="blog-grid__item-meta">
+                  <span className="blog-grid__item-meta__author">Bởi quản trị viên</span>
+                  <span className="blog-grid__item-meta__date">Ngày 04 tháng 01 năm 2025</span>
+                </div>
+                <div className="blog-grid__item-title">
+                  <a href="blog/text">5 Mẹo Tăng Doanh Số Bán Hàng Trực Tuyến Của Bạn</a>
+                </div>
+                <div className="blog-grid__item-content">
+                  <p>Tối ưu website, cá nhân hóa trải nghiệm, tận dụng mạng xã hội, tạo ưu đãi hấp dẫn, và đầu tư vào nội dung để tăng doanh số bán hàng trực tuyến.</p>
+                  <a href="blog/text" className="readmore-link">Tiếp tục đọc</a>
+                </div>
+              </div>
+            </div>
+            <div className="blog-grid__item">
+              <div className="blog-grid__item-image">
+                <img loading="lazy" className="h-auto" src={blog3} width={690} height={500} />
+              </div>
+              <div className="blog-grid__item-detail">
+                <div className="blog-grid__item-meta">
+                  <span className="blog-grid__item-meta__author">Bởi quản trị viên</span>
+                  <span className="blog-grid__item-meta__date">Ngày 04 tháng 01 năm 2025</span>
+                </div>
+                <div className="blog-grid__item-title">
+                  <a href="blog/text">Thế nào là phụ nữ đẹp một cách đúng nghĩa</a>
+                </div>
+                <div className="blog-grid__item-content">
+                  <p>Có lẽ chữ “đẹp” luôn song hành cùng những người phụ nữ. Thế nên không phải người ta tự dưng lại ưu ái gọi phụ nữ bằng hai từ “phái đẹp”. Nhiều khi nhận thấy, chữ “đẹp” lại vượt xa phạm vi của nó. </p>
+                  <a href="blog/text" className="readmore-link">Tiếp tục đọc</a>
+                </div>
+              </div>
+            </div>
+            <div className="blog-grid__item">
+              <div className="blog-grid__item-image">
+                <img loading="lazy" className="h-auto" src={blog4} width={690} height={500} />
+              </div>
+              <div className="blog-grid__item-detail">
+                <div className="blog-grid__item-meta">
+                  <span className="blog-grid__item-meta__author">Bởi quản trị viên</span>
+                  <span className="blog-grid__item-meta__date">Ngày 04 tháng 01 năm 2025</span>
+                </div>
+                <div className="blog-grid__item-title">
+                  <a href="blog/text">Xu hướng thời trang đường phố</a>
+                </div>
+                <div className="blog-grid__item-content">
+                  <p>Chẳng bao lâu nữa sẽ bắt đầu mùa đông, chị em cũng dần sắm sửa quần áo mới. Áo khoác dài chính là một trong những items mà nhiều cô nàng yêu thích vì nó có thể giữ ấm toàn thân lại mang đến một diện mạo thanh lịch, thời thượng và có thể phối với bất cứ món đồ nào.</p>
+                  <a href="blog/text" className="readmore-link">Tiếp tục đọc</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="progress progress_uomo mb-3 ms-auto me-auto" style={{ width: 300 }}>
+            <div className="progress-bar" role="progressbar" style={{ width: '39%' }} aria-valuenow={39} aria-valuemin={0} aria-valuemax={100} />
+          </div>
+          <div className="text-center">
+            <a className="btn-link btn-link_lg text-uppercase fw-medium" href="#">Hiển thị thêm</a>
+          </div>
+        </section>
+      </main>
+      <div className="mb-5 pb-xl-5"></div>
+    </div>
+  )
+}
