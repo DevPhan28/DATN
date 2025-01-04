@@ -222,6 +222,10 @@ export function useCart(userId: string | null) {
     return cartData?.products.filter((_, index) => selectedProducts[index]);
   };
 
+  const getAllItems = () => {
+    return cartData?.products || []; // Trả về tất cả các sản phẩm trong giỏ hàng hoặc một mảng rỗng nếu không có dữ liệu
+  };
+
   return {
     cartData,
     isLoading,
@@ -237,5 +241,6 @@ export function useCart(userId: string | null) {
     toggleSelectAll,
     totalSelectedPrice,
     getSelectedItems,
+    getAllItems,
   };
 }

@@ -89,6 +89,7 @@ const Header = () => {
     toggleSelectAll,
     totalSelectedPrice,
     getSelectedItems,
+    getAllItems,
   } = useCart(userId);
 
   // if (!cartData || !cartData.products || cartData.products.length === 0) {
@@ -96,13 +97,13 @@ const Header = () => {
   // }
 
   const handleCheckout = () => {
-    const selectedItems = getSelectedItems() || [];
+    const selectedItems = getAllItems() || [];
     if (selectedItems.length === 0) {
       toast.error('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
       return;
     }
     navigate({
-      to: '/checkout',
+      to: '/checkoutNew',
       state: { selectedItems },
     });
   };
@@ -247,9 +248,7 @@ const Header = () => {
                   data-aside="customerForms"
                   onClick={toggleMenu}
                 >
-                  <div
-                    className="custom-cursor-on-hover flex cursor-pointer items-center"
-                  >
+                  <div className="custom-cursor-on-hover flex cursor-pointer items-center">
                     <i className="fa-solid fa-user text-xl hover:text-blue-400"></i>
                   </div>
                 </a>
@@ -291,7 +290,7 @@ const Header = () => {
             <div className="flex flex-col items-center justify-center">
               <div className="group relative z-10" ref={menuRef}>
                 {isMenuOpen && (
-                  <ul className="absolute top-10 w-96 transform cursor-pointer rounded-lg transition-all duration-300 ease-in-out" >
+                  <ul className="absolute top-10 w-96 transform cursor-pointer rounded-lg transition-all duration-300 ease-in-out">
                     {isLoggedIn ? (
                       <>
                         <div className="flex flex-col items-center justify-center px-3 py-4">
@@ -299,7 +298,7 @@ const Header = () => {
                           <img
                             src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg"
                             alt=""
-                            className="h-16 w-16 rounded-full border-2 border-gray-200 object-cover mt-5"
+                            className="mt-5 h-16 w-16 rounded-full border-2 border-gray-200 object-cover"
                           />
                           <div className="mt-2 flex items-center gap-2">
                             <div className="text-xl text-gray-700">
@@ -330,9 +329,9 @@ const Header = () => {
                         </li>
                       </>
                     ) : (
-                      <div className="w-full ">
-                        <button className="js-close-aside btn-close-lg btn-close-aside ms-auto  flex justify-end" />
-                        <div className='space-y-4 p-4 text-center'>
+                      <div className="w-full">
+                        <button className="js-close-aside btn-close-lg btn-close-aside ms-auto flex justify-end" />
+                        <div className="space-y-4 p-4 text-center">
                           <Link to="/login">
                             <button className="btn btn-primary d-block mt-3 w-full rounded-lg text-lg transition-colors duration-300">
                               Đăng nhập
@@ -347,14 +346,12 @@ const Header = () => {
                               Đăng ký
                             </Link>
                           </div>
-
                         </div>
                       </div>
                     )}
                   </ul>
                 )}
               </div>
-
             </div>
           </div>
         </div>
@@ -465,9 +462,12 @@ const Header = () => {
             <Link to="/cart" className="btn btn-light d-block mt-3">
               Xem giỏ hàng
             </Link>
-            <Link to="/checkoutNew" className="btn btn-primary d-block mt-3">
+            <button
+              onClick={handleCheckout}
+              className="btn btn-primary d-block mt-3"
+            >
               Thanh Toán
-            </Link>
+            </button>
           </div>
           {/* /.aside-content */}
         </div>

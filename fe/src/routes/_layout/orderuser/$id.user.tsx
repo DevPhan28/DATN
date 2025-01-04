@@ -300,8 +300,9 @@ function DetailOrderUser() {
                         <div className="font-semibold">x{item.quantity}</div>
                       </div>
                     </div>
-                    <div className="text-right font-semibold text-red-600">
-                      <CurrencyVND amount={item.price} />
+                    <div className="flex gap-2 text-right font-semibold text-red-600">
+                      Thành Tiền:
+                      <CurrencyVND amount={item.price * item.quantity} />
                     </div>
                   </div>
                   {index !== items.length - 1 && <hr className="my-4" />}
@@ -349,7 +350,7 @@ function DetailOrderUser() {
                 </span>
               </div>
               <div className="mt-4 text-sm text-gray-600">
-                <p className="mb-1">Phương thức thanh toán: {paymentStatus}</p>
+                <p className="mb-1">Phương thức thanh toán: {paymentMethod}</p>
               </div>
             </div>
           </div>
