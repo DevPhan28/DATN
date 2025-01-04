@@ -58,7 +58,7 @@ function Address() {
     });
     if (userHasConfirmed) {
       await deleteCustomer.mutate({ id });
-      queryClient.invalidateQueries(['cus']);
+      queryClient.invalidateQueries(['customers']);
     }
   };
 

@@ -1,8 +1,10 @@
 import instance from '@/api/axiosIntance';
 import { FocusModal } from '@/components/ui/custom-focus-modal';
 import { useFetchAddress } from '@/data/address/useFetchAddress';
-import { Badge, toast } from '@medusajs/ui';
+import { Badge, Button, toast } from '@medusajs/ui';
+import { Plus } from '@medusajs/icons';
 import { useEffect, useState } from 'react';
+import ModalCreateCustomInfor from './modal-create-custom-infor';
 
 const ModalListCustomInfor = ({
   isOpen,
@@ -12,6 +14,18 @@ const ModalListCustomInfor = ({
   onClose: () => void;
 }) => {
   const [userId, setUserId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentAddress, setCurrentAddress] = useState(null);
+
+  const openCreateModal = () => {
+    setCurrentAddress(null);
+    setIsModalOpen(true);
+  };
+
+  const closeCreateModal = () => {
+    setIsModalOpen(false);
+    refetch();
+  };
 
   useEffect(() => {
     const storedUserId = localStorage.getItem('userId');
@@ -115,46 +129,53 @@ const ModalListCustomInfor = ({
 
   return (
     <FocusModal open={isOpen} onOpenChange={onClose}>
-      <FocusModal.Content className="m-auto h-fit max-h-[80%] w-[calc(100%-24px)] max-w-[650px] overflow-visible">
+      <FocusModal.Content className="m-auto h-fit max-h-[76%] w-[calc(100%-24px)] max-w-[650px] overflow-visible overflow-y-scroll">
         <FocusModal.Header className="flex flex-row-reverse px-8 py-6 [&_kbd]:hidden">
           <p className="font-semibold">Danh Sách Địa Chỉ</p>
         </FocusModal.Header>
-        <div>
-          {sortedAddresses?.map(address => (
-            <div
-              key={address.id}
-              className="mb-2 justify-start rounded-lg border-b bg-white shadow sm:space-x-0"
-            >
-              <div className="flex justify-between p-7">
-                <div>
-                  <h1 className="mt-1 text-lg">
-                    {address.name}, {address.phone}
-                  </h1>
-                  <h1 className="mt-2 text-sm">{address.address}</h1>
-                  <h1 className="mb-2">
-                    {address.ward}, {address.district}, {address.city}
-                  </h1>
-                  {address.isDefault && <Badge color="red">Mặc Định</Badge>}
-                </div>
-                <div className="mt-2 flex flex-col items-center">
-                  {!address.isDefault && (
-                    <p
-                      className="mt-3 cursor-pointer border p-2 text-black"
-                      onClick={() => updateIsDefault(address._id)}
-                    >
-                      Thiết Lập Là Mặc Định
-                    </p>
-                  )}
-                  {/* <p
-                    className="cursor-pointer text-red-500"
-                    onClick={() => deleteEntity(address.id)}
-                  >
-                    Xoá
-                  </p> */}
+        <div className="">
+          <div className="max-h-[350px] overflow-y-scroll">
+            {sortedAddresses?.map(address => (
+              <div
+                key={address.id}
+                className="mb-1 justify-start rounded-lg border-b bg-white shadow sm:space-x-0"
+              >
+                <div className="flex justify-between p-7">
+                  <div>
+                    <h1 className="mt-1 flex flex-col text-lg">
+                      {address.name}{' '}
+                      <p className="text-[16px]"> {address.phone}</p>
+                    </h1>
+                    <h1 className="text-sm">{address.address}</h1>
+                    <h1 className="mb-2">
+                      {address.ward}, {address.district}, {address.city}
+                    </h1>
+                    {address.isDefault && <Badge color="red">Mặc Định</Badge>}
+                  </div>
+                  <div className="mt-2 flex flex-col items-center">
+                    {!address.isDefault && (
+                      <p
+                        className="mt-3 cursor-pointer border p-2 text-black"
+                        onClick={() => updateIsDefault(address._id)}
+                      >
+                        Thiết Lập Là Mặc Định
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          <div className="flex justify-start px-4 pb-2">
+            <button onClick={openCreateModal} className="flex justify-end">
+              <Plus />
+              Thêm địa chỉ
+            </button>
+          </div>
+          <ModalCreateCustomInfor
+            isOpen={isModalOpen}
+            onClose={closeCreateModal}
+          />
         </div>
       </FocusModal.Content>
     </FocusModal>
