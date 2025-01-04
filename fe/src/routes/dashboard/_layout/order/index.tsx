@@ -2,10 +2,19 @@ import CurrencyVND from '@/components/config/vnd';
 import Header from '@/components/layoutAdmin/header/header';
 import { useFetchOrdersStatus } from '@/data/oder/useOderList';
 import useCheckoutMutation from '@/data/oder/useOderMutation';
-import { Adjustments, ArrowUpTray, EllipsisVertical, Loader } from '@medusajs/icons';
-import { Button, DropdownMenu, Input, Table, toast, } from '@medusajs/ui';
+import {
+  Adjustments,
+  ArrowUpTray,
+  EllipsisVertical,
+  Loader,
+} from '@medusajs/icons';
+import { Button, DropdownMenu, Input, Table, toast } from '@medusajs/ui';
 
-import { createFileRoute, useLocation, useNavigate } from '@tanstack/react-router';
+import {
+  createFileRoute,
+  useLocation,
+  useNavigate,
+} from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 
 const pageSize = 10;
@@ -16,7 +25,7 @@ export const Route = createFileRoute('/dashboard/_layout/order/')({
 
 function OrderList() {
   const location = useLocation();
-  const status = location.state?.status || 'all-delivery'
+  const status = location.state?.status || 'all-delivery';
   const select = location.state?.selectedGroup || 'delivery';
   const [currentPage, setCurrentPage] = useState(0);
   const [selectedTab, setSelectedTab] = useState(status || 'all-delivery');
@@ -107,21 +116,28 @@ function OrderList() {
       toast.error('Trạng thái không hợp lệ cho nhóm hiện tại.');
       return;
     }
-    if (
-      currentStatus === 'pending' &&
-      newStatus === 'canceled'
+    if (currentStatus === 'pending' && newStatus === 'canceled') {
+    } else if (
+      currentStatus === 'complaint' &&
+      !['refund_in_progress', 'exchange_in_progress', 'received'].includes(
+        newStatus
+      )
     ) {
-    } else
-      if (currentStatus === 'complaint' && !['refund_in_progress', 'exchange_in_progress', 'received'].includes(newStatus)) {
-        toast.error('Trạng thái chỉ có thể chuyển sang "Đang hoàn trả hàng", "Đang đổi trả hàng" hoặc "Đã nhận hàng".');
-        return;
-      }
+      toast.error(
+        'Trạng thái chỉ có thể chuyển sang "Đang hoàn trả hàng", "Đang đổi trả hàng" hoặc "Đã nhận hàng".'
+      );
+      return;
+    }
 
     if (
-      (currentStatus === 'refund_in_progress' && newStatus !== 'refund_completed') ||
-      (currentStatus === 'refund_completed' && newStatus !== 'refund_in_progress') ||
-      (currentStatus === 'exchange_in_progress' && newStatus !== 'exchange_completed') ||
-      (currentStatus === 'exchange_completed' && newStatus !== 'exchange_in_progress')
+      (currentStatus === 'refund_in_progress' &&
+        newStatus !== 'refund_completed') ||
+      (currentStatus === 'refund_completed' &&
+        newStatus !== 'refund_in_progress') ||
+      (currentStatus === 'exchange_in_progress' &&
+        newStatus !== 'exchange_completed') ||
+      (currentStatus === 'exchange_completed' &&
+        newStatus !== 'exchange_in_progress')
     ) {
       toast.error('Trạng thái không hợp lệ trong quá trình hoàn trả/đổi trả.');
       return;
@@ -185,32 +201,22 @@ function OrderList() {
 
   return (
     <div className="h-screen overflow-y-auto">
-      <Header title="Order List" pathname="/" />
+      <Header title="Danh sách đơn hàng" pathname="/" />
       <div className="relative flex justify-between px-6 pt-4">
         <div className="relative w-80">
           <Input
             className="bg-ui-bg-base"
-            placeholder="Find Something"
+            placeholder="Tìm kiếm"
             id="search-input"
             size="small"
-            type="search"
           />
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="secondary">
-            <Adjustments className="text-black" />
-            Lọc
-          </Button>
-          <Button variant="secondary">
-            <ArrowUpTray className="text-black" />
-            Tải lên
-          </Button>
-        </div>
+        <div className="flex items-center gap-2"></div>
       </div>
       {Loading && (
-        <div className="fixed inset-0 z-50 flex justify-center items-center bg-opacity-50 bg-gray-800">
-          <div className="flex justify-center items-center space-x-2 py-4 bg-white p-6 rounded-lg shadow-lg">
-            <div className="w-8 h-8 border-4 border-t-4 border-gray-200 border-solid rounded-full animate-spin border-t-indigo-600" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="flex items-center justify-center space-x-2 rounded-lg bg-white p-6 py-4 shadow-lg">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-t-4 border-solid border-gray-200 border-t-indigo-600" />
             <p className="text-gray-500">Đang cập nhật...</p>
           </div>
         </div>
@@ -220,10 +226,11 @@ function OrderList() {
           onClick={() => {
             setSelectedGroup('delivery') == setSelectedTab('all-delivery');
           }}
-          className={`text-gray-700 ${selectedGroup === 'delivery'
-            ? 'border-b-2 border-red-500 text-red-600'
-            : ''
-            }`}
+          className={`text-gray-700 ${
+            selectedGroup === 'delivery'
+              ? 'border-b-2 border-red-500 text-red-600'
+              : ''
+          }`}
         >
           Giao hàng
         </button>
@@ -231,10 +238,11 @@ function OrderList() {
           onClick={() => {
             setSelectedGroup('complaint') == setSelectedTab('all-complaint');
           }}
-          className={`text-gray-700 ${selectedGroup === 'complaint'
-            ? 'border-b-2 border-red-500 text-red-600'
-            : ''
-            }`}
+          className={`text-gray-700 ${
+            selectedGroup === 'complaint'
+              ? 'border-b-2 border-red-500 text-red-600'
+              : ''
+          }`}
         >
           Khiếu nại
         </button>
@@ -245,10 +253,11 @@ function OrderList() {
             <button
               key={tab.id}
               onClick={() => setSelectedTab(tab.id)}
-              className={`text-gray-700 ${selectedTab === tab.id
-                ? 'border-b-2 border-red-500 text-red-600'
-                : ''
-                }`}
+              className={`text-gray-700 ${
+                selectedTab === tab.id
+                  ? 'border-b-2 border-red-500 text-red-600'
+                  : ''
+              }`}
             >
               {tab.label}
             </button>
@@ -414,10 +423,15 @@ function OrderList() {
                           order.status === 'exchange_completed' ||
                           (selectedGroup === 'delivery' &&
                             !(
-                              isNextDeliveryStatusValid(order.status, status.value) ||
-                              (order.status === 'pending' && status.value === 'canceled') // Cho phép từ pending sang canceled
-                            )
-                          ) ||
+                              (
+                                isNextDeliveryStatusValid(
+                                  order.status,
+                                  status.value
+                                ) ||
+                                (order.status === 'pending' &&
+                                  status.value === 'canceled')
+                              ) // Cho phép từ pending sang canceled
+                            )) ||
                           (order.status === 'refund_in_progress' &&
                             status.value !== 'refund_completed') ||
                           (order.status === 'exchange_in_progress' &&

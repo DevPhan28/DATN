@@ -1,58 +1,26 @@
-import { IconHome, CategoriesIcon, StoreIcon } from '@/components/icon.tsx';
-import {
-  ArrowRightOnRectangle,
-  CogSixTooth,
-  Key,
-  Pencil,
-  ReceiptPercent,
-  Tag,
-  Users,
-} from '@medusajs/icons';
+import { CategoriesIcon, IconHome, StoreIcon } from '@/components/icon.tsx';
+import { ArrowDownLeft, Pencil, ReceiptPercent, Tag } from '@medusajs/icons';
 import ItemSidebar from './item-sidebar';
 
 const menuItems: MenuItem[] = [
   {
     id: 1,
     icon: <IconHome />,
-    name: 'Dashboard',
+    name: 'Bảng điều khiển',
     href: '/dashboard',
   },
-  // {
-  //     id: 2,
-  //     icon: <Star />,
-  //     name: 'Brand',
-  //     href: '/brand',
-  // },
-  // {
-  //     id: 3,
-  //     icon: <UserGroup />,
-  //     name: 'Human Resources',
-  //     href: '/human-resources',
-  // },
-  // {
-  //     id: 4,
-  //     icon: <User />,
-  //     name: 'Sale records',
-  //     href: '/sale-records',
-  // },
-  // {
-  //     id: 5,
-  //     icon: <DocumentText />,
-  //     name: 'Sale reports',
-  //     href: '/sale-reports',
-  // },
 ];
 
 const menuProducts: MenuItem[] = [
   {
     id: 1,
-    name: 'Product List',
+    name: 'Danh sách sản phẩm',
     icon: <Tag />,
     href: '/dashboard/products',
   },
   {
     id: 1,
-    name: 'Product Category',
+    name: 'Danh mục sản phẩm',
     icon: <CategoriesIcon />,
     href: '/dashboard/category',
   },
@@ -61,7 +29,7 @@ const menuProducts: MenuItem[] = [
 const menuOders: MenuItem[] = [
   {
     id: 1,
-    name: 'Order List',
+    name: 'Danh sách đơn hàng',
     icon: <StoreIcon />,
     href: '/dashboard/order',
   },
@@ -69,7 +37,7 @@ const menuOders: MenuItem[] = [
 const menuCoupon: MenuItem[] = [
   {
     id: 1,
-    name: 'Coupon List',
+    name: 'Danh sách mã giảm giá',
     icon: <ReceiptPercent />,
     href: '/dashboard/coupon',
   },
@@ -77,32 +45,18 @@ const menuCoupon: MenuItem[] = [
 const menuBlog: MenuItem[] = [
   {
     id: 1,
-    name: 'Blog List',
+    name: 'Danh sách blog',
     icon: <Pencil />,
     href: '/dashboard/blog',
   },
 ];
 
-// const menuUsers: MenuItem[] = [
-//   {
-//     id: 1,
-//     name: 'Users ',
-//     icon: <Users />,
-//     href: '/dashboard/users',
-//   },
-// ];
 const menuAccount: MenuItem[] = [
   {
     id: 1,
-    name: 'User Account',
-    icon: <Key />,
-    href: '/dashboard/users',
-  },
-  {
-    id: 1,
-    name: 'Settings',
-    icon: <CogSixTooth />,
-    href: '/settings',
+    name: 'Website',
+    icon: <ArrowDownLeft />,
+    href: '/',
   },
 ];
 
@@ -124,7 +78,7 @@ const Sidebar = () => {
         </ul>
         <section className="space-y-1">
           <header className="py-1.5 pl-2 text-xs font-medium text-ui-fg-muted">
-            Product
+            Sản phẩm
           </header>
           <div>
             {menuProducts.map(item => (
@@ -140,7 +94,7 @@ const Sidebar = () => {
         </section>
         <section className="space-y-1">
           <header className="py-1.5 pl-2 text-xs font-medium text-ui-fg-muted">
-            Oders
+            Đơn hàng
           </header>
           <div>
             {menuOders.map(item => (
@@ -154,25 +108,9 @@ const Sidebar = () => {
             ))}
           </div>
         </section>
-        {/* <section className="space-y-1">
-          <header className="py-1.5 pl-2 text-xs font-medium text-ui-fg-muted">
-            Users List
-          </header>
-          <div>
-            {menuUsers.map(item => (
-              <ItemSidebar
-                key={item.id}
-                href={item.href}
-                id={item.id}
-                name={item.name}
-                icon={item.icon}
-              />
-            ))}
-          </div>
-        </section> */}
         <section className="space-y-1">
           <header className="py-1.5 pl-2 text-xs font-medium text-ui-fg-muted">
-            Coupon
+            Mã giảm giá
           </header>
           <div>
             {menuCoupon.map(item => (
@@ -204,7 +142,7 @@ const Sidebar = () => {
         </section>
         <div className="space-y-1">
           <div className="py-1.5 pl-2 text-xs font-medium text-ui-fg-muted">
-            Account
+            Khác
           </div>
           <div>
             {menuAccount.map(item => (

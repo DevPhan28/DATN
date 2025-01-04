@@ -101,11 +101,11 @@ function ProfileUser() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Đang tải...</div>;
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return <div>Lỗi: {error}</div>;
   }
 
   if (!user) {
@@ -121,11 +121,11 @@ function ProfileUser() {
           </div>
           <div className="mt-3 flex items-center justify-center gap-1">
             <div className="flex items-center justify-center">
-              <Link to="/">Home</Link>
+              <Link to="/">Trang chủ</Link>
               <ChevronRightMini />
             </div>
             <div className="capitalize text-gray-500">
-              <Link to="/change_password">Hồ Sơ Của Tôi</Link>
+              <Link to="/profile">Hồ Sơ Của Tôi</Link>
             </div>
           </div>
         </div>

@@ -1,8 +1,20 @@
 import Header from '@/components/layoutAdmin/header/header';
 import useCategoryMutation from '@/data/category/useCategoryMutation';
 import { useFetchCategory } from '@/data/products/useProductList';
-import { Adjustments, ArrowUpTray, Plus, EllipsisVertical } from '@medusajs/icons';
-import { Button, Input, StatusBadge, Table, DropdownMenu, usePrompt } from '@medusajs/ui';
+import {
+  Adjustments,
+  ArrowUpTray,
+  Plus,
+  EllipsisVertical,
+} from '@medusajs/icons';
+import {
+  Button,
+  Input,
+  StatusBadge,
+  Table,
+  DropdownMenu,
+  usePrompt,
+} from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 
@@ -36,50 +48,38 @@ function CategoryList() {
       setCurrentPage(currentPage - 1);
     }
   };
-  
+
   const dialog = usePrompt();
-   const handleDelete = async (categoryId: string) => {
+  const handleDelete = async (categoryId: string) => {
     const userHasConfirmed = await dialog({
-      title: 'Delete products',
-      description: 'bạn có muốn xóa không ?',
+      title: 'Xóa danh mục',
+      description: 'Bạn có muốn xóa danh mục này không ?',
     });
     if (userHasConfirmed) {
       deleteCategory.mutate(categoryId, {
-        onSuccess: () => {
-         
-        },
-        onError: (error) => {
-          console.error("Lỗi khi xóa danh mục:", error);
+        onSuccess: () => {},
+        onError: error => {
+          console.error('Lỗi khi xóa danh mục:', error);
         },
       });
     }
   };
-  
 
   return (
     <div className="h-screen overflow-y-auto">
-      <Header title="Category" pathname="" />
+      <Header title="Danh mục" pathname="" />
       <div className="relative flex justify-between px-6 py-4">
         <div className="relative w-80">
           <Input
             className="bg-ui-bg-base"
-            placeholder="Find Something"
+            placeholder="Tìm kiếm"
             id="search-input"
             size="small"
-            type="search"
             value={searchTerm} // Bind input to searchTerm
-            onChange={(e) => setSearchTerm(e.target.value)} // Update searchTerm on input change
+            onChange={e => setSearchTerm(e.target.value)} // Update searchTerm on input change
           />
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="secondary">
-            <Adjustments className="text-black" />
-           Lọc
-          </Button>
-          <Button variant="secondary">
-            <ArrowUpTray className="text-black" />
-           Tải lên 
-          </Button>
           <Button
             variant="primary"
             onClick={() => void navigate({ to: '/dashboard/category/create' })}
@@ -89,7 +89,7 @@ function CategoryList() {
           </Button>
         </div>
       </div>
-      <div className="border-gray-200 mx-6 flex flex-col gap-1 rounded-lg border bg-ui-bg-base px-6 py-4">
+      <div className="mx-6 flex flex-col gap-1 rounded-lg border border-gray-200 bg-ui-bg-base px-6 py-4">
         <Table>
           <Table.Row className="bg-ui-bg-base-hover">
             <Table.HeaderCell className="font-semibold text-ui-fg-base" />
@@ -115,15 +115,18 @@ function CategoryList() {
                         </button>
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Content className="space-y-2">
-                        <DropdownMenu.Item className="p-2 text-ui-tag-neutral-text hover:text-ui-code-bg-base">
-                          Xem chi tiết
-                        </DropdownMenu.Item>
                         <DropdownMenu.Item className="gap-x-2" asChild>
-                          <span onClick={() => handleDelete(category._id)}>Xóa</span>
+                          <span onClick={() => handleDelete(category._id)}>
+                            Xóa
+                          </span>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item
                           className="gap-x-2"
-                          onClick={() => void navigate({ to: `/dashboard/category/${category._id}/edit` })}
+                          onClick={() =>
+                            void navigate({
+                              to: `/dashboard/category/${category._id}/edit`,
+                            })
+                          }
                         >
                           Chỉnh sửa
                         </DropdownMenu.Item>

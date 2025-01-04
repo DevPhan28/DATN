@@ -4,7 +4,6 @@ import useBlogMutation from '@/data/blog/useBlogMutation';
 import { EllipsisVertical, Plus } from '@medusajs/icons';
 import { Button, DropdownMenu, Input, Table, usePrompt } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { log } from 'console';
 import { useMemo, useState } from 'react';
 
 const pageSize = 7;
@@ -73,7 +72,7 @@ function BlogList() {
         )
       : [];
   }, [listPosts, searchQuery]);
-  console.log("list", listPosts)
+  console.log('list', listPosts);
 
   const toggleContent = (id: string) => {
     if (expandedPost === id) {
@@ -96,7 +95,6 @@ function BlogList() {
             placeholder="Tìm kiếm"
             id="search-input"
             size="small"
-            type="search"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
           />

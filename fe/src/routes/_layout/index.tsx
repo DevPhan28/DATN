@@ -15,7 +15,6 @@ function Index() {
     <>
       <Slides />
       <Hotlist />
-      {/* <Category /> */}
       <CardProduct />
       <Collection />
       <FeaturedProducts />

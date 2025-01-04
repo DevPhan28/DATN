@@ -104,7 +104,7 @@ function OrderDetail() {
                   <h2 className="mb-2 flex items-center space-x-2 text-lg font-semibold">
                     <TagSolid /> <p>Địa chỉ nhận hàng</p>
                   </h2>
-                  <p>Số điện thoại: (+84) {customerInfo.phone}</p>
+                  <p>Số điện thoại: {customerInfo.phone}</p>
                   <p>
                     Địa chỉ: {customerInfo.address}, {customerInfo.wards},{' '}
                     {customerInfo.districts}, {customerInfo.city}
@@ -115,12 +115,12 @@ function OrderDetail() {
                     <Users /> <p>Thông tin vận chuyển</p>
                   </h2>
                   <p>
-                    Kiện hàng :
+                    Mã đơn hàng :
                     <span className="rounded-lg bg-green-100 px-2 py-1 text-green-500">
                       {orderNumber}
                     </span>
                   </p>
-                  <p className="mt-2">Họ tên: {customerInfo.name}</p>
+                  <p className="mt-2">Tên người nhận: {customerInfo.name}</p>
                   <p className="mt-2">Email: {customerInfo.email}</p>
                 </div>
                 <div className="mb-4">
@@ -286,15 +286,6 @@ function OrderDetail() {
                         <CurrencyVND amount={orderDetail.discount} />
                       </td>
                     </tr>
-
-                    {/* <tr>
-                      <td colSpan={4} className="px-4 py-2 font-semibold">
-                        Fees & Charges
-                      </td>
-                      <td className="px-4 py-2">-₫6.585</td>
-                      <td></td>
-                      <td className="px-4 py-2"></td>
-                    </tr> */}
                     <tr className="bg-gray-50">
                       <td colSpan={4} className="px-4 py-2 font-semibold">
                         Doanh Thu Đơn Hàng

@@ -22,8 +22,8 @@ const translateOrderStatus = status => {
 const ToDoList = () => {
   const { data, isLoading, error } = useFetchOrders({});
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error loading orders: {error.message}</p>;
+  if (isLoading) return <p>Đang tải...</p>;
+  if (error) return <p>Lỗi khi tải đơn hàng: {error.message}</p>;
 
   const defaultStatusCounts = {
     pendingPayment: 0,
@@ -41,10 +41,19 @@ const ToDoList = () => {
 
   // Phân loại trạng thái thành 2 nhóm
   const deliveryStatuses = [
-    'pendingPayment', 'pending', 'shipped', 'received', 'delivered', 'canceled',
+    'pendingPayment',
+    'pending',
+    'shipped',
+    'received',
+    'delivered',
+    'canceled',
   ];
   const complaintStatuses = [
-    'complaint', 'refund_in_progress', 'refund_completed', 'exchange_in_progress', 'exchange_completed',
+    'complaint',
+    'refund_in_progress',
+    'refund_completed',
+    'exchange_in_progress',
+    'exchange_completed',
   ];
 
   const statusCounts = { ...defaultStatusCounts, ...data?.statusCounts };
@@ -59,10 +68,12 @@ const ToDoList = () => {
 
   return (
     <div className="m-6 rounded-lg bg-white p-6">
-      <h2 className="mb-8 text-xl font-semibold text-center">Danh sách cần làm</h2>
+      <h2 className="mb-8 text-center text-xl font-semibold">
+        Danh sách cần làm
+      </h2>
 
       {/* Nhóm Delivery */}
-      <h3 className="text-lg font-medium mt-4 mb-2">Đơn giao hàng</h3>
+      <h3 className="mb-2 mt-4 text-lg font-medium">Đơn giao hàng</h3>
       <div className="grid grid-cols-4 gap-4">
         {Object.keys(deliveryCounts).map(status => (
           <div key={status} className="text-center">
@@ -73,14 +84,16 @@ const ToDoList = () => {
               <div className="text-3xl font-bold text-blue-500">
                 {deliveryCounts[status]}
               </div>
-              <p className="text-sm text-gray-600">{translateOrderStatus(status)}</p>
+              <p className="text-sm text-gray-600">
+                {translateOrderStatus(status)}
+              </p>
             </Link>
           </div>
         ))}
       </div>
 
       {/* Nhóm Complaint */}
-      <h3 className="text-lg font-medium mt-8 mb-2">Khiếu nại</h3>
+      <h3 className="mb-2 mt-8 text-lg font-medium">Khiếu nại</h3>
       <div className="grid grid-cols-4 gap-4">
         {Object.keys(complaintCounts).map(status => (
           <div key={status} className="text-center">
@@ -91,7 +104,9 @@ const ToDoList = () => {
               <div className="text-3xl font-bold text-red-500">
                 {complaintCounts[status]}
               </div>
-              <p className="text-sm text-gray-600">{translateOrderStatus(status)}</p>
+              <p className="text-sm text-gray-600">
+                {translateOrderStatus(status)}
+              </p>
             </Link>
           </div>
         ))}

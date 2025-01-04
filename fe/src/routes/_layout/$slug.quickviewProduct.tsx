@@ -86,7 +86,7 @@ function DetailProduct() {
           );
           const average = totalRating / response.data.length;
           setAverageRating(average); // Cập nhật số sao trung bình
-        } catch (err) { }
+        } catch (err) {}
       };
       fetchComments();
     }
@@ -379,10 +379,11 @@ function DetailProduct() {
                           <button
                             type="button"
                             onClick={() => handleSizeChange(size)}
-                            className={`rounded border px-4 py-2 ${selectedSize === size
-                              ? 'border-blue-500 bg-blue-500 text-white'
-                              : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100'
-                              }`}
+                            className={`rounded border px-4 py-2 ${
+                              selectedSize === size
+                                ? 'border-blue-500 bg-blue-500 text-white'
+                                : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100'
+                            }`}
                           >
                             {size}
                           </button>
@@ -407,10 +408,11 @@ function DetailProduct() {
                               type="button"
                               key={color}
                               onClick={() => setSelectedColor(color)}
-                              className={`h-8 w-8 rounded-full border focus:outline-none ${selectedColor === color
-                                ? 'border-blue-500 ring-2 ring-blue-500'
-                                : 'border-gray-300'
-                                }`}
+                              className={`h-8 w-8 rounded-full border focus:outline-none ${
+                                selectedColor === color
+                                  ? 'border-blue-500 ring-2 ring-blue-500'
+                                  : 'border-gray-300'
+                              }`}
                               style={{
                                 backgroundColor: color,
                                 boxShadow:
@@ -601,7 +603,7 @@ function DetailProduct() {
                     aria-controls="tab-reviews"
                     aria-selected="false"
                   >
-                    Đánh Giá ({comments.length}{' '})
+                    Đánh Giá ({comments.length} )
                   </a>
                 </li>
               </ul>
@@ -615,7 +617,9 @@ function DetailProduct() {
                   <div className="product-single__description">
                     <div
                       className="mt-5"
-                      dangerouslySetInnerHTML={{ __html: product.detaildescription }}
+                      dangerouslySetInnerHTML={{
+                        __html: product.detaildescription,
+                      }}
                     />
                   </div>
                 </div>
@@ -637,18 +641,15 @@ function DetailProduct() {
                     <div className="item">
                       <label className="h6">Kích cỡ</label>
                       {uniqueSizes.map(size => (
-                        <span className='p-2'>{size}</span>
+                        <span className="p-2">{size}</span>
                       ))}
                     </div>
                     <div className="item">
                       <label className="h6">Màu</label>
                       {availableColors &&
-                        availableColors.map((color, index) => (
-                          <div></div>
-                        ))}
+                        availableColors.map((color, index) => <div></div>)}
                       <span>Black, Orange, White</span>
                     </div>
-
                   </div>
                 </div>
                 <div
@@ -657,74 +658,75 @@ function DetailProduct() {
                   role="tabpanel"
                   aria-labelledby="tab-reviews-tab"
                 >
-                  <h2 className="product-single__reviews-title">Đánh giá sản phẩm (
-                    {comments.length > 0 ? comments.length : 0})</h2>
+                  <h2 className="product-single__reviews-title">
+                    Đánh giá sản phẩm (
+                    {comments.length > 0 ? comments.length : 0})
+                  </h2>
                   <div className="product-single__reviews-list">
-
-                    {comments.length > 0 ? (comments.map(comment => (
-                      <div className="product-single__reviews-item">
-                        <div className="customer-avatar">
-                          <img loading="lazy" src="/anh.jpg" />
-                        </div>
-                        <div className="customer-review w-full">
-                          <div className="flex justify-between">
-                            <div className="customer-name">
-                              <h6>{comment.userId?.username}</h6>
-                              <div className="reviews-group d-flex">
-                                {[1, 2, 3, 4, 5].map(star => (
-                                  <div key={star}>
-                                    {comment.rating >= star ? (
-                                      <StarSolid className="text-orange-300" />
-                                    ) : (
-                                      <StarSolid className="text-orange-200" />
-                                    )}
-                                  </div>
-                                ))}
+                    {comments.length > 0 ? (
+                      comments.map(comment => (
+                        <div className="product-single__reviews-item">
+                          <div className="customer-avatar">
+                            <img loading="lazy" src="/admin.jpg" />
+                          </div>
+                          <div className="customer-review w-full">
+                            <div className="flex justify-between">
+                              <div className="customer-name">
+                                <h6>{comment.userId?.username}</h6>
+                                <div className="reviews-group d-flex">
+                                  {[1, 2, 3, 4, 5].map(star => (
+                                    <div key={star}>
+                                      {comment.rating >= star ? (
+                                        <StarSolid className="text-orange-300" />
+                                      ) : (
+                                        <StarSolid className="text-orange-200" />
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
+                              <DropdownMenu>
+                                <DropdownMenu.Trigger asChild>
+                                  <IconButton>
+                                    <EllipsisHorizontal />
+                                  </IconButton>
+                                </DropdownMenu.Trigger>
+                                <DropdownMenu.Content>
+                                  <DropdownMenu.Separator />
+                                  <DropdownMenu.Item
+                                    className="gap-x-2"
+                                    onClick={() =>
+                                      handleDeleteComment(comment._id)
+                                    }
+                                  >
+                                    <Trash className="text-ui-fg-subtle" />
+                                    Xóa bình luận
+                                  </DropdownMenu.Item>
+                                </DropdownMenu.Content>
+                              </DropdownMenu>
                             </div>
-                            <DropdownMenu>
-                              <DropdownMenu.Trigger asChild>
-                                <IconButton>
-                                  <EllipsisHorizontal />
-                                </IconButton>
-                              </DropdownMenu.Trigger>
-                              <DropdownMenu.Content>
-                                <DropdownMenu.Separator />
-                                <DropdownMenu.Item
-                                  className="gap-x-2"
-                                  onClick={() =>
-                                    handleDeleteComment(comment._id)
-                                  }
-                                >
-                                  <Trash className="text-ui-fg-subtle" />
-                                  Xóa bình luận
-                                </DropdownMenu.Item>
-                              </DropdownMenu.Content>
-                            </DropdownMenu>
-                          </div>
 
-                          <div className="review-date">{new Date(comment.createdAt).toLocaleString(
-                            'vi-VN',
-                            {
-                              year: 'numeric',
-                              month: '2-digit',
-                              day: '2-digit',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            }
-                          )}</div>
-                          <div className="review-text">
-                            <p>
-                              {comment.commentText}
-                            </p>
+                            <div className="review-date">
+                              {new Date(comment.createdAt).toLocaleString(
+                                'vi-VN',
+                                {
+                                  year: 'numeric',
+                                  month: '2-digit',
+                                  day: '2-digit',
+                                  hour: '2-digit',
+                                  minute: '2-digit',
+                                }
+                              )}
+                            </div>
+                            <div className="review-text">
+                              <p>{comment.commentText}</p>
+                            </div>
                           </div>
-
                         </div>
-                      </div>
-                    ))) : (
+                      ))
+                    ) : (
                       <p>Chưa có bình luận nào</p>
                     )}
-
                   </div>
                   <div className="product-single__review-form">
                     <form name="customer-review-form">
@@ -770,7 +772,11 @@ function DetailProduct() {
                         </label>
                       </div> */}
                       <div className="form-action">
-                        <button type="submit" onClick={handleCommentSubmit} className="btn btn-primary">
+                        <button
+                          type="submit"
+                          onClick={handleCommentSubmit}
+                          className="btn btn-primary"
+                        >
                           Đăng bình luận
                         </button>
                       </div>

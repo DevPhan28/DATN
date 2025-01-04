@@ -5,12 +5,7 @@ import {
   useFetchProducts,
 } from '@/data/products/useProductList';
 import useProductMutation from '@/data/products/useProductMutation';
-import {
-  Adjustments,
-  ArrowUpTray,
-  EllipsisVertical,
-  Plus,
-} from '@medusajs/icons';
+import { Adjustments, EllipsisVertical, Plus } from '@medusajs/icons';
 import {
   Button,
   Checkbox,
@@ -19,7 +14,7 @@ import {
   Table,
   usePrompt,
 } from '@medusajs/ui';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
 
 const pageSize = 10;
@@ -67,8 +62,8 @@ function ProductList() {
   const { deleteProduct } = useProductMutation();
   const deleteEntity = async (_id: string) => {
     const userHasConfirmed = await dialog({
-      title: 'Delete products',
-      description: 'bạn có muốn xóa không ?',
+      title: 'Xóa sản phẩm',
+      description: 'Bạn có muốn xóa sản phẩm này không ?',
     });
     if (userHasConfirmed) {
       deleteProduct.mutate(_id);
@@ -108,9 +103,9 @@ function ProductList() {
           product.countInStock !== undefined
             ? product.countInStock
             : product.variants?.reduce(
-              (total, variant) => total + (variant.countInStock || 0),
-              0
-            ) || 0,
+                (total, variant) => total + (variant.countInStock || 0),
+                0
+              ) || 0,
       })) ?? []
     );
   }, [filteredProducts]);
@@ -135,10 +130,9 @@ function ProductList() {
         <div className="relative w-80">
           <Input
             className="bg-ui-bg-base"
-            placeholder="Tìm kiếm"
             id="search-input"
+            placeholder="Tìm kiếm"
             size="small"
-            type="search"
             value={searchTerm} // Liên kết giá trị input
             onChange={e => setSearchTerm(e.target.value)} // Cập nhật giá trị tìm kiếm
           />
@@ -181,10 +175,7 @@ function ProductList() {
               ))}
             </DropdownMenu.Content>
           </DropdownMenu>
-          <Button variant="secondary">
-            <ArrowUpTray className="text-black" />
-            Tải lên
-          </Button>
+
           <Button
             variant="primary"
             onClick={() => navigate({ to: '/dashboard/products/create' })}
@@ -292,7 +283,7 @@ function ProductList() {
                       {product.category?.name}
                     </div>
                   </Table.Cell>
-                  <Table.Cell className="font-semibold text-ui-fg-base truncate max-w-xs">
+                  <Table.Cell className="max-w-xs truncate font-semibold text-ui-fg-base">
                     {product.description}
                   </Table.Cell>
                 </Table.Row>

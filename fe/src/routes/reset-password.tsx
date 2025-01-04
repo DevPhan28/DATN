@@ -87,11 +87,11 @@ function UpdatePassword() {
         {/* Left section with text */}
         <div className="w-full space-y-5 text-center text-ui-bg-base md:w-1/2 md:text-left">
           <p className="text-header-login-1 font-bold">
-            Streamline your workflow
+            Tối ưu hóa quy trình làm việc của bạn
           </p>
           <p className="txt-large">
-            Access your dashboard to manage your brand, sales, and performance
-            with ease!
+            Truy cập bảng điều khiển của bạn để quản lý thương hiệu, doanh số và
+            hiệu suất một cách dễ dàng!
           </p>
         </div>
 
@@ -112,10 +112,10 @@ function UpdatePassword() {
             {/* Welcome message */}
             <div className="space-y-1 text-center">
               <p className="txt-compact-large text-ui-fg-subtle">
-                Welcome to Fashion Zone
+                Chào mừng đến với Fashion Zone
               </p>
               <p className="text-header-web-2 font-semibold text-ui-fg-base">
-                Reset password to your account
+                Đặt lại mật khẩu cho tài khoản của bạn
               </p>
             </div>
 

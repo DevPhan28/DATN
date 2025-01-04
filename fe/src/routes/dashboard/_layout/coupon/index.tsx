@@ -1,7 +1,12 @@
 import Header from '@/components/layoutAdmin/header/header';
 import { useFetchCoupons } from '@/data/coupon/useCouponList';
 import useCouponMutation from '@/data/coupon/useCouponMutation';
-import { Adjustments, ArrowUpTray, EllipsisVertical, Plus } from '@medusajs/icons';
+import {
+  Adjustments,
+  ArrowUpTray,
+  EllipsisVertical,
+  Plus,
+} from '@medusajs/icons';
 import { Button, DropdownMenu, Input, Table, usePrompt } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';
@@ -18,27 +23,36 @@ function CouponList() {
   const navigate = useNavigate();
   const dialog = usePrompt();
 
-  const { data: listCoupon, error, isLoading } = useFetchCoupons({
+  const {
+    data: listCoupon,
+    error,
+    isLoading,
+  } = useFetchCoupons({
     limit: pageSize,
     page: currentPage + 1,
   });
 
   const pageCount = useMemo(() => {
-    return listCoupon?.meta ? Math.ceil(listCoupon.meta.totalItems / pageSize) : 0;
+    return listCoupon?.meta
+      ? Math.ceil(listCoupon.meta.totalItems / pageSize)
+      : 0;
   }, [listCoupon]);
 
-  const canNextPage = useMemo(() => currentPage < pageCount - 1, [currentPage, pageCount]);
+  const canNextPage = useMemo(
+    () => currentPage < pageCount - 1,
+    [currentPage, pageCount]
+  );
   const canPreviousPage = useMemo(() => currentPage > 0, [currentPage]);
 
   const nextPage = () => {
     if (canNextPage) {
-      setCurrentPage((prev) => prev + 1);
+      setCurrentPage(prev => prev + 1);
     }
   };
 
   const previousPage = () => {
     if (canPreviousPage) {
-      setCurrentPage((prev) => prev - 1);
+      setCurrentPage(prev => prev - 1);
     }
   };
 
@@ -55,7 +69,7 @@ function CouponList() {
 
   const filteredCoupons = useMemo(() => {
     return Array.isArray(listCoupon)
-      ? listCoupon.filter((coupon) =>
+      ? listCoupon.filter(coupon =>
           coupon.code.toLowerCase().includes(searchQuery.toLowerCase())
         )
       : [];
@@ -74,21 +88,15 @@ function CouponList() {
             placeholder="Tìm kiếm"
             id="search-input"
             size="small"
-            type="search"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
           />
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="secondary">
-            <Adjustments className="text-black" />
-            Lọc
-          </Button>
-          <Button variant="secondary">
-            <ArrowUpTray className="text-black" />
-            Tải lên
-          </Button>
-          <Button variant="primary" onClick={() => navigate({ to: '/dashboard/coupon/create' })}>
+          <Button
+            variant="primary"
+            onClick={() => navigate({ to: '/dashboard/coupon/create' })}
+          >
             <Plus />
             Tạo phiếu giảm giá
           </Button>
@@ -100,20 +108,39 @@ function CouponList() {
           <thead>
             <Table.Row className="bg-ui-bg-base-hover">
               <Table.HeaderCell className="font-semibold text-ui-fg-base"></Table.HeaderCell>
-              <Table.HeaderCell className="font-semibold text-ui-fg-base">Mã phiếu giảm giá</Table.HeaderCell>
-              <Table.HeaderCell className="font-semibold text-ui-fg-base">Giảm giá</Table.HeaderCell>
-              <Table.HeaderCell className="font-semibold text-ui-fg-base">Tổng tiền yêu cầu</Table.HeaderCell>
-              <Table.HeaderCell className="font-semibold text-ui-fg-base">Số tiền giảm tối đa</Table.HeaderCell>
-              <Table.HeaderCell className="font-semibold text-ui-fg-base">Miễn phí vận chuyển</Table.HeaderCell>
-              <Table.HeaderCell className="font-semibold text-ui-fg-base">Ngày bắt đầu</Table.HeaderCell>
-              <Table.HeaderCell className="font-semibold text-ui-fg-base">Ngày hết hạn</Table.HeaderCell>
-              <Table.HeaderCell className="font-semibold text-ui-fg-base">Trạng thái</Table.HeaderCell>
+              <Table.HeaderCell className="font-semibold text-ui-fg-base">
+                Mã phiếu giảm giá
+              </Table.HeaderCell>
+              <Table.HeaderCell className="font-semibold text-ui-fg-base">
+                Giảm giá
+              </Table.HeaderCell>
+              <Table.HeaderCell className="font-semibold text-ui-fg-base">
+                Tổng tiền yêu cầu
+              </Table.HeaderCell>
+              <Table.HeaderCell className="font-semibold text-ui-fg-base">
+                Số tiền giảm tối đa
+              </Table.HeaderCell>
+              <Table.HeaderCell className="font-semibold text-ui-fg-base">
+                Miễn phí vận chuyển
+              </Table.HeaderCell>
+              <Table.HeaderCell className="font-semibold text-ui-fg-base">
+                Ngày bắt đầu
+              </Table.HeaderCell>
+              <Table.HeaderCell className="font-semibold text-ui-fg-base">
+                Ngày hết hạn
+              </Table.HeaderCell>
+              <Table.HeaderCell className="font-semibold text-ui-fg-base">
+                Trạng thái
+              </Table.HeaderCell>
             </Table.Row>
           </thead>
           <tbody>
             {filteredCoupons.length > 0 ? (
-              filteredCoupons.map((coupon) => (
-                <Table.Row key={coupon._id} className="[&_td:last-child]:w-[10%] [&_td:last-child]:whitespace-nowrap">
+              filteredCoupons.map(coupon => (
+                <Table.Row
+                  key={coupon._id}
+                  className="[&_td:last-child]:w-[10%] [&_td:last-child]:whitespace-nowrap"
+                >
                   <Table.Cell>
                     <DropdownMenu>
                       <DropdownMenu.Trigger asChild>
@@ -123,7 +150,7 @@ function CouponList() {
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Content className="space-y-2">
                         <DropdownMenu.Item className="p-2 text-ui-tag-neutral-text hover:text-ui-code-bg-base">
-                        <span
+                          <span
                             onClick={() =>
                               void navigate({
                                 to: `/dashboard/coupon/${coupon._id}/showUser`,
@@ -134,27 +161,44 @@ function CouponList() {
                           </span>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item className="gap-x-2" asChild>
-                          <span onClick={async () => deleteEntity(coupon._id)}>Xóa</span>
+                          <span onClick={async () => deleteEntity(coupon._id)}>
+                            Xóa
+                          </span>
                         </DropdownMenu.Item>
                         <DropdownMenu.Item
                           className="gap-x-2"
-                          onClick={() => void navigate({ to: `/dashboard/coupon/${coupon._id}/edit` })}>
+                          onClick={() =>
+                            void navigate({
+                              to: `/dashboard/coupon/${coupon._id}/edit`,
+                            })
+                          }
+                        >
                           Chỉnh sửa
                         </DropdownMenu.Item>
                       </DropdownMenu.Content>
                     </DropdownMenu>
                   </Table.Cell>
-                  <Table.Cell className="font-semibold text-ui-fg-base">{coupon.code}</Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
-                    {coupon.isFreeShipping ? 'Không áp dụng' : `${coupon.discount} %`}
+                    {coupon.code}
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
-                    {coupon.minOrder == 0 ? 'Không áp dụng' : `${coupon.minOrder} đ`}
+                    {coupon.isFreeShipping
+                      ? 'Không áp dụng'
+                      : `${coupon.discount} %`}
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
-                    {coupon.maxDiscountAmount == 0 ? 'Không áp dụng' : `${coupon.maxDiscountAmount} đ`}
+                    {coupon.minOrder == 0
+                      ? 'Không áp dụng'
+                      : `${coupon.minOrder} đ`}
                   </Table.Cell>
-                  <Table.Cell className="font-semibold text-ui-fg-base">{coupon.isFreeShipping ? 'Có' : 'Không'}</Table.Cell>
+                  <Table.Cell className="font-semibold text-ui-fg-base">
+                    {coupon.maxDiscountAmount == 0
+                      ? 'Không áp dụng'
+                      : `${coupon.maxDiscountAmount} đ`}
+                  </Table.Cell>
+                  <Table.Cell className="font-semibold text-ui-fg-base">
+                    {coupon.isFreeShipping ? 'Có' : 'Không'}
+                  </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     {new Date(coupon.startDate).toLocaleDateString()}
                   </Table.Cell>

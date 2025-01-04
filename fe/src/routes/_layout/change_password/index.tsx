@@ -151,7 +151,7 @@ function PasswordUser() {
           </div>
           <div className="mt-3 flex items-center justify-center gap-1">
             <div className="flex items-center justify-center">
-              <Link to="/">Home</Link>
+              <Link to="/">Trang chủ</Link>
               <ChevronRightMini />
             </div>
             <div className="capitalize text-gray-500">

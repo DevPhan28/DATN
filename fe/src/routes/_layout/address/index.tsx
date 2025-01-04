@@ -1,14 +1,13 @@
+import ModalCreateCustomInfor from '@/components/custom-infor/modal-create-custom-infor';
+import ModalUpdateCustomInfor from '@/components/custom-infor/modal-edit-custom-infor';
 import CustomUser from '@/components/useroder/custom-menu';
-import { createFileRoute } from '@tanstack/react-router';
+import useCustomerMutation from '@/data/address/useAddressMutation';
+import { useFetchAddress } from '@/data/address/useFetchAddress';
+import { queryClient } from '@/main';
 import { ChevronRightMini, Plus } from '@medusajs/icons';
 import { Badge, Button, usePrompt } from '@medusajs/ui';
-import ModalCreateCustomInfor from '@/components/custom-infor/modal-create-custom-infor';
+import { createFileRoute, Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
-import { useFetchAddress } from '@/data/address/useFetchAddress';
-import useCustomerMutation from '@/data/address/useAddressMutation';
-import { toast } from '@medusajs/ui';
-import ModalUpdateCustomInfor from '@/components/custom-infor/modal-edit-custom-infor';
-import { queryClient } from '@/main';
 
 export const Route = createFileRoute('/_layout/address/')({
   component: Address,
@@ -75,15 +74,11 @@ function Address() {
             <div className="text-center text-4xl font-semibold">Địa Chỉ</div>
             <div className="link caption1 mt-3 flex items-center justify-center gap-1">
               <div className="flex items-center justify-center">
-                <a href="/">Trang chủ</a>
-                <ChevronRightMini />
-              </div>
-              <div className="flex items-center justify-center">
-                <a href="/">User</a>
+                <Link to="/">Trang chủ</Link>
                 <ChevronRightMini />
               </div>
               <div className="capitalize text-gray-500">
-                <a href="#">Địa Chỉ</a>
+                <Link to="/address">Địa Chỉ</Link>
               </div>
             </div>
           </div>

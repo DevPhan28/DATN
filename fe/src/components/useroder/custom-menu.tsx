@@ -15,7 +15,7 @@ const CustomUser = () => {
         <div className="flex flex-col gap-4 rounded-lg">
           <div className="flex items-center gap-3">
             <img
-              src="/anh.jpg"
+              src="/admin.jpg"
               alt="User avatar"
               className="h-12 w-12 rounded-full"
             />
