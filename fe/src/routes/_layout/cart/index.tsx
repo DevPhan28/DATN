@@ -11,191 +11,210 @@ export const Route = createFileRoute('/_layout/cart/')({
 });
 
 function Cart() {
-  const navigate = useNavigate();
-  const userId = localStorage.getItem('userId');
 
-  if (!userId) {
-    return <LoginCart />;
-  }
-
-  const {
-    cartData,
-    isLoading,
-    quantities,
-    selectedProducts,
-    selectAll,
-    handleQuantityChange,
-    incrementQuantity,
-    decrementQuantity,
-    productPrice,
-    handleDeleteSelectedProducts,
-    toggleSelectProduct,
-    toggleSelectAll,
-    totalSelectedPrice,
-    getSelectedItems,
-  } = useCart(userId);
-
-  if (isLoading) {
-    return <div>Đang tải...</div>;
-  }
-
-  if (!cartData || !cartData.products || cartData.products.length === 0) {
-    return <ErrorCart />;
-  }
-
-  const handleCheckout = () => {
-    const selectedItems = getSelectedItems() || [];
-    if (selectedItems.length === 0) {
-      toast.error('Vui lòng chọn ít nhất một sản phẩm để thanh toán.');
-      return;
-    }
-    navigate({
-      to: '/checkoutNew',
-      state: { selectedItems },
-    });
-  };
   return (
-    <div>
-      <div className="main-content flex h-48 w-full flex-col items-center justify-center">
-        <div className="text-content">
-          <div className="text-center text-4xl font-semibold">Giỏ hàng</div>
-          <div className="link caption1 mt-3 flex items-center justify-center gap-1">
-            <div className="flex items-center justify-center">
-              <a href="/">Trang chủ</a>
-              <ChevronRightMini />
-            </div>
-            <div className="capitalize text-gray-500">
-              <a href="#">Giỏ hàng</a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="bg-gray-50">
-        <div className="mx-auto mb-10 max-w-7xl py-10 pt-10">
-          <div className="w-full flex-none">
-            <table className="min-w-full">
-              <thead className="shadow">
-                <tr className="bg-white font-bold uppercase text-gray-600">
-                  <th className="px-4 py-3 text-center">
-                    <input
-                      type="checkbox"
-                      className="h-4 w-4"
-                      checked={selectAll}
-                      onChange={toggleSelectAll}
-                    />
-                  </th>
-                  <th className="w-28 text-left">Sản Phẩm</th>
-                  <th className="text-center">Giá</th>
-                  <th className="text-center">Số Lượng</th>
-                  <th className="text-center">Tổng</th>
-                </tr>
-              </thead>
-
-              <tbody className="bg-white">
-                {cartData?.products?.map((product, index) => (
-                  <tr key={product.productId} className="shadow">
-                    <td className="px-4 py-4 text-center">
-                      <input
-                        className="h-4 w-4"
-                        type="checkbox"
-                        checked={selectedProducts[index] || false}
-                        onChange={() => toggleSelectProduct(index)}
-                      />
-                    </td>
-                    <td className="flex items-center gap-x-2 py-4">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="h-auto w-12"
-                      />
-                      <div className="w-36">
-                        {product.name}
-                        <span className="text-gray-400">
-                          <div className="flex">
-                            <div>{product.color || 'Không có'}</div>
-                            <div>, {product.size || 'Không có'}</div>
-                          </div>
-                        </span>
+    <div className='px-[40px]'>
+      <main>
+        <div className="mb-4 pb-4" />
+        <section className="shop-checkout container">
+          <h2 className="page-title">Cart</h2>
+          <hr />
+          <div className="shopping-cart">
+            <div className="cart-table__wrapper">
+              <table className="cart-table">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th />
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                    <th />
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <div className="shopping-cart__product-item">
+                        <a href="product1_simple.html">
+                          <img loading="lazy" src="../images/cart-item-1.jpg" width={120} height={120} alt />
+                        </a>
                       </div>
                     </td>
-                    <td className="px-4 py-4 text-center">
-                      <CurrencyVND amount={productPrice(index)} />
-                    </td>
-                    <td className="px-4 py-4 text-center">
-                      <div className="flex items-center justify-center">
-                        <button
-                          onClick={() => decrementQuantity(index)}
-                          className="border px-2 hover:bg-blue-400"
-                        >
-                          -
-                        </button>
-                        <input
-                          type="text"
-                          min="0"
-                          value={quantities[index] || product.quantity}
-                          onChange={e =>
-                            handleQuantityChange(index, e.target.value)
-                          }
-                          className="w-12 border text-center"
-                        />
-                        <button
-                          onClick={() => incrementQuantity(index)}
-                          className="border px-2 hover:bg-blue-400"
-                        >
-                          +
-                        </button>
+                    <td>
+                      <div className="shopping-cart__product-item__detail">
+                        <h4><a href="product1_simple.html">Zessi Dresses</a></h4>
+                        <ul className="shopping-cart__product-item__options">
+                          <li>Color: Yellow</li>
+                          <li>Size: L</li>
+                        </ul>
                       </div>
                     </td>
-                    <td className="px-4 py-4 text-center">
-                      <CurrencyVND
-                        amount={
-                          (quantities[index] || product.quantity) *
-                          productPrice(index)
-                        }
-                      />
+                    <td>
+                      <span className="shopping-cart__product-price">$99</span>
+                    </td>
+                    <td>
+                      <div className="qty-control position-relative">
+                        <input type="number" name="quantity" defaultValue={3} min={1} className="qty-control__number text-center" />
+                        <div className="qty-control__reduce">-</div>
+                        <div className="qty-control__increase">+</div>
+                      </div>{/* .qty-control */}
+                    </td>
+                    <td>
+                      <span className="shopping-cart__subtotal">$297</span>
+                    </td>
+                    <td>
+                      <a href="#" className="remove-cart">
+                        <svg width={10} height={10} viewBox="0 0 10 10" fill="#767676" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M0.259435 8.85506L9.11449 0L10 0.885506L1.14494 9.74056L0.259435 8.85506Z" />
+                          <path d="M0.885506 0.0889838L9.74057 8.94404L8.85506 9.82955L0 0.97449L0.885506 0.0889838Z" />
+                        </svg>
+                      </a>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-
-            <div className="mt-2 bg-white shadow">
-              <div className="flex justify-between p-4">
-                <div className="ml-10 flex items-center gap-5">
-                  <input
-                    className="h-4 w-4"
-                    type="checkbox"
-                    checked={selectAll}
-                    onChange={toggleSelectAll}
-                  />
-                  Chọn tất cả({cartData?.products?.length || 0})
-                  <button
-                    onClick={handleDeleteSelectedProducts}
-                    className="text-red-600 hover:underline"
-                  >
-                    Xóa
-                  </button>
+                  <tr>
+                    <td>
+                      <div className="shopping-cart__product-item">
+                        <a href="product1_simple.html">
+                          <img loading="lazy" src="../images/cart-item-2.jpg" width={120} height={120} alt />
+                        </a>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="shopping-cart__product-item__detail">
+                        <h4><a href="product1_simple.html">Kirby T-Shirt</a></h4>
+                        <ul className="shopping-cart__product-item__options">
+                          <li>Color: Yellow</li>
+                          <li>Size: L</li>
+                        </ul>
+                      </div>
+                    </td>
+                    <td>
+                      <span className="shopping-cart__product-price">$99</span>
+                    </td>
+                    <td>
+                      <div className="qty-control position-relative">
+                        <input type="number" name="quantity" defaultValue={3} min={1} className="qty-control__number text-center" />
+                        <div className="qty-control__reduce">-</div>
+                        <div className="qty-control__increase">+</div>
+                      </div>{/* .qty-control */}
+                    </td>
+                    <td>
+                      <span className="shopping-cart__subtotal">$297</span>
+                    </td>
+                    <td>
+                      <a href="#" className="remove-cart">
+                        <svg width={10} height={10} viewBox="0 0 10 10" fill="#767676" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M0.259435 8.85506L9.11449 0L10 0.885506L1.14494 9.74056L0.259435 8.85506Z" />
+                          <path d="M0.885506 0.0889838L9.74057 8.94404L8.85506 9.82955L0 0.97449L0.885506 0.0889838Z" />
+                        </svg>
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <div className="shopping-cart__product-item">
+                        <a href="product1_simple.html">
+                          <img loading="lazy" src="../images/cart-item-3.jpg" width={120} height={120} alt />
+                        </a>
+                      </div>
+                    </td>
+                    <td>
+                      <div className="shopping-cart__product-item__detail">
+                        <h4><a href="product1_simple.html">Cobleknit Shawl</a></h4>
+                        <ul className="shopping-cart__product-item__options">
+                          <li>Color: Yellow</li>
+                          <li>Size: L</li>
+                        </ul>
+                      </div>
+                    </td>
+                    <td>
+                      <span className="shopping-cart__product-price">$99</span>
+                    </td>
+                    <td>
+                      <div className="qty-control position-relative">
+                        <input type="number" name="quantity" defaultValue={3} min={1} className="qty-control__number text-center" />
+                        <div className="qty-control__reduce">-</div>
+                        <div className="qty-control__increase">+</div>
+                      </div>{/* .qty-control */}
+                    </td>
+                    <td>
+                      <span className="shopping-cart__subtotal">$297</span>
+                    </td>
+                    <td>
+                      <a href="#" className="remove-cart">
+                        <svg width={10} height={10} viewBox="0 0 10 10" fill="#767676" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M0.259435 8.85506L9.11449 0L10 0.885506L1.14494 9.74056L0.259435 8.85506Z" />
+                          <path d="M0.885506 0.0889838L9.74057 8.94404L8.85506 9.82955L0 0.97449L0.885506 0.0889838Z" />
+                        </svg>
+                      </a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div className="cart-table-footer">
+                <form action="https://uomo-html.flexkitux.com/Demo1/" className="position-relative bg-body">
+                  <input className="form-control" type="text" name="coupon_code" placeholder="Coupon Code" />
+                  <input className="btn-link fw-medium position-absolute top-0 end-0 h-100 px-4" type="submit" defaultValue="APPLY COUPON" />
+                </form>
+                <button className="btn btn-light">UPDATE CART</button>
+              </div>
+            </div>
+            <div className="shopping-cart__totals-wrapper">
+              <div className="sticky-content">
+                <div className="shopping-cart__totals">
+                  <h3>Cart Totals</h3>
+                  <table className="cart-totals">
+                    <tbody>
+                      <tr>
+                        <th>Subtotal</th>
+                        <td>$1300</td>
+                      </tr>
+                      <tr>
+                        <th>Shipping</th>
+                        <td>
+                          <div className="form-check">
+                            <input className="form-check-input form-check-input_fill" type="checkbox" defaultValue id="free_shipping" />
+                            <label className="form-check-label" htmlFor="free_shipping">Free shipping</label>
+                          </div>
+                          <div className="form-check">
+                            <input className="form-check-input form-check-input_fill" type="checkbox" defaultValue id="flat_rate" />
+                            <label className="form-check-label" htmlFor="flat_rate">Flat rate: $49</label>
+                          </div>
+                          <div className="form-check">
+                            <input className="form-check-input form-check-input_fill" type="checkbox" defaultValue id="local_pickup" />
+                            <label className="form-check-label" htmlFor="local_pickup">Local pickup: $8</label>
+                          </div>
+                          <div>Shipping to AL.</div>
+                          <div>
+                            <a href="#" className="menu-link menu-link_us-s">CHANGE ADDRESS</a>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th>VAT</th>
+                        <td>$19</td>
+                      </tr>
+                      <tr>
+                        <th>Total</th>
+                        <td>$1319</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
-                <div className="flex items-center gap-5">
-                  <div>
-                    Tổng thanh toán (VND):{' '}
-                    <span className="text-red-500">
-                      <CurrencyVND amount={totalSelectedPrice || '0'} />
-                    </span>
+                <div className="mobile_fixed-btn_wrapper">
+                  <div className="button-wrapper container">
+                    <button className="btn btn-primary btn-checkout">PROCEED TO CHECKOUT</button>
                   </div>
-                  <button
-                    onClick={handleCheckout}
-                    className="rounded-md bg-blue-500 px-6 py-3 text-white hover:bg-black"
-                  >
-                    Thanh toán
-                  </button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
+      <div className="mb-5 pb-xl-5" />
     </div>
+
   );
 }
 

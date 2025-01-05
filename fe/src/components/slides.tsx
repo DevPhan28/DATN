@@ -1,11 +1,10 @@
-import { Link } from "@tanstack/react-router";
 import "swiper/css";
 import "swiper/css/pagination";
-import slide1 from '../assets/images/slider1.jpg';
-import slide3 from '../assets/images/slider3.jpg';
-import slide2 from '../assets/images/slider2.jpg';
+import { Autoplay, EffectFade, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay, EffectFade } from "swiper/modules";
+import slide1 from '../assets/images/slider1.jpg';
+import slide2 from '../assets/images/slider2.jpg';
+import slide3 from '../assets/images/slider3.jpg';
 const Slides = () => {
     return (
         <div className="px-[55px]">

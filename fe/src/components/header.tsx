@@ -110,7 +110,7 @@ const Header = () => {
   };
   return (
     <>
-      <header id="header" className="header header_sticky">
+      <header id="header" className=" header_sticky">
         <div className="container px-[55px]">
           <div className="header-desk header-desk_type_1">
             <div className="logo">
@@ -289,7 +289,7 @@ const Header = () => {
         >
           <div className="customer-forms__wrapper d-flex position-relative">
             <div className="flex flex-col items-center justify-center">
-              <div className="group relative z-10" ref={menuRef}>
+              <div className="group relative z-1" ref={menuRef}>
                 {isMenuOpen && (
                   <ul className="absolute top-10 w-96 transform cursor-pointer rounded-lg transition-all duration-300 ease-in-out">
                     {isLoggedIn ? (
