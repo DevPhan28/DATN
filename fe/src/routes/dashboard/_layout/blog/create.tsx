@@ -130,7 +130,7 @@ function AddBlog() {
     formDataThumbnail.append('thumbnail', selectedImage);
     try {
       // Gửi yêu cầu upload ảnh
-       await axios.post(
+      await axios.post(
         `http://localhost:8080/api/upload-thumbnail-blog`,
         formDataThumbnail,
         {
@@ -141,7 +141,7 @@ function AddBlog() {
       );
 
       // Kiểm tra phản hồi từ server
-      
+
     } catch (error) {
       console.error('Failed to upload image:', error);
       throw new Error('Failed to upload image');
@@ -192,7 +192,7 @@ function AddBlog() {
             {/* Tiêu đề */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className="block text-sm font-medium text-ui-fg-base">
+                <label className=" text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Tiêu đề
                 </label>
                 <Input
@@ -212,7 +212,7 @@ function AddBlog() {
             {/* Tác giả */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className="block text-sm font-medium text-ui-fg-base">
+                <label className=" text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Tác giả
                 </label>
                 <Input
@@ -232,7 +232,7 @@ function AddBlog() {
             {/* Thẻ */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className="block text-sm font-medium text-ui-fg-base">
+                <label className=" text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Thẻ
                 </label>
                 <Input
@@ -251,7 +251,7 @@ function AddBlog() {
             </div>
             {/* Ảnh đại diện  */}
             <div>
-              <label className="block text-sm font-medium text-ui-fg-base">
+              <label className=" text-sm font-medium text-ui-fg-base">
                 <span className="text-ui-tag-red-text">*</span> Ảnh
               </label>
               <p className="mb-2 text-xs text-ui-fg-muted">
@@ -274,7 +274,7 @@ function AddBlog() {
                     ref={fileInputRef}
                     accept=".jpg, .png"
                     onChange={handleThumbnailChange}
-                    
+
                     className="hidden cursor-pointer"
                   />
                 </div>
@@ -301,7 +301,7 @@ function AddBlog() {
                 )}
               </div>
               <div className="flex flex-col">
-                <label className="block text-sm font-medium text-ui-fg-base">
+                <label className=" text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Nội dung
                 </label>
                 <div className="mt-2 flex flex-1 flex-col">

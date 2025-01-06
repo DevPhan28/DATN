@@ -9,7 +9,7 @@ export const Route = createFileRoute('/_layout')({
   component: () => (
     <div>
       <div>
-        <Banertime />
+
         <Header />
         <Outlet />
       </div>

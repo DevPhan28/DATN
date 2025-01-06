@@ -50,7 +50,14 @@ const menuBlog: MenuItem[] = [
     href: '/dashboard/blog',
   },
 ];
-
+const menuMessenger: MenuItem[] = [
+  {
+    id: 1,
+    name: 'Trò chuyện',
+    icon: <Pencil />,
+    href: '/dashboard/messenger',
+  },
+];
 const menuAccount: MenuItem[] = [
   {
     id: 1,
@@ -130,6 +137,22 @@ const Sidebar = () => {
           </header>
           <div>
             {menuBlog.map(item => (
+              <ItemSidebar
+                key={item.id}
+                href={item.href}
+                id={item.id}
+                name={item.name}
+                icon={item.icon}
+              />
+            ))}
+          </div>
+        </section>
+        <section className="space-y-1">
+          <header className="py-1.5 pl-2 text-xs font-medium text-ui-fg-muted">
+            Blog
+          </header>
+          <div>
+            {menuMessenger.map(item => (
               <ItemSidebar
                 key={item.id}
                 href={item.href}

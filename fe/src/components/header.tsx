@@ -10,6 +10,7 @@ import nav_bg from '../assets/images/nav-bg.jpg';
 import CurrencyVND from './config/vnd';
 import { SeachIcon } from './icon';
 import imgCart from '../assets/images/cart_trong.jpg';
+import Banertime from './Banertime';
 const Header = () => {
   // Trạng thái hiển thị của menu
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -108,10 +109,31 @@ const Header = () => {
       state: { selectedItems },
     });
   };
+
+  //Dòng dữ nguyên header
+  const [isSticky, setIsSticky] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => {
+      // Kiểm tra nếu đã cuộn đến gần cuối trang
+      const scrollPosition = window.scrollY + window.innerHeight;
+      const pageHeight = document.documentElement.scrollHeight;
+      if (scrollPosition >= pageHeight - 50) {
+        setIsSticky(true);
+      } else {
+        setIsSticky(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <>
-      <header id="header" className=" header_sticky">
-        <div className="container px-[55px]">
+
+      <header id="header" className={`${isSticky ? "bg-white" : "bg-white"} fixed top-0 left-0 w-full  transition-all duration-300 header_sticky`}>
+        <Banertime />
+        <div className="container px-[55px] mt-[-10px]">
           <div className="header-desk header-desk_type_1">
             <div className="logo">
               <a href="/">

@@ -237,7 +237,7 @@ function AddBrand() {
             {/* Product Name */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className="block text-sm font-medium text-ui-fg-base">
+                <label className=" text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Tên sản phẩm
                 </label>
                 <Input
@@ -257,7 +257,7 @@ function AddBrand() {
 
             {/* Image Upload */}
             <div>
-              <label className="block text-sm font-medium text-ui-fg-base">
+              <label className=" text-sm font-medium text-ui-fg-base">
                 <span className="text-ui-tag-red-text">*</span> Ảnh
               </label>
               <p className="mb-2 text-xs text-ui-fg-muted">
@@ -310,7 +310,7 @@ function AddBrand() {
             {/* Price */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className="block text-sm font-medium text-ui-fg-base">
+                <label className=" text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Giá (VND)
                 </label>
                 <Input
@@ -334,7 +334,7 @@ function AddBrand() {
             {/* Category */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className="block text-sm font-medium text-ui-fg-base">
+                <label className=" text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Danh mục
                 </label>
                 <div className="w-full">
@@ -364,7 +364,7 @@ function AddBrand() {
             {/* Description */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className="block text-sm font-medium text-ui-fg-base">
+                <label className=" text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Mô tả
                 </label>
                 <Textarea
@@ -376,7 +376,7 @@ function AddBrand() {
 
             {/* Gallery Upload */}
             <div>
-              <label className="block text-sm font-medium text-ui-fg-base">
+              <label className=" text-sm font-medium text-ui-fg-base">
                 <span className="text-ui-tag-red-text">*</span> Ảnh trưng bày
               </label>
               <p className="mb-2 text-xs text-ui-fg-muted">
@@ -432,7 +432,7 @@ function AddBrand() {
               </div>
 
               <div className="flex flex-col">
-                <label className="block text-sm font-medium text-ui-fg-base">
+                <label className=" text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Content
                 </label>
                 <div className="mt-2 flex flex-1 flex-col">
@@ -470,7 +470,7 @@ function AddBrand() {
                 {fields.map((item, index) => (
                   <div key={item.id} className="mb-4 flex space-x-4">
                     <div className="flex-1 space-y-3">
-                      <label className="block text-sm font-medium text-ui-fg-base">
+                      <label className=" text-sm font-medium text-ui-fg-base">
                         <span className="text-ui-tag-red-text">*</span> Size
                       </label>
                       <Input
@@ -498,7 +498,7 @@ function AddBrand() {
                       )}
                     </div>
                     <div className="flex-1 space-y-3">
-                      <label className="block text-sm font-medium text-ui-fg-base">
+                      <label className=" text-sm font-medium text-ui-fg-base">
                         <span className="text-ui-tag-red-text">*</span> Màu
                       </label>
                       <Input
@@ -526,7 +526,7 @@ function AddBrand() {
                       )}
                     </div>
                     <div className="flex-1 space-y-3">
-                      <label className="block text-sm font-medium text-ui-fg-base">
+                      <label className=" text-sm font-medium text-ui-fg-base">
                         <span className="text-ui-tag-red-text">*</span> Giá
                         (VND)
                       </label>
@@ -546,7 +546,7 @@ function AddBrand() {
                       )}
                     </div>
                     <div className="flex-1 space-y-3">
-                      <label className="block text-sm font-medium text-ui-fg-base">
+                      <label className=" text-sm font-medium text-ui-fg-base">
                         <span className="text-ui-tag-red-text">*</span> Số lượng
                         trong kho
                       </label>
@@ -572,7 +572,7 @@ function AddBrand() {
                       )}
                     </div>
                     <div className="flex-1 space-y-3">
-                      <label className="block text-sm font-medium text-ui-fg-base">
+                      <label className=" text-sm font-medium text-ui-fg-base">
                         <span className="text-ui-tag-red-text">*</span> Khối
                         lượng
                       </label>
@@ -595,7 +595,7 @@ function AddBrand() {
                       )}
                     </div>
                     {/* <div className="flex-1 space-y-3">
-                      <label className="block text-sm font-medium text-ui-fg-base">
+                      <label className=" text-sm font-medium text-ui-fg-base">
                         <span className="text-ui-tag-red-text">*</span> SKU
                       </label>
                       <Input

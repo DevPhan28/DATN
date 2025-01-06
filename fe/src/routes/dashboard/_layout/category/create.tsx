@@ -81,7 +81,7 @@ function AddCategory() {
             {/* Category Name */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className="block text-sm font-medium text-ui-fg-base">
+                <label className=" text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Tên danh mục
                 </label>
                 <Input

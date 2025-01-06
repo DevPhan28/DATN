@@ -89,7 +89,7 @@ function AddCoupon() {
             {/* Phiếu giảm giá */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className="block text-sm font-medium text-ui-fg-base">
+                <label className=" text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Phiếu giảm giá
                 </label>
                 <Input
@@ -110,7 +110,7 @@ function AddCoupon() {
             {/* Giảm giá */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className="block text-sm font-medium text-ui-fg-base">
+                <label className=" text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Giảm giá (%)
                 </label>
                 <Input
@@ -139,7 +139,7 @@ function AddCoupon() {
             {/* Đơn hàng tối thiểu */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className="block text-sm font-medium text-ui-fg-base">
+                <label className=" text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Đơn hàng tối
                   thiểu
                 </label>
@@ -164,7 +164,7 @@ function AddCoupon() {
             {/* Số tiền giảm tối đa */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className="block text-sm font-medium text-ui-fg-base">
+                <label className=" text-sm font-medium text-ui-fg-base">
                   Số tiền giảm tối đa
                 </label>
                 <Input
@@ -185,7 +185,7 @@ function AddCoupon() {
             {/* Miễn phí vận chuyển */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className="block text-sm font-medium text-ui-fg-base">
+                <label className=" text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Miễn phí vận
                   chuyển
                 </label>
@@ -209,7 +209,7 @@ function AddCoupon() {
             {/* Ngày bắt đầu */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className="block text-sm font-medium text-ui-fg-base">
+                <label className=" text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Ngày bắt đầu
                 </label>
                 <DatePicker
@@ -222,7 +222,7 @@ function AddCoupon() {
             {/* Ngày hết hạn */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className="block text-sm font-medium text-ui-fg-base">
+                <label className=" text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Ngày hết hạn
                 </label>
                 <DatePicker
@@ -235,7 +235,7 @@ function AddCoupon() {
             {/* Trạng thái */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className="block text-sm font-medium text-ui-fg-base">
+                <label className=" text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Trạng thái
                 </label>
                 <Select
