@@ -483,13 +483,11 @@ function AddBrand() {
                             const isDuplicate = variants.some(
                               (variant, i) =>
                                 i !== index &&
-                                variant.size === value &&
-                                variant.color === variants[index].color // Kiểm tra cả size và color
+                                variant.color.trim().toLowerCase() === value.trim().toLowerCase() &&
+                                variant.size.trim().toLowerCase() === variants[index].size.trim().toLowerCase()
                             );
-                            return isDuplicate
-                              ? 'Kích thước đã tồn tại.'
-                              : true;
-                          },
+                            return isDuplicate ? 'Kích thước đã tồn tại.' : true;
+                          }
                         })}
                       />
 
@@ -513,11 +511,11 @@ function AddBrand() {
                             const isDuplicate = variants.some(
                               (variant, i) =>
                                 i !== index &&
-                                variant.color === value &&
-                                variant.size === variants[index].size // Kiểm tra cả color và size
+                                variant.color.trim().toLowerCase() === value.trim().toLowerCase() &&
+                                variant.size.trim().toLowerCase() === variants[index].size.trim().toLowerCase()
                             );
-                            return isDuplicate ? 'Màu đã tồn tại.' : true;
-                          },
+                            return isDuplicate ? 'màu sắc đã tồn tại.' : true;
+                          }
                         })}
                       />
 
