@@ -226,7 +226,7 @@ function EditProduct() {
   };
   return (
     <div className="h-screen overflow-y-auto">
-      <Header title="Edit Product" pathname="/dashboard/products" />
+      <Header title="Sửa sản phẩm" pathname="/dashboard/products" />
       <form onSubmit={handleSubmit(onCreateProduct)} className="m-8">
         <div className="my-3 flex justify-between">
           <div className="w-[330px]">
@@ -567,13 +567,11 @@ function EditProduct() {
                             const isDuplicate = variants.some(
                               (variant, i) =>
                                 i !== index &&
-                                variant.size === value &&
-                                variant.color === variants[index].color // Kiểm tra cả size và color
+                                variant.color.trim().toLowerCase() === value.trim().toLowerCase() &&
+                                variant.size.trim().toLowerCase() === variants[index].size.trim().toLowerCase()
                             );
-                            return isDuplicate
-                              ? 'Kích thước đã tồn tại.'
-                              : true;
-                          },
+                            return isDuplicate ? 'Kích thướcthước đã tồn tại.' : true;
+                          }
                         })}
                       />
                       {errors.variants?.[index]?.size && (
@@ -598,11 +596,11 @@ function EditProduct() {
                             const isDuplicate = variants.some(
                               (variant, i) =>
                                 i !== index &&
-                                variant.color === value &&
-                                variant.size === variants[index].size // Kiểm tra cả color và size
+                                variant.color.trim().toLowerCase() === value.trim().toLowerCase() &&
+                                variant.size.trim().toLowerCase() === variants[index].size.trim().toLowerCase()
                             );
-                            return isDuplicate ? 'Màu đã tồn tại.' : true;
-                          },
+                            return isDuplicate ? 'màu sắc đã tồn tại.' : true;
+                          }
                         })}
                       />
                       {errors.variants?.[index]?.color && (
