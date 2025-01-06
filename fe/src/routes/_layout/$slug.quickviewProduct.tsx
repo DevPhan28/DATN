@@ -87,7 +87,7 @@ function DetailProduct() {
           );
           const average = totalRating / response.data.length;
           setAverageRating(average); // Cập nhật số sao trung bình
-        } catch (err) {}
+        } catch (err) { }
       };
       fetchComments();
     }
@@ -380,11 +380,10 @@ function DetailProduct() {
                           <button
                             type="button"
                             onClick={() => handleSizeChange(size)}
-                            className={`rounded border px-4 py-2 ${
-                              selectedSize === size
+                            className={`rounded border px-4 py-2 ${selectedSize === size
                                 ? 'border-blue-500 bg-blue-500 text-white'
                                 : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100'
-                            }`}
+                              }`}
                           >
                             {size}
                           </button>
@@ -409,11 +408,10 @@ function DetailProduct() {
                               type="button"
                               key={color}
                               onClick={() => setSelectedColor(color)}
-                              className={`h-8 w-8 rounded-full border focus:outline-none ${
-                                selectedColor === color
+                              className={`h-8 w-8 rounded-full border focus:outline-none ${selectedColor === color
                                   ? 'border-blue-500 ring-2 ring-blue-500'
                                   : 'border-gray-300'
-                              }`}
+                                }`}
                               style={{
                                 backgroundColor: color,
                                 boxShadow:

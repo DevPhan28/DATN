@@ -94,9 +94,9 @@ function NewCheckout() {
       coupon.isFreeShipping
         ? 0
         : Math.min(
-            (coupon.discount / 100) * totalAmount,
-            coupon.maxDiscountAmount || Infinity
-          )
+          (coupon.discount / 100) * totalAmount,
+          coupon.maxDiscountAmount || Infinity
+        )
     );
     setIsCouponFreeShipping(coupon.isFreeShipping);
   };

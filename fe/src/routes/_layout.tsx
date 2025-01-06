@@ -9,7 +9,6 @@ export const Route = createFileRoute('/_layout')({
   component: () => (
     <div>
       <div>
-
         <Header />
         <Outlet />
       </div>

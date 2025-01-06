@@ -7,7 +7,7 @@ import slide2 from '../assets/images/slider2.jpg';
 import slide3 from '../assets/images/slider3.jpg';
 const Slides = () => {
     return (
-        <div className="px-[55px] mt-32">
+        <div className="px-[55px]">
             <section className="swiper-container slideshow full-width_padding ">
                 <Swiper
                     modules={[Navigation, Pagination, Autoplay, EffectFade]}
