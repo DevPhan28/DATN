@@ -1,22 +1,21 @@
-import { createFileRoute, useLocation } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import useCheckoutMutation from '@/data/oder/useOderMutation';
+import instance from '@/api/axiosIntance';
+import VoucherModal from '@/components/VoucherModal';
+import CurrencyVND from '@/components/config/vnd';
 import useCartMutation from '@/data/cart/useCartMutation';
-import { useQueryClient } from '@tanstack/react-query';
+import { useFetchAvailableCoupons } from '@/data/coupon/useCouponList';
+import useCheckoutMutation from '@/data/oder/useOderMutation';
 import {
   ChevronRightMini,
   CurrencyDollarSolid,
   DocumentTextSolid,
   MapPin,
-  User,
   ReceiptPercent,
+  User,
 } from '@medusajs/icons';
 import { toast } from '@medusajs/ui';
-import instance from '@/api/axiosIntance';
-import { useFetchAvailableCoupons } from '@/data/coupon/useCouponList';
-import VoucherModal from '@/components/VoucherModal';
-import CurrencyVND from '@/components/config/vnd';
+import { createFileRoute, useLocation } from '@tanstack/react-router';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 
 export const Route = createFileRoute('/_layout/checkout/')({
   component: () => {

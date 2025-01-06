@@ -1,11 +1,9 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from '@medusajs/ui';
 import instance from '@/api/axiosIntance';
+import { toast } from '@medusajs/ui';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { QUERY_KEY } from '../stores/key';
-import { useNavigate } from '@tanstack/react-router';
 
 const useCommentMutation = () => {
-  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   // Thêm bình luận
@@ -17,7 +15,7 @@ const useCommentMutation = () => {
       rating: number; // Thêm rating vào dữ liệu gửi đi
     }) => instance.post('/comments', data),
 
-    onSuccess: async (response) => {
+    onSuccess: async response => {
       const { productId } = response.data; // Lấy productId từ phản hồi
 
       // Kiểm tra nếu productId không tồn tại trong phản hồi từ backend
@@ -40,14 +38,21 @@ const useCommentMutation = () => {
     },
     onError: (error: any) => {
       // Xử lý lỗi từ backend
-      const errorMessage = error?.response?.data?.message || error.message || 'Unknown error occurred';
-      
+      const errorMessage =
+        error?.response?.data?.message ||
+        error.message ||
+        'Unknown error occurred';
+
       // Kiểm tra các lỗi đặc biệt từ backend (khi người dùng chưa mua sản phẩm)
-      if (error?.response?.data?.message === "You must purchase the product before commenting") {
+      if (
+        error?.response?.data?.message ===
+        'You must purchase the product before commenting'
+      ) {
         toast.error('You must purchase the product before commenting.', {
-          description: 'Please ensure that you have bought the product before leaving a comment.',
+          description:
+            'Please ensure that you have bought the product before leaving a comment.',
         });
-      } else if (error?.response?.data?.message === "Missing required fields") {
+      } else if (error?.response?.data?.message === 'Missing required fields') {
         toast.error('Missing required fields.', {
           description: 'Please make sure all required fields are filled.',
         });
@@ -75,7 +80,7 @@ const useCommentMutation = () => {
       });
     },
 
-    onSuccess: async (response) => {
+    onSuccess: async response => {
       const { productId } = response.data; // Truy cập productId từ dữ liệu phản hồi
       toast.success('Comment deleted successfully!', {
         description: 'Your comment has been deleted.',
@@ -87,12 +92,6 @@ const useCommentMutation = () => {
         queryKey: [QUERY_KEY.FETCH_COMMENT_BY_PRODUCT, productId],
       });
 
-      // Optionally, refetch to ensure the latest data is fetched immediately after deletion
-      // queryClient.refetchQueries({
-      //   queryKey: [QUERY_KEY.FETCH_COMMENT_BY_PRODUCT, productId],
-      //   active: true,
-      // });
-
       return response;
     },
     onError: (error: any) => {
@@ -103,41 +102,39 @@ const useCommentMutation = () => {
   });
   const removeCommentByAdmin = useMutation({
     mutationFn: (commentId: string) => {
-      console.log("Comment ID to delete:", commentId); // Log ID trước khi gọi API
+      console.log('Comment ID to delete:', commentId); // Log ID trước khi gọi API
       return instance.delete(`/comments/${commentId}/admin`);
     },
-  
-    onSuccess: async (response) => {
+
+    onSuccess: async response => {
       const { productId } = response.data || {};
-      console.log("Response from server:", response.data); // Log phản hồi từ server
-  
+      console.log('Response from server:', response.data); // Log phản hồi từ server
+
       if (productId) {
         toast.success('Comment deleted successfully!', {
           description: 'Your comment has been deleted.',
           duration: 1000,
         });
-  
+
         // Refresh comments data cho sản phẩm
         await queryClient.invalidateQueries({
           queryKey: [QUERY_KEY.FETCH_COMMENT_BY_PRODUCT, productId],
         });
       } else {
-        console.warn("Product ID missing in response.");
+        console.warn('Product ID missing in response.');
       }
       return response;
     },
-  
+
     onError: (error: any) => {
-      console.error("Error deleting comment:", error); // Log lỗi nếu xảy ra
+      console.error('Error deleting comment:', error); // Log lỗi nếu xảy ra
       toast.error(`Error deleting comment: ${error.message}`, {
         description: 'Please try again later.',
       });
     },
   });
-  
-  
 
-  return { createComment, removeComment,removeCommentByAdmin };
+  return { createComment, removeComment, removeCommentByAdmin };
 };
 
 export default useCommentMutation;

@@ -125,7 +125,7 @@ function ProfileUser() {
               <ChevronRightMini />
             </div>
             <div className="capitalize text-gray-500">
-              <Link to="/profile">Hồ Sơ Của Tôi</Link>
+              <Link to="/profile">Hồ Sơ</Link>
             </div>
           </div>
         </div>

@@ -7,10 +7,15 @@ import { Coupon } from '@/types/coupon';
 export const fetchCoupons = async (params: CouponParams) => {
   try {
     console.log('Fetching coupons with params:', params);
-    const res = await instance.get<{ data: Coupon[]; meta: MetaData }>('/get-coupon', { params });
+    const res = await instance.get<{ data: Coupon[]; meta: MetaData }>(
+      '/get-coupon',
+      { params }
+    );
 
     if (res.status !== 200 && res.status !== 201) {
-      throw new Error(`Error while fetching coupons - status code: ${res.status}`);
+      throw new Error(
+        `Error while fetching coupons - status code: ${res.status}`
+      );
     }
 
     return res.data;
@@ -63,7 +68,9 @@ export const fetchAvailableCoupons = async (
     });
 
     if (res.status !== 200) {
-      throw new Error(`Error while fetching available coupons - status: ${res.status}`);
+      throw new Error(
+        `Error while fetching available coupons - status: ${res.status}`
+      );
     }
 
     // Kiểm tra response có phải là mảng hợp lệ
@@ -94,7 +101,7 @@ export const useFetchAvailableCoupons = (
       return fetchAvailableCoupons(orderAmount, userId, code);
     },
     enabled: !!orderAmount && !!userId, // Chỉ kích hoạt nếu orderAmount và userId tồn tại
-    onError: (error) => {
+    onError: error => {
       console.error('Không thể tải mã giảm giá khả dụng:', error);
     },
   });
@@ -103,10 +110,14 @@ export const useFetchAvailableCoupons = (
 // Hàm fetch người dùng đã sử dụng mã giảm giá cụ thể
 export const fetchCouponUsers = async (couponId: string): Promise<User[]> => {
   try {
-    const res = await instance.get<{ users: User[] }>(`/coupon/${couponId}/users`);
+    const res = await instance.get<{ users: User[] }>(
+      `/coupon/${couponId}/users`
+    );
 
     if (res.status !== 200) {
-      throw new Error(`Không thể tải người dùng của mã giảm giá - trạng thái: ${res.status}`);
+      throw new Error(
+        `Không thể tải người dùng của mã giảm giá - trạng thái: ${res.status}`
+      );
     }
 
     return res.data.users;

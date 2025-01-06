@@ -1,18 +1,24 @@
 import { useFetchOrderAll } from '@/data/oder/useOderList';
-import React, { useEffect, useState } from 'react';
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-
+import { useEffect, useState } from 'react';
+import {
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+} from 'recharts';
 
 const PieChartExample = () => {
-  const [pieData, setPieData] = useState<{ name: string; value: number }[]>([]); 
-  const { listOrder, loading, error } = useFetchOrderAll(); 
+  const [pieData, setPieData] = useState<{ name: string; value: number }[]>([]);
+  const { listOrder, loading, error } = useFetchOrderAll();
 
   useEffect(() => {
     if (listOrder && listOrder.length > 0) {
       const locationCounts: Record<string, number> = {};
 
-      listOrder.forEach((order) => {
-        const location = order.customerInfo.city;  
+      listOrder.forEach(order => {
+        const location = order.customerInfo.city;
 
         if (locationCounts[location]) {
           locationCounts[location]++;
@@ -22,24 +28,33 @@ const PieChartExample = () => {
       });
 
       // Chuyển dữ liệu nhóm thành mảng phù hợp với PieChart
-      const formattedData = Object.keys(locationCounts).map((location) => ({
+      const formattedData = Object.keys(locationCounts).map(location => ({
         name: location,
         value: locationCounts[location],
       }));
 
-      setPieData(formattedData);  // Cập nhật dữ liệu cho PieChart
+      setPieData(formattedData); // Cập nhật dữ liệu cho PieChart
     }
-  }, [listOrder]);  // Đảm bảo dữ liệu sẽ được cập nhật khi listOrder thay đổi
+  }, [listOrder]); // Đảm bảo dữ liệu sẽ được cập nhật khi listOrder thay đổi
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   // Màu sắc cho từng phần trong biểu đồ
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#FF6347', '#ADFF2F'];
+  const COLORS = [
+    '#0088FE',
+    '#00C49F',
+    '#FFBB28',
+    '#FF8042',
+    '#FF6347',
+    '#ADFF2F',
+  ];
 
   return (
-    <div className="bg-white pb-20 m-6 rounded-lg shadow mb-8 p-6">
-        <h2 className='text-xl m-6 font-semibold '>Tỉnh thành mua nhiều sản phẩm</h2>
+    <div className="m-6 mb-8 rounded-lg bg-white p-6 pb-20 shadow">
+      <h2 className="m-6 text-xl font-semibold">
+        Tỉnh thành mua nhiều sản phẩm
+      </h2>
       <div style={{ width: '100%', height: 400 }} className="">
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
@@ -54,7 +69,10 @@ const PieChartExample = () => {
               label
             >
               {pieData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
               ))}
             </Pie>
             <Tooltip />

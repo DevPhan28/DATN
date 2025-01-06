@@ -1,10 +1,10 @@
+import instance from '@/api/axiosIntance';
+import CustomUser from '@/components/useroder/custom-menu';
+import { ChevronRightMini } from '@medusajs/icons';
+import { Button, Input, toast } from '@medusajs/ui';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
-import { ChevronRightMini } from '@medusajs/icons';
-import instance from '@/api/axiosIntance';
-import { Button, Input, toast } from '@medusajs/ui';
 import { useForm } from 'react-hook-form';
-import CustomUser from '@/components/useroder/custom-menu';
 
 export const Route = createFileRoute('/_layout/change_password/')({
   component: PasswordUser,
@@ -19,7 +19,6 @@ function PasswordUser() {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors, isValid },
   } = useForm<Iaccount>({
     mode: 'onChange',
@@ -127,7 +126,7 @@ function PasswordUser() {
   };
 
   // Kiểm tra mật khẩu mới có giống mật khẩu cũ không
-  const newPassword = watch('newPassword');
+
   const oldPassword = user?.password; //
 
   if (loading) {
