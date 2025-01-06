@@ -140,10 +140,20 @@ function DetailOrderUser() {
             <span className="text-gray-500">|</span>
             <span className="font-bold text-green-600">
               {{
+                pendingPayment: 'CHỜ THANH TOÁN',
                 pending: 'ĐANG CHỜ XÁC NHẬN',
+                confirmed: 'CHỜ LẤY HÀNG',
                 shipped: 'ĐANG VẬN CHUYỂN',
-                delivered: 'ĐƠN HÀNG HOÀN THÀNH',
                 received: 'GIAO HÀNG THÀNH CÔNG',
+                delivered: 'ĐƠN HÀNG HOÀN THÀNH',
+                canceled: 'ĐÃ HUỶ',
+                returned: 'ĐÃ HOÀN TRẢ HÀNG',
+                complaint: 'ĐANG KHIÊU NẠI',
+                refund_in_progress: 'ĐANG HOÀN TRẢ HÀNG',
+                refund_completed: 'HOÀN TRẢ HÀNG THÀNH CÔNG',
+                exchange_in_progress: 'ĐANG ĐỔI TRẢ HÀNG',
+                exchange_completed: 'ĐỔI TRẢ HÀNG THÀNH CÔNG',
+                canceled_complaint: 'HUỶ KHIẾU NẠI',
               }[status] || status}
             </span>
           </div>
@@ -154,9 +164,22 @@ function DetailOrderUser() {
           {/* Tiến trình đơn hàng */}
           <div className="mb-6 flex items-center justify-around">
             {steps.map((step, index) => {
-              const isActive = statusOrder[step.status] <= statusIndex; // Đã hoàn thành hoặc đang xử lý
-              const isCurrent = statusOrder[step.status] === statusIndex; // Trạng thái hiện tại
-              const isLastStep = index === steps.length - 1; // Kiểm tra nếu là bước cuối
+              const isActive = statusOrder[step.status] <= statusIndex;
+              const isCurrent = statusOrder[step.status] === statusIndex;
+              const isLastStep = index === steps.length - 1;
+
+              let stepLabel = step.label;
+
+              if (step.status === 'pendingPayment') {
+                if (statusOrder['delivered'] <= statusIndex) {
+                  stepLabel = 'Đã thanh toán';
+                } else {
+                  stepLabel =
+                    paymentMethod === 'cod'
+                      ? 'Chưa thanh toán'
+                      : 'Đã thanh toán';
+                }
+              }
 
               return (
                 <div key={index} className="flex items-center">
@@ -174,7 +197,7 @@ function DetailOrderUser() {
                         isActive ? 'text-gray-800' : 'text-gray-400'
                       }`}
                     >
-                      {step.label}
+                      {stepLabel} {/* Hiển thị tên bước đã được thay đổi */}
                     </span>
                   </div>
 
