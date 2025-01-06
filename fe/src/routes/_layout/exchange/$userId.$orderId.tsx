@@ -75,8 +75,8 @@ function ExchangeRequestPage() {
       toast.error('Vui lòng chọn lý do đổi trả!');
       return;
     }
-    if (!description || !email) {
-      toast.error('Vui lòng nhập đầy đủ thông tin mô tả và email.');
+    if (!email) {
+      toast.error('Vui lòng nhập đầy đủ thông tin email.');
       return;
     }
     const isValidEmail = (email: string) =>
@@ -137,9 +137,11 @@ function ExchangeRequestPage() {
   }
 
   return (
-    <div className="mx-auto mt-8 max-w-3xl bg-white p-6 shadow-md">
+    <div className="mx-auto mb-5 mt-8 max-w-3xl bg-white p-6 shadow-md">
       <h2 className="mb-4 text-xl font-semibold">Tình huống bạn đang gặp?</h2>
-      <p className="mb-6 text-gray-600">Tôi chưa nhận hàng, nhận thiếu hàng</p>
+      <p className="mb-6 text-gray-600">
+        Tôi muốn đổi sản phẩm do không đúng mẫu mã, kích thước hoặc bị lỗi
+      </p>
 
       <div className="mb-6">
         <h3 className="mb-2 text-lg font-semibold">Sản phẩm đã chọn</h3>
@@ -177,29 +179,35 @@ function ExchangeRequestPage() {
           className="mb-4 w-full rounded border p-2"
         >
           <option value="">Chọn Lý Do</option>
-          <option value="Chưa nhận được hàng">Chưa nhận được hàng</option>
-          <option value="Thiếu hàng">Thiếu hàng</option>
-          <option value="Thùng hàng rỗng">Thùng hàng rỗng</option>
+          <option value="Sản phẩm không đúng mẫu mã đặt hàng">
+            Sản phẩm không đúng mẫu mã đặt hàng
+          </option>
+          <option value="Sản phẩm không đúng kích thước">
+            Sản phẩm không đúng kích thước
+          </option>
+          <option value="Sản phẩm không đúng màu sắc">
+            Sản phẩm không đúng màu sắc
+          </option>
+          <option value="Sản phẩm bị lỗi hoặc hư hỏng">
+            Sản phẩm bị lỗi hoặc hư hỏng
+          </option>
+          <option value="Giao nhầm sản phẩm">Giao nhầm sản phẩm</option>
+          <option value="Sản phẩm khác với hình ảnh hoặc mô tả trên website">
+            Sản phẩm khác với hình ảnh hoặc mô tả trên website
+          </option>
+          <option value="Thùng hàng bị lỗi hoặc không đầy đủ sản phẩm">
+            Thùng hàng bị lỗi hoặc không đầy đủ sản phẩm
+          </option>
         </select>
-
-        <label className="mb-2 block text-sm font-medium text-gray-700">
-          Mô tả:
-        </label>
-        <textarea
-          value={description}
-          onChange={e => setDescription(e.target.value)}
-          className="mb-4 w-full rounded border p-2"
-          placeholder="Chi tiết vấn đề bạn gặp phải"
-          rows={4}
-          maxLength={2000}
-        ></textarea>
       </div>
 
       <div className="mb-6">
         <h3 className="mb-2 text-lg font-semibold">Thông tin hoàn tiền</h3>
         <div className="mb-2 flex justify-between">
           <span>Số tiền hoàn lại:</span>
-          <span><CurrencyVND amount={order.totalPrice}/></span>
+          <span>
+            <CurrencyVND amount={order.totalPrice} />
+          </span>
         </div>
 
         <label className="mb-2 block text-sm font-medium text-gray-700">

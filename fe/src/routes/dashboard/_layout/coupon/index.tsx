@@ -1,12 +1,7 @@
 import Header from '@/components/layoutAdmin/header/header';
 import { useFetchCoupons } from '@/data/coupon/useCouponList';
 import useCouponMutation from '@/data/coupon/useCouponMutation';
-import {
-  Adjustments,
-  ArrowUpTray,
-  EllipsisVertical,
-  Plus,
-} from '@medusajs/icons';
+import { EllipsisVertical, Plus } from '@medusajs/icons';
 import { Button, DropdownMenu, Input, Table, usePrompt } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useMemo, useState } from 'react';

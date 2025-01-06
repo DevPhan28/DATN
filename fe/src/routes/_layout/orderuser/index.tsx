@@ -530,8 +530,8 @@ function UserOrder() {
                 to={`/refund/${userId}/${selectedOrderId}`}
                 className="w-full rounded bg-blue-500 p-2 text-white"
               >
-                Tôi đã nhận hàng nhưng không còn nhu cầu/hàng có vấn đề (bể vỡ,
-                sai mẫu, lỗi, khác mô tả...)
+                Tôi đã nhận hàng nhưng không còn nhu cầu/hàng có vấn đề ( sai
+                mẫu, lỗi, khác mô tả...)
               </Link>
               <Link
                 to={`/exchange/${userId}/${selectedOrderId}`}

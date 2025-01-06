@@ -1,8 +1,8 @@
 import Header from '@/components/layoutAdmin/header/header';
 import useCouponMutation from '@/data/coupon/useCouponMutation';
-import { Button, Input, Select, DatePicker } from '@medusajs/ui';
+import { Button, DatePicker, Input, Select } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useForm, SubmitHandler, setError } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 export const Route = createFileRoute('/dashboard/_layout/coupon/create')({
   component: AddCoupon,
@@ -175,7 +175,9 @@ function AddCoupon() {
                   {...register('maxDiscountAmount')}
                 />
                 {errors.maxDiscountAmount && (
-                  <span className="text-xs text-red-500">{errors.maxDiscountAmount.message}</span>
+                  <span className="text-xs text-red-500">
+                    {errors.maxDiscountAmount.message}
+                  </span>
                 )}
               </div>
             </div>
@@ -212,7 +214,7 @@ function AddCoupon() {
                 </label>
                 <DatePicker
                   placeholder="Chọn ngày bắt đầu"
-                  onChange={(date) => setValue('startDate', date)}
+                  onChange={date => setValue('startDate', date)}
                 />
               </div>
             </div>
@@ -225,7 +227,7 @@ function AddCoupon() {
                 </label>
                 <DatePicker
                   placeholder="Chọn ngày hết hạn"
-                  onChange={(date) => setValue('expirationDate', date)}
+                  onChange={date => setValue('expirationDate', date)}
                 />
               </div>
             </div>

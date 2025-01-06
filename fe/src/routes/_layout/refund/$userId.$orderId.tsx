@@ -22,7 +22,7 @@ type Order = {
     quantity: number;
     price: number;
     image: string;
-    totalPrice : string
+    totalPrice: string;
   }[];
 };
 
@@ -50,7 +50,6 @@ function RefundRequestPage() {
       return;
     }
 
-    
     const fetchOrder = async () => {
       setLoading(true);
       try {
@@ -85,8 +84,8 @@ function RefundRequestPage() {
       toast.error('Vui lòng chọn lý do hoàn trả!');
       return;
     }
-    if (!description || !email) {
-      toast.error('Vui lòng nhập đầy đủ thông tin mô tả và email.');
+    if (!email) {
+      toast.error('Vui lòng nhập đầy đủ thông tin email.');
       return;
     }
 
@@ -149,11 +148,12 @@ function RefundRequestPage() {
   }
 
   return (
-    <div className="mx-auto mt-8 max-w-3xl bg-white p-6 shadow-md">
+    <div className="mx-auto mb-5 mt-8 max-w-3xl bg-white p-6 shadow-md">
       <h2 className="mb-4 text-xl font-semibold">Tình huống bạn đang gặp?</h2>
       <p className="mb-6 text-gray-600">
-        Tôi đã nhận hàng nhưng không còn nhu cầu/hàng có vấn đề (bể vỡ, sai mẫu,
-        lỗi, khác mô tả...)
+        Tôi đã nhận hàng nhưng không còn nhu cầu sử dụng hoặc sản phẩm gặp vấn
+        đề (sai mẫu mã, không đúng kích thước, lỗi chất lượng, khác hình ảnh
+        trên website...).
       </p>
 
       <div className="mb-6">
@@ -183,7 +183,7 @@ function RefundRequestPage() {
 
       <div className="mb-6">
         <h3 className="mb-2 text-lg font-semibold">
-          Chọn sản phẩm cần Trả hàng và Hoàn tiền
+          Chọn lý do Trả hàng và Hoàn tiền
         </h3>
         <label className="mb-2 block text-sm font-medium text-gray-700">
           Lý do:
@@ -194,39 +194,40 @@ function RefundRequestPage() {
           className="mb-4 w-full rounded border p-2"
         >
           <option value="">Chọn Lý Do</option>
-          <option value="Thiếu hàng">Thiếu hàng</option>
-          <option value="Người bán gửi sai hàng">Người bán gửi sai hàng</option>
-          <option value="Hàng bễ vỡ">Hàng bễ vỡ</option>
-          <option value="Hàng lỗi, không hoạt động">
-            Hàng lỗi, không hoạt động
+          <option value="Sản phẩm không đúng với đơn đặt hàng">
+            Sản phẩm không đúng với đơn đặt hàng
           </option>
-          <option value="Hàng hết hạn sử dụng">Hàng hết hạn sử dụng</option>
-          <option value="Khác với mô tả">Khác với mô tả</option>
-          <option value="Hàng đã qua sử dụng">Hàng đã qua sử dụng</option>
-          <option value="Hàng giả, nhái">Hàng giả, nhái</option>
-          <option value="Hàng nguyên vẹn nhưng không còn nhu cầu">
-            Hàng nguyên vẹn nhưng không còn nhu cầu
+          <option value="Sản phẩm bị lỗi hoặc hỏng khi nhận">
+            Sản phẩm bị lỗi hoặc hỏng khi nhận
+          </option>
+          <option value="Không nhận đủ sản phẩm trong đơn hàng">
+            Không nhận đủ sản phẩm trong đơn hàng
+          </option>
+          <option value="Sản phẩm không phải hàng chính hãng">
+            Sản phẩm không phải hàng chính hãng
+          </option>
+          <option value="Sản phẩm không giống với hình ảnh hoặc mô tả trên website">
+            Sản phẩm không giống với hình ảnh hoặc mô tả trên website
+          </option>
+          <option value="Đã nhận hàng nhưng không còn nhu cầu sử dụng">
+            Đã nhận hàng nhưng không còn nhu cầu sử dụng
+          </option>
+          <option value="Thùng hàng bị rỗng hoặc sai thông tin giao hàng">
+            Thùng hàng bị rỗng hoặc sai thông tin giao hàng
+          </option>
+          <option value="Sản phẩm đã qua sử dụng hoặc bị thay thế">
+            Sản phẩm đã qua sử dụng hoặc bị thay thế
           </option>
         </select>
-
-        <label className="mb-2 block text-sm font-medium text-gray-700">
-          Mô tả:
-        </label>
-        <textarea
-          value={description}
-          onChange={e => setDescription(e.target.value)}
-          className="mb-4 w-full rounded border p-2"
-          placeholder="Chi tiết vấn đề bạn gặp phải"
-          rows={4}
-          maxLength={2000}
-        ></textarea>
       </div>
 
       <div className="mb-6">
         <h3 className="mb-2 text-lg font-semibold">Thông tin hoàn tiền</h3>
         <div className="mb-2 flex justify-between">
           <span>Số tiền hoàn lại:</span>
-          <span><CurrencyVND amount={order.totalPrice}/></span>
+          <span>
+            <CurrencyVND amount={order.totalPrice} />
+          </span>
         </div>
 
         <label className="mb-2 block text-sm font-medium text-gray-700">
