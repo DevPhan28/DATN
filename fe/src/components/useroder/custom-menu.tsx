@@ -56,7 +56,7 @@ const CustomUser = () => {
               Đơn hàng
             </Link>
             <Link
-              to="/"
+              to="/payment-online"
               className="flex items-center gap-2 text-gray-700 hover:text-blue-500"
             >
               <CurrencyDollar />

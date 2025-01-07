@@ -13,6 +13,7 @@ const {
   returnOrder,
   countSuccessfulOrders,
   getOrderByIdAdmin,
+  getOrdersByUserIdWithOnlinePayment,
 } = require("../controllers/order");
 const router = express.Router();
 
@@ -33,5 +34,6 @@ router.put("/orders/:orderId/set-delivered", setDelivered);
 router.put("/orders/:orderId/return", returnOrder);
 router.post("/:id/return", updateReturnReason);
 router.get("/count-successful-orders", countSuccessfulOrders);
+router.get('/order/:userId', getOrdersByUserIdWithOnlinePayment);
 
 module.exports = router;

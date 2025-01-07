@@ -12,11 +12,9 @@ const cron = require('node-cron');
 const Coupon = require("../models/coupon");
 
 const ZALOPAY_ID_APP = process.env.ZALOPAY_ID_APP;
-console.log("🚀 =====  ZALOPAY_ID_APP:", ZALOPAY_ID_APP);
 const ZALOPAY_KEY1 = process.env.ZALOPAY_KEY1;
-console.log("🚀 =====  ZALOPAY_KEY1:", ZALOPAY_KEY1);
 const ZALOPAY_ENDPOINT = process.env.ZALOPAY_ENDPOINT;
-console.log("🚀 ===== ZALOPAY_ENDPOINT:", ZALOPAY_ENDPOINT);
+
 
 const createOrder = async (req, res) => {
   return new Promise(async (resolve, reject) => {
@@ -141,6 +139,7 @@ const createOrder = async (req, res) => {
     }
   });
 };
+
 
 const countOrdersByStatus = async () => {
   const orders = await Order.aggregate([
@@ -633,14 +632,12 @@ cron.schedule('* * * * *', async () => {
             );
           }
 
-          // Lưu sản phẩm
           await product.save();
         } else {
           console.log(`Product not found for item: ${item.productId}`);
         }
       }
 
-      // Cập nhật trạng thái đơn hàng
       order.status = 'canceled';
       order.statusHistory.push(JSON.stringify({ status: 'canceled', time: new Date() }));
       await order.save();
@@ -694,6 +691,47 @@ const getOrderByIdAdmin = async (req, res) => {
   }
 };
 
+const getOrdersByUserIdWithOnlinePayment = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { page = 1, limit = 10 } = req.query;  
+    const skip = (page - 1) * limit;
+    const totalOrders = await Order.countDocuments({ userId, paymentMethod: "online" }); 
+
+    const orders = await Order.find({ userId, paymentMethod: "online" })
+      .sort({ createdAt: -1 })
+      .skip(skip) 
+      .limit(Number(limit)); 
+    if (!orders || orders.length === 0) {
+      return res.status(StatusCodes.OK).json({ data: [], meta: { totalItems: 0, totalPages: 0, currentPage: 1, pageSize: 10 } });
+    }
+
+    orders.forEach((order) => {
+      order.items.forEach((item) => {
+        if (!item.color || !item.size) {
+          console.warn(`Order item missing color or size: ${item.name}`);
+        }
+      });
+    });
+
+    const totalPages = Math.ceil(totalOrders / limit);
+
+    return res.status(StatusCodes.OK).json({
+      data: orders,
+      meta: {
+        totalItems: totalOrders,
+        totalPages: totalPages,
+        currentPage: Number(page),
+        pageSize: Number(limit),
+      },
+    });
+  } catch (error) {
+    return res
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
+      .json({ error: error.message });
+  }
+};
+
 module.exports = {
   getOrderById,
   confirmReceived,
@@ -707,5 +745,6 @@ module.exports = {
   returnOrder,
   updateReturnReason,
   countSuccessfulOrders,
-  getOrderByIdAdmin
+  getOrderByIdAdmin,
+  getOrdersByUserIdWithOnlinePayment,
 };
