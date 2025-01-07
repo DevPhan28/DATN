@@ -94,9 +94,9 @@ function NewCheckout() {
       coupon.isFreeShipping
         ? 0
         : Math.min(
-          (coupon.discount / 100) * totalAmount,
-          coupon.maxDiscountAmount || Infinity
-        )
+            (coupon.discount / 100) * totalAmount,
+            coupon.maxDiscountAmount || Infinity
+          )
     );
     setIsCouponFreeShipping(coupon.isFreeShipping);
   };
@@ -319,7 +319,7 @@ function NewCheckout() {
                   ></input>
                   <button
                     type="button"
-                    className="rounded-r bg-orange-500 px-4 text-white hover:bg-orange-600"
+                    className="hover:bg-gray-700-600 rounded-r bg-black px-4 text-white"
                     onClick={() => setVoucherModalOpen(true)}
                   >
                     Áp dụng
@@ -372,6 +372,18 @@ function NewCheckout() {
                       alt="Zalo Pay"
                     />
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => handlePaymentMethodChange('momo')}
+                    className={`flex w-full justify-between rounded-lg border p-3 ${paymentMethod === 'momo' ? 'border-red-500 bg-red-100' : ''} focus:outline-none`}
+                  >
+                    Thanh toán qua momo
+                    <img
+                      className="ml-2 mt-1 w-14"
+                      src="./zalo_pay.png"
+                      alt="Zalo Pay"
+                    />
+                  </button>
                 </div>
 
                 <p className="mt-3 text-sm text-gray-500">
@@ -380,7 +392,7 @@ function NewCheckout() {
                 </p>
                 <button
                   type="submit"
-                  className="mt-5 w-full rounded-lg bg-orange-500 py-2 font-semibold text-white transition hover:bg-orange-600"
+                  className="mt-5 w-full bg-black py-2 font-semibold text-white transition hover:bg-gray-800"
                 >
                   Đặt hàng
                 </button>
