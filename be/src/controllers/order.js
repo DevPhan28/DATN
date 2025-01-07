@@ -242,20 +242,43 @@ const getOrders = async (req, res) => {
 
 const getOrderById = async (req, res) => {
   try {
-    const { userId, orderId } = req.params;
-    const order = await Order.findOne({ userId, _id: orderId });
-    if (!order) {
-      return res
-        .status(StatusCodes.NOT_FOUND)
-        .json({ error: "Order not found" });
+    const { userId } = req.params;
+    const { page = 1, limit = 10 } = req.query; 
+
+    const pageNumber = parseInt(page);
+    const limitNumber = parseInt(limit);
+
+    const skip = (pageNumber - 1) * limitNumber;
+
+    const orders = await Order.find({ userId })
+      .skip(skip) 
+      .limit(limitNumber) 
+      .sort({ createdAt: -1 }); 
+
+    if (!orders || orders.length === 0) {
+      return res.status(StatusCodes.OK).json({ data: [], total: 0, page: pageNumber });
     }
-    return res.status(StatusCodes.OK).json(order);
+
+    const totalOrders = await Order.countDocuments({ userId });
+
+    const totalPages = Math.ceil(totalOrders / limitNumber);
+
+    return res.status(StatusCodes.OK).json({
+      data: orders,
+      meta: {
+        totalItems: totalOrders,
+        totalPages: totalPages,
+        currentPage: pageNumber,
+        pageSize: limitNumber,
+      },
+    });
   } catch (error) {
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: error.message });
   }
 };
+
 
 const getOrdersByUserId = async (req, res) => {
   try {

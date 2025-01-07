@@ -14,8 +14,8 @@ export const Route = createFileRoute('/_layout/payment-online/')({
 function PaymentOnline() {
   const [userId, setUserId] = useState(null);
   const [currentAddress, setCurrentAddress] = useState(null);
-  const [page, setPage] = useState(1); // Thêm trạng thái cho trang
-  const [limit, setLimit] = useState(4); // Số lượng giao dịch trên mỗi trang
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(4);
 
   useEffect(() => {
     const storedUserId = localStorage.getItem('userId');

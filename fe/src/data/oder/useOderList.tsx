@@ -10,30 +10,41 @@ interface Order {
 }
 
 interface MetaData {
-  totalItems: number; 
-  totalPages: number; 
-  currentPage: number; 
-  pageSize: number; 
+  totalItems: number;
+  totalPages: number;
+  currentPage: number;
+  pageSize: number;
 }
 
 interface OrdersResponse {
   data: Order[];
-  meta: MetaData; 
+  meta: MetaData;
   statusCounts: Record<string, number>;
   totalDeliveredAmount: number;
 }
 
-export const fetchOrders = async (params: { page?: number; limit?: number; status?: string; sortBy?: string; order?: string }): Promise<OrdersResponse> => {
+export const fetchOrders = async (params: {
+  page?: number;
+  limit?: number;
+  status?: string;
+  sortBy?: string;
+  order?: string;
+}): Promise<OrdersResponse> => {
   try {
     const res = await instance.get<OrdersResponse>('/orders', { params });
 
     if (res.status < 200 || res.status >= 300) {
-      throw new Error(`Error while fetching orders - status code: ${res.status}`);
+      throw new Error(
+        `Error while fetching orders - status code: ${res.status}`
+      );
     }
 
     return res.data;
   } catch (error: any) {
-    console.error('Error while fetching orders:', error.response?.data || error.message);
+    console.error(
+      'Error while fetching orders:',
+      error.response?.data || error.message
+    );
     throw error;
   }
 };
@@ -64,7 +75,12 @@ export const useFetchOrdersStatus = (params: FetchOrdersParams) => {
   return {
     ...query,
     data: query.data?.data || [], // Dữ liệu đơn hàng
-    meta: query.data?.meta || { totalItems: 0, totalPages: 0, currentPage: 0, pageSize: 10 }, // Phân trang mặc định
+    meta: query.data?.meta || {
+      totalItems: 0,
+      totalPages: 0,
+      currentPage: 0,
+      pageSize: 10,
+    }, // Phân trang mặc định
     totalDeliveredAmount: query.data?.totalDeliveredAmount || 0, // Tổng giá trị đã giao hàng
     statusCounts: query.data?.statusCounts || {}, // Đếm trạng thái đơn hàng
   };
@@ -72,9 +88,9 @@ export const useFetchOrdersStatus = (params: FetchOrdersParams) => {
 
 export const useFetchSuccessfulOrderCount = () => {
   return useQuery({
-    queryKey: ["successfulOrderCount"],
+    queryKey: ['successfulOrderCount'],
     queryFn: async () => {
-      const { data } = await instance.get("/count-successful-orders"); // Đảm bảo endpoint chính xác
+      const { data } = await instance.get('/count-successful-orders'); // Đảm bảo endpoint chính xác
       return {
         successfulOrders: data.successfulOrders,
         totalDeliveredAmount: data.totalDeliveredAmount,
@@ -83,14 +99,13 @@ export const useFetchSuccessfulOrderCount = () => {
   });
 };
 
-
 // Hook lấy tất cả đơn hàng
 export const useFetchOrderAll = () => {
   const [listOrder, setListOrder] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalDeliveredAmount, setTotalDeliveredAmount] = useState(0);
-  const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});  // Thêm trạng thái đếm đơn hàng
+  const [statusCounts, setStatusCounts] = useState<Record<string, number>>({}); // Thêm trạng thái đếm đơn hàng
 
   useEffect(() => {
     const fetchAllOrders = async () => {
@@ -98,7 +113,7 @@ export const useFetchOrderAll = () => {
         const response = await fetchOrders({});
         setListOrder(response.data);
         setTotalDeliveredAmount(response.totalDeliveredAmount);
-        setStatusCounts(response.statusCounts);  // Lưu lại statusCounts
+        setStatusCounts(response.statusCounts); // Lưu lại statusCounts
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -113,27 +128,35 @@ export const useFetchOrderAll = () => {
 };
 
 // Hàm lấy đơn hàng theo userId
-export const fetchOrdersByUserId = async (userId: string): Promise<OrdersResponse> => {
+export const fetchOrdersByUserId = async (
+  userId: string
+): Promise<OrdersResponse> => {
   try {
     console.log(`Fetching orders for userId: ${userId}`);
     const res = await instance.get<OrdersResponse>(`/orders/${userId}`);
 
     if (res.status !== 200 && res.status !== 201) {
-      throw new Error(`Error while fetching orders - status code: ${res.status}`);
+      throw new Error(
+        `Error while fetching orders - status code: ${res.status}`
+      );
     }
 
     return res.data;
   } catch (error: any) {
-    console.error("Error while fetching orders by userId:", error.message);
+    console.error('Error while fetching orders by userId:', error.message);
     throw new Error('Error while fetching orders');
   }
 };
 
 // Hook lấy đơn hàng theo userId
-export const useFetchOrdersByUserId = (userId: string) => {
+export const useFetchOrdersByUserId = (
+  userId: string,
+  page: number = 1,
+  limit: number = 10
+) => {
   return useQuery({
-    queryKey: [QUERY_KEY.FETCH_ORDERS_BY_USER, userId],
-    queryFn: () => fetchOrdersByUserId(userId),
-    enabled: !!userId, 
+    queryKey: [QUERY_KEY.FETCH_ORDERS_BY_USER, userId, page, limit], // Thêm page và limit vào queryKey để đảm bảo cache đúng
+    queryFn: () => fetchOrdersByUserId(userId, page, limit),
+    enabled: !!userId, // Chỉ gọi khi có userId
   });
 };

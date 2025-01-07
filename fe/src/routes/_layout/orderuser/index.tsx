@@ -3,7 +3,7 @@ import CurrencyVND, { CreateSlugByTitle } from '@/components/config/vnd';
 import CustomUser from '@/components/useroder/custom-menu';
 import { useFetchOrdersByUserId } from '@/data/oder/useOderList';
 import { retryPayment } from '@/data/oder/usePayment';
-import { ChevronRightMini } from '@medusajs/icons';
+import { ChevronLeft, ChevronRight, ChevronRightMini } from '@medusajs/icons';
 import { toast, usePrompt } from '@medusajs/ui';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
@@ -64,7 +64,7 @@ function UserOrder() {
   const [selectedTab, setSelectedTab] = useState('all');
   const [orders, setOrders] = useState<Order[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 3;
   const [showComplaintModal, setShowComplaintModal] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
@@ -480,39 +480,22 @@ function UserOrder() {
           <div className="mt-8 flex items-center justify-center space-x-2">
             <button
               onClick={() => handlePageChange(currentPage - 1)}
-              className="rounded-full bg-gray-200 px-3 py-1 text-gray-600 hover:bg-gray-300"
+              className="rounded-md border px-2 py-1.5 text-gray-400"
               disabled={currentPage === 1}
             >
-              Trước
+              <ChevronLeft />
             </button>
 
-            {Array.from({ length: totalPages }, (_, index) => index + 1)
-              .filter(
-                page =>
-                  page === 1 || // Trang đầu tiên
-                  page === totalPages || // Trang cuối cùng
-                  (page >= currentPage - 2 && page <= currentPage + 2) // Các trang xung quanh trang hiện tại
-              )
-              .map(page => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`rounded-full px-4 py-2 ${
-                    currentPage === page
-                      ? 'bg-blue-500 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
+            <p className="mx-2 rounded-lg border-[1px] border-blue-400 px-3 py-1.5 text-blue-400">
+              {currentPage}
+            </p>
 
             <button
               onClick={() => handlePageChange(currentPage + 1)}
-              className="rounded-full bg-gray-200 px-3 py-1 text-gray-600 hover:bg-gray-300"
+              className="rounded-md border px-2 py-1.5 text-gray-400"
               disabled={currentPage === totalPages}
             >
-              Sau
+              <ChevronRight />
             </button>
           </div>
         </div>

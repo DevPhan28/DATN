@@ -27,6 +27,7 @@ import { Route as LayoutThanksIndexImport } from './routes/_layout/thanks/index'
 import { Route as LayoutShopIndexImport } from './routes/_layout/shop/index'
 import { Route as LayoutSearchListIndexImport } from './routes/_layout/searchList/index'
 import { Route as LayoutProfileIndexImport } from './routes/_layout/profile/index'
+import { Route as LayoutPaymentOnlineIndexImport } from './routes/_layout/payment-online/index'
 import { Route as LayoutOrderuserIndexImport } from './routes/_layout/orderuser/index'
 import { Route as LayoutCheckoutNewIndexImport } from './routes/_layout/checkoutNew/index'
 import { Route as LayoutCheckoutIndexImport } from './routes/_layout/checkout/index'
@@ -43,6 +44,7 @@ import { Route as LayoutSlugDetailproductImport } from './routes/_layout/$slug.d
 import { Route as DashboardLayoutUsersIndexImport } from './routes/dashboard/_layout/users/index'
 import { Route as DashboardLayoutProductsIndexImport } from './routes/dashboard/_layout/products/index'
 import { Route as DashboardLayoutOrderIndexImport } from './routes/dashboard/_layout/order/index'
+import { Route as DashboardLayoutMessengerIndexImport } from './routes/dashboard/_layout/messenger/index'
 import { Route as DashboardLayoutCouponIndexImport } from './routes/dashboard/_layout/coupon/index'
 import { Route as DashboardLayoutCategoryIndexImport } from './routes/dashboard/_layout/category/index'
 import { Route as DashboardLayoutBlogIndexImport } from './routes/dashboard/_layout/blog/index'
@@ -142,6 +144,11 @@ const LayoutProfileIndexRoute = LayoutProfileIndexImport.update({
   getParentRoute: () => LayoutRoute,
 } as any)
 
+const LayoutPaymentOnlineIndexRoute = LayoutPaymentOnlineIndexImport.update({
+  path: '/payment-online/',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
 const LayoutOrderuserIndexRoute = LayoutOrderuserIndexImport.update({
   path: '/orderuser/',
   getParentRoute: () => LayoutRoute,
@@ -224,6 +231,12 @@ const DashboardLayoutOrderIndexRoute = DashboardLayoutOrderIndexImport.update({
   path: '/order/',
   getParentRoute: () => DashboardLayoutRoute,
 } as any)
+
+const DashboardLayoutMessengerIndexRoute =
+  DashboardLayoutMessengerIndexImport.update({
+    path: '/messenger/',
+    getParentRoute: () => DashboardLayoutRoute,
+  } as any)
 
 const DashboardLayoutCouponIndexRoute = DashboardLayoutCouponIndexImport.update(
   {
@@ -489,6 +502,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutOrderuserIndexImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/payment-online/': {
+      id: '/_layout/payment-online/'
+      path: '/payment-online'
+      fullPath: '/payment-online'
+      preLoaderRoute: typeof LayoutPaymentOnlineIndexImport
+      parentRoute: typeof LayoutImport
+    }
     '/_layout/profile/': {
       id: '/_layout/profile/'
       path: '/profile'
@@ -594,6 +614,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLayoutCouponIndexImport
       parentRoute: typeof DashboardLayoutImport
     }
+    '/dashboard/_layout/messenger/': {
+      id: '/dashboard/_layout/messenger/'
+      path: '/messenger'
+      fullPath: '/dashboard/messenger'
+      preLoaderRoute: typeof DashboardLayoutMessengerIndexImport
+      parentRoute: typeof DashboardLayoutImport
+    }
     '/dashboard/_layout/order/': {
       id: '/dashboard/_layout/order/'
       path: '/order'
@@ -684,6 +711,7 @@ interface LayoutRouteChildren {
   LayoutCheckoutIndexRoute: typeof LayoutCheckoutIndexRoute
   LayoutCheckoutNewIndexRoute: typeof LayoutCheckoutNewIndexRoute
   LayoutOrderuserIndexRoute: typeof LayoutOrderuserIndexRoute
+  LayoutPaymentOnlineIndexRoute: typeof LayoutPaymentOnlineIndexRoute
   LayoutProfileIndexRoute: typeof LayoutProfileIndexRoute
   LayoutSearchListIndexRoute: typeof LayoutSearchListIndexRoute
   LayoutShopIndexRoute: typeof LayoutShopIndexRoute
@@ -708,6 +736,7 @@ const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutCheckoutIndexRoute: LayoutCheckoutIndexRoute,
   LayoutCheckoutNewIndexRoute: LayoutCheckoutNewIndexRoute,
   LayoutOrderuserIndexRoute: LayoutOrderuserIndexRoute,
+  LayoutPaymentOnlineIndexRoute: LayoutPaymentOnlineIndexRoute,
   LayoutProfileIndexRoute: LayoutProfileIndexRoute,
   LayoutSearchListIndexRoute: LayoutSearchListIndexRoute,
   LayoutShopIndexRoute: LayoutShopIndexRoute,
@@ -729,6 +758,7 @@ interface DashboardLayoutRouteChildren {
   DashboardLayoutBlogIndexRoute: typeof DashboardLayoutBlogIndexRoute
   DashboardLayoutCategoryIndexRoute: typeof DashboardLayoutCategoryIndexRoute
   DashboardLayoutCouponIndexRoute: typeof DashboardLayoutCouponIndexRoute
+  DashboardLayoutMessengerIndexRoute: typeof DashboardLayoutMessengerIndexRoute
   DashboardLayoutOrderIndexRoute: typeof DashboardLayoutOrderIndexRoute
   DashboardLayoutProductsIndexRoute: typeof DashboardLayoutProductsIndexRoute
   DashboardLayoutUsersIndexRoute: typeof DashboardLayoutUsersIndexRoute
@@ -750,6 +780,7 @@ const DashboardLayoutRouteChildren: DashboardLayoutRouteChildren = {
   DashboardLayoutBlogIndexRoute: DashboardLayoutBlogIndexRoute,
   DashboardLayoutCategoryIndexRoute: DashboardLayoutCategoryIndexRoute,
   DashboardLayoutCouponIndexRoute: DashboardLayoutCouponIndexRoute,
+  DashboardLayoutMessengerIndexRoute: DashboardLayoutMessengerIndexRoute,
   DashboardLayoutOrderIndexRoute: DashboardLayoutOrderIndexRoute,
   DashboardLayoutProductsIndexRoute: DashboardLayoutProductsIndexRoute,
   DashboardLayoutUsersIndexRoute: DashboardLayoutUsersIndexRoute,
@@ -805,6 +836,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof LayoutCheckoutIndexRoute
   '/checkoutNew': typeof LayoutCheckoutNewIndexRoute
   '/orderuser': typeof LayoutOrderuserIndexRoute
+  '/payment-online': typeof LayoutPaymentOnlineIndexRoute
   '/profile': typeof LayoutProfileIndexRoute
   '/searchList': typeof LayoutSearchListIndexRoute
   '/shop': typeof LayoutShopIndexRoute
@@ -820,6 +852,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/blog': typeof DashboardLayoutBlogIndexRoute
   '/dashboard/category': typeof DashboardLayoutCategoryIndexRoute
   '/dashboard/coupon': typeof DashboardLayoutCouponIndexRoute
+  '/dashboard/messenger': typeof DashboardLayoutMessengerIndexRoute
   '/dashboard/order': typeof DashboardLayoutOrderIndexRoute
   '/dashboard/products': typeof DashboardLayoutProductsIndexRoute
   '/dashboard/users': typeof DashboardLayoutUsersIndexRoute
@@ -854,6 +887,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof LayoutCheckoutIndexRoute
   '/checkoutNew': typeof LayoutCheckoutNewIndexRoute
   '/orderuser': typeof LayoutOrderuserIndexRoute
+  '/payment-online': typeof LayoutPaymentOnlineIndexRoute
   '/profile': typeof LayoutProfileIndexRoute
   '/searchList': typeof LayoutSearchListIndexRoute
   '/shop': typeof LayoutShopIndexRoute
@@ -868,6 +902,7 @@ export interface FileRoutesByTo {
   '/dashboard/blog': typeof DashboardLayoutBlogIndexRoute
   '/dashboard/category': typeof DashboardLayoutCategoryIndexRoute
   '/dashboard/coupon': typeof DashboardLayoutCouponIndexRoute
+  '/dashboard/messenger': typeof DashboardLayoutMessengerIndexRoute
   '/dashboard/order': typeof DashboardLayoutOrderIndexRoute
   '/dashboard/products': typeof DashboardLayoutProductsIndexRoute
   '/dashboard/users': typeof DashboardLayoutUsersIndexRoute
@@ -905,6 +940,7 @@ export interface FileRoutesById {
   '/_layout/checkout/': typeof LayoutCheckoutIndexRoute
   '/_layout/checkoutNew/': typeof LayoutCheckoutNewIndexRoute
   '/_layout/orderuser/': typeof LayoutOrderuserIndexRoute
+  '/_layout/payment-online/': typeof LayoutPaymentOnlineIndexRoute
   '/_layout/profile/': typeof LayoutProfileIndexRoute
   '/_layout/searchList/': typeof LayoutSearchListIndexRoute
   '/_layout/shop/': typeof LayoutShopIndexRoute
@@ -920,6 +956,7 @@ export interface FileRoutesById {
   '/dashboard/_layout/blog/': typeof DashboardLayoutBlogIndexRoute
   '/dashboard/_layout/category/': typeof DashboardLayoutCategoryIndexRoute
   '/dashboard/_layout/coupon/': typeof DashboardLayoutCouponIndexRoute
+  '/dashboard/_layout/messenger/': typeof DashboardLayoutMessengerIndexRoute
   '/dashboard/_layout/order/': typeof DashboardLayoutOrderIndexRoute
   '/dashboard/_layout/products/': typeof DashboardLayoutProductsIndexRoute
   '/dashboard/_layout/users/': typeof DashboardLayoutUsersIndexRoute
@@ -957,6 +994,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/checkoutNew'
     | '/orderuser'
+    | '/payment-online'
     | '/profile'
     | '/searchList'
     | '/shop'
@@ -972,6 +1010,7 @@ export interface FileRouteTypes {
     | '/dashboard/blog'
     | '/dashboard/category'
     | '/dashboard/coupon'
+    | '/dashboard/messenger'
     | '/dashboard/order'
     | '/dashboard/products'
     | '/dashboard/users'
@@ -1005,6 +1044,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/checkoutNew'
     | '/orderuser'
+    | '/payment-online'
     | '/profile'
     | '/searchList'
     | '/shop'
@@ -1019,6 +1059,7 @@ export interface FileRouteTypes {
     | '/dashboard/blog'
     | '/dashboard/category'
     | '/dashboard/coupon'
+    | '/dashboard/messenger'
     | '/dashboard/order'
     | '/dashboard/products'
     | '/dashboard/users'
@@ -1054,6 +1095,7 @@ export interface FileRouteTypes {
     | '/_layout/checkout/'
     | '/_layout/checkoutNew/'
     | '/_layout/orderuser/'
+    | '/_layout/payment-online/'
     | '/_layout/profile/'
     | '/_layout/searchList/'
     | '/_layout/shop/'
@@ -1069,6 +1111,7 @@ export interface FileRouteTypes {
     | '/dashboard/_layout/blog/'
     | '/dashboard/_layout/category/'
     | '/dashboard/_layout/coupon/'
+    | '/dashboard/_layout/messenger/'
     | '/dashboard/_layout/order/'
     | '/dashboard/_layout/products/'
     | '/dashboard/_layout/users/'
@@ -1140,6 +1183,7 @@ export const routeTree = rootRoute
         "/_layout/checkout/",
         "/_layout/checkoutNew/",
         "/_layout/orderuser/",
+        "/_layout/payment-online/",
         "/_layout/profile/",
         "/_layout/searchList/",
         "/_layout/shop/",
@@ -1183,6 +1227,7 @@ export const routeTree = rootRoute
         "/dashboard/_layout/blog/",
         "/dashboard/_layout/category/",
         "/dashboard/_layout/coupon/",
+        "/dashboard/_layout/messenger/",
         "/dashboard/_layout/order/",
         "/dashboard/_layout/products/",
         "/dashboard/_layout/users/",
@@ -1255,6 +1300,10 @@ export const routeTree = rootRoute
       "filePath": "_layout/orderuser/index.tsx",
       "parent": "/_layout"
     },
+    "/_layout/payment-online/": {
+      "filePath": "_layout/payment-online/index.tsx",
+      "parent": "/_layout"
+    },
     "/_layout/profile/": {
       "filePath": "_layout/profile/index.tsx",
       "parent": "/_layout"
@@ -1313,6 +1362,10 @@ export const routeTree = rootRoute
     },
     "/dashboard/_layout/coupon/": {
       "filePath": "dashboard/_layout/coupon/index.tsx",
+      "parent": "/dashboard/_layout"
+    },
+    "/dashboard/_layout/messenger/": {
+      "filePath": "dashboard/_layout/messenger/index.tsx",
       "parent": "/dashboard/_layout"
     },
     "/dashboard/_layout/order/": {
