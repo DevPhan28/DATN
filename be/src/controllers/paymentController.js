@@ -9,7 +9,6 @@ require("dotenv").config();
 
 const callback = async (req, res) => {
   const { data, mac } = req.body;
-console.log("Testt");
 
   const appKey = process.env.ZALOPAY_KEY2; 
   const dataJson = JSON.parse(data); 

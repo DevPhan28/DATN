@@ -16,6 +16,12 @@ type Product = {
   image: string;
   description: string;
   slug: string;
+  variants : [
+    {
+      color: string;
+      size: string;
+    }
+  ]
 };
 
 type Order = {

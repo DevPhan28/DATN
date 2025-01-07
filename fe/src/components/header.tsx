@@ -400,7 +400,7 @@ const Header = () => {
           <div className="aside-content cart-drawer-items-list">
             {cartData?.products?.length === 0 ? (
               <>
-                <img src={imgCart} className="m-auto w-52" alt="" />
+                <img src={imgCart} className="m-auto w-40" alt="" />
                 <p className="text-muted text-center">
                   Giỏ hàng của bạn hiện đang trống.
                 </p>
