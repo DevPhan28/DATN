@@ -1,7 +1,8 @@
 import instance from '@/api/axiosIntance';
 import Header from '@/components/layoutAdmin/header/header';
 import useCategoryMutation from '@/data/category/useCategoryMutation';
-import { Button, Input } from '@medusajs/ui';
+import { Button, Input, toast } from '@medusajs/ui';
+
 import {
   createFileRoute,
   useNavigate,
@@ -10,6 +11,7 @@ import {
 import { useEffect } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
+// Route configuration
 export const Route = createFileRoute('/dashboard/_layout/category/$id/edit')({
   loader: async ({ params }) => {
     const { id } = params;
@@ -30,15 +32,15 @@ export const Route = createFileRoute('/dashboard/_layout/category/$id/edit')({
 function EditCategory() {
   const navigate = useNavigate();
   const { id } = useParams({ from: '/dashboard/_layout/category/$id/edit' });
-
   const { updateCategory } = useCategoryMutation();
+  const categories = Route.useLoaderData<Categori>();
 
-  const categories = Route.useLoaderData();
+  console.log('Dữ liệu từ API:', categories);
 
   const {
     register,
     handleSubmit,
-    setValue,
+    reset,
     formState: { errors },
   } = useForm<Category>({
     defaultValues: {
@@ -47,12 +49,12 @@ function EditCategory() {
   });
 
   useEffect(() => {
-    if (categories) {
-      setValue('name', categories.name);
+    if (categories?.category?.name) {
+      reset({ name: categories.category.name });
     }
-  }, [categories, setValue]);
+  }, [categories, reset]);
 
-  const onUpdateCategory: SubmitHandler<Category> = async (data) => {
+  const onUpdateCategory: SubmitHandler<Category> = async data => {
     try {
       await updateCategory.mutateAsync({ id, data });
       navigate({ to: '/dashboard/category' });
@@ -112,7 +114,6 @@ function EditCategory() {
                   <span className="text-ui-tag-red-text">*</span> Tên danh mục
                 </label>
                 <Input
-                
                   placeholder="Nhập tên danh mục"
                   size="base"
                   {...register('name', {

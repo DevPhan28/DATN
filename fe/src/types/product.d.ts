@@ -4,7 +4,7 @@ type Variant = {
   price: number;
   countInStock: number;
   weight: number;
-  suk: string
+  suk: string;
 };
 
 type Category = {
@@ -15,6 +15,10 @@ type Category = {
   slug: string;
 };
 
+interface Categori {
+  category: Category; // Thêm thuộc tính `category` chứa thông tin danh mục
+  products: any[]; // Nếu products có cấu trúc cụ thể, hãy thay `any[]` bằng kiểu thích hợp
+}
 type Product = {
   _id: string;
   name: string;

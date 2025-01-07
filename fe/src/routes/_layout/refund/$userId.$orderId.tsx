@@ -32,7 +32,6 @@ function RefundRequestPage() {
   const [order, setOrder] = useState<Order | null>(null);
 
   const [reason, setReason] = useState('');
-  const [description, setDescription] = useState('');
   const [email, setEmail] = useState('');
   const [returnType] = useState('complaint');
   const [loading, setLoading] = useState(false);
@@ -54,16 +53,20 @@ function RefundRequestPage() {
       setLoading(true);
       try {
         const response = await instance.get(`/orders/${userId}/${orderId}`);
-        setOrder(response.data);
-      } catch (error) {
-        if (error instanceof AxiosError) {
-          toast.error(
-            `Lỗi: ${error.response?.data?.message || 'Không thể lấy dữ liệu.'}`
-          );
+        console.log('Dữ liệu trả về từ API:', response.data);
+
+        if (
+          response.data &&
+          response.data.data &&
+          response.data.data.length > 0
+        ) {
+          setOrder(response.data.data[0]); // Gán đơn hàng đầu tiên vào state
         } else {
-          toast.error('Lỗi mạng, vui lòng thử lại.');
+          setOrder(null); // Nếu không có dữ liệu hợp lệ, set null
         }
+      } catch (error) {
         console.error('Lỗi khi lấy thông tin đơn hàng:', error);
+        toast.error('Không thể tải dữ liệu đơn hàng.');
       } finally {
         setLoading(false);
       }
@@ -116,7 +119,6 @@ function RefundRequestPage() {
 
       await instance.put(`/orders/${orderId}/return`, {
         reason,
-        description,
         email,
         returnType,
       });

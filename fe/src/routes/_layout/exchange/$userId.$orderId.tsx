@@ -1,23 +1,26 @@
+import instance from '@/api/axiosIntance';
+import CurrencyVND from '@/components/config/vnd';
+import { toast, usePrompt } from '@medusajs/ui';
 import {
   createFileRoute,
   useNavigate,
   useParams,
 } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
-import instance from '@/api/axiosIntance';
-import { toast, usePrompt } from '@medusajs/ui';
-import { AxiosError } from 'axios';
-import CurrencyVND from '@/components/config/vnd';
+
+type OrderItem = {
+  productId: string;
+  name: string;
+  color: string;
+  size: string;
+  quantity: number;
+  price: number;
+  image: string;
+};
+
 type Order = {
-  items: {
-    productId: string;
-    name: string;
-    color: string;
-    size: string;
-    quantity: number;
-    price: number;
-    image: string;
-  }[];
+  items: OrderItem[];
+  totalPrice?: number;
 };
 
 export const Route = createFileRoute('/_layout/exchange/$userId/$orderId')({
@@ -29,7 +32,6 @@ function ExchangeRequestPage() {
   const navigate = useNavigate();
   const [order, setOrder] = useState<Order | null>(null);
   const [reason, setReason] = useState('');
-  const [description, setDescription] = useState('');
   const [email, setEmail] = useState('');
   const [returnType] = useState('complaint');
   const [loading, setLoading] = useState(false);
@@ -39,12 +41,10 @@ function ExchangeRequestPage() {
     const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
     const userId = storedUser?.user?._id;
     const userEmail = storedUser?.user?.email;
-    if (userEmail) {
-      setEmail(userEmail);
-    }
 
+    if (userEmail) setEmail(userEmail);
     if (!userId || !orderId) {
-      console.error('userId hoặc orderId không tồn tại');
+      toast.error('Không tìm thấy thông tin người dùng hoặc đơn hàng.');
       return;
     }
 
@@ -52,23 +52,27 @@ function ExchangeRequestPage() {
       setLoading(true);
       try {
         const response = await instance.get(`/orders/${userId}/${orderId}`);
-        setOrder(response.data);
-      } catch (error) {
-        if (error instanceof AxiosError) {
-          toast.error(
-            `Lỗi: ${error.response?.data?.message || 'Không thể lấy dữ liệu.'}`
-          );
+        console.log('Dữ liệu trả về từ API:', response.data);
+
+        if (
+          response.data &&
+          response.data.data &&
+          response.data.data.length > 0
+        ) {
+          setOrder(response.data.data[0]); // Gán đơn hàng đầu tiên vào state
         } else {
-          toast.error('Lỗi mạng, vui lòng thử lại.');
+          setOrder(null); // Nếu không có dữ liệu hợp lệ, set null
         }
+      } catch (error) {
         console.error('Lỗi khi lấy thông tin đơn hàng:', error);
+        toast.error('Không thể tải dữ liệu đơn hàng.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchOrder();
-  }, [orderId, navigate]);
+  }, [orderId]);
 
   const handleSubmit = async () => {
     if (!reason) {
@@ -76,28 +80,28 @@ function ExchangeRequestPage() {
       return;
     }
     if (!email) {
-      toast.error('Vui lòng nhập đầy đủ thông tin email.');
+      toast.error('Vui lòng nhập email.');
       return;
     }
+
     const isValidEmail = (email: string) =>
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
     if (!isValidEmail(email)) {
       toast.error('Vui lòng nhập email hợp lệ.');
       return;
     }
+
     const userHasConfirmed = await dialog({
       title: 'Khiếu nại đơn hàng',
       description: 'Bạn có chắc chắn muốn khiếu nại đơn hàng này không?',
     });
 
-    if (!userHasConfirmed) {
-      return;
-    }
+    if (!userHasConfirmed) return;
 
     try {
       const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
       const userId = storedUser?.user?._id;
+
       if (!userId || !orderId) {
         toast.error('Không tìm thấy thông tin người dùng hoặc đơn hàng.');
         return;
@@ -105,7 +109,6 @@ function ExchangeRequestPage() {
 
       await instance.put(`/orders/${orderId}/return`, {
         reason,
-        description,
         email,
         returnType,
       });
@@ -124,15 +127,7 @@ function ExchangeRequestPage() {
     return <div>Đang tải thông tin đơn hàng...</div>;
   }
 
-  if (!order) {
-    return <div>Không tìm thấy thông tin đơn hàng.</div>;
-  }
-
-  const totalRefundAmount = order.items.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0
-  );
-  if (!order || !order.items || order.items.length === 0) {
+  if (!order || !Array.isArray(order.items) || order.items.length === 0) {
     return <div className="text-center">Đơn hàng không có sản phẩm nào.</div>;
   }
 
@@ -140,7 +135,7 @@ function ExchangeRequestPage() {
     <div className="mx-auto mb-5 mt-8 max-w-3xl bg-white p-6 shadow-md">
       <h2 className="mb-4 text-xl font-semibold">Tình huống bạn đang gặp?</h2>
       <p className="mb-6 text-gray-600">
-        Tôi muốn đổi sản phẩm do không đúng mẫu mã, kích thước hoặc bị lỗi
+        Tôi muốn đổi sản phẩm do không đúng mẫu mã, kích thước hoặc bị lỗi.
       </p>
 
       <div className="mb-6">
@@ -170,9 +165,6 @@ function ExchangeRequestPage() {
 
       <div className="mb-6">
         <h3 className="mb-2 text-lg font-semibold">Chọn lý do đổi trả</h3>
-        <label className="mb-2 block text-sm font-medium text-gray-700">
-          Lý do:
-        </label>
         <select
           value={reason}
           onChange={e => setReason(e.target.value)}
@@ -185,18 +177,8 @@ function ExchangeRequestPage() {
           <option value="Sản phẩm không đúng kích thước">
             Sản phẩm không đúng kích thước
           </option>
-          <option value="Sản phẩm không đúng màu sắc">
-            Sản phẩm không đúng màu sắc
-          </option>
           <option value="Sản phẩm bị lỗi hoặc hư hỏng">
             Sản phẩm bị lỗi hoặc hư hỏng
-          </option>
-          <option value="Giao nhầm sản phẩm">Giao nhầm sản phẩm</option>
-          <option value="Sản phẩm khác với hình ảnh hoặc mô tả trên website">
-            Sản phẩm khác với hình ảnh hoặc mô tả trên website
-          </option>
-          <option value="Thùng hàng bị lỗi hoặc không đầy đủ sản phẩm">
-            Thùng hàng bị lỗi hoặc không đầy đủ sản phẩm
           </option>
         </select>
       </div>
@@ -210,9 +192,6 @@ function ExchangeRequestPage() {
           </span>
         </div>
 
-        <label className="mb-2 block text-sm font-medium text-gray-700">
-          Email:
-        </label>
         <input
           type="email"
           value={email}
