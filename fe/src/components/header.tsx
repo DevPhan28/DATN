@@ -130,7 +130,6 @@ const Header = () => {
 
   return (
     <div className='pb-32'>
-
       <header id="header" className={`${isSticky ? "bg-white" : "bg-white"} fixed top-0 left-0 w-full   transition-all duration-300 header_sticky`}>
         <Banertime />
         <div className="container px-[55px] mt-[-10px]">

@@ -1,19 +1,20 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Header from '@/components/layoutAdmin/header/header';
 import instance from '@/api/axiosIntance';
-import { useSocket } from '@/data/socket/useSocket'; // Đảm bảo rằng bạn đã cấu hình socket context
+import { useSocket } from '@/data/socket/useSocket';
 
 export const Route = createFileRoute('/dashboard/_layout/messenger/')({
   component: Messenger,
 });
 
-export default function Messenger  () {
+export default function Messenger() {
   const [activeChat, setActiveChat] = useState(null); // Lưu ID người dùng đang được chọn
   const [newMessage, setNewMessage] = useState(""); // Lưu tin nhắn mới
   const [chats, setChats] = useState([]); // Lưu danh sách các cuộc trò chuyện
   const [messages, setMessages] = useState([]); // Lưu tin nhắn của người dùng đang được chọn
   const socket = useSocket(); // Kết nối socket
+  const messagesEndRef = useRef(null); // Tham chiếu đến phần tử cuối cùng trong danh sách tin nhắn
 
   // Lấy danh sách cuộc trò chuyện khi component được mount
   useEffect(() => {
@@ -29,22 +30,25 @@ export default function Messenger  () {
     fetchChats();
 
     // Lắng nghe sự kiện tin nhắn mới từ socket
-    socket.on('receive-message', (data) => {
-      if (data && data._id) {
-        setMessages((prevMessages) => {
-          // Chỉ thêm tin nhắn nếu nó chưa có trong danh sách
-          if (!prevMessages.find(msg => msg._id === data._id)) {
-            return [...prevMessages, data]; // Thêm tin nhắn mới vào UI nếu chưa có
-          }
-          return prevMessages; // Nếu tin nhắn đã có, không làm gì
-        });
-      }
-    });
+    if (activeChat) { // Chỉ lắng nghe khi có cuộc trò chuyện đang mở
+      socket.on('receive-message', (data) => {
+        console.log("Received message:", data);
+        if (data && data.userId === activeChat) {
+          setMessages((prevMessages) => {
+            // Kiểm tra nếu tin nhắn đã có trong danh sách
+            if (!prevMessages.find(msg => msg._id === data._id)) {
+              return [...prevMessages, data]; // Thêm tin nhắn mới nếu chưa có
+            }
+            return prevMessages;
+          });
+        }
+      });
+    }
 
     return () => {
-      socket.off('receive-message'); // Dọn dẹp khi component unmount
+      socket.off('receive-message'); // Dọn dẹp khi component unmount hoặc activeChat thay đổi
     };
-  }, [socket]);
+  }, [socket, activeChat]); // Thêm activeChat vào dependency để lắng nghe thay đổi
 
   // Nhóm các tin nhắn theo userId
   const groupMessagesByUserId = (messages) => {
@@ -54,15 +58,21 @@ export default function Messenger  () {
         if (!acc[userId]) {
           acc[userId] = {
             userId,
-            messages: [],
             username: message.userId.username || "Unknown User",
-            avatar: message.userId.avatar || "https://picsum.photos/100/100"
+            avatar: message.userId.avatar || "https://picsum.photos/100/100",
+            messages: [],
           };
         }
         acc[userId].messages.push(message);
       }
       return acc;
     }, {});
+  };
+
+  // Hàm khi người dùng click vào tên
+  const handleChatClick = (userId) => {
+    setActiveChat(userId); // Lưu người dùng được chọn
+    fetchMessagesByUser(userId); // Lấy tin nhắn của người dùng khi chọn cuộc trò chuyện
   };
 
   // Lấy tin nhắn của người dùng khi người dùng được chọn
@@ -73,30 +83,6 @@ export default function Messenger  () {
     } catch (error) {
       console.error("Error fetching messages:", error);
     }
-
-    // Lắng nghe các tin nhắn mới từ socket cho người dùng này
-    socket.on('receive-message', (data) => {
-      if (data?.userId === userId) {
-        setMessages((prevMessages) => {
-          // Kiểm tra xem tin nhắn đã có chưa, tránh thêm trùng lặp
-          if (data?._id && !prevMessages.find((msg) => msg._id === data._id)) {
-            return [...prevMessages, data];
-          }
-          return prevMessages;
-        });
-      }
-    });
-
-    // Dọn dẹp sự kiện khi component unmount hoặc khi activeChat thay đổi
-    return () => {
-      socket.off('receive-message');
-    };
-  };
-
-  // Hàm khi người dùng click vào tên
-  const handleChatClick = (userId) => {
-    setActiveChat(userId); // Lưu người dùng được chọn
-    fetchMessagesByUser(userId); // Lấy tin nhắn của người dùng khi chọn cuộc trò chuyện
   };
 
   // Hàm gửi tin nhắn
@@ -108,6 +94,8 @@ export default function Messenger  () {
           replyText: newMessage,  // Đảm bảo newMessage không trống
         });
 
+        console.log("data socket:", response);
+        
         // Phát tin nhắn qua socket đến tất cả các client (bao gồm admin)
         socket.emit('admin-send-message', response.data.replyMessage);
 
@@ -123,6 +111,16 @@ export default function Messenger  () {
       console.error("Error: userId or replyText is missing");
     }
   };
+
+  // Hàm cuộn xuống dưới khi có tin nhắn mới
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Sử dụng useEffect để cuộn đến tin nhắn mới khi danh sách tin nhắn thay đổi
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   return (
     <div>
@@ -182,6 +180,8 @@ export default function Messenger  () {
                   </div>
                 ))
               )}
+              {/* Phần tử để cuộn đến */}
+              <div ref={messagesEndRef} />
             </div>
 
             {/* Chat Input */}
@@ -205,5 +205,4 @@ export default function Messenger  () {
       </div>
     </div>
   );
-};
-
+}

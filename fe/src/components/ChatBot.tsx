@@ -1,7 +1,6 @@
 import instance from '@/api/axiosIntance';
 import { useSocket } from '@/data/socket/useSocket'; // Đảm bảo rằng bạn đã cấu hình socket context
-import axios from 'axios';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const ChatBot = () => {
     const [messages, setMessages] = useState([]); // Lưu trữ danh sách tin nhắn
@@ -9,6 +8,7 @@ const ChatBot = () => {
     const [isChatOpen, setIsChatOpen] = useState(false); // Trạng thái mở/đóng khung chat
     const [userId, setUserId] = useState(null); // Lưu trữ ID người dùng
     const socket = useSocket(); // Lấy kết nối socket từ context
+    const messagesEndRef = useRef(null); // Tham chiếu đến phần tử chứa tin nhắn
 
     // Khởi tạo userId từ localStorage hoặc tạo mới
     useEffect(() => {
@@ -21,8 +21,8 @@ const ChatBot = () => {
 
         // Lắng nghe sự kiện nhận tin nhắn từ server
         socket.on('receive-message', (data) => {
-            // Kiểm tra xem tin nhắn có giá trị hợp lệ không trước khi thêm vào
-            if (data && data._id) {
+            // Kiểm tra nếu tin nhắn phù hợp với userId hiện tại và chỉ khi chat đang mở
+            if (data && data._id && data.userId === userId && isChatOpen) {
                 setMessages((prevMessages) => {
                     // Kiểm tra xem tin nhắn đã có trong danh sách chưa
                     if (!prevMessages.find(msg => msg._id === data._id)) {
@@ -37,7 +37,7 @@ const ChatBot = () => {
         return () => {
             socket.off('receive-message');
         };
-    }, [socket]);
+    }, [socket, userId, isChatOpen]);
 
     // Hàm gọi API để lấy tất cả tin nhắn theo userId
     const fetchMessagesByUserId = async () => {
@@ -51,6 +51,32 @@ const ChatBot = () => {
         }
     };
 
+    // Hàm lưu tin nhắn vào localStorage
+    const saveMessagesToLocalStorage = (messages) => {
+        localStorage.setItem('messages', JSON.stringify(messages)); // Lưu tin nhắn vào localStorage
+    };
+
+    // Hàm tải tin nhắn từ localStorage
+    const loadMessagesFromLocalStorage = () => {
+        const storedMessages = localStorage.getItem('messages');
+        return storedMessages ? JSON.parse(storedMessages) : [];
+    };
+
+    // Sử dụng trong useEffect để tải tin nhắn khi mở chat
+    useEffect(() => {
+        if (isChatOpen) {
+            const storedMessages = loadMessagesFromLocalStorage();
+            setMessages(storedMessages);
+        }
+    }, [isChatOpen]);
+
+    // Cập nhật lại tin nhắn trong localStorage khi có thay đổi
+    useEffect(() => {
+        if (messages.length > 0) {
+            saveMessagesToLocalStorage(messages); // Lưu tin nhắn khi state thay đổi
+        }
+    }, [messages]);
+
     // Hàm gửi tin nhắn mới
     const sendMessage = async () => {
         const trimmedMessage = input.trim(); // Loại bỏ khoảng trắng thừa ở đầu và cuối tin nhắn
@@ -58,15 +84,18 @@ const ChatBot = () => {
         if (!trimmedMessage) return; // Nếu tin nhắn rỗng sau khi loại bỏ khoảng trắng, không gửi
 
         const newMessage = { text: trimmedMessage, sender: 'user', userId };
-        setMessages((prevMessages) => [...prevMessages, newMessage]); // Cập nhật tin nhắn người dùng vào UI
-        setInput(''); // Reset input
 
         try {
             // Gửi tin nhắn của người dùng qua API
             const response = await instance.post('/chat', { message: trimmedMessage, userId });
 
             // Phát sự kiện với tin nhắn người dùng
-            socket.emit('admin-send-message', response); // Phát sự kiện tin nhắn mới
+            socket.emit('admin-send-message', { ...response.data.userMessage });
+
+            // Cập nhật lại mảng tin nhắn khi nhận được phản hồi từ API
+            setMessages((prevMessages) => [...prevMessages, response.data.userMessage]);
+
+            setInput(''); // Reset input
         } catch (error) {
             console.error('Error sending message:', error);
         }
@@ -77,6 +106,16 @@ const ChatBot = () => {
         setIsChatOpen(true);
         fetchMessagesByUserId(); // Lấy tin nhắn của người dùng khi mở chat
     };
+
+    // Hàm cuộn đến tin nhắn mới nhất
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // Sử dụng useEffect để cuộn đến tin nhắn mới nhất khi danh sách tin nhắn thay đổi
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
 
     return (
         <div>
@@ -138,6 +177,8 @@ const ChatBot = () => {
                                 )}
                             </div>
                         ))}
+                        {/* Phần tử để cuộn đến */}
+                        <div ref={messagesEndRef} />
                     </div>
 
                     <div className="flex items-center p-4 border-t">
