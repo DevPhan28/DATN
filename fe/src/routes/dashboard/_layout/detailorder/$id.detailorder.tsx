@@ -1,10 +1,7 @@
 import instance from '@/api/axiosIntance';
-import CurrencyVND from '@/components/config/vnd';
-import { Table, toast } from '@medusajs/ui';
-import { ArchiveBox, TagSolid, Users } from '@medusajs/icons';
+import { toast } from '@medusajs/ui';
 import { createFileRoute, useParams } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
-
 export const Route = createFileRoute(
   '/dashboard/_layout/detailorder/$id/detailorder'
 )({
@@ -12,6 +9,7 @@ export const Route = createFileRoute(
 });
 
 function OrderDetail() {
+
   const { id } = useParams({
     from: '/dashboard/_layout/detailorder/$id/detailorder',
   });
@@ -75,241 +73,136 @@ function OrderDetail() {
   } = orderDetail;
 
   const formatDate = date => new Date(date).toLocaleString();
-
   return (
-    <div className="mx-auto max-w-6xl">
-      <div>
-        <div className="mt-2 border-gray-100">
-          <div className="mt-2 overflow-x-auto">
-            <div className="rounded-lg">
-              <div className="mb-4 flex items-center justify-between">
-                <h1 className="text-xl font-semibold">
-                  <div>
-                    <p
-                      className={`font-semibold ${status === 'pending' ? 'text-yellow-400' : 'text-green-600'}`}
-                    >
-                      {status}
-                    </p>
-                  </div>
-                </h1>
+    <div className="p-5 bg-gray-50 min-h-screen">
+      {/* Chi tiết theo dõi đơn hàng */}
+      <div className="bg-white p-5 rounded-lg shadow-md mb-5">
+        <h2 className="text-lg font-bold mb-4">Chi tiết theo dõi đơn hàng</h2>
+        <div className="flex items-center justify-between">
+          {['Đã Đặt Hàng', 'Xác nhận', 'Đang giao hàng', 'Giao hàng', 'Đã nhận hàng'].map((status, index) => (
+            <div key={index} className="flex flex-col items-center">
+              <div className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white font-bold">
+                ✓
               </div>
-              <div className="border-t border-gray-200 pt-4">
-                <div className="mb-4">
-                  <h2 className="mb-2 flex items-center space-x-2 text-lg font-semibold">
-                    <ArchiveBox /> <span>Mã đơn hàng</span>
-                  </h2>
-                  <p>{orderNumber}</p>
-                </div>
-                <div className="mb-4">
-                  <h2 className="mb-2 flex items-center space-x-2 text-lg font-semibold">
-                    <TagSolid /> <p>Địa chỉ nhận hàng</p>
-                  </h2>
-                  <p>Số điện thoại: {customerInfo.phone}</p>
-                  <p>
-                    Địa chỉ: {customerInfo.address}, {customerInfo.wards},{' '}
-                    {customerInfo.districts}, {customerInfo.city}
-                  </p>
-                </div>
-                <div className="mb-4">
-                  <h2 className="mb-2 flex items-center space-x-2 text-lg font-semibold">
-                    <Users /> <p>Thông tin vận chuyển</p>
-                  </h2>
-                  <p>
-                    Mã đơn hàng :
-                    <span className="rounded-lg bg-green-100 px-2 py-1 text-green-500">
-                      {orderNumber}
-                    </span>
-                  </p>
-                  <p className="mt-2">Tên người nhận: {customerInfo.name}</p>
-                  <p className="mt-2">Email: {customerInfo.email}</p>
-                </div>
-                <div className="mb-4">
-                  <h2 className="mb-2 text-lg font-semibold">Sản phẩm</h2>
-                  <div className="flex items-center">
-                    {items.length > 0 ? (
-                      items.map((item, index) => (
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="mr-2 h-12 w-12 object-cover"
-                        />
-                      ))
-                    ) : (
-                      <tr>
-                        <td
-                          colSpan={5}
-                          className="p-2 text-center text-sm text-gray-500"
-                        >
-                          Không có sản phẩm nào trong đơn hàng.
-                        </td>
-                      </tr>
-                    )}
-
-                    <div>
-                      <p
-                        className={`font-semibold ${status === 'pending' ? 'text-yellow-400' : 'text-green-600'}`}
-                      >
-                        {status}
-                      </p>
-                      <p className="text-gray-500">{formatDate(createdAt)}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <p className="text-sm mt-2 text-center">{status}</p>
+              <p className="text-xs text-gray-500">02/12/2024 22:46:41</p>
             </div>
-
-            <table className="min-w-full divide-y divide-gray-200 rounded-lg border border-gray-200 shadow-sm">
-              <thead className="bg-gray-50">
-                <tr className="border-b">
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                    STT
-                  </th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                    Sản phẩm
-                  </th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                    Đơn Giá
-                  </th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                    Số lượng
-                  </th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-                    Thành tiền
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.length > 0 ? (
-                  items.map((item, index) => (
-                    <tr key={item._id} className="border-b">
-                      <td className="px-4 py-3">{index + 1}</td>
-                      <td className="flex items-center p-2">
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="mr-2 h-12 w-12 object-cover"
-                        />
-                        <div>
-                          <div>{item.name}</div>
-                          <div className="text-sm text-gray-500">
-                            Phân loại: {item.color} / {item.size}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        {item.price.toLocaleString()} ₫
-                      </td>
-                      <td className="px-4 py-3">{item.quantity}</td>
-                      <td className="px-4 py-3">
-                        {(item.price * item.quantity).toLocaleString()} ₫
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td
-                      colSpan={5}
-                      className="p-2 text-center text-sm text-gray-500"
-                    >
-                      Không có sản phẩm nào trong đơn hàng.
-                    </td>
-                  </tr>
-                )}
-
-                <tr>
-                  <td colSpan={5} className="relative">
-                    <div className="flex items-center">
-                      <div className="flex-grow border-t border-gray-300"></div>
-                      <button
-                        onClick={toggleRevenueVisibility}
-                        className="mx-4 whitespace-nowrap pr-6 text-right text-gray-500"
-                      >
-                        {isRevenueVisible
-                          ? 'Ẩn chi tiết doanh thu'
-                          : 'Xem chi tiết doanh thu'}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-
-                {/* Dòng hiển thị doanh thu */}
-                {isRevenueVisible && (
-                  <>
-                    <tr>
-                      <td colSpan={4} className="px-4 py-2 text-gray-500">
-                        Giá sản phẩm
-                      </td>
-                      <td className="px-4 py-2">
-                        {items.map((item, index) => (
-                          <td key={item._id} className="">
-                            <CurrencyVND amount={item.price * item.quantity} />
-                          </td>
-                        ))}
-                      </td>
-
-                      <td></td>
-                      <td className="px-4 py-2"></td>
-                    </tr>
-                    <tr>
-                      <td colSpan={4} className="px-4 py-2 font-semibold">
-                        Tổng phí vận chuyển
-                      </td>
-
-                      <td></td>
-                      <td className="px-4 py-2"></td>
-                    </tr>
-
-                    <tr>
-                      <td colSpan={4} className="px-4 py-2 text-gray-500">
-                        Phí vận chuyển
-                      </td>
-                      <td className="px-4 py-2">
-                        {shippingMessageDisplay?.props?.amount ? (
-                          <CurrencyVND
-                            amount={shippingMessageDisplay.props.amount}
-                          />
-                        ) : (
-                          <span className="text-gray-600">
-                            Miễn phí vận chuyển
-                          </span>
-                        )}
-                      </td>
-                      <td></td>
-                      <td className="px-4 py-2"></td>
-                    </tr>
-                    <tr>
-                      <td colSpan={4} className="px-4 py-2 font-semibold">
-                        Giảm giá
-                      </td>
-
-                      <td className="px-4 py-2">
-                        <CurrencyVND amount={orderDetail.discount} />
-                      </td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td colSpan={4} className="px-4 py-2 font-semibold">
-                        Doanh Thu Đơn Hàng
-                      </td>
-                      <td className="px-4 py-2 text-lg text-red-500">
-                        <CurrencyVND amount={totalPrice} />
-                      </td>
-                      <td></td>
-                      <td className="px-4 py-2"></td>
-                    </tr>
-                    <tr className="bg-gray-50">
-                      <td colSpan={4} className="px-4 py-2 font-semibold">
-                        Phương thức thanh toán
-                      </td>
-                      <td className="px-4 py-2 text-lg">{paymentMethod}</td>
-                      <td></td>
-                      <td className="px-4 py-2"></td>
-                    </tr>
-                  </>
-                )}
-              </tbody>
-            </table>
-          </div>
+          ))}
         </div>
+      </div>
+
+      {/* Bảng theo dõi đơn hàng */}
+      <div className="bg-white p-5 rounded-lg shadow-md mb-5">
+        <h2 className="text-lg font-bold mb-4">Theo dõi đơn hàng</h2>
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="border-b">
+              <th className="py-2">Thông tin</th>
+              <th className="py-2">Ngày giờ</th>
+              <th className="py-2">Tin nhắn</th>
+              <th className="py-2">Chi tiết</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[
+              { info: 'Đặt hàng thành công', time: '2024-12-02 22:44:41', message: 'Đơn hàng đặt thành công', detail: 'Đơn hàng đã được đặt' },
+              { info: 'Xác nhận đơn hàng', time: '2024-12-02 22:46:55', message: 'Đơn hàng đang được chuẩn bị', detail: 'Shop đang chuẩn bị đơn hàng' },
+              { info: 'Đang giao hàng', time: '2024-12-02 22:56:05', message: 'Đơn hàng đang giao', detail: 'Đơn hàng sẽ sớm được giao, vui lòng chú ý điện thoại' },
+              { info: 'Giao hàng thành công', time: '2024-12-02 22:56:23', message: 'Đơn hàng giao thành công', detail: 'Người nhận: nguyễn danh quân' },
+              { info: 'Đã nhận hàng', time: '2024-12-02 22:57:19', message: 'Đơn hàng thành công', detail: '' },
+            ].map((row, index) => (
+              <tr key={index} className="border-b">
+                <td className="py-2">{row.info}</td>
+                <td className="py-2">{row.time}</td>
+                <td className="py-2">{row.message}</td>
+                <td className="py-2">{row.detail}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Sản phẩm đơn hàng */}
+      <div className="bg-white p-5 rounded-lg shadow-md mb-5">
+        <h2 className="text-lg font-bold mb-4">Sản phẩm đơn hàng</h2>
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="border-b">
+              <th className="py-2">Sản phẩm</th>
+              <th className="py-2">Phân loại</th>
+              <th className="py-2">Số lượng</th>
+              <th className="py-2">Giá</th>
+              <th className="py-2">Thành tiền</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.length > 0 ? (
+              items.map((item, index) => (
+                <tr key={item._id} className="border-b">
+                  <td className="py-2 flex items-center gap-3">
+                    <img src={item.image} alt={item.name} className="w-12 h-12 rounded-md" />
+                    {item.name}
+                  </td>
+                  <td className="py-2">Phân loại: {item.color} / {item.size}</td>
+                  <td className="py-2">{item.quantity}</td>
+                  <td className="py-2"> {item.price.toLocaleString()} ₫</td>
+                  <td className="py-2">{(item.price * item.quantity).toLocaleString()} ₫</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={5}
+                  className="p-2 text-center text-sm text-gray-500"
+                >
+                  Không có sản phẩm nào trong đơn hàng.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+        <div className="text-right mt-4 font-bold">{items.reduce((total, item) => total + item.price * item.quantity, 0).toLocaleString()} ₫</div>
+      </div>
+
+      {/* Thông tin thanh toán và Địa chỉ đặt hàng */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="bg-white p-5 rounded-lg shadow-md">
+          <h2 className="text-lg font-bold mb-4">Thông tin thanh toán</h2>
+          <table className="w-full text-left border-collapse">
+            <tbody>
+              <tr className="border-b">
+                <td className="py-2">Giá tiền</td>
+                <td className="py-2 text-right">{items.reduce((total, item) => total + item.price * item.quantity, 0).toLocaleString()} ₫</td>
+              </tr>
+              <tr className="border-b">
+                <td className="py-2">Phí vận chuyển</td>
+                <td className="py-2 text-right">0 đ</td>
+              </tr>
+              <tr>
+                <td className="py-2 font-bold">Thanh toán khi nhận hàng</td>
+                <td className="py-2 text-right font-bold">1.400.000 đ</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div className="bg-white p-5 rounded-lg shadow-md">
+          <h2 className="text-lg font-bold mb-4">Địa chỉ đặt hàng</h2>
+          <p>Họ và tên:  {customerInfo.name}</p>
+          <p>Số điện thoại:  {customerInfo.phone}</p>
+          <p>Địa chỉ: {customerInfo.address}, {customerInfo.wards},{' '}
+            {customerInfo.districts}, {customerInfo.city}</p>
+          <p className="mt-2">Phương thức thanh toán: Thanh toán khi nhận hàng</p>
+        </div>
+      </div>
+
+      {/* Lựa chọn giao hàng */}
+      <div className="bg-white p-5 rounded-lg shadow-md mt-5">
+        <h2 className="text-lg font-bold mb-4">Lựa chọn giao hàng</h2>
+        <p>Họ tên:  {customerInfo.name}</p>
+        <p>Số điện thoại: {customerInfo.phone}</p>
+        <p>Địa chỉ: {customerInfo.address}, {customerInfo.wards},{' '}
+          {customerInfo.districts}, {customerInfo.city}</p>
       </div>
     </div>
   );
