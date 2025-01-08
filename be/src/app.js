@@ -49,6 +49,11 @@ io.on('connection', (socket) => {
         io.emit('notify-quantity-change', data); 
     });
 
+    socket.on('admin-send-message', (data) => {
+        console.log('Admin sent a message:', data);
+        io.emit('receive-message', data);  
+    });
+
     // Xử lý khi client ngắt kết nối
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);

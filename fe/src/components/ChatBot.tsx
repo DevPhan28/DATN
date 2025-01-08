@@ -1,67 +1,89 @@
+import instance from '@/api/axiosIntance';
+import { useSocket } from '@/data/socket/useSocket'; // Đảm bảo rằng bạn đã cấu hình socket context
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 
 const ChatBot = () => {
-    const [messages, setMessages] = useState([]);
-    const [input, setInput] = useState('');
-    const [isChatOpen, setIsChatOpen] = useState(false);
-    const [userId, setUserId] = useState(null); // Khởi tạo userId trong state
+    const [messages, setMessages] = useState([]); // Lưu trữ danh sách tin nhắn
+    const [input, setInput] = useState(''); // Lưu trữ nội dung nhập từ người dùng
+    const [isChatOpen, setIsChatOpen] = useState(false); // Trạng thái mở/đóng khung chat
+    const [userId, setUserId] = useState(null); // Lưu trữ ID người dùng
+    const socket = useSocket(); // Lấy kết nối socket từ context
 
-    // Lấy userId từ localStorage khi component được khởi tạo
+    // Khởi tạo userId từ localStorage hoặc tạo mới
     useEffect(() => {
-        const storedUserId = localStorage.getItem("userId");
-        if (storedUserId) {
-            setUserId(storedUserId);
-        } else {
-            console.error("User ID not found in localStorage.");
+        let storedUserId = localStorage.getItem('userId');
+        if (!storedUserId) {
+            storedUserId = `user_${Date.now()}`;
+            localStorage.setItem('userId', storedUserId);
         }
-    }, []);
+        setUserId(storedUserId);
 
-    // Hàm để gọi API lấy tất cả tin nhắn theo userId
+        // Lắng nghe sự kiện nhận tin nhắn từ server
+        socket.on('receive-message', (data) => {
+            // Kiểm tra xem tin nhắn có giá trị hợp lệ không trước khi thêm vào
+            if (data && data._id) {
+                setMessages((prevMessages) => {
+                    // Kiểm tra xem tin nhắn đã có trong danh sách chưa
+                    if (!prevMessages.find(msg => msg._id === data._id)) {
+                        return [...prevMessages, data]; // Thêm tin nhắn mới nếu chưa có
+                    }
+                    return prevMessages; // Không làm gì nếu tin nhắn đã có
+                });
+            }
+        });
+
+        // Dọn dẹp khi component bị unmount
+        return () => {
+            socket.off('receive-message');
+        };
+    }, [socket]);
+
+    // Hàm gọi API để lấy tất cả tin nhắn theo userId
     const fetchMessagesByUserId = async () => {
         try {
-            const response = await axios.get(`http://localhost:8080/api/messages/user/${userId}`);
-            setMessages(response.data); // Cập nhật danh sách tin nhắn từ backend
+            if (userId) {
+                const response = await instance.get(`/messages/user/${userId}`);
+                setMessages(response.data); // Cập nhật danh sách tin nhắn từ backend
+            }
         } catch (error) {
-            console.error("Error fetching messages by userId:", error);
+            console.error('Error fetching messages by userId:', error);
         }
     };
 
-    // Gửi tin nhắn mới và cập nhật danh sách tin nhắn
+    // Hàm gửi tin nhắn mới
     const sendMessage = async () => {
-        const newMessage = { text: input, sender: 'user', userId }; // Đảm bảo rằng `userId` có giá trị hợp lệ
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
-        setInput('');
+        const trimmedMessage = input.trim(); // Loại bỏ khoảng trắng thừa ở đầu và cuối tin nhắn
+
+        if (!trimmedMessage) return; // Nếu tin nhắn rỗng sau khi loại bỏ khoảng trắng, không gửi
+
+        const newMessage = { text: trimmedMessage, sender: 'user', userId };
+        setMessages((prevMessages) => [...prevMessages, newMessage]); // Cập nhật tin nhắn người dùng vào UI
+        setInput(''); // Reset input
 
         try {
-            const response = await axios.post('http://localhost:8080/api/chat', { message: input, userId });
+            // Gửi tin nhắn của người dùng qua API
+            const response = await instance.post('/chat', { message: trimmedMessage, userId });
 
-            // Sử dụng hàm callback để cập nhật state dựa trên state mới nhất
-            setMessages((prevMessages) => [
-                ...prevMessages,
-                { text: response.data.adminReply.text, sender: 'admin' } // Thêm tin nhắn trả lời tự động từ admin
-            ]);
+            // Phát sự kiện với tin nhắn người dùng
+            socket.emit('admin-send-message', response); // Phát sự kiện tin nhắn mới
         } catch (error) {
-            console.error("Error sending message:", error);
+            console.error('Error sending message:', error);
         }
     };
 
-
-    // Hàm xử lý khi nhấn vào nút "Chat"
+    // Hàm mở khung chat và tải tin nhắn
     const handleChatButtonClick = () => {
         setIsChatOpen(true);
-        if (userId) {
-            fetchMessagesByUserId(); // Gọi hàm fetchMessagesByUserId để lấy tin nhắn theo userId
-        } else {
-            console.error("User ID is not available.");
-        }
+        fetchMessagesByUserId(); // Lấy tin nhắn của người dùng khi mở chat
     };
+
     return (
         <div>
-            {/* Floating Chat Button */}
+            {/* Nút mở khung chat */}
             {!isChatOpen && (
                 <button
-                    onClick={handleChatButtonClick} // Gọi hàm handleChatButtonClick khi nhấn
+                    onClick={handleChatButtonClick}
                     className="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg flex items-center p-2 cursor-pointer"
                 >
                     <span className="text-orange-500 text-lg mr-2">💬</span>
@@ -69,13 +91,15 @@ const ChatBot = () => {
                 </button>
             )}
 
-            {/* Chat Interface */}
+            {/* Giao diện khung chat */}
             {isChatOpen && (
                 <div className="fixed bottom-4 right-4 w-80 bg-white shadow-lg rounded-lg overflow-hidden z-50">
                     <div className="bg-blue-600 text-white p-4 flex items-center">
-                        <div >
-                            <img className="w-10 h-10 bg-gray-300 rounded-full mr-2" src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg" alt="" />
-                        </div>
+                        <img
+                            className="w-10 h-10 bg-gray-300 rounded-full mr-2"
+                            src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg"
+                            alt="Admin"
+                        />
                         <div>
                             <p className="font-bold">Fashion Zone (Admin)</p>
                             <p className="text-sm">Offline</p>
@@ -87,26 +111,27 @@ const ChatBot = () => {
                             ✕
                         </button>
                     </div>
-                    <div className="p-4 h-80 overflow-y-auto space-y-2">
 
+                    <div className="p-4 h-80 overflow-y-auto space-y-2">
                         {messages.map((msg, index) => (
-                            <div key={index} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'} `}>
-                                {/* Hiển thị ảnh đại diện bên cạnh tin nhắn */}
+                            <div key={index} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                                 {msg.sender !== 'user' && (
                                     <img
-                                        src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg" // Thay bằng URL ảnh của admin
+                                        src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg"
                                         alt="Admin Avatar"
                                         className="w-8 h-8 rounded-full mr-2"
                                     />
                                 )}
                                 <div
-                                    className={`${msg.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'} px-4 py-2 rounded-lg max-w-xs`}
+                                    className={`${
+                                        msg.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'
+                                    } px-4 py-2 rounded-lg max-w-xs`}
                                 >
                                     {msg.text}
                                 </div>
                                 {msg.sender === 'user' && (
                                     <img
-                                        src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg" // Thay bằng URL ảnh của user
+                                        src="https://via.placeholder.com/150" // Placeholder image cho user
                                         alt="User Avatar"
                                         className="w-8 h-8 rounded-full ml-2"
                                     />
@@ -114,6 +139,7 @@ const ChatBot = () => {
                             </div>
                         ))}
                     </div>
+
                     <div className="flex items-center p-4 border-t">
                         <input
                             value={input}
@@ -132,7 +158,7 @@ const ChatBot = () => {
                 </div>
             )}
         </div>
-    )
-}
+    );
+};
 
-export default ChatBot
+export default ChatBot;

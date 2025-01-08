@@ -1,45 +1,133 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
+import { useState, useEffect } from 'react';
 import Header from '@/components/layoutAdmin/header/header';
+import instance from '@/api/axiosIntance';
+import { useSocket } from '@/data/socket/useSocket'; // Đảm bảo rằng bạn đã cấu hình socket context
+
 export const Route = createFileRoute('/dashboard/_layout/messenger/')({
   component: Messenger,
-})
+});
 
-function Messenger() {
-  const [activeChat, setActiveChat] = useState("trung V2");
-  const [newMessage, setNewMessage] = useState(""); // State để lưu tin nhắn mới
+export default function Messenger  () {
+  const [activeChat, setActiveChat] = useState(null); // Lưu ID người dùng đang được chọn
+  const [newMessage, setNewMessage] = useState(""); // Lưu tin nhắn mới
+  const [chats, setChats] = useState([]); // Lưu danh sách các cuộc trò chuyện
+  const [messages, setMessages] = useState([]); // Lưu tin nhắn của người dùng đang được chọn
+  const socket = useSocket(); // Kết nối socket
 
-  const [chats, setChats] = useState([
-    { id: "trung V2", name: "trung V2", lastMessage: "chào bạn nhé", messages: ["Xin chào quý khách đến với cửa hàng NUCSHOP"] },
-    { id: "vantuyen", name: "vantuyen", lastMessage: "zề", messages: ["Xin chào, tôi là vantuyen"] },
-  ]);
+  // Lấy danh sách cuộc trò chuyện khi component được mount
+  useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        const response = await instance.get('/messages');
+        const groupedMessages = groupMessagesByUserId(response.data);
+        setChats(groupedMessages);
+      } catch (error) {
+        console.error("Error fetching chats:", error);
+      }
+    };
+    fetchChats();
 
-  const activeChatData = chats.find(chat => chat.id === activeChat);
+    // Lắng nghe sự kiện tin nhắn mới từ socket
+    socket.on('receive-message', (data) => {
+      if (data && data._id) {
+        setMessages((prevMessages) => {
+          // Chỉ thêm tin nhắn nếu nó chưa có trong danh sách
+          if (!prevMessages.find(msg => msg._id === data._id)) {
+            return [...prevMessages, data]; // Thêm tin nhắn mới vào UI nếu chưa có
+          }
+          return prevMessages; // Nếu tin nhắn đã có, không làm gì
+        });
+      }
+    });
 
-  // Hàm gửi tin nhắn
-  const handleSendMessage = () => {
-    if (newMessage.trim()) {
-      // Cập nhật mảng messages của cuộc trò chuyện đang active
-      const updatedChats = chats.map(chat => {
-        if (chat.id === activeChat) {
-          return {
-            ...chat,
-            messages: [...chat.messages, newMessage], // Thêm tin nhắn mới vào messages
-            lastMessage: newMessage, // Cập nhật lastMessage của cuộc trò chuyện
+    return () => {
+      socket.off('receive-message'); // Dọn dẹp khi component unmount
+    };
+  }, [socket]);
+
+  // Nhóm các tin nhắn theo userId
+  const groupMessagesByUserId = (messages) => {
+    return messages.reduce((acc, message) => {
+      const userId = message.userId?._id; // Kiểm tra nếu `userId` hợp lệ
+      if (userId) {
+        if (!acc[userId]) {
+          acc[userId] = {
+            userId,
+            messages: [],
+            username: message.userId.username || "Unknown User",
+            avatar: message.userId.avatar || "https://picsum.photos/100/100"
           };
         }
-        return chat;
-      });
+        acc[userId].messages.push(message);
+      }
+      return acc;
+    }, {});
+  };
 
-      setChats(updatedChats); // Cập nhật lại chats với mảng tin nhắn mới
-      setNewMessage(""); // Reset input sau khi gửi
+  // Lấy tin nhắn của người dùng khi người dùng được chọn
+  const fetchMessagesByUser = async (userId) => {
+    try {
+      const response = await instance.get(`/messages/user/${userId}`);
+      setMessages(response.data); // Lưu tin nhắn của người dùng
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+    }
+
+    // Lắng nghe các tin nhắn mới từ socket cho người dùng này
+    socket.on('receive-message', (data) => {
+      if (data?.userId === userId) {
+        setMessages((prevMessages) => {
+          // Kiểm tra xem tin nhắn đã có chưa, tránh thêm trùng lặp
+          if (data?._id && !prevMessages.find((msg) => msg._id === data._id)) {
+            return [...prevMessages, data];
+          }
+          return prevMessages;
+        });
+      }
+    });
+
+    // Dọn dẹp sự kiện khi component unmount hoặc khi activeChat thay đổi
+    return () => {
+      socket.off('receive-message');
+    };
+  };
+
+  // Hàm khi người dùng click vào tên
+  const handleChatClick = (userId) => {
+    setActiveChat(userId); // Lưu người dùng được chọn
+    fetchMessagesByUser(userId); // Lấy tin nhắn của người dùng khi chọn cuộc trò chuyện
+  };
+
+  // Hàm gửi tin nhắn
+  const handleSendMessage = async () => {
+    if (newMessage.trim() && activeChat) {
+      try {
+        const response = await instance.post('/chatRep', {
+          userId: activeChat,  // Đảm bảo activeChat là ID hợp lệ
+          replyText: newMessage,  // Đảm bảo newMessage không trống
+        });
+
+        // Phát tin nhắn qua socket đến tất cả các client (bao gồm admin)
+        socket.emit('admin-send-message', response.data.replyMessage);
+
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          response.data.replyMessage, // Thêm tin nhắn mới vào UI
+        ]);
+        setNewMessage(""); // Reset input
+      } catch (error) {
+        console.error("Error sending reply:", error);
+      }
+    } else {
+      console.error("Error: userId or replyText is missing");
     }
   };
 
   return (
     <div>
-      <Header title="Trò Chuyện" pathname="" />
-      <div className="bg-gray-100 h-[650px] flex  justify-center p-2">
+      <Header title="Trò Chuyện" />
+      <div className="bg-gray-100 h-[650px] flex justify-center p-2">
         <div className="w-full bg-white shadow-md rounded-lg flex">
           {/* Sidebar */}
           <div className="w-1/3 border-r border-gray-200">
@@ -47,19 +135,18 @@ function Messenger() {
               <h1 className="text-lg font-bold">Messages</h1>
             </div>
             <ul className="overflow-y-auto h-[calc(100vh-80px)]">
-              {chats.map(chat => (
+              {Object.values(chats).map(chat => (
                 <li
-                  key={chat.id}
-                  className={`px-4 py-3 flex items-center hover:bg-gray-100 cursor-pointer ${activeChat === chat.id ? "bg-gray-100" : ""
-                    }`}
-                  onClick={() => setActiveChat(chat.id)}
+                  key={chat.userId}
+                  className={`px-4 py-3 flex items-center hover:bg-gray-100 cursor-pointer ${activeChat === chat.userId ? "bg-gray-100" : ""}`}
+                  onClick={() => handleChatClick(chat.userId)} // Chọn cuộc trò chuyện
                 >
                   <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-xl font-bold text-white mr-4">
-                    {chat.name.charAt(0).toLowerCase()}
+                    {chat.username.charAt(0).toLowerCase()}
                   </div>
                   <div>
-                    <p className="font-semibold">{chat.name}</p>
-                    <p className="text-sm text-gray-500">{chat.lastMessage}</p>
+                    <p className="font-semibold">{chat.username}</p>
+                    <p className="text-sm text-gray-500">{chat.messages[chat.messages.length - 1]?.text}</p>
                   </div>
                 </li>
               ))}
@@ -68,37 +155,33 @@ function Messenger() {
 
           {/* Chat Area */}
           <div className="w-2/3 flex flex-col">
-            {/* Chat Header */}
             <div className="p-[16.5px] border-b border-gray-200 flex items-center">
               <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-xl font-bold text-white mr-4">
-                {activeChatData.name.charAt(0).toLowerCase()}
+                {activeChat && chats[activeChat]?.username?.charAt(0).toLowerCase()}
               </div>
               <div>
-                <p className="font-semibold">{activeChatData.name}</p>
-                <p className="text-sm text-gray-500">{activeChatData.lastMessage}</p>
+                <p className="font-semibold">{activeChat ? chats[activeChat]?.username : "Select a user"}</p>
               </div>
             </div>
 
             {/* Chat Messages */}
             <div className="flex-1 p-4 overflow-y-auto">
-              {activeChatData.messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`flex ${index % 2 === 0 ? "items-start" : "items-end justify-end"} mb-4`}
-                >
-                  {index % 2 === 0 && (
-                    <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-xl font-bold text-white mr-4">
-                      {activeChatData.name.charAt(0).toLowerCase()}
+              {messages.length === 0 ? (
+                <p>No messages yet</p>
+              ) : (
+                messages.map((message) => (
+                  <div key={message._id} className={`flex ${message.sender === "user" ? "items-start" : "items-end justify-end"} mb-4`}>
+                    {message.sender === "user" && (
+                      <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-xl font-bold text-white mr-4">
+                        {message.userId?.username?.charAt(0).toLowerCase() || "?"}
+                      </div>
+                    )}
+                    <div className={`${message.sender === "user" ? "bg-gray-100" : "bg-purple-500 text-white"} p-3 rounded-lg`}>
+                      <p>{message.text}</p>
                     </div>
-                  )}
-                  <div
-                    className={`${index % 2 === 0 ? "bg-gray-100" : "bg-purple-500 text-white"
-                      } p-3 rounded-lg`}
-                  >
-                    <p>{message}</p>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
 
             {/* Chat Input */}
@@ -106,13 +189,13 @@ function Messenger() {
               <input
                 type="text"
                 value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)} // Cập nhật state khi người dùng nhập tin nhắn
+                onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Type your message here..."
                 className="flex-1 border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
               <button
+                onClick={handleSendMessage}
                 className="ml-4 bg-purple-500 text-white p-2 rounded-lg hover:bg-purple-600"
-                onClick={handleSendMessage} // Gửi tin nhắn khi click nút "Send"
               >
                 Send
               </button>
@@ -121,5 +204,6 @@ function Messenger() {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
+
