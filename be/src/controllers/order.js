@@ -10,10 +10,14 @@ require("dotenv").config();
 const { config, order2 } = require("../zalo_pay/config");
 const cron = require('node-cron');
 const Coupon = require("../models/coupon");
+const User = require("../models/user");
+const { ObjectId } = require('mongodb');
+
 
 const ZALOPAY_ID_APP = process.env.ZALOPAY_ID_APP;
 const ZALOPAY_KEY1 = process.env.ZALOPAY_KEY1;
 const ZALOPAY_ENDPOINT = process.env.ZALOPAY_ENDPOINT;
+
 
 
 const createOrder = async (req, res) => {
@@ -60,6 +64,18 @@ const createOrder = async (req, res) => {
         } 
         
       }
+
+     
+        const Id = new ObjectId(order.userId); // Chuyển sang ObjectId
+        const user = await User.findOne({ _id: Id });
+
+      if (!user || !user.email) {
+        throw new Error('User not found or email is missing.');
+      }
+      const email = user.email;
+
+
+      Mail.sendOrderConfirmation(email, order);
 
       if (couponCode) {
         const coupon = await Coupon.findOne({ code: couponCode });
@@ -125,7 +141,6 @@ const createOrder = async (req, res) => {
 
           order.transactionid = payment.app_trans_id;
           await order.save();
-
           return res.status(200).json(data.order_url);
         } catch (error) {
           console.error("Error creating ZaloPay order:", error.message);

@@ -96,7 +96,7 @@ function PaymentOnline() {
             <button
               onClick={() => goToPage(page - 1)}
               disabled={page === 1}
-              className="rounded-md border px-2 py-1.5 text-gray-400"
+              className="cursor-pointer rounded-md border px-2 py-1.5 text-gray-400"
             >
               <ChevronLeft />
             </button>
@@ -104,7 +104,7 @@ function PaymentOnline() {
               {page}
             </p>
             <button
-              className="rounded-md border px-2 py-1.5 text-gray-400"
+              className="cursor-pointer rounded-md border px-2 py-1.5 text-gray-400"
               onClick={() => goToPage(page + 1)}
               disabled={!data || data.data.length < limit}
             >

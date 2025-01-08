@@ -6,6 +6,7 @@ import useCheckoutMutation from '@/data/oder/useOderMutation';
 import { useFetchAvailableCoupons } from '@/data/coupon/useCouponList';
 import instance from '@/api/axiosIntance';
 import { Badge, toast } from '@medusajs/ui';
+import { ListBullet, MapPin } from '@medusajs/icons';
 import { createFileRoute, useLocation } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import VoucherModal from '@/components/VoucherModal';
@@ -195,9 +196,15 @@ function NewCheckout() {
         <form onSubmit={handleSubmit}>
           <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
             <div className="col-span-2 space-y-4">
+              <h1 className="text-xl font-semibold">Đơn hàng của tôi</h1>
               <div className="rounded bg-white p-4 shadow">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-medium">Địa chỉ nhận hàng</h2>
+                  <h2 className="flex gap-2 text-lg font-medium text-orange-500">
+                    <p className="mt-1 text-orange-500">
+                      <MapPin />
+                    </p>{' '}
+                    Địa chỉ nhận hàng
+                  </h2>
                   <button
                     type="button"
                     className="text-sm text-blue-500"
@@ -276,8 +283,14 @@ function NewCheckout() {
             </div>
 
             <div className="space-y-4">
+              <h1 className="text-xl font-semibold">Thông tin liên quan</h1>
               <div className="rounded bg-white p-4 shadow">
-                <h2 className="text-lg font-medium">Chi tiết thanh toán</h2>
+                <h2 className="flex gap-2 text-lg font-medium">
+                  <p className="mt-1">
+                    <ListBullet />
+                  </p>{' '}
+                  Chi tiết thanh toán
+                </h2>
                 <div className="mt-4 space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span>Tổng tiền hàng</span>

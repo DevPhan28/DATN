@@ -480,7 +480,7 @@ function UserOrder() {
           <div className="mt-8 flex items-center justify-center space-x-2">
             <button
               onClick={() => handlePageChange(currentPage - 1)}
-              className="rounded-md border px-2 py-1.5 text-gray-400"
+              className="cursor-pointer rounded-md border px-2 py-1.5 text-gray-400"
               disabled={currentPage === 1}
             >
               <ChevronLeft />
@@ -492,7 +492,7 @@ function UserOrder() {
 
             <button
               onClick={() => handlePageChange(currentPage + 1)}
-              className="rounded-md border px-2 py-1.5 text-gray-400"
+              className="cursor-pointer rounded-md border px-2 py-1.5 text-gray-400"
               disabled={currentPage === totalPages}
             >
               <ChevronRight />
