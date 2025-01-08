@@ -15557,8 +15557,8 @@ textarea.form-control.is-invalid {
 
 .pc__title {
   margin: 0;
-  font-size: 1rem;
-  font-weight: 400;
+  font-size: 24px;
+  font-weight: 600;
 }
 
 .price {

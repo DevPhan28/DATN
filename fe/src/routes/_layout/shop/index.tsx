@@ -4,7 +4,7 @@ import {
   useFetchCategory,
   useFetchProductAll,
 } from '@/data/products/useProductList';
-import { StarSolid } from '@medusajs/icons';
+import { ChevronLeft, ChevronRight, StarSolid } from '@medusajs/icons';
 import { toast } from '@medusajs/ui';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
@@ -23,6 +23,8 @@ function Shop() {
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [averageRating, setAverageRating] = useState(0);
   const [comments, setComments] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
   const [product, setProduct] = useState(null);
   const toggleFilter = () => {
     setShowFilter(!showFilter);
@@ -82,9 +84,7 @@ function Shop() {
     filterProducts();
   }, [selectedCategory, searchTerm, listProduct]);
   const displayedProducts =
-    filteredProducts.length > 0
-      ? filteredProducts.slice(0, 8)
-      : listProduct.slice(0, 8);
+    filteredProducts.length > 0 ? filteredProducts : listProduct;
 
   const handleFilterChange = (filtered: Product[]) => {
     setFilteredProducts(filtered);
@@ -113,6 +113,17 @@ function Shop() {
       fetchComments();
     }
   }, [product]);
+  const totalPages = Math.ceil(displayedProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const ordersToDisplay = displayedProducts.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
 
   return (
     <div>
@@ -505,73 +516,75 @@ function Shop() {
               className="products-grid row row-cols-2 row-cols-md-3"
               id="products-grid"
             >
-              {displayedProducts.map((product: Product) => (
-                <div className="product-card-wrapper">
-                  <div className="product-card mb-md-4 mb-xxl-5 mb-3">
-                    <div className="pc__img-wrapper">
-                      <div className="">
+              {ordersToDisplay.map((product: Product) => (
+                <div className="col-12 col-md-6 col-lg-3 mb-4">
+                  <div className="product-card-wrapper">
+                    <div className="product-card mb-md-4 mb-xxl-5 mb-3">
+                      <div className="pc__img-wrapper">
+                        <div className="">
+                          <Link
+                            to={`/${product.slug ? product.slug : product._id}/quickviewProduct`}
+                          >
+                            <img
+                              loading="lazy"
+                              src={product.image}
+                              width={330}
+                              height={400}
+                              alt="Cropped Faux leather Jacket"
+                              className="pc__img"
+                            />
+                            <img
+                              loading="lazy"
+                              src={product.gallery[0]} // Dùng ảnh đầu tiên từ gallery
+                              width={330}
+                              height={400}
+                              alt="Cropped Faux leather Jacket"
+                              className="pc__img pc__img-second"
+                            />
+                          </Link>
+                        </div>
                         <Link
                           to={`/${product.slug ? product.slug : product._id}/quickviewProduct`}
                         >
-                          <img
-                            loading="lazy"
-                            src={product.image}
-                            width={330}
-                            height={400}
-                            alt="Cropped Faux leather Jacket"
-                            className="pc__img"
-                          />
-                          <img
-                            loading="lazy"
-                            src={product.gallery[0]} // Dùng ảnh đầu tiên từ gallery
-                            width={330}
-                            height={400}
-                            alt="Cropped Faux leather Jacket"
-                            className="pc__img pc__img-second"
-                          />
+                          <button
+                            className="pc__atc btn btn-sm anim_appear-bottom btn position-absolute text-uppercase fw-medium border-0"
+                            data-aside="cartDrawer"
+                            title="Chi Tiết"
+                          >
+                            Chi Tiết
+                          </button>
                         </Link>
                       </div>
-                      <Link
-                        to={`/${product.slug ? product.slug : product._id}/quickviewProduct`}
-                      >
-                        <button
-                          className="pc__atc btn anim_appear-bottom btn position-absolute text-uppercase fw-medium border-0"
-                          data-aside="cartDrawer"
-                          title="Add To Cart"
-                        >
-                          Chi Tiết
-                        </button>
-                      </Link>
-                    </div>
-                    <div className="pc__info position-relative">
-                      <h6 className="pc__title capitalize">
-                        <a
-                          href={`${product.slug ? product.slug : product._id}/quickviewProduct`}
-                        >
-                          {product.name}
-                        </a>
-                      </h6>
+                      <div className="pc__info position-relative">
+                        <h6 className="pc__title capitalize">
+                          <a
+                            href={`${product.slug ? product.slug : product._id}/quickviewProduct`}
+                          >
+                            {product.name}
+                          </a>
+                        </h6>
 
-                      <div className="product-card__price d-flex">
-                        <span className="money price">
-                          <CurrencyVND amount={product.price} />
-                        </span>
-                      </div>
-                      <div className="product-card__review d-flex align-items-center">
-                        <div className="reviews-group d-flex">
-                          {[...Array(5)].map((_, index) => (
-                            <StarSolid
-                              key={index}
-                              className={`h-5 w-5 ${index < Math.floor(averageRating) ? 'text-yellow-400' : 'text-gray-300'}`}
-                            />
-                          ))}
-                          <span className="font-semibold">
-                            {averageRating.toFixed(1)}
+                        <div className="product-card__price d-flex">
+                          <span className="money price">
+                            <CurrencyVND amount={product.price} />
                           </span>
                         </div>
-                        <span className="reviews-note text-lowercase text-secondary ms-1">
-                          8k+ reviews
-                        </span>
+                        <div className="product-card__review d-flex align-items-center">
+                          <div className="reviews-group d-flex">
+                            {[...Array(5)].map((_, index) => (
+                              <StarSolid
+                                key={index}
+                                className={`h-5 w-5 ${index < Math.floor(averageRating) ? 'text-yellow-400' : 'text-gray-300'}`}
+                              />
+                            ))}
+                            <span className="font-semibold">
+                              {averageRating.toFixed(1)}
+                            </span>
+                          </div>
+                          <span className="reviews-note text-lowercase text-secondary ms-1">
+                            8k+ reviews
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -579,56 +592,27 @@ function Shop() {
               ))}
             </div>
             {/* /.products-grid row */}
-            <nav
-              className="shop-pages d-flex justify-content-between mt-3"
-              aria-label="Page navigation"
-            >
-              <a href="#" className="btn-link d-inline-flex align-items-center">
-                <svg
-                  className="me-1"
-                  width={7}
-                  height={11}
-                  viewBox="0 0 7 11"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <use href="#icon_prev_sm" />
-                </svg>
-                <span className="fw-medium">PREV</span>
-              </a>
-              <ul className="pagination mb-0">
-                <li className="page-item">
-                  <a className="btn-link btn-link_active mx-2 px-1" href="#">
-                    1
-                  </a>
-                </li>
-                <li className="page-item">
-                  <a className="btn-link mx-2 px-1" href="#">
-                    2
-                  </a>
-                </li>
-                <li className="page-item">
-                  <a className="btn-link mx-2 px-1" href="#">
-                    3
-                  </a>
-                </li>
-                <li className="page-item">
-                  <a className="btn-link mx-2 px-1" href="#">
-                    4
-                  </a>
-                </li>
-              </ul>
-              <a href="#" className="btn-link d-inline-flex align-items-center">
-                <span className="fw-medium me-1">NEXT</span>
-                <svg
-                  width={7}
-                  height={11}
-                  viewBox="0 0 7 11"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <use href="#icon_next_sm" />
-                </svg>
-              </a>
-            </nav>
+            <div className="mt-8 flex items-center justify-center space-x-2">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                className="rounded-md border px-2 py-1.5 text-gray-400"
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft />
+              </button>
+
+              <p className="mx-2 rounded-lg border-[1px] border-blue-400 px-3 py-1.5 text-blue-400">
+                {currentPage}
+              </p>
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                className="rounded-md border px-2 py-1.5 text-gray-400"
+                disabled={currentPage === totalPages}
+              >
+                <ChevronRight />
+              </button>
+            </div>
           </div>
         </section>
         {/* /.shop-main container */}
