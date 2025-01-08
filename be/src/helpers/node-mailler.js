@@ -120,7 +120,6 @@ const Mail = {
           <h3 style="color: #4CAF50; border-bottom: 2px solid #4CAF50; padding-bottom: 5px;">Thông tin khách hàng</h3>
           <p><strong>Tên:</strong> ${order.customerInfo.name}</p>
           <p><strong>Số điện thoại:</strong> ${order.customerInfo.phone}</p>
-          <p><strong>Email:</strong> ${order.customerInfo.email}</p>
           <p><strong>Địa chỉ:</strong> ${order.customerInfo.address}, ${order.customerInfo.wards}, ${order.customerInfo.districts}, ${order.customerInfo.city}</p>
 
           <h3 style="color: #4CAF50; border-bottom: 2px solid #4CAF50; padding-bottom: 5px; margin-top: 20px;">Chi tiết đơn hàng</h3>

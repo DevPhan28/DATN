@@ -18,8 +18,6 @@ const ZALOPAY_ID_APP = process.env.ZALOPAY_ID_APP;
 const ZALOPAY_KEY1 = process.env.ZALOPAY_KEY1;
 const ZALOPAY_ENDPOINT = process.env.ZALOPAY_ENDPOINT;
 
-
-
 const createOrder = async (req, res) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -368,9 +366,15 @@ const updateOrder = async (req, res) => {
       console.log("Order status updated and saved.");
     }
 
-    // Gửi email thông báo nếu có email khách hàng
-    if (order.customerInfo && order.customerInfo.email) {
-      await Mail.sendOrderStatusUpdate(order.customerInfo.email, order);
+    const Id = new ObjectId(order.userId); // Chuyển sang ObjectId
+    const user = await User.findOne({ _id: Id });
+
+      if (!user || !user.email) {
+        throw new Error('User not found or email is missing.');
+      }
+    const email = user.email;
+    if (email) {
+      await Mail.sendOrderStatusUpdate(email, order);
     } else {
       console.warn("Customer email not found. Skipping email notification.");
     }
