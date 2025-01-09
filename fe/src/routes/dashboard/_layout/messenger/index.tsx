@@ -95,7 +95,7 @@ export default function Messenger() {
         });
 
         console.log("data socket:", response);
-        
+
         // Phát tin nhắn qua socket đến tất cả các client (bao gồm admin)
         socket.emit('admin-send-message', response.data.replyMessage);
 
@@ -125,84 +125,87 @@ export default function Messenger() {
   return (
     <div>
       <Header title="Trò Chuyện" />
-      <div className="bg-gray-100 h-[650px] flex justify-center p-2">
-        <div className="w-full bg-white shadow-md rounded-lg flex">
-          {/* Sidebar */}
-          <div className="w-1/3 border-r border-gray-200">
-            <div className="p-4 border-b border-gray-200">
-              <h1 className="text-lg font-bold">Messages</h1>
-            </div>
-            <ul className="overflow-y-auto h-[calc(100vh-80px)]">
-              {Object.values(chats).map(chat => (
-                <li
-                  key={chat.userId}
-                  className={`px-4 py-3 flex items-center hover:bg-gray-100 cursor-pointer ${activeChat === chat.userId ? "bg-gray-100" : ""}`}
-                  onClick={() => handleChatClick(chat.userId)} // Chọn cuộc trò chuyện
-                >
-                  <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-xl font-bold text-white mr-4">
-                    {chat.username.charAt(0).toLowerCase()}
-                  </div>
-                  <div>
-                    <p className="font-semibold">{chat.username}</p>
-                    <p className="text-sm text-gray-500">{chat.messages[chat.messages.length - 1]?.text}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Chat Area */}
-          <div className="w-2/3 flex flex-col">
-            <div className="p-[16.5px] border-b border-gray-200 flex items-center">
-              <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-xl font-bold text-white mr-4">
-                {activeChat && chats[activeChat]?.username?.charAt(0).toLowerCase()}
+      <div className='mx-6 flex flex-col gap-1 rounded-lg border border-gray-200 bg-ui-bg-base px-6 py-4 mt-4'>
+        <div className="bg-gray-100  flex justify-center">
+          <div className="w-full bg-white h-[600px]  flex">
+            {/* Sidebar */}
+            <div className="w-1/3 border-r border-gray-200">
+              <div className="p-4 border-b border-gray-200">
+                <h1 className="text-lg font-bold">Messages</h1>
               </div>
-              <div>
-                <p className="font-semibold">{activeChat ? chats[activeChat]?.username : "Select a user"}</p>
-              </div>
-            </div>
-
-            {/* Chat Messages */}
-            <div className="flex-1 p-4 overflow-y-auto">
-              {messages.length === 0 ? (
-                <p>No messages yet</p>
-              ) : (
-                messages.map((message) => (
-                  <div key={message._id} className={`flex ${message.sender === "user" ? "items-start" : "items-end justify-end"} mb-4`}>
-                    {message.sender === "user" && (
-                      <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-xl font-bold text-white mr-4">
-                        {message.userId?.username?.charAt(0).toLowerCase() || "?"}
-                      </div>
-                    )}
-                    <div className={`${message.sender === "user" ? "bg-gray-100" : "bg-purple-500 text-white"} p-3 rounded-lg`}>
-                      <p>{message.text}</p>
+              <ul className="overflow-y-auto h-[calc(100vh-80px)]">
+                {Object.values(chats).map(chat => (
+                  <li
+                    key={chat.userId}
+                    className={`px-4 py-3 flex items-center hover:bg-gray-100 cursor-pointer ${activeChat === chat.userId ? "bg-gray-100" : ""}`}
+                    onClick={() => handleChatClick(chat.userId)} // Chọn cuộc trò chuyện
+                  >
+                    <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-xl font-bold text-white mr-4">
+                      {chat.username.charAt(0).toLowerCase()}
                     </div>
-                  </div>
-                ))
-              )}
-              {/* Phần tử để cuộn đến */}
-              <div ref={messagesEndRef} />
+                    <div>
+                      <p className="font-semibold">{chat.username}</p>
+                      <p className="text-sm text-gray-500">{chat.messages[chat.messages.length - 1]?.text}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </div>
 
-            {/* Chat Input */}
-            <div className="p-4 border-t border-gray-200 flex items-center">
-              <input
-                type="text"
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Type your message here..."
-                className="flex-1 border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-              />
-              <button
-                onClick={handleSendMessage}
-                className="ml-4 bg-purple-500 text-white p-2 rounded-lg hover:bg-purple-600"
-              >
-                Send
-              </button>
+            {/* Chat Area */}
+            <div className="w-2/3 flex flex-col">
+              <div className="p-[16.5px] border-b border-gray-200 flex items-center">
+                <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-xl font-bold text-white mr-4">
+                  {activeChat && chats[activeChat]?.username?.charAt(0).toLowerCase()}
+                </div>
+                <div>
+                  <p className="font-semibold">{activeChat ? chats[activeChat]?.username : "Select a user"}</p>
+                </div>
+              </div>
+
+              {/* Chat Messages */}
+              <div className="flex-1 p-4 overflow-y-auto">
+                {messages.length === 0 ? (
+                  <p>No messages yet</p>
+                ) : (
+                  messages.map((message) => (
+                    <div key={message._id} className={`flex ${message.sender === "user" ? "items-start" : "items-end justify-end"} mb-4`}>
+                      {message.sender === "user" && (
+                        <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-xl font-bold text-white mr-4">
+                          {message.userId?.username?.charAt(0).toLowerCase() || "?"}
+                        </div>
+                      )}
+                      <div className={`${message.sender === "user" ? "bg-gray-100" : "bg-purple-500 text-white"} p-3 rounded-lg`}>
+                        <p>{message.text}</p>
+                      </div>
+                    </div>
+                  ))
+                )}
+                {/* Phần tử để cuộn đến */}
+                <div ref={messagesEndRef} />
+              </div>
+
+              {/* Chat Input */}
+              <div className="p-4 border-t border-gray-200 flex items-center">
+                <input
+                  type="text"
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="Type your message here..."
+                  className="flex-1 border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+                <button
+                  onClick={handleSendMessage}
+                  className="ml-4 bg-purple-500 text-white p-2 rounded-lg hover:bg-purple-600"
+                >
+                  Send
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   );
 }
