@@ -14,6 +14,25 @@ const getCategorys = async (req, res) => {
   }
 };
 
+
+const getCategoryShow = async (req, res) => {
+  try {
+    // Tìm danh mục có trạng thái 'SHOW'
+    const categories = await Category.find({ status: 'SHOW' });
+    
+    // Nếu không có danh mục nào có trạng thái 'SHOW'
+    if (categories.length === 0) {
+      return res.status(200).json([]);
+    }
+    
+    // Trả về danh mục có trạng thái 'SHOW'
+    return res.status(200).json(categories);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 const getCategoryById = async (req, res) => {
   try {
     // Tìm danh mục theo ID
@@ -87,27 +106,59 @@ const getCategoryBySlug = async (req, res) => {
 //   }
 // };
 
+// const addCategory = async (req, res) => {
+//   try {
+//     // Tạo slug từ tên danh mục
+//     const rootCategory = await Category.findOne({ name: "Danh mục gốc" });
+
+//     if (!rootCategory) {
+//       // Tạo danh mục gốc nếu chưa có
+//       const newRootCategory = new Category({
+//         name: "Danh mục gốc",
+//         slug: "danh-muc-goc",
+//         parentCategory: null, // Đặt parentCategory là null
+//       });
+
+//       await newRootCategory.save();
+//     } 
+//     const slug = slugify(req.body.name, { lower: true, strict: true });
+
+//     // Tạo danh mục
+//     const category = await Category.create({
+//       name: req.body.name,
+//       slug, // Thêm slug vào dữ liệu
+//     });
+
+//     return res.status(201).json({
+//       message: "Tạo danh mục thành công",
+//       category, // Đổi tên từ categories -> category cho đúng số ít
+//     });
+//   } catch (error) {
+//     // Kiểm tra lỗi trùng slug (hoặc tên)
+//     if (error.code === 11000) {
+//       return res.status(400).json({
+//         message: "Danh mục đã tồn tại",
+//       });
+//     }
+
+//     // Xử lý lỗi khác
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
 const addCategory = async (req, res) => {
   try {
     // Tạo slug từ tên danh mục
-    const rootCategory = await Category.findOne({ name: "Danh mục gốc" });
-
-    if (!rootCategory) {
-      // Tạo danh mục gốc nếu chưa có
-      const newRootCategory = new Category({
-        name: "Danh mục gốc",
-        slug: "danh-muc-goc",
-        parentCategory: null, // Đặt parentCategory là null
-      });
-
-      await newRootCategory.save();
-    } 
     const slug = slugify(req.body.name, { lower: true, strict: true });
+
+    // Kiểm tra nếu status không có giá trị hợp lệ, mặc định là "SHOW"
+    const status = req.body.status === "HIDE" ? "HIDE" : "SHOW";
 
     // Tạo danh mục
     const category = await Category.create({
       name: req.body.name,
       slug, // Thêm slug vào dữ liệu
+      status, // Thêm trường status vào dữ liệu
     });
 
     return res.status(201).json({
@@ -126,6 +177,7 @@ const addCategory = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 const getRootCategory = async (req, res) => {
   try {
@@ -177,24 +229,34 @@ const deleteCategory = async (req, res) => {
 
 const updateCategory = async (req, res) => {
   try {
-    const categories = await Category.findByIdAndUpdate(
+    const { status, ...updateData } = req.body; // Tách status ra khỏi các dữ liệu khác
+
+    // Nếu có trạng thái mới, thêm vào updateData
+    if (status !== undefined) {
+      updateData.status = status; // Cập nhật status nếu có thay đổi
+    }
+
+    const category = await Category.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updateData, // Chỉ cập nhật các dữ liệu đã thay đổi
       {
-        new: true,
+        new: true, // Trả về đối tượng đã được cập nhật
       }
     );
-    if (categories.length < 0) {
+
+    if (!category) {
       return res.status(404).json({ message: "Không có danh mục nào" });
     }
-    return res.status(201).json({
-      messages: "Cập nhật danh mục thành công",
-      categories,
+
+    return res.status(200).json({
+      message: "Cập nhật danh mục thành công",
+      category,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 module.exports = {
   getCategorys,
@@ -204,4 +266,5 @@ module.exports = {
   updateCategory,
   getCategoryBySlug,
   getRootCategory,
+  getCategoryShow,
 };

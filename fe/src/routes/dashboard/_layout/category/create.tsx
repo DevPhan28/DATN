@@ -1,6 +1,6 @@
 import instance from '@/api/axiosIntance';
 import Header from '@/components/layoutAdmin/header/header';
-import { Button, Input, toast } from '@medusajs/ui';
+import { Button, Input, toast, Switch, Label } from '@medusajs/ui'; // Import Switch và Label
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
@@ -14,21 +14,31 @@ function AddCategory() {
     register,
     handleSubmit,
     formState: { errors },
+    setValue, // Sử dụng setValue để thay đổi giá trị
   } = useForm<Category>({
     defaultValues: {
       name: '',
+      status: true, // true = SHOW, false = HIDE
     },
   });
 
+  // Hàm xử lý khi Switch thay đổi
+  const handleSwitchChange = (checked: boolean) => {
+    setValue('status', checked); // Cập nhật giá trị của status khi thay đổi
+  };
+
   const onCreateCategory: SubmitHandler<Category> = async data => {
     try {
-      // Send API request to create category
-      await instance.post('/categories', { name: data.name });
+      // Gửi request API để tạo danh mục với status là 'SHOW' hoặc 'HIDE'
+      await instance.post('/categories', {
+        name: data.name,
+        status: data.status ? 'SHOW' : 'HIDE', // Trạng thái sẽ là 'SHOW' nếu true, 'HIDE' nếu false
+      });
       toast.success('Tạo danh mục', {
         description: 'Tạo danh mục thành công!',
         duration: 1000,
       });
-      // Redirect to categories list after creation
+      // Chuyển hướng về danh sách danh mục sau khi tạo
       navigate({ to: '/dashboard/category' });
     } catch (error) {
       console.error('Thêm danh mục thất bại', error);
@@ -78,10 +88,10 @@ function AddCategory() {
           </p>
 
           <div className="space-y-4">
-            {/* Category Name */}
+            {/* Tên danh mục */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className=" text-sm font-medium text-ui-fg-base">
+                <label className="text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Tên danh mục
                 </label>
                 <Input
@@ -97,6 +107,17 @@ function AddCategory() {
                   </span>
                 )}
               </div>
+            </div>
+
+            {/* Trường Status với Switch */}
+            <div className="flex items-center gap-x-2">
+              <Switch
+                id="manage-inventory"
+                {...register('status')}
+                onCheckedChange={handleSwitchChange} // Cập nhật giá trị khi thay đổi
+                defaultChecked={true} // Mặc định là 'SHOW'
+              />
+              <Label htmlFor="manage-inventory">Hiển thị</Label>
             </div>
           </div>
         </div>

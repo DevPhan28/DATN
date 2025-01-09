@@ -64,6 +64,17 @@ function CategoryList() {
       });
     }
   };
+  const STATUS_CATEGORY = { SHOW: 'SHOW', HIDE: 'HIDE' };
+
+  const capitalizeFirstLetter = (text: string) => {
+    if (!text) return text;
+    const formattedText = text.replace(/_/g, ' ');
+
+    return (
+      formattedText.replace(/_/g, ' ').charAt(0).toUpperCase() +
+      formattedText.slice(1).toLocaleLowerCase()
+    );
+  };
 
   return (
     <div className="h-screen overflow-y-auto">
@@ -115,11 +126,11 @@ function CategoryList() {
                         </button>
                       </DropdownMenu.Trigger>
                       <DropdownMenu.Content className="space-y-2">
-                        <DropdownMenu.Item className="gap-x-2" asChild>
+                        {/* <DropdownMenu.Item className="gap-x-2" asChild>
                           <span onClick={() => handleDelete(category._id)}>
                             Xóa
                           </span>
-                        </DropdownMenu.Item>
+                        </DropdownMenu.Item> */}
                         <DropdownMenu.Item
                           className="gap-x-2"
                           onClick={() =>
@@ -137,10 +148,10 @@ function CategoryList() {
                     {category.name}
                   </Table.Cell>
                   <StatusBadge
-                    className="mt-2 rounded-full px-2 py-1 [&_div]:rounded-full"
-                    color="green"
+                    className="mt-1 rounded-full bg-white px-3 py-2"
+                    color={category.status === 'SHOW' ? 'green' : 'red'}
                   >
-                    Hiển thị
+                    {capitalizeFirstLetter(category.status)}
                   </StatusBadge>
                 </Table.Row>
               ))

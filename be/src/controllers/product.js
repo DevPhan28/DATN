@@ -221,15 +221,23 @@ const getProductAll = async (req, res) => {
   const { limit = 10, page = 1 } = req.query;
   const skip = (page - 1) * limit;
   try {
+    // Lọc sản phẩm chỉ lấy các sản phẩm có danh mục có trạng thái SHOW
     const products = await Product.find()
       .limit(Number(limit))
       .skip(Number(skip))
-      .populate("category", "name");
+      .populate({
+        path: "category",
+        match: { status: "SHOW" },  // Điều kiện lọc danh mục có trạng thái là SHOW
+        select: "name"
+      });
+
+    // Lọc ra các sản phẩm có category là null (các sản phẩm không có danh mục có trạng thái SHOW)
+    const filteredProducts = products.filter(product => product.category !== null);
 
     const totalItems = await Product.countDocuments();
 
     // Cập nhật thêm tag 'Hết hàng' nếu tất cả các variant của sản phẩm có countInStock = 0
-    const productsWithTags = products.map(product => {
+    const productsWithTags = filteredProducts.map(product => {
       const isOutOfStock = product.variants.every(variant => variant.countInStock === 0);
       return {
         ...product.toObject(),
@@ -253,12 +261,13 @@ const getProductAll = async (req, res) => {
       meta: {
         totalItems,
       },
-      data: products,
+      data: productsWithTags,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 /// search products
 const searchProduct = async (req, res) => {

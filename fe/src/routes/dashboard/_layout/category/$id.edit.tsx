@@ -1,7 +1,7 @@
 import instance from '@/api/axiosIntance';
 import Header from '@/components/layoutAdmin/header/header';
 import useCategoryMutation from '@/data/category/useCategoryMutation';
-import { Button, Input, toast } from '@medusajs/ui';
+import { Button, Input, Switch, Label, toast } from '@medusajs/ui';
 
 import {
   createFileRoute,
@@ -33,7 +33,7 @@ function EditCategory() {
   const navigate = useNavigate();
   const { id } = useParams({ from: '/dashboard/_layout/category/$id/edit' });
   const { updateCategory } = useCategoryMutation();
-  const categories = Route.useLoaderData<Categori>();
+  const categories = Route.useLoaderData<Category>();
 
   console.log('Dữ liệu từ API:', categories);
 
@@ -42,15 +42,21 @@ function EditCategory() {
     handleSubmit,
     reset,
     formState: { errors },
+    setValue,
+    watch,
   } = useForm<Category>({
     defaultValues: {
       name: '',
+      status: 'SHOW', // Set default status to 'SHOW'
     },
   });
 
   useEffect(() => {
     if (categories?.category?.name) {
-      reset({ name: categories.category.name });
+      reset({
+        name: categories.category.name,
+        status: categories.category.status || 'SHOW', // Ensure status is loaded
+      });
     }
   }, [categories, reset]);
 
@@ -64,6 +70,8 @@ function EditCategory() {
   };
 
   if (!categories) return <div>Đang tải thông tin danh mục...</div>;
+
+  const isStatusShow = watch('status') === 'SHOW'; // Check the status from watch
 
   return (
     <div className="h-screen overflow-y-auto">
@@ -104,7 +112,7 @@ function EditCategory() {
             Thông tin chung
           </h1>
           <p className="mb-4 text-sm font-normal text-ui-fg-subtle">
-            Cập nhật tên danh mục.
+            Cập nhật tên danh mục và trạng thái.
           </p>
 
           <div className="space-y-4">
@@ -127,6 +135,34 @@ function EditCategory() {
                 )}
               </div>
             </div>
+
+            {/* Thêm Switch để chọn trạng thái */}
+            <div className="flex items-center gap-x-2">
+              <Switch
+                id="manage-inventory"
+                checked={isStatusShow}
+                onCheckedChange={value =>
+                  setValue('status', value ? 'SHOW' : 'HIDE')
+                }
+              />
+              <Label htmlFor="manage-inventory">Hiển thị danh mục</Label>
+            </div>
+
+            {/* Hiển thị thông tin bổ sung nếu trạng thái là "SHOW" */}
+            {isStatusShow && (
+              <div className="mt-4 rounded-lg border bg-green-50 p-4">
+                <p className="text-sm text-green-700">
+                  Danh mục này đang hiển thị.
+                </p>
+              </div>
+            )}
+
+            {/* Ẩn phần này khi trạng thái là "HIDE" */}
+            {!isStatusShow && (
+              <div className="mt-4 rounded-lg border bg-gray-50 p-4">
+                <p className="text-sm text-gray-700">Danh mục này đã ẩn.</p>
+              </div>
+            )}
           </div>
         </div>
       </form>

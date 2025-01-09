@@ -76,7 +76,6 @@ export const fetchCategory = async () => {
       data: Category[];
     }>('/categories');
 
-
     // Kiểm tra mã trạng thái
     if (res.status !== 200 && res.status !== 201) {
       console.error('Unexpected status code:', res.status, res.statusText);
@@ -102,5 +101,43 @@ export const useFetchCategory = () => {
   return useQuery({
     queryKey: [QUERY_KEY.FETCH_CATEGORIES],
     queryFn: fetchCategory, // Gọi hàm fetchCategory
+  });
+};
+
+export const fetchCategoryShow = async () => {
+  try {
+    console.log('Fetching categories...'); // Log các tham số request
+    const res = await instance.get<{
+      map(
+        arg0: (category: Category) => import('react/jsx-runtime').JSX.Element
+      ): import('react').ReactNode;
+      data: Category[];
+    }>('/category');
+
+    // Kiểm tra mã trạng thái
+    if (res.status !== 200 && res.status !== 201) {
+      console.error('Unexpected status code:', res.status, res.statusText);
+      throw new Error(
+        `Error while fetching categories - status code: ${res.status}`
+      );
+    }
+
+    return res.data; // Đảm bảo rằng bạn trả về đúng dữ liệu
+  } catch (error: any) {
+    // Log chi tiết lỗi để kiểm tra thêm
+    if (error.response) {
+      console.error('Response error:', error.response.data);
+    } else {
+      console.error('Request error:', error.message);
+    }
+    throw new Error('Error while fetching categories');
+  }
+};
+
+// Hook `useFetchCategory` sử dụng `useQuery` để gọi API
+export const useFetchCategoryShow = () => {
+  return useQuery({
+    queryKey: [QUERY_KEY.FETCH_CATEGORIES],
+    queryFn: fetchCategoryShow, // Gọi hàm fetchCategory
   });
 };

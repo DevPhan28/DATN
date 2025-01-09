@@ -1,6 +1,7 @@
 import useCartMutation from '@/data/cart/useCartMutation';
 import {
   useFetchCategory,
+  useFetchCategoryShow,
   useFetchProductAll,
 } from '@/data/products/useProductList';
 import { ShoppingCartSolid } from '@medusajs/icons';
@@ -35,7 +36,7 @@ const CardProduct: React.FC = () => {
   };
 
   const { listProduct, loading, error } = useFetchProductAll();
-  const { data: categories } = useFetchCategory();
+  const { data: categories } = useFetchCategoryShow();
 
   const handleAddToCart = (product: Product) => {
     const userId = localStorage.getItem('userId') ?? '';

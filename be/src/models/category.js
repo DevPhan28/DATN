@@ -16,6 +16,11 @@ const categorySchema = new Schema(
       required: true,
       lowercase: true,
     },
+    status: {
+      type: String,
+      enum: ['SHOW', 'HIDE'], 
+      default: 'SHOW', 
+    },
     parentCategory: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Category',

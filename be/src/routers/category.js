@@ -7,10 +7,12 @@ const {
   updateCategory,
   getCategoryBySlug,
   getRootCategory,
+  getCategoryShow,
 } = require("../controllers/category");
 
 const router = express.Router();
 router.get(`/categories`, getCategorys);
+router.get(`/category`, getCategoryShow);
 
 router.get(`/categories/danh-muc-goc-a`, getRootCategory);
 
