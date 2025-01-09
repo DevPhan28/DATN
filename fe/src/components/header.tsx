@@ -1,16 +1,13 @@
-import ErrorCart from '@/components/errors/error-cart';
-import LoginCart from '@/components/errors/error-login-cart';
 import { useCart } from '@/data/cart/useCartLogic';
 import { useFetchCart } from '@/data/cart/useFetchCart';
 import { toast } from '@medusajs/ui';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 import '../../css/plugins/swiper.min.css';
-import nav_bg from '../assets/images/nav-bg.jpg';
-import CurrencyVND from './config/vnd';
-import { SeachIcon } from './icon';
 import imgCart from '../assets/images/cart_trong.jpg';
+import nav_bg from '../assets/images/nav-bg.jpg';
 import Banertime from './Banertime';
+import CurrencyVND from './config/vnd';
 const Header = () => {
   // Trạng thái hiển thị của menu
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -124,15 +121,18 @@ const Header = () => {
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
-    <div className='pb-32'>
-      <header id="header" className={`${isSticky ? "bg-white" : "bg-white"} fixed top-0 left-0 w-full   transition-all duration-300 header_sticky`}>
+    <div className="pb-32">
+      <header
+        id="header"
+        className={`${isSticky ? 'bg-white' : 'bg-white'} header_sticky fixed left-0 top-0 w-full transition-all duration-300`}
+      >
         <Banertime />
-        <div className="container px-[55px] mt-[-10px]">
+        <div className="container mt-[-10px] px-[55px]">
           <div className="header-desk header-desk_type_1">
             <div className="logo">
               <a href="/">
@@ -162,14 +162,14 @@ const Header = () => {
                   </Link>
                 </li>
                 <li className="navigation__item">
-                  <a href="/about" className="navigation__link">
+                  <Link to="/about" className="navigation__link">
                     Về Chúng Tôi
-                  </a>
+                  </Link>
                 </li>
                 <li className="navigation__item">
-                  <a href="contact.html" className="navigation__link">
+                  <Link to="/" className="navigation__link">
                     Liên hệ
-                  </a>
+                  </Link>
                 </li>
               </ul>
               {/* /.navigation__list */}
@@ -310,7 +310,7 @@ const Header = () => {
         >
           <div className="customer-forms__wrapper d-flex position-relative">
             <div className="flex flex-col items-center justify-center">
-              <div className="group relative z-1" ref={menuRef}>
+              <div className="z-1 group relative" ref={menuRef}>
                 {isMenuOpen && (
                   <ul className="absolute top-10 w-96 transform cursor-pointer rounded-lg transition-all duration-300 ease-in-out">
                     {isLoggedIn ? (

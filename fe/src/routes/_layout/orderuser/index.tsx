@@ -364,7 +364,7 @@ function UserOrder() {
                           </p>
                         </div>
                         <span className="text-base text-[#ee4d2d]">
-                          <CurrencyVND amount={item.price} />
+                          <CurrencyVND amount={item.price * item.quantity} />
                         </span>
                       </div>
                     ))}

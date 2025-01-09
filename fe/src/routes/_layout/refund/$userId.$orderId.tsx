@@ -176,7 +176,7 @@ function RefundRequestPage() {
               <p className="text-gray-600">Kích thước: {item.size}</p>
               <p className="text-gray-600">Số lượng: {item.quantity}</p>
               <p className="text-gray-600">
-                Giá: {item.price.toLocaleString()} đ
+                Giá: <CurrencyVND amount={item.price * item.quantity} />
               </p>
             </div>
           </div>
