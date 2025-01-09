@@ -13,7 +13,7 @@ const useCartMutation = () => {
     onSuccess: () => {
       toast.success('Đã thêm sản phẩm vào giỏ hàng', {
         description: 'Sản phẩm của bạn đã được thêm vào giỏ hàng thành công!',
-        duration: 1000,
+        duration: 100,
       });
       queryClient.invalidateQueries({ queryKey: ['cart'] });
     },

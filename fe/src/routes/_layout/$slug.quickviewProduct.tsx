@@ -61,13 +61,11 @@ function DetailProduct() {
     fetchProduct();
 
     const handleCartUpdate = async () => {
-      // Tải lại dữ liệu sản phẩm ngay khi có sự kiện
       await fetchProduct();
     };
 
     socket.on('update-cart', handleCartUpdate);
 
-    // Hủy đăng ký khi component unmount hoặc slug thay đổi
     return () => {
       socket.off('update-cart', handleCartUpdate);
     };
@@ -87,7 +85,7 @@ function DetailProduct() {
           );
           const average = totalRating / response.data.length;
           setAverageRating(average); // Cập nhật số sao trung bình
-        } catch (err) { }
+        } catch (err) {}
       };
       fetchComments();
     }
@@ -144,7 +142,7 @@ function DetailProduct() {
     onSuccess: () => {
       toast.success('Đã thêm sản phẩm vào giỏ hàng', {
         description: 'Sản phẩm của bạn đã được thêm vào giỏ hàng thành công!',
-        duration: 1000,
+        duration: 100,
       });
       queryClient.invalidateQueries(['cart']);
     },
@@ -380,10 +378,11 @@ function DetailProduct() {
                           <button
                             type="button"
                             onClick={() => handleSizeChange(size)}
-                            className={`rounded border px-4 py-2 ${selectedSize === size
+                            className={`rounded border px-4 py-2 ${
+                              selectedSize === size
                                 ? 'border-blue-500 bg-blue-500 text-white'
                                 : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100'
-                              }`}
+                            }`}
                           >
                             {size}
                           </button>
@@ -408,10 +407,11 @@ function DetailProduct() {
                               type="button"
                               key={color}
                               onClick={() => setSelectedColor(color)}
-                              className={`h-8 w-8 rounded-full border focus:outline-none ${selectedColor === color
+                              className={`h-8 w-8 rounded-full border focus:outline-none ${
+                                selectedColor === color
                                   ? 'border-blue-500 ring-2 ring-blue-500'
                                   : 'border-gray-300'
-                                }`}
+                              }`}
                               style={{
                                 backgroundColor: color,
                                 boxShadow:

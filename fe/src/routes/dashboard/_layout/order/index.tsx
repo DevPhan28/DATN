@@ -273,16 +273,13 @@ function OrderList() {
               Số điện thoại
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Email
-            </Table.HeaderCell>
-            <Table.HeaderCell className="font-semibold text-ui-fg-base">
               Địa chỉ
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Sản phẩm
+              <div className="ml-5">Sản phẩm</div>
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Tổng tiền (VND)
+              Tổng tiền (đ)
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
               Phương thức thanh toán
@@ -334,9 +331,6 @@ function OrderList() {
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     {order.customerInfo.phone}
                   </Table.Cell>
-                  <Table.Cell className="font-semibold text-ui-fg-base">
-                    {order.customerInfo.email}
-                  </Table.Cell>
                   <Table.Cell className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-ui-fg-base">
                     <DropdownMenu>
                       <DropdownMenu.Trigger asChild>
@@ -363,7 +357,7 @@ function OrderList() {
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     {order.items.map((product, index) => (
                       <span key={product._id || index}>
-                        <div className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-ui-fg-base">
+                        <div className="ml-5 max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-ui-fg-base">
                           {product.name}
                         </div>
                       </span>

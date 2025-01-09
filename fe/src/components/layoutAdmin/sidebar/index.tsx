@@ -1,5 +1,11 @@
 import { CategoriesIcon, IconHome, StoreIcon } from '@/components/icon.tsx';
-import { ArrowDownLeft, Pencil, ReceiptPercent, Tag } from '@medusajs/icons';
+import {
+  ArrowDownLeft,
+  ChatBubble,
+  Pencil,
+  ReceiptPercent,
+  Tag,
+} from '@medusajs/icons';
 import ItemSidebar from './item-sidebar';
 
 const menuItems: MenuItem[] = [
@@ -54,7 +60,7 @@ const menuMessenger: MenuItem[] = [
   {
     id: 1,
     name: 'Trò chuyện',
-    icon: <Pencil />,
+    icon: <ChatBubble />,
     href: '/dashboard/messenger',
   },
 ];
@@ -69,7 +75,7 @@ const menuAccount: MenuItem[] = [
 
 const Sidebar = () => {
   return (
-    <aside className="border-cool-gray-20 relative max-h-screen min-w-fit space-y-4 overflow-hidden border-r bg-ui-bg-base px-4 py-6">
+    <aside className="border-cool-gray-20 relative h-screen max-h-screen min-w-fit space-y-4 overflow-hidden overflow-y-auto border-r bg-ui-bg-base px-4 py-6">
       <img src="/fasion zone.png" alt="logo" width={150} height={53} />
       <nav className="space-y-4">
         <ul>
@@ -149,7 +155,7 @@ const Sidebar = () => {
         </section>
         <section className="space-y-1">
           <header className="py-1.5 pl-2 text-xs font-medium text-ui-fg-muted">
-            Blog
+            Trò Chuyện
           </header>
           <div>
             {menuMessenger.map(item => (
