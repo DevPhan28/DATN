@@ -270,19 +270,13 @@ function OrderList() {
               Tên người dùng
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Số điện thoại
-            </Table.HeaderCell>
-            <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Địa chỉ
-            </Table.HeaderCell>
-            <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              <div className="ml-5">Sản phẩm</div>
+              Số sản phẩm
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
               Tổng tiền (đ)
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
-              Phương thức thanh toán
+              Thanh toán
             </Table.HeaderCell>
             <Table.HeaderCell className="font-semibold text-ui-fg-base">
               Trạng thái thanh toán
@@ -328,40 +322,15 @@ function OrderList() {
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     {order.customerInfo.name}
                   </Table.Cell>
-                  <Table.Cell className="font-semibold text-ui-fg-base">
-                    {order.customerInfo.phone}
-                  </Table.Cell>
-                  <Table.Cell className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-ui-fg-base">
-                    <DropdownMenu>
-                      <DropdownMenu.Trigger asChild>
-                        <span className="cursor-pointer">
-                          {order.customerInfo.address},{' '}
-                          {order.customerInfo.wards},{' '}
-                          {order.customerInfo.districts},{' '}
-                          {order.customerInfo.city}
-                        </span>
-                      </DropdownMenu.Trigger>
-                      <DropdownMenu.Content className="w-96 p-4">
-                        <div>
-                          <p className="font-semibold">Địa chỉ chi tiết:</p>
-                          <p>
-                            {order.customerInfo.address},{' '}
-                            {order.customerInfo.wards},{' '}
-                            {order.customerInfo.districts},{' '}
-                            {order.customerInfo.city}
-                          </p>
-                        </div>
-                      </DropdownMenu.Content>
-                    </DropdownMenu>
-                  </Table.Cell>
-                  <Table.Cell className="font-semibold text-ui-fg-base">
-                    {order.items.map((product, index) => (
+                  <Table.Cell className="text-center font-semibold text-ui-fg-base">
+                    {/* {order.items.map((product, index) => (
                       <span key={product._id || index}>
                         <div className="ml-5 max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap font-semibold text-ui-fg-base">
                           {product.name}
                         </div>
                       </span>
-                    ))}
+                    ))} */}
+                    {order.items.length}
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
                     <CurrencyVND amount={order.totalPrice} />
@@ -371,10 +340,14 @@ function OrderList() {
                       <img
                         src="/zalo_pay.png"
                         alt="Zalopay"
-                        className="h-12 w-12 object-contain"
+                        className="ml-1 h-12 w-12 object-contain"
                       />
                     ) : (
-                      order.paymentMethod
+                      <img
+                        src="/cod-removebg-preview.png"
+                        alt="Zalopay"
+                        className="ml-2 h-10 w-10 object-cover"
+                      />
                     )}
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
@@ -383,7 +356,7 @@ function OrderList() {
                     ) : order.paymentStatus === 'failed' ? (
                       <span>Chờ thanh toán</span>
                     ) : order.paymentStatus === 'cod' ? (
-                      <span>Thanh toán khi nhận được hàng</span>
+                      <span>Thanh toán khi nhận</span>
                     ) : (
                       order.paymentStatus
                     )}
