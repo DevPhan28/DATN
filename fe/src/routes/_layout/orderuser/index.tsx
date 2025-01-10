@@ -273,7 +273,7 @@ function UserOrder() {
         <CustomUser />
 
         <div className="ml-6 w-3/4">
-          <div className="mb-2 flex flex-wrap justify-start border-b bg-white shadow sm:space-x-0">
+          <div className="mb-2 flex flex-wrap justify-start rounded-sm border-[0.5px] border-b border-gray-200 bg-white shadow sm:space-x-0">
             {tabs.map(tab => (
               <button
                 key={tab.id}
@@ -298,11 +298,8 @@ function UserOrder() {
                 }, 0);
 
                 return (
-                  <div
-                    key={order._id}
-                    className="rounded-lg bg-white p-6 shadow-md"
-                  >
-                    <div className="mb-4 flex items-center justify-between">
+                  <div key={order._id} className="">
+                    <div className="mb-0.5 flex items-center justify-between rounded-sm border-[0.5px] border-gray-200 bg-white px-6 py-3">
                       <span
                         className={`rounded-full px-4 py-1 text-sm font-medium ${
                           order.status === 'canceled' ||
@@ -338,94 +335,67 @@ function UserOrder() {
                         Mã đơn hàng: {order.orderNumber}
                       </span>
                     </div>
-                    {order.items.map(item => (
-                      <div
-                        key={item.productId}
-                        className="mb-4 flex items-center space-x-4"
-                      >
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="h-16 w-16 rounded-lg object-cover shadow-sm"
-                        />
-                        <div className="flex-1">
-                          <p className="text-xl font-semibold uppercase text-gray-800">
-                            <Link to={`/orderuser/${order._id}/user`}>
-                              {item.name}
-                            </Link>
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            Phân loại hàng: Màu: {item.color || ''}{' '}
-                            {item.size ? `, Size: ${item.size}` : ''}
-                          </p>
-                          <p className="font-medium text-gray-800">
-                            x{item.quantity}
-                          </p>
-                        </div>
-                        <span className="flex flex-col text-base text-[#ee4d2d]">
-                          <p className="flex justify-end">
-                            {' '}
-                            <CurrencyVND amount={item.price * item.quantity} />
-                          </p>
-                          <div>
-                            {order.status === 'delivered' && (
-                              <Link
-                                to={`/${CreateSlugByTitle(item.name)}/quickviewProduct#comments-section`}
-                              >
-                                Đánh giá sản phẩm
+                    <div className="mb-0.5 rounded-sm border-[0.5px] border-gray-200 bg-white px-6 py-3">
+                      {order.items.map(item => (
+                        <div
+                          key={item.productId}
+                          className="mb-4 flex items-center space-x-4"
+                        >
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="h-16 w-16 rounded-lg object-cover shadow-sm"
+                          />
+                          <div className="flex-1">
+                            <p className="text-xl font-semibold uppercase text-gray-800">
+                              <Link to={`/orderuser/${order._id}/user`}>
+                                {item.name}
                               </Link>
-                            )}
+                            </p>
+                            <p className="text-sm text-gray-600">
+                              Phân loại hàng: Màu: {item.color || ''}{' '}
+                              {item.size ? `, Size: ${item.size}` : ''}
+                            </p>
+                            <p className="font-medium text-gray-800">
+                              x{item.quantity}
+                            </p>
                           </div>
-                        </span>
-                      </div>
-                    ))}
+                          <span className="flex flex-col text-base text-[#ee4d2d]">
+                            <p className="flex justify-end">
+                              {' '}
+                              <CurrencyVND
+                                amount={item.price * item.quantity}
+                              />
+                            </p>
+                            <div>
+                              {order.status === 'delivered' && (
+                                <Link
+                                  className="text-black underline hover:text-[#ee4d2d]"
+                                  to={`/${CreateSlugByTitle(item.name)}/quickviewProduct#comments-section`}
+                                >
+                                  Đánh giá sản phẩm
+                                </Link>
+                              )}
+                            </div>
+                          </span>
+                        </div>
+                      ))}
 
-                    <div className="border-t border-dotted border-gray-200">
-                      <div className="flex items-center justify-end p-4">
-                        <div className="w-auto space-y-3">
-                          {/* <span className="flex items-center justify-between text-lg">
-                            Phí vận chuyển :{' '}
-                            <span className="ml-2">
-                              <div>
-                                {order.shippingMessageDisplay?.props?.amount ? (
-                                  <CurrencyVND
-                                    amount={
-                                      order.shippingMessageDisplay.props.amount
-                                    }
-                                  />
-                                ) : (
-                                  <span className="text-gray-600">
-                                    Miễn phí vận chuyển
-                                  </span>
-                                )}
-                              </div>
+                      <div className="border-t border-dotted border-gray-200">
+                        <div className="flex items-center justify-end pt-3">
+                          <div className="w-auto">
+                            <span className="flex items-center justify-between text-lg font-semibold">
+                              Tổng số tiền({order.items.length} sản phẩm) :
+                              <span className="ml-2 text-[#ee4d2d]">
+                                <CurrencyVND amount={totalProductPrice} />
+                              </span>
                             </span>
-                          </span>
-                          <span className="flex items-center justify-between text-lg">
-                            Giảm giá:
-                            <span className="ml-2">
-                              <div>
-                                {order.discount ? (
-                                  <CurrencyVND amount={order.discount} />
-                                ) : (
-                                  <span className="text-gray-600">
-                                    <CurrencyVND amount={0} />
-                                  </span>
-                                )}
-                              </div>
-                            </span>
-                          </span> */}
-                          <span className="flex items-center justify-between text-lg">
-                            Tổng tiền sản phẩm :{' '}
-                            <span className="ml-2">
-                              <CurrencyVND amount={totalProductPrice} />
-                            </span>
-                          </span>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div className="flex justify-between border-t">
-                      <div className="mt-4 flex items-center justify-end">
+                    <div className="mb-4 flex justify-between rounded-sm border-[0.5px] border-gray-200 bg-white px-6 py-3">
+                      <div className="flex items-center justify-end">
                         {order.status === 'pendingPayment' && (
                           <button
                             onClick={() => retryPayment(order._id)}
@@ -471,9 +441,9 @@ function UserOrder() {
                           </>
                         )}
                       </div>
-                      <p className="mt-4 flex items-center justify-between text-lg">
-                        Thành tiền:{' '}
-                        <span className="ml-2 text-2xl text-[#ee4d2d]">
+                      <p className="flex items-center justify-between text-lg font-semibold">
+                        Thành tiền:
+                        <span className="ml-2 text-[#ee4d2d]">
                           <CurrencyVND amount={order.totalPrice} />
                         </span>
                       </p>
