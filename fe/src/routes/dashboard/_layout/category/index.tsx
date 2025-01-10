@@ -148,7 +148,7 @@ function CategoryList() {
                     {category.name}
                   </Table.Cell>
                   <StatusBadge
-                    className="mt-1 rounded-full bg-white px-3 py-2"
+                    className="mt-1 rounded-full bg-white px-[13px] py-2"
                     color={category.status === 'SHOW' ? 'green' : 'red'}
                   >
                     {capitalizeFirstLetter(category.status)}

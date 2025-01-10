@@ -1,4 +1,5 @@
 import Header from '@/components/layoutAdmin/header/header';
+import OrderList from '@/components/layoutAdmin/orderdashboard/dashboard-order';
 import MyBarChart from '@/components/layoutAdmin/statistics/BarChart';
 import DashboardOverview from '@/components/layoutAdmin/statistics/LineChar';
 import PieChartExample from '@/components/layoutAdmin/statistics/PiaChart';
@@ -16,6 +17,7 @@ function ThongKe() {
       <div className="overflow-y-hidden">
         <ToDoList />
         <DashboardOverview />
+        <OrderList />
         <div className="flex justify-between overflow-y-hidden">
           <div className="flex-1">
             <MyBarChart />
