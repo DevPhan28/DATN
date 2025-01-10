@@ -66,7 +66,7 @@ function PaymentOnline() {
               {data?.data.map(online => (
                 <div
                   key={online._id}
-                  className="mb-2 grid-cols-1 rounded-md border-b bg-white shadow sm:space-x-0"
+                  className="mb-2 grid-cols-1 rounded-md border-[1px] border-b border-blue-300 bg-white shadow sm:space-x-0"
                 >
                   <div className="p-3 font-semibold">
                     <div className="flex gap-2">

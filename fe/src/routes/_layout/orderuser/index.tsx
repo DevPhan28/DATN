@@ -347,7 +347,7 @@ function UserOrder() {
                             className="h-16 w-16 rounded-lg object-cover shadow-sm"
                           />
                           <div className="flex-1">
-                            <p className="text-xl font-semibold uppercase text-gray-800">
+                            <p className="text-xl font-semibold text-gray-800">
                               <Link to={`/orderuser/${order._id}/user`}>
                                 {item.name}
                               </Link>

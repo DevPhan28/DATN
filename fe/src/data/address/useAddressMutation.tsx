@@ -10,8 +10,8 @@ const useCustomerMutation = () => {
       return instance.post('/create-customer', data);
     },
     onSuccess: async () => {
-      toast.success('Thêm địa chỉ thành công!', {
-        description: 'Địa chỉ đã được thêm thành công.',
+      toast.success('Thêm thông tin địa chỉ thành công!', {
+        description: 'Thông tin địa chỉ đã được thêm thành công.',
         duration: 1000,
       });
       await queryClient.invalidateQueries({ queryKey: ['customers'] });
@@ -27,13 +27,13 @@ const useCustomerMutation = () => {
       return instance.put(`/edit-customer/${id}/${userId}`, updateData);
     },
     onSuccess: async () => {
-      toast.success('Cập nhật thông tin khách hàng thành công!', {
+      toast.success('Cập nhật thông tin địa chỉ thành công!', {
         duration: 1000,
       });
       await queryClient.invalidateQueries({ queryKey: ['customers'] });
     },
     onError: error => {
-      toast.error(`Lỗi khi cập nhật thông tin khách hàng: ${error.message}`);
+      toast.error(`Lỗi khi cập nhật thông tin địa chỉ: ${error.message}`);
     },
   });
 
@@ -43,13 +43,14 @@ const useCustomerMutation = () => {
       return instance.delete(`/delete-customer/${id}`);
     },
     onSuccess: async () => {
-      toast.success('Xóa khách hàng thành công!', {
+      toast.success('Xóa thông tin địa chỉ thành công!', {
+        description: 'Thông tin địa chỉ đã được xoá thành công',
         duration: 1000,
       });
       await queryClient.invalidateQueries({ queryKey: ['customers'] });
     },
     onError: error => {
-      toast.error(`Lỗi khi xóa khách hàng: ${error.message}`);
+      toast.error(`Lỗi khi xóa địa chỉ: ${error.message}`);
     },
   });
 
