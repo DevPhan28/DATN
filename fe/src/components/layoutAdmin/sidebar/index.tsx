@@ -2,6 +2,7 @@ import { CategoriesIcon, IconHome, StoreIcon } from '@/components/icon.tsx';
 import {
   ArrowDownLeft,
   ChatBubble,
+  CurrencyDollar,
   Pencil,
   ReceiptPercent,
   Tag,
@@ -12,7 +13,7 @@ const menuItems: MenuItem[] = [
   {
     id: 1,
     icon: <IconHome />,
-    name: 'Bảng điều khiển',
+    name: 'Thống kê',
     href: '/dashboard',
   },
 ];
@@ -60,7 +61,7 @@ const menuRevenue: MenuItem[] = [
   {
     id: 1,
     name: 'Tổng doanh thu',
-    icon: <Pencil />,
+    icon: <CurrencyDollar />,
     href: '/dashboard/revenue',
   },
 ];

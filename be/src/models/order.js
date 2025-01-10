@@ -100,30 +100,29 @@ const OrderSchema = new mongoose.Schema(
 );
 
 // Tạo orderNumber tự động
+const generateRandomOrderNumber = (length = 12) => {
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let orderNumber = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    orderNumber += characters[randomIndex];
+  }
+  return orderNumber;
+};
+
 OrderSchema.pre("save", async function (next) {
   if (!this.isNew || this.orderNumber) {
     return next();
   }
 
-  const today = new Date();
-  const dateString = today.toISOString().split("T")[0];
   let attempt = 0;
   let success = false;
 
   while (!success && attempt < 5) {
-    const lastOrder = await this.constructor
-      .findOne({ orderNumber: { $regex: `^${dateString}` } })
-      .sort({ createdAt: -1 });
+    // Generate a random 12-character order number
+    this.orderNumber = generateRandomOrderNumber(12);
 
-    const lastOrderNumber = lastOrder
-      ? parseInt(lastOrder.orderNumber.split("-")[3])
-      : 0;
-
-    this.orderNumber = `${dateString}-${String(lastOrderNumber + 1).padStart(
-      3,
-      "0"
-    )}`;
-
+    // Check if the order number already exists
     const existingOrder = await this.constructor.findOne({
       orderNumber: this.orderNumber,
     });
@@ -143,6 +142,7 @@ OrderSchema.pre("save", async function (next) {
 
   next();
 });
+
 
 // Kiểm tra model đã tồn tại chưa, tránh overwrite model
 const Order = mongoose.models.Order || mongoose.model("Order", OrderSchema);
