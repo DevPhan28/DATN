@@ -351,7 +351,6 @@ function UserOrder() {
                         <div className="flex-1">
                           <p className="text-xl font-semibold uppercase text-gray-800">
                             <Link to={`/orderuser/${order._id}/user`}>
-                              {' '}
                               {item.name}
                             </Link>
                           </p>
@@ -363,15 +362,28 @@ function UserOrder() {
                             x{item.quantity}
                           </p>
                         </div>
-                        <span className="text-base text-[#ee4d2d]">
-                          <CurrencyVND amount={item.price * item.quantity} />
+                        <span className="flex flex-col text-base text-[#ee4d2d]">
+                          <p className="flex justify-end">
+                            {' '}
+                            <CurrencyVND amount={item.price * item.quantity} />
+                          </p>
+                          <div>
+                            {order.status === 'delivered' && (
+                              <Link
+                                to={`/${CreateSlugByTitle(item.name)}/quickviewProduct#comments-section`}
+                              >
+                                Đánh giá sản phẩm
+                              </Link>
+                            )}
+                          </div>
                         </span>
                       </div>
                     ))}
+
                     <div className="border-t border-dotted border-gray-200">
                       <div className="flex items-center justify-end p-4">
                         <div className="w-auto space-y-3">
-                          <span className="flex items-center justify-between text-lg">
+                          {/* <span className="flex items-center justify-between text-lg">
                             Phí vận chuyển :{' '}
                             <span className="ml-2">
                               <div>
@@ -402,65 +414,69 @@ function UserOrder() {
                                 )}
                               </div>
                             </span>
-                          </span>
+                          </span> */}
                           <span className="flex items-center justify-between text-lg">
                             Tổng tiền sản phẩm :{' '}
                             <span className="ml-2">
                               <CurrencyVND amount={totalProductPrice} />
                             </span>
                           </span>
-                          <p className="flex items-center justify-between text-lg">
-                            Thành tiền:{' '}
-                            <span className="ml-2 text-2xl text-[#ee4d2d]">
-                              <CurrencyVND amount={order.totalPrice} />
-                            </span>
-                          </p>
                         </div>
                       </div>
                     </div>
-                    <div className="mt-4 flex items-center justify-end">
-                      {order.status === 'pendingPayment' && (
-                        <button
-                          onClick={() => retryPayment(order._id)}
-                          className="mr-2 rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
-                        >
-                          Thanh Toán Lại
-                        </button>
-                      )}
-                      {order.status === 'delivered' &&
-                        order.items.map(item => (
-                          <Link
-                            key={item.productId}
-                            to={`/${CreateSlugByTitle(item.name)}/quickviewProduct#comments-section`}
-                            className="mr-2 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
-                          >
-                            Đánh giá sản phẩm {item.name}
-                          </Link>
-                        ))}
-                      {order.status === 'pending' && (
-                        <button
-                          onClick={() => deleteEntity(order._id)}
-                          className="mr-2 rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600"
-                        >
-                          Hủy đơn hàng
-                        </button>
-                      )}
-                      {order.status === 'received' && (
-                        <>
+                    <div className="flex justify-between border-t">
+                      <div className="mt-4 flex items-center justify-end">
+                        {order.status === 'pendingPayment' && (
                           <button
-                            onClick={() => handleConfirmReceived(order._id)}
-                            className="mr-2 rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+                            onClick={() => retryPayment(order._id)}
+                            className="mr-2 rounded border-[1px] border-green-500 px-4 py-2 text-green-500 hover:border-green-600"
                           >
-                            Đã nhận được hàng
+                            Thanh Toán Lại
                           </button>
+                        )}
+                        {/* {order.status === 'delivered' &&
+                          order.items.map(item => (
+                            <Link
+                              key={item.productId}
+                              to={`/${CreateSlugByTitle(item.name)}/quickviewProduct#comments-section`}
+                              className="mr-2 rounded-md border-[1px] border-red-500 px-4 py-2 text-red-500 hover:border-red-600"
+                            >
+                              Đánh giá sản phẩm {item.name}
+                            </Link>
+                          ))} */}
+                        {order.status === 'pending' && (
                           <button
-                            onClick={() => handleOpenComplaintModal(order._id)}
-                            className="rounded bg-purple-500 px-4 py-2 text-white hover:bg-purple-600"
+                            onClick={() => deleteEntity(order._id)}
+                            className="mr-2 rounded-md border-[1px] border-[#ee4d2d] px-4 py-2 text-[#ee4d2d] hover:border-red-600"
                           >
-                            Khiếu nại
+                            Hủy đơn hàng
                           </button>
-                        </>
-                      )}
+                        )}
+                        {order.status === 'received' && (
+                          <>
+                            <button
+                              onClick={() => handleConfirmReceived(order._id)}
+                              className="mr-2 rounded-md border-[1px] border-green-500 px-4 py-2 text-green-500 hover:border-green-600"
+                            >
+                              Đã nhận được hàng
+                            </button>
+                            <button
+                              onClick={() =>
+                                handleOpenComplaintModal(order._id)
+                              }
+                              className="rounded-md border-[1px] border-purple-500 px-4 py-2 text-purple-500 hover:border-purple-600"
+                            >
+                              Khiếu nại
+                            </button>
+                          </>
+                        )}
+                      </div>
+                      <p className="mt-4 flex items-center justify-between text-lg">
+                        Thành tiền:{' '}
+                        <span className="ml-2 text-2xl text-[#ee4d2d]">
+                          <CurrencyVND amount={order.totalPrice} />
+                        </span>
+                      </p>
                     </div>
                   </div>
                 );
