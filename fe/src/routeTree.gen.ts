@@ -42,6 +42,7 @@ import { Route as LayoutBlogTextImport } from './routes/_layout/blog/text'
 import { Route as LayoutSlugQuickviewProductImport } from './routes/_layout/$slug.quickviewProduct'
 import { Route as LayoutSlugDetailproductImport } from './routes/_layout/$slug.detailproduct'
 import { Route as DashboardLayoutUsersIndexImport } from './routes/dashboard/_layout/users/index'
+import { Route as DashboardLayoutRevenueIndexImport } from './routes/dashboard/_layout/revenue/index'
 import { Route as DashboardLayoutProductsIndexImport } from './routes/dashboard/_layout/products/index'
 import { Route as DashboardLayoutOrderIndexImport } from './routes/dashboard/_layout/order/index'
 import { Route as DashboardLayoutMessengerIndexImport } from './routes/dashboard/_layout/messenger/index'
@@ -220,6 +221,12 @@ const DashboardLayoutUsersIndexRoute = DashboardLayoutUsersIndexImport.update({
   path: '/users/',
   getParentRoute: () => DashboardLayoutRoute,
 } as any)
+
+const DashboardLayoutRevenueIndexRoute =
+  DashboardLayoutRevenueIndexImport.update({
+    path: '/revenue/',
+    getParentRoute: () => DashboardLayoutRoute,
+  } as any)
 
 const DashboardLayoutProductsIndexRoute =
   DashboardLayoutProductsIndexImport.update({
@@ -635,6 +642,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLayoutProductsIndexImport
       parentRoute: typeof DashboardLayoutImport
     }
+    '/dashboard/_layout/revenue/': {
+      id: '/dashboard/_layout/revenue/'
+      path: '/revenue'
+      fullPath: '/dashboard/revenue'
+      preLoaderRoute: typeof DashboardLayoutRevenueIndexImport
+      parentRoute: typeof DashboardLayoutImport
+    }
     '/dashboard/_layout/users/': {
       id: '/dashboard/_layout/users/'
       path: '/users'
@@ -761,6 +775,7 @@ interface DashboardLayoutRouteChildren {
   DashboardLayoutMessengerIndexRoute: typeof DashboardLayoutMessengerIndexRoute
   DashboardLayoutOrderIndexRoute: typeof DashboardLayoutOrderIndexRoute
   DashboardLayoutProductsIndexRoute: typeof DashboardLayoutProductsIndexRoute
+  DashboardLayoutRevenueIndexRoute: typeof DashboardLayoutRevenueIndexRoute
   DashboardLayoutUsersIndexRoute: typeof DashboardLayoutUsersIndexRoute
   DashboardLayoutCategoryIdEditRoute: typeof DashboardLayoutCategoryIdEditRoute
   DashboardLayoutCommentIdCommentRoute: typeof DashboardLayoutCommentIdCommentRoute
@@ -783,6 +798,7 @@ const DashboardLayoutRouteChildren: DashboardLayoutRouteChildren = {
   DashboardLayoutMessengerIndexRoute: DashboardLayoutMessengerIndexRoute,
   DashboardLayoutOrderIndexRoute: DashboardLayoutOrderIndexRoute,
   DashboardLayoutProductsIndexRoute: DashboardLayoutProductsIndexRoute,
+  DashboardLayoutRevenueIndexRoute: DashboardLayoutRevenueIndexRoute,
   DashboardLayoutUsersIndexRoute: DashboardLayoutUsersIndexRoute,
   DashboardLayoutCategoryIdEditRoute: DashboardLayoutCategoryIdEditRoute,
   DashboardLayoutCommentIdCommentRoute: DashboardLayoutCommentIdCommentRoute,
@@ -855,6 +871,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/messenger': typeof DashboardLayoutMessengerIndexRoute
   '/dashboard/order': typeof DashboardLayoutOrderIndexRoute
   '/dashboard/products': typeof DashboardLayoutProductsIndexRoute
+  '/dashboard/revenue': typeof DashboardLayoutRevenueIndexRoute
   '/dashboard/users': typeof DashboardLayoutUsersIndexRoute
   '/dashboard/category/$id/edit': typeof DashboardLayoutCategoryIdEditRoute
   '/dashboard/comment/$id/comment': typeof DashboardLayoutCommentIdCommentRoute
@@ -905,6 +922,7 @@ export interface FileRoutesByTo {
   '/dashboard/messenger': typeof DashboardLayoutMessengerIndexRoute
   '/dashboard/order': typeof DashboardLayoutOrderIndexRoute
   '/dashboard/products': typeof DashboardLayoutProductsIndexRoute
+  '/dashboard/revenue': typeof DashboardLayoutRevenueIndexRoute
   '/dashboard/users': typeof DashboardLayoutUsersIndexRoute
   '/dashboard/category/$id/edit': typeof DashboardLayoutCategoryIdEditRoute
   '/dashboard/comment/$id/comment': typeof DashboardLayoutCommentIdCommentRoute
@@ -959,6 +977,7 @@ export interface FileRoutesById {
   '/dashboard/_layout/messenger/': typeof DashboardLayoutMessengerIndexRoute
   '/dashboard/_layout/order/': typeof DashboardLayoutOrderIndexRoute
   '/dashboard/_layout/products/': typeof DashboardLayoutProductsIndexRoute
+  '/dashboard/_layout/revenue/': typeof DashboardLayoutRevenueIndexRoute
   '/dashboard/_layout/users/': typeof DashboardLayoutUsersIndexRoute
   '/dashboard/_layout/category/$id/edit': typeof DashboardLayoutCategoryIdEditRoute
   '/dashboard/_layout/comment/$id/comment': typeof DashboardLayoutCommentIdCommentRoute
@@ -1013,6 +1032,7 @@ export interface FileRouteTypes {
     | '/dashboard/messenger'
     | '/dashboard/order'
     | '/dashboard/products'
+    | '/dashboard/revenue'
     | '/dashboard/users'
     | '/dashboard/category/$id/edit'
     | '/dashboard/comment/$id/comment'
@@ -1062,6 +1082,7 @@ export interface FileRouteTypes {
     | '/dashboard/messenger'
     | '/dashboard/order'
     | '/dashboard/products'
+    | '/dashboard/revenue'
     | '/dashboard/users'
     | '/dashboard/category/$id/edit'
     | '/dashboard/comment/$id/comment'
@@ -1114,6 +1135,7 @@ export interface FileRouteTypes {
     | '/dashboard/_layout/messenger/'
     | '/dashboard/_layout/order/'
     | '/dashboard/_layout/products/'
+    | '/dashboard/_layout/revenue/'
     | '/dashboard/_layout/users/'
     | '/dashboard/_layout/category/$id/edit'
     | '/dashboard/_layout/comment/$id/comment'
@@ -1230,6 +1252,7 @@ export const routeTree = rootRoute
         "/dashboard/_layout/messenger/",
         "/dashboard/_layout/order/",
         "/dashboard/_layout/products/",
+        "/dashboard/_layout/revenue/",
         "/dashboard/_layout/users/",
         "/dashboard/_layout/category/$id/edit",
         "/dashboard/_layout/comment/$id/comment",
@@ -1374,6 +1397,10 @@ export const routeTree = rootRoute
     },
     "/dashboard/_layout/products/": {
       "filePath": "dashboard/_layout/products/index.tsx",
+      "parent": "/dashboard/_layout"
+    },
+    "/dashboard/_layout/revenue/": {
+      "filePath": "dashboard/_layout/revenue/index.tsx",
       "parent": "/dashboard/_layout"
     },
     "/dashboard/_layout/users/": {

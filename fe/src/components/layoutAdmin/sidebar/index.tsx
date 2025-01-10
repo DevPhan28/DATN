@@ -84,7 +84,7 @@ const menuAccount: MenuItem[] = [
 
 const Sidebar = () => {
   return (
-    <aside className="border-cool-gray-20 relative h-screen max-h-screen min-w-fit space-y-4 overflow-hidden overflow-y-auto border-r bg-ui-bg-base px-4 py-6">
+    <aside className="border-cool-gray-20 relative h-screen max-h-screen min-w-fit space-y-4 overflow-y-scroll border-r bg-ui-bg-base px-4 py-6">
       <img src="/fasion zone.png" alt="logo" width={150} height={53} />
       <nav className="space-y-4">
         <ul>

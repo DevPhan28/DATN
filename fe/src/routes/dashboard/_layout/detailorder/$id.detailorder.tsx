@@ -71,6 +71,7 @@ function OrderDetail() {
     paymentStatus,
     note,
     createdAt,
+    discount,
     receivedAt,
     shippingMessageDisplay,
   } = orderDetail;
@@ -233,7 +234,7 @@ function OrderDetail() {
       <div className="max-h-[600px] overflow-y-scroll">
         <div className="min-h-screen bg-gray-50 p-3">
           {/* Chi tiết theo dõi đơn hàng */}
-          <div className="mb-2 rounded-lg bg-white p-5 shadow-md">
+          <div className="mb-2 rounded-lg bg-white p-4 shadow-md">
             <h2 className="mb-4 text-lg font-bold">
               Chi tiết theo dõi đơn hàng
             </h2>
@@ -284,7 +285,7 @@ function OrderDetail() {
 
           {/* Sản phẩm đơn hàng */}
           <div className="mb-2 flex gap-2">
-            <div className="w-2/3 rounded-lg bg-white p-5 shadow-md">
+            <div className="w-2/3 rounded-lg bg-white p-4 shadow-md">
               <h2 className="mb-4 text-lg font-bold">Sản phẩm đơn hàng</h2>
               <table className="w-full border-collapse text-left">
                 <thead>
@@ -311,7 +312,7 @@ function OrderDetail() {
                         <td className="py-2">
                           Phân loại: {item.color} / {item.size}
                         </td>
-                        <td className="py-2">{item.quantity}</td>
+                        <td className="py-2 text-center">x{item.quantity}</td>
                         <td className="py-2">
                           {' '}
                           {item.price.toLocaleString()} ₫
@@ -343,7 +344,7 @@ function OrderDetail() {
                 ₫
               </div>
             </div>
-            <div className="w-1/3 space-y-4 rounded-lg bg-white p-5 shadow-md">
+            <div className="w-1/3 space-y-4 rounded-lg bg-white p-4 shadow-md">
               <h2 className="mb-4 text-lg font-bold">
                 Chi tiết theo dõi đơn hàng
               </h2>
@@ -370,7 +371,7 @@ function OrderDetail() {
 
           {/* Thông tin thanh toán và Địa chỉ đặt hàng */}
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <div className="rounded-lg bg-white p-5 shadow-md">
+            <div className="rounded-lg bg-white p-4 shadow-md">
               <h2 className="mb-4 text-lg font-bold">Thông tin thanh toán</h2>
               <table className="w-full border-collapse text-left">
                 <tbody>
@@ -400,6 +401,14 @@ function OrderDetail() {
                       )}
                     </td>
                   </tr>
+                  <tr className="border-b">
+                    <td className="py-2">Giảm giá</td>
+                    <td className="py-2 text-right">
+                      {' '}
+                      -
+                      <CurrencyVND amount={discount} />
+                    </td>
+                  </tr>
                   <tr>
                     <td className="py-2 font-bold">
                       {paymentMethod === 'online'
@@ -415,7 +424,7 @@ function OrderDetail() {
               </table>
             </div>
 
-            <div className="space-y-2 rounded-lg bg-white p-5 shadow-md">
+            <div className="space-y-5 rounded-lg bg-white p-4 shadow-md">
               <h2 className="mb-4 text-lg font-bold">Địa chỉ đặt hàng</h2>
               <p className="font-semibold">
                 Họ và tên:{' '}
@@ -432,7 +441,7 @@ function OrderDetail() {
                   {customerInfo.districts}, {customerInfo.city}
                 </span>
               </p>
-              <p className="mt-2 font-semibold">
+              <p className="font-semibold">
                 Phương thức thanh toán:
                 <span className="ml-2 font-medium">
                   {paymentMethod === 'online'
