@@ -11,7 +11,11 @@ const getProduct = async (req, res) => {
     const products = await Product.find()
       .limit(Number(limit))
       .skip(Number(skip))
-      .populate("category", "name");
+      .populate({
+        path: "category",
+        match: { status: "SHOW" },  // Điều kiện lọc danh mục có trạng thái là SHOW
+        select: "name"
+      });
 
     const totalItems = await Product.countDocuments();
 
@@ -49,6 +53,7 @@ const getProduct = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 const getProductById = async (req, res) => {
   try {

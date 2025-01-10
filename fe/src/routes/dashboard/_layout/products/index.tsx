@@ -7,6 +7,7 @@ import {
 import useProductMutation from '@/data/products/useProductMutation';
 import { Adjustments, EllipsisVertical, Plus } from '@medusajs/icons';
 import {
+  Badge,
   Button,
   Checkbox,
   DropdownMenu,
@@ -279,9 +280,9 @@ function ProductList() {
                     <CurrencyVND amount={product.price} />
                   </Table.Cell>
                   <Table.Cell className="font-semibold text-ui-fg-base">
-                    <div className="w-fit rounded-md border border-ui-tag-blue-border bg-ui-tag-blue-bg p-1 text-xs text-ui-tag-blue-text">
-                      {product.category?.name}
-                    </div>
+                    <Badge color={product.category?.name ? 'blue' : 'red'}>
+                      {product.category?.name || 'Danh mục không hiển thị'}
+                    </Badge>
                   </Table.Cell>
                   <Table.Cell className="max-w-xs truncate font-semibold text-ui-fg-base">
                     {product.description}
