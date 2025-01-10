@@ -49,6 +49,7 @@ import { Route as DashboardLayoutMessengerIndexImport } from './routes/dashboard
 import { Route as DashboardLayoutCouponIndexImport } from './routes/dashboard/_layout/coupon/index'
 import { Route as DashboardLayoutCategoryIndexImport } from './routes/dashboard/_layout/category/index'
 import { Route as DashboardLayoutBlogIndexImport } from './routes/dashboard/_layout/blog/index'
+import { Route as DashboardLayoutAddressIndexImport } from './routes/dashboard/_layout/address/index'
 import { Route as DashboardLayoutProductsCreateImport } from './routes/dashboard/_layout/products/create'
 import { Route as DashboardLayoutCouponCreateImport } from './routes/dashboard/_layout/coupon/create'
 import { Route as DashboardLayoutCategoryCreateImport } from './routes/dashboard/_layout/category/create'
@@ -262,6 +263,12 @@ const DashboardLayoutBlogIndexRoute = DashboardLayoutBlogIndexImport.update({
   path: '/blog/',
   getParentRoute: () => DashboardLayoutRoute,
 } as any)
+
+const DashboardLayoutAddressIndexRoute =
+  DashboardLayoutAddressIndexImport.update({
+    path: '/address/',
+    getParentRoute: () => DashboardLayoutRoute,
+  } as any)
 
 const DashboardLayoutProductsCreateRoute =
   DashboardLayoutProductsCreateImport.update({
@@ -600,6 +607,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardLayoutProductsCreateImport
       parentRoute: typeof DashboardLayoutImport
     }
+    '/dashboard/_layout/address/': {
+      id: '/dashboard/_layout/address/'
+      path: '/address'
+      fullPath: '/dashboard/address'
+      preLoaderRoute: typeof DashboardLayoutAddressIndexImport
+      parentRoute: typeof DashboardLayoutImport
+    }
     '/dashboard/_layout/blog/': {
       id: '/dashboard/_layout/blog/'
       path: '/blog'
@@ -769,6 +783,7 @@ interface DashboardLayoutRouteChildren {
   DashboardLayoutCategoryCreateRoute: typeof DashboardLayoutCategoryCreateRoute
   DashboardLayoutCouponCreateRoute: typeof DashboardLayoutCouponCreateRoute
   DashboardLayoutProductsCreateRoute: typeof DashboardLayoutProductsCreateRoute
+  DashboardLayoutAddressIndexRoute: typeof DashboardLayoutAddressIndexRoute
   DashboardLayoutBlogIndexRoute: typeof DashboardLayoutBlogIndexRoute
   DashboardLayoutCategoryIndexRoute: typeof DashboardLayoutCategoryIndexRoute
   DashboardLayoutCouponIndexRoute: typeof DashboardLayoutCouponIndexRoute
@@ -792,6 +807,7 @@ const DashboardLayoutRouteChildren: DashboardLayoutRouteChildren = {
   DashboardLayoutCategoryCreateRoute: DashboardLayoutCategoryCreateRoute,
   DashboardLayoutCouponCreateRoute: DashboardLayoutCouponCreateRoute,
   DashboardLayoutProductsCreateRoute: DashboardLayoutProductsCreateRoute,
+  DashboardLayoutAddressIndexRoute: DashboardLayoutAddressIndexRoute,
   DashboardLayoutBlogIndexRoute: DashboardLayoutBlogIndexRoute,
   DashboardLayoutCategoryIndexRoute: DashboardLayoutCategoryIndexRoute,
   DashboardLayoutCouponIndexRoute: DashboardLayoutCouponIndexRoute,
@@ -865,6 +881,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/category/create': typeof DashboardLayoutCategoryCreateRoute
   '/dashboard/coupon/create': typeof DashboardLayoutCouponCreateRoute
   '/dashboard/products/create': typeof DashboardLayoutProductsCreateRoute
+  '/dashboard/address': typeof DashboardLayoutAddressIndexRoute
   '/dashboard/blog': typeof DashboardLayoutBlogIndexRoute
   '/dashboard/category': typeof DashboardLayoutCategoryIndexRoute
   '/dashboard/coupon': typeof DashboardLayoutCouponIndexRoute
@@ -916,6 +933,7 @@ export interface FileRoutesByTo {
   '/dashboard/category/create': typeof DashboardLayoutCategoryCreateRoute
   '/dashboard/coupon/create': typeof DashboardLayoutCouponCreateRoute
   '/dashboard/products/create': typeof DashboardLayoutProductsCreateRoute
+  '/dashboard/address': typeof DashboardLayoutAddressIndexRoute
   '/dashboard/blog': typeof DashboardLayoutBlogIndexRoute
   '/dashboard/category': typeof DashboardLayoutCategoryIndexRoute
   '/dashboard/coupon': typeof DashboardLayoutCouponIndexRoute
@@ -971,6 +989,7 @@ export interface FileRoutesById {
   '/dashboard/_layout/category/create': typeof DashboardLayoutCategoryCreateRoute
   '/dashboard/_layout/coupon/create': typeof DashboardLayoutCouponCreateRoute
   '/dashboard/_layout/products/create': typeof DashboardLayoutProductsCreateRoute
+  '/dashboard/_layout/address/': typeof DashboardLayoutAddressIndexRoute
   '/dashboard/_layout/blog/': typeof DashboardLayoutBlogIndexRoute
   '/dashboard/_layout/category/': typeof DashboardLayoutCategoryIndexRoute
   '/dashboard/_layout/coupon/': typeof DashboardLayoutCouponIndexRoute
@@ -1026,6 +1045,7 @@ export interface FileRouteTypes {
     | '/dashboard/category/create'
     | '/dashboard/coupon/create'
     | '/dashboard/products/create'
+    | '/dashboard/address'
     | '/dashboard/blog'
     | '/dashboard/category'
     | '/dashboard/coupon'
@@ -1076,6 +1096,7 @@ export interface FileRouteTypes {
     | '/dashboard/category/create'
     | '/dashboard/coupon/create'
     | '/dashboard/products/create'
+    | '/dashboard/address'
     | '/dashboard/blog'
     | '/dashboard/category'
     | '/dashboard/coupon'
@@ -1129,6 +1150,7 @@ export interface FileRouteTypes {
     | '/dashboard/_layout/category/create'
     | '/dashboard/_layout/coupon/create'
     | '/dashboard/_layout/products/create'
+    | '/dashboard/_layout/address/'
     | '/dashboard/_layout/blog/'
     | '/dashboard/_layout/category/'
     | '/dashboard/_layout/coupon/'
@@ -1246,6 +1268,7 @@ export const routeTree = rootRoute
         "/dashboard/_layout/category/create",
         "/dashboard/_layout/coupon/create",
         "/dashboard/_layout/products/create",
+        "/dashboard/_layout/address/",
         "/dashboard/_layout/blog/",
         "/dashboard/_layout/category/",
         "/dashboard/_layout/coupon/",
@@ -1373,6 +1396,10 @@ export const routeTree = rootRoute
     },
     "/dashboard/_layout/products/create": {
       "filePath": "dashboard/_layout/products/create.tsx",
+      "parent": "/dashboard/_layout"
+    },
+    "/dashboard/_layout/address/": {
+      "filePath": "dashboard/_layout/address/index.tsx",
       "parent": "/dashboard/_layout"
     },
     "/dashboard/_layout/blog/": {

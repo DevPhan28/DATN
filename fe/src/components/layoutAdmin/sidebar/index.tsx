@@ -6,6 +6,7 @@ import {
   Pencil,
   ReceiptPercent,
   Tag,
+  MapPin,
 } from '@medusajs/icons';
 import ItemSidebar from './item-sidebar';
 
@@ -71,6 +72,14 @@ const menuMessenger: MenuItem[] = [
     name: 'Trò chuyện',
     icon: <ChatBubble />,
     href: '/dashboard/messenger',
+  },
+];
+const menuAddress: MenuItem[] = [
+  {
+    id: 1,
+    name: 'Vị trí cửa hàng',
+    icon: <MapPin />,
+    href: '/dashboard/address',
   },
 ];
 const menuAccount: MenuItem[] = [
@@ -184,6 +193,22 @@ const Sidebar = () => {
           </header>
           <div>
             {menuMessenger.map(item => (
+              <ItemSidebar
+                key={item.id}
+                href={item.href}
+                id={item.id}
+                name={item.name}
+                icon={item.icon}
+              />
+            ))}
+          </div>
+        </section>
+        <section className="space-y-1">
+          <header className="py-1.5 pl-2 text-xs font-medium text-ui-fg-muted">
+            Vị trí cửa hàng
+          </header>
+          <div>
+            {menuAddress.map(item => (
               <ItemSidebar
                 key={item.id}
                 href={item.href}
