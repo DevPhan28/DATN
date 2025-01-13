@@ -75,7 +75,7 @@ function PaymentOnline() {
                     </div>
                     <p className="font-medium">
                       Có giao dịch thanh toán với số tiền
-                      <span className="ml-0.5 text-red-500">
+                      <span className="ml-0.5 font-semibold text-red-500">
                         <CurrencyVND amount={online.totalPrice} />
                       </span>
                       , vui lòng kiểm tra thông tin

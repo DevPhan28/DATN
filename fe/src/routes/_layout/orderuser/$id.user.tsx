@@ -22,6 +22,7 @@ function DetailOrderUser() {
   const [orderDetail, setOrderDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [statusHistory, setStatusHistory] = useState([]);
+  const [statusIndex1, setStatusIndex] = useState(0);
 
   useEffect(() => {
     const fetchOrderDetail = async () => {
@@ -86,6 +87,7 @@ function DetailOrderUser() {
   };
 
   const statusIndex = statusOrder[status] || 0; // Xác định trạng thái hiện tại
+  console.log('statusIndex', statusIndex);
 
   const steps = [
     {
@@ -115,7 +117,63 @@ function DetailOrderUser() {
     },
   ];
 
-  const formatDate = date => new Date(date).toLocaleString();
+  const steps1 = [
+    {
+      label: 'Đơn hàng đặt thành công',
+      icon: <DocumentText />,
+      time: '09:36 23/11/2024',
+      description: 'Đơn hàng đã được đặt',
+      status: statusOrder.pending,
+    },
+    {
+      label: 'Đơn hàng chưa được thanh toán',
+      icon: <DocumentText />,
+      time: '09:37 23/11/2024',
+      description: 'Vui lòng thanh toán khi nhận hàng',
+      status: statusOrder.pendingPayment,
+    },
+    {
+      label: 'Đơn hàng đang giao',
+      icon: <DocumentText />,
+      time: '09:37 23/11/2024',
+      description: 'Đơn hàng sẽ sớm được giao, vui lòng chú ý điện thoại',
+      status: statusOrder.shipped,
+    },
+    {
+      label: 'Đơn hàng giao thành công',
+      icon: <DocumentText />,
+      time: '10:21 24/11/2024',
+      description: 'Đơn hàng đã được giao cho bạn',
+      status: statusOrder.delivered,
+    },
+    {
+      label: 'Đơn hàng thành công',
+      icon: <DocumentText />,
+      status: statusOrder.delivered,
+    },
+  ];
+
+  const getFilteredSteps = currentStatus => {
+    if (currentStatus === statusIndex) {
+      return [
+        {
+          label: 'Đơn hàng đã bị hủy',
+          icon: <DocumentText />,
+          time: '10:00 24/11/2024',
+          description: 'Đơn hàng của bạn đã bị hủy',
+          status: statusIndex,
+        },
+      ];
+    }
+
+    return steps1;
+  };
+
+  const currentStatus = statusOrder.canceled; // Trạng thái hiện tại của đơn hàng
+  const filteredSteps = getFilteredSteps(currentStatus);
+
+  console.log('đ', filteredSteps);
+
   const total = items
     .map(item => item.price * item.quantity)
     .reduce((sum, price) => sum + price, 0);
@@ -251,52 +309,50 @@ function DetailOrderUser() {
               </div>
             </div>
 
-            <div>
-              {/* Trạng thái đơn hàng */}
-              <div className="mt-5 space-y-3 text-sm">
-                {[
-                  {
-                    status: 'Đơn hàng thành công',
-                  },
-                  {
-                    time: '10:21 24/11/2024',
-                    status: 'Đơn hàng giao thành công',
-                    note: `Người nhận: ${customerInfo.name}`,
-                  },
-                  {
-                    time: '09:37 23/11/2024',
-                    status: 'Đơn hàng đang giao',
-                    note: 'Đơn hàng sẽ sớm được giao, vui lòng chú ý điện thoại',
-                  },
-                  {
-                    time: formatDate(updatedAt),
-                    status: 'Đơn hàng đang được chuẩn bị',
-                    note: 'Shop đang chuẩn bị đơn hàng',
-                  },
-                  {
-                    time: formatDate(createdAt),
-                    status: 'Đơn hàng đặt thành công',
-                    note: 'Đơn hàng đã được đặt',
-                  },
-                ].map((log, index) => (
-                  <div key={index} className="flex items-start">
-                    <div className="mr-4 flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-white">
-                      <DocumentText />
+            <div className="mt-5 space-y-3 text-sm">
+              {getFilteredSteps(currentStatus) // Lọc các bước hiển thị dựa trên trạng thái
+                .map((step, index) => (
+                  <div
+                    key={index}
+                    className={`relative flex items-start space-x-3 ${index <= statusIndex ? 'opacity-100 transition-opacity duration-500' : 'opacity-0'}`} // Hiệu ứng hiển thị dần dần cho bước
+                  >
+                    {/* Icon */}
+                    <div className="flex flex-col items-center">
+                      <div
+                        className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                          index <= statusIndex ? 'bg-teal-500' : 'bg-gray-300'
+                        }`}
+                      >
+                        <p className="text-white">{step.icon}</p>
+                      </div>
+                      {/* Line */}
+                      {index < filteredSteps.length - 1 && (
+                        <div
+                          className={`mt-2 h-20 w-[2px] bg-gray-300 transition-opacity duration-500 ${
+                            index < statusIndex ? 'opacity-100' : 'opacity-0'
+                          }`}
+                        ></div>
+                      )}
                     </div>
+
+                    {/* Nội dung */}
+                    <p className="text-gray-500">{step.time}</p>
                     <div>
-                      <div className="flex items-center">
-                        <p className="mr-2">{log.time}</p>
-                        <div>
-                          <p className="font-semibold text-green-500">
-                            {log.status}
-                          </p>
-                          <p className="mt-1 text-gray-600">{log.note}</p>
-                        </div>
+                      <div className="flex flex-col">
+                        <p
+                          className={`font-semibold ${
+                            index <= statusIndex
+                              ? 'text-teal-500'
+                              : 'text-gray-600'
+                          }`}
+                        >
+                          {step.label}
+                        </p>
+                        <p className="text-gray-500">{step.description}</p>
                       </div>
                     </div>
                   </div>
                 ))}
-              </div>
             </div>
           </div>
           <hr />
@@ -316,7 +372,7 @@ function DetailOrderUser() {
                         <div className="text-xl font-semibold">{item.name}</div>
                         <div className="text-gray-500">
                           Phân loại:{' '}
-                          <span className="text-black">
+                          <span className="text-gray-500">
                             {item.color} - {item.size}
                           </span>
                         </div>
@@ -362,7 +418,7 @@ function DetailOrderUser() {
                   {voucher ? (
                     <CurrencyVND amount={voucher} />
                   ) : (
-                    <span className="text-gray-600">0đ</span>
+                    <span className="text-gray-600"> - 0đ</span>
                   )}
                 </span>
               </div>
@@ -373,7 +429,17 @@ function DetailOrderUser() {
                 </span>
               </div>
               <div className="mt-4 text-sm text-gray-600">
-                <p className="mb-1">Phương thức thanh toán: {paymentMethod}</p>
+                <p className="mb-1">
+                  Phương thức thanh toán:
+                  <span className="ml-2">
+                    {' '}
+                    {paymentMethod === 'cod'
+                      ? statusIndex === 4
+                        ? 'Đã thanh toán'
+                        : 'Chưa thanh toán'
+                      : 'Thanh toán Zalo Pay'}
+                  </span>
+                </p>
               </div>
             </div>
           </div>
