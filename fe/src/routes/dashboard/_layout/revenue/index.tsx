@@ -1,5 +1,7 @@
 import CurrencyVND from '@/components/config/vnd';
 import Header from '@/components/layoutAdmin/header/header';
+import DashboardOver from '@/components/layoutAdmin/statistics/LineCharNew';
+import DashboardNew from '@/components/layoutAdmin/statistics/LineCharSmall';
 import { useFetchOrdersStatus } from '@/data/oder/useOderList';
 import { createFileRoute } from '@tanstack/react-router';
 
@@ -90,30 +92,31 @@ function Revenue() {
   // Hàm tuỳ chỉnh để hiển thị label
   const renderLabel = ({ name, value }) => `${value}%`;
   return (
-    <div>
+    <div className="h-screen overflow-y-scroll">
       <Header title="Tổng Doanh Thu" />
-      <div className="mx-6 mt-4 flex flex-col gap-1 rounded-lg border border-gray-200 bg-ui-bg-base px-6 py-4">
+      <div className="flex flex-col gap-1 rounded-lg px-6 py-4">
         {/* Main Container */}
-        <div className="grid grid-cols-12 gap-5">
-          <div className="col-span-4 space-y-4">
+        <div className="grid grid-cols-12 gap-3">
+          <div className="col-span-5 space-y-4">
             {/* Tổng doanh thu */}
-            <div className="flex justify-between gap-2">
-              <div className="rounded-lg bg-white p-4 shadow-md">
+            <div className="flex gap-3">
+              <div className="w-[240px] rounded-lg bg-white p-4 shadow-md">
                 <h2 className="mb-3 text-lg font-bold">Tổng doanh thu</h2>
                 <p className="text-2xl font-bold text-red-500">
                   <CurrencyVND amount={totalRevenue} />
                 </p>
               </div>
-              <div className="rounded-lg bg-white p-4 shadow-md">
+              <div className="w-[240px] rounded-lg bg-white p-4 shadow-md">
                 <h2 className="mb-3 text-lg font-bold">Số đơn hàng</h2>
                 <p className="text-xl font-semibold">{listOrder.length}</p>
               </div>
             </div>
             {/* tổng đơn hàng */}
-            <div className="rounded-lg bg-white p-4 shadow-md">
-              <h2 className="mb-3 text-lg font-bold">Tổng đơn hàng</h2>
+            <div className="rounded-lg bg-white shadow-md">
+              {/* <h2 className="mb-3 text-lg font-bold">Tổng đơn hàng</h2> */}
               <div className="flex items-center justify-center">
                 <div className="w-1/2">
+                  <p className="mb-2 font-semibold">Tổng đơn hàng</p>
                   <p className="font-bold text-green-500">
                     Thành công: {deliveredOrders}
                   </p>
@@ -141,10 +144,10 @@ function Revenue() {
               </div>
             </div>
             {/* Tổng tiền đơn hàng */}
-            <div className="rounded-lg bg-white p-4 shadow-md">
-              <h2 className="mb-3 text-lg font-bold">Tổng tiền đơn hàng</h2>
+            <div className="rounded-lg bg-white px-4 shadow-md">
               <div className="flex items-center">
                 <div className="w-1/2">
+                  <p className="mb-2 font-semibold">Tổng tiền đơn hàng</p>
                   <p className="font-bold text-green-500">
                     Thành công: <CurrencyVND amount={deliveredRevenue} />
                   </p>
@@ -178,31 +181,17 @@ function Revenue() {
           </div>
 
           {/* Right Section */}
-          <div className="col-span-8 rounded-lg bg-white p-4 shadow-md">
+          <div className="col-span-7 rounded-lg bg-white p-4 shadow-md">
             <h2 className="mb-3 text-lg font-bold">
               Biểu đồ doanh thu theo tháng hiện tại
             </h2>
             <div className="h-64 bg-gray-100">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={data}
-                  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="revenue"
-                    stroke="#8884d8"
-                    activeDot={{ r: 8 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+              <DashboardOver />
             </div>
           </div>
+        </div>
+        <div>
+          <DashboardNew />
         </div>
       </div>
     </div>
