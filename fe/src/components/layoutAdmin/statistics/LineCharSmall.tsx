@@ -175,36 +175,42 @@ const DashboardOver = () => {
     return <p>Error: {orderError?.message || deliveredCountError?.message}</p>;
 
   return (
-    <div className="h-screen rounded-lg bg-white p-8 shadow-sm">
+    <div className="mt-2 h-screen rounded-lg bg-white p-8 shadow-md">
       <div className="flex justify-between">
-        <h2 className="mb-4 text-xl font-semibold">Tổng quan</h2>
+        <h2 className="mb-4 text-xl font-semibold">
+          Biểu đồ thống kê doanh thu lọc theo tháng, năm
+        </h2>
         <div className="flex gap-4">
-          <select
-            value={selectedYear}
-            onChange={handleYearChange}
-            className="rounded-md border px-3 py-2.5"
-          >
-            {[...Array(2026 - 2000)].map((_, index) => {
-              const year = 2000 + index;
-              return (
-                <option key={year} value={year}>
-                  {year}
+          <div>
+            <select
+              value={selectedYear}
+              onChange={handleYearChange}
+              className="rounded-md border px-3 py-2.5"
+            >
+              {[...Array(2026 - 2000)].map((_, index) => {
+                const year = 2000 + index;
+                return (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+          <div>
+            <select
+              value={selectedMonth}
+              onChange={handleMonthChange}
+              className="rounded-md border px-3 py-2.5"
+            >
+              <option value={0}>Tất cả tháng</option>
+              {[...Array(12)].map((_, index) => (
+                <option key={index} value={index + 1}>
+                  Tháng {index + 1}
                 </option>
-              );
-            })}
-          </select>
-          <select
-            value={selectedMonth}
-            onChange={handleMonthChange}
-            className="rounded-md border px-3 py-2.5"
-          >
-            <option value={0}>Tất cả tháng</option>
-            {[...Array(12)].map((_, index) => (
-              <option key={index} value={index + 1}>
-                Tháng {index + 1}
-              </option>
-            ))}
-          </select>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
       {/* Phần biểu đồ */}

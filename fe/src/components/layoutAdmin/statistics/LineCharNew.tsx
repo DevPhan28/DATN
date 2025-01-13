@@ -107,9 +107,6 @@ const DashboardOver = () => {
 
   return (
     <div className="rounded-lg bg-white p-6">
-      <div className="flex justify-between">
-        <h2 className="mb-4 text-xl font-semibold">Tổng quan</h2>
-      </div>
       {/* Phần biểu đồ */}
       <div className="h-64">
         <ResponsiveContainer width="100%" height="150%">
