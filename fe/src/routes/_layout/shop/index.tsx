@@ -10,6 +10,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import anhbanershop from '../../../assets/images/shop/shop_banner_character1.png';
 import instance from '@/api/axiosIntance';
+import FilterBar from '@/components/FilterBar';
 export const Route = createFileRoute('/_layout/shop/')({
   component: Shop,
 });
@@ -82,17 +83,14 @@ function Shop() {
     };
 
     filterProducts();
+    
   }, [selectedCategory, searchTerm, listProduct]);
   const displayedProducts =
     filteredProducts.length > 0 ? filteredProducts : listProduct;
 
   const handleFilterChange = (filtered: Product[]) => {
     setFilteredProducts(filtered);
-    if (filtered.length > 0) {
-      toast.success('Sản phẩm đã được lọc thành công!');
-    } else {
-      toast.error('Không tìm thấy sản phẩm phù hợp!');
-    }
+   
   };
   useEffect(() => {
     if (product) {
@@ -158,7 +156,7 @@ function Shop() {
                       className="me-xl-4 me-3 pe-1"
                     >
                       <a
-                        href="#"
+                       
                         className="menu-link menu-link_us-s menu-link_active"
                       >
                         Tất Cả
@@ -250,178 +248,7 @@ function Shop() {
               {/* /.accordion-item */}
             </div>
             {/* /.accordion-item */}
-            <div className="accordion" id="color-filters">
-              <div className="accordion-item mb-4 pb-3">
-                <h5 className="accordion-header" id="accordion-heading-1">
-                  <button
-                    className="accordion-button fs-5 text-uppercase border-0 p-0"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#accordion-filter-2"
-                    aria-expanded="true"
-                    aria-controls="accordion-filter-2"
-                  >
-                    Color
-                    <svg
-                      className="accordion-button__icon type2"
-                      viewBox="0 0 10 6"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <g aria-hidden="true" stroke="none" fillRule="evenodd">
-                        <path d="M5.35668 0.159286C5.16235 -0.053094 4.83769 -0.0530941 4.64287 0.159286L0.147611 5.05963C-0.0492049 5.27473 -0.049205 5.62357 0.147611 5.83813C0.344427 6.05323 0.664108 6.05323 0.860924 5.83813L5 1.32706L9.13858 5.83867C9.33589 6.05378 9.65507 6.05378 9.85239 5.83867C10.0492 5.62357 10.0492 5.27473 9.85239 5.06018L5.35668 0.159286Z" />
-                      </g>
-                    </svg>
-                  </button>
-                </h5>
-                <div
-                  id="accordion-filter-2"
-                  className="accordion-collapse show border-0"
-                  aria-labelledby="accordion-heading-1"
-                  data-bs-parent="#color-filters"
-                >
-                  <div className="accordion-body px-0 pb-0">
-                    <div className="d-flex flex-wrap">
-                      {[
-                        ...new Set(
-                          displayedProducts
-                            .map(
-                              product =>
-                                product.variants && product.variants[0]?.color
-                            )
-                            .filter(Boolean) // Loại bỏ các giá trị null hoặc undefined
-                        ),
-                      ].map((color, index) => (
-                        <a
-                          key={index}
-                          href="#"
-                          className="swatch-color js-filter border-1 rounded-full border-gray-300 p-1"
-                          style={{ color }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/* /.accordion-item */}
-            </div>
-            {/* /.accordion */}
-            <div className="accordion" id="size-filters">
-              <div className="accordion-item mb-4 pb-3">
-                <h5 className="accordion-header" id="accordion-heading-size">
-                  <button
-                    className="accordion-button fs-5 text-uppercase border-0 p-0"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#accordion-filter-size"
-                    aria-expanded="true"
-                    aria-controls="accordion-filter-size"
-                  >
-                    Sizes
-                    <svg
-                      className="accordion-button__icon type2"
-                      viewBox="0 0 10 6"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <g aria-hidden="true" stroke="none" fillRule="evenodd">
-                        <path d="M5.35668 0.159286C5.16235 -0.053094 4.83769 -0.0530941 4.64287 0.159286L0.147611 5.05963C-0.0492049 5.27473 -0.049205 5.62357 0.147611 5.83813C0.344427 6.05323 0.664108 6.05323 0.860924 5.83813L5 1.32706L9.13858 5.83867C9.33589 6.05378 9.65507 6.05378 9.85239 5.83867C10.0492 5.62357 10.0492 5.27473 9.85239 5.06018L5.35668 0.159286Z" />
-                      </g>
-                    </svg>
-                  </button>
-                </h5>
-                <div
-                  id="accordion-filter-size"
-                  className="accordion-collapse show border-0"
-                  aria-labelledby="accordion-heading-size"
-                  data-bs-parent="#size-filters"
-                >
-                  <div className="accordion-body px-0 pb-0">
-                    <div className="d-flex flex-wrap">
-                      {[
-                        ...new Set(
-                          displayedProducts
-                            .map(
-                              product =>
-                                product.variants && product.variants[0]?.size
-                            )
-                            .filter(Boolean)
-                        ),
-                      ].map((size, index) => (
-                        <a
-                          key={index}
-                          href="#"
-                          className="swatch-size btn btn-sm btn-outline-light js-filter mb-3 me-3"
-                        >
-                          {size}
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/* /.accordion-item */}
-            </div>
-
-            <div className="accordion" id="price-filters">
-              <div className="accordion-item mb-4">
-                <h5
-                  className="accordion-header mb-2"
-                  id="accordion-heading-price"
-                >
-                  <button
-                    className="accordion-button fs-5 text-uppercase border-0 p-0"
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#accordion-filter-price"
-                    aria-expanded="true"
-                    aria-controls="accordion-filter-price"
-                  >
-                    Price
-                    <svg
-                      className="accordion-button__icon type2"
-                      viewBox="0 0 10 6"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <g aria-hidden="true" stroke="none" fillRule="evenodd">
-                        <path d="M5.35668 0.159286C5.16235 -0.053094 4.83769 -0.0530941 4.64287 0.159286L0.147611 5.05963C-0.0492049 5.27473 -0.049205 5.62357 0.147611 5.83813C0.344427 6.05323 0.664108 6.05323 0.860924 5.83813L5 1.32706L9.13858 5.83867C9.33589 6.05378 9.65507 6.05378 9.85239 5.83867C10.0492 5.62357 10.0492 5.27473 9.85239 5.06018L5.35668 0.159286Z" />
-                      </g>
-                    </svg>
-                  </button>
-                </h5>
-                <div
-                  id="accordion-filter-price"
-                  className="accordion-collapse show border-0"
-                  aria-labelledby="accordion-heading-price"
-                  data-bs-parent="#price-filters"
-                >
-                  <div className="price-range__info d-flex align-items-center mt-2">
-                    <span className="text-secondary me-2">Min Price:</span>
-                    <input
-                      type="range"
-                      className="form-range price-range__min mx-2"
-                      min="0"
-                      max="1000"
-                      step="10"
-                      value="250"
-                      onChange={e => console.log('Min Price:', e.target.value)} // Cập nhật logic tại đây
-                    />
-                    <span className="text-danger me-4">$250</span>
-
-                    <span className="text-secondary me-2">Max Price:</span>
-                    <input
-                      type="range"
-                      className="form-range price-range__max mx-2"
-                      min="0"
-                      max="1000"
-                      step="10"
-                      value="450"
-                      onChange={e => console.log('Max Price:', e.target.value)} // Cập nhật logic tại đây
-                    />
-                    <span className="text-danger">$450</span>
-                  </div>
-                </div>
-              </div>
-              {/* /.accordion-item */}
-            </div>
+            <FilterBar onFilterChange={handleFilterChange} />
             {/* /.accordion */}
           </div>
           {/* /.shop-sidebar */}
@@ -581,9 +408,7 @@ function Shop() {
                               {averageRating.toFixed(1)}
                             </span>
                           </div>
-                          <span className="reviews-note text-lowercase text-secondary ms-1">
-                            8k+ reviews
-                          </span>
+                        
                         </div>
                       </div>
                     </div>
