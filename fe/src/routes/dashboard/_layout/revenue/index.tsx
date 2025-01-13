@@ -1,9 +1,11 @@
+import CurrencyVND from '@/components/config/vnd';
 import Header from '@/components/layoutAdmin/header/header';
-import { createFileRoute } from '@tanstack/react-router'
+import { useFetchOrdersStatus } from '@/data/oder/useOderList';
+import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/dashboard/_layout/revenue/')({
   component: Revenue,
-})
+});
 import {
   LineChart,
   Line,
@@ -13,64 +15,111 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
-  PieChart, Pie, Cell
-} from "recharts";
-
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
 
 function Revenue() {
+  const {
+    data: listOrder,
+    meta,
+    isLoading,
+    error,
+  } = useFetchOrdersStatus({
+    limit: 1000000,
+  });
+
   const data = [
-    { month: "Jan", revenue: 2500 },
-    { month: "Feb", revenue: 3000 },
-    { month: "Mar", revenue: 2000 },
-    { month: "Apr", revenue: 2780 },
-    { month: "May", revenue: 1890 },
-    { month: "Jun", revenue: 2390 },
-    { month: "Jul", revenue: 3490 },
-    { month: "Aug", revenue: 4000 },
-    { month: "Sep", revenue: 3000 },
-    { month: "Oct", revenue: 2000 },
-    { month: "Nov", revenue: 2780 },
-    { month: "Dec", revenue: 1890 },
+    { month: 'Jan', revenue: 2500 },
+    { month: 'Feb', revenue: 3000 },
+    { month: 'Mar', revenue: 2000 },
+    { month: 'Apr', revenue: 2780 },
+    { month: 'May', revenue: 1890 },
+    { month: 'Jun', revenue: 2390 },
+    { month: 'Jul', revenue: 3490 },
+    { month: 'Aug', revenue: 4000 },
+    { month: 'Sep', revenue: 3000 },
+    { month: 'Oct', revenue: 2000 },
+    { month: 'Nov', revenue: 2780 },
+    { month: 'Dec', revenue: 1890 },
   ];
 
+  // Lấy tháng hiện tại
+  const currentMonth = new Date().toLocaleString('default', { month: 'short' }); // 'Jan', 'Feb', 'Mar', ...
+
+  // Tìm doanh thu của tháng hiện tại
+  const currentMonthData = data.find(item => item.month === currentMonth);
+
+  const currentMonthRevenue = currentMonthData ? currentMonthData.revenue : 0;
+
+  console.log(`Doanh thu tháng ${currentMonth}: ${currentMonthRevenue}`);
+
+  const deliveredRevenue = listOrder
+    .filter(order => order.status === 'delivered')
+    .reduce((acc, curr) => acc + curr.totalPrice, 0);
+  const canceledRevenue = listOrder
+    .filter(order => order.status === 'canceled')
+    .reduce((acc, curr) => acc + curr.totalPrice, 0);
 
   const haha = [
-    { name: "Thành công", value: 78 },
-    { name: "Thất bại", value: 22 },
+    { name: 'Thành công', value: deliveredRevenue },
+    { name: 'Thất bại', value: canceledRevenue },
   ];
-  const hihi = [
-    { name: "Thành công", value: 71 }, // % Thành công
-    { name: "Thất bại", value: 29 },  // % Thất bại
-  ];
+  const totalOrders = listOrder.length;
+  const deliveredOrders = listOrder.filter(
+    order => order.status === 'delivered'
+  ).length;
+  const canceledOrders = listOrder.filter(
+    order => order.status === 'canceled'
+  ).length;
 
-  const COLORS = ["#0088FE", "#FF8042"];
+  const successPercentage = (deliveredOrders / totalOrders) * 100; // Tính % thành công (delivered)
+  const failurePercentage = (canceledOrders / totalOrders) * 100; // Tính % thất bại (canceled)
+
+  const hihi = [
+    { name: 'Thành công', value: successPercentage },
+    { name: 'Thất bại', value: failurePercentage },
+  ];
+  const totalRevenue = listOrder
+    .filter(order => order.status === 'delivered')
+    .map(order => order.totalPrice)
+    .reduce((acc, curr) => acc + curr, 0);
+
+  const COLORS = ['#0088FE', '#FF8042'];
   // Hàm tuỳ chỉnh để hiển thị label
   const renderLabel = ({ name, value }) => `${value}%`;
   return (
     <div>
       <Header title="Tổng Doanh Thu" />
-      <div className="mt-4 mx-6 flex flex-col gap-1 rounded-lg border border-gray-200 bg-ui-bg-base px-6 py-4">
+      <div className="mx-6 mt-4 flex flex-col gap-1 rounded-lg border border-gray-200 bg-ui-bg-base px-6 py-4">
         {/* Main Container */}
         <div className="grid grid-cols-12 gap-5">
           <div className="col-span-4 space-y-4">
             {/* Tổng doanh thu */}
-            <div className="flex gap-2 justify-between">
-              <div className="bg-white p-4 rounded-lg shadow-md">
-                <h2 className="text-lg font-bold mb-3">Tổng doanh thu</h2>
-                <p className="text-2xl font-bold text-red-500">1.285.550.630 đ</p>
+            <div className="flex justify-between gap-2">
+              <div className="rounded-lg bg-white p-4 shadow-md">
+                <h2 className="mb-3 text-lg font-bold">Tổng doanh thu</h2>
+                <p className="text-2xl font-bold text-red-500">
+                  <CurrencyVND amount={totalRevenue} />
+                </p>
               </div>
-              <div className="bg-white p-4 rounded-lg shadow-md">
-                <h2 className="text-lg font-bold mb-3">Số đơn hàng</h2>
-                <p className="font-semibold text-xl">1.195</p>
+              <div className="rounded-lg bg-white p-4 shadow-md">
+                <h2 className="mb-3 text-lg font-bold">Số đơn hàng</h2>
+                <p className="text-xl font-semibold">{listOrder.length}</p>
               </div>
             </div>
             {/* tổng đơn hàng */}
-            <div className="bg-white p-4 rounded-lg shadow-md">
-              <h2 className="text-lg font-bold mb-3">Tổng đơn hàng</h2>
+            <div className="rounded-lg bg-white p-4 shadow-md">
+              <h2 className="mb-3 text-lg font-bold">Tổng đơn hàng</h2>
               <div className="flex items-center justify-center">
                 <div className="w-1/2">
-                  <p className="text-green-500 font-bold">Thành công: 1.001.999.980 đ</p>
-                  <p className="text-red-500 font-bold">Thất bại: 283.550.650 đ</p>
+                  <p className="font-bold text-green-500">
+                    Thành công: {deliveredOrders}
+                  </p>
+                  <p className="font-bold text-red-500">
+                    Thất bại: {canceledOrders}
+                  </p>
                 </div>
                 {/* Biểu đồ tròn */}
                 <PieChart width={200} height={200}>
@@ -83,7 +132,7 @@ function Revenue() {
                     label={renderLabel} // Hiển thị nhãn và %
                     labelLine={true} // Hiển thị đường chỉ dẫn
                   >
-                    {data.map((entry, index) => (
+                    {hihi.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index]} />
                     ))}
                   </Pie>
@@ -92,14 +141,18 @@ function Revenue() {
               </div>
             </div>
             {/* Tổng tiền đơn hàng */}
-            <div className="bg-white p-4 rounded-lg shadow-md">
-              <h2 className="text-lg font-bold mb-3">Tổng tiền đơn hàng</h2>
+            <div className="rounded-lg bg-white p-4 shadow-md">
+              <h2 className="mb-3 text-lg font-bold">Tổng tiền đơn hàng</h2>
               <div className="flex items-center">
                 <div className="w-1/2">
-                  <p className="text-green-500 font-bold">Thành công: 1.001.999.980 đ</p>
-                  <p className="text-red-500 font-bold">Thất bại: 283.550.650 đ</p>
+                  <p className="font-bold text-green-500">
+                    Thành công: <CurrencyVND amount={deliveredRevenue} />
+                  </p>
+                  <p className="font-bold text-red-500">
+                    Thất bại: <CurrencyVND amount={canceledRevenue} />
+                  </p>
                 </div>
-                <div className="w-1/2 flex justify-center">
+                <div className="flex w-1/2 justify-center">
                   {/* Tăng kích thước biểu đồ */}
                   <PieChart width={200} height={200}>
                     <Pie
@@ -125,8 +178,8 @@ function Revenue() {
           </div>
 
           {/* Right Section */}
-          <div className="col-span-8 bg-white p-4 rounded-lg shadow-md">
-            <h2 className="text-lg font-bold mb-3">
+          <div className="col-span-8 rounded-lg bg-white p-4 shadow-md">
+            <h2 className="mb-3 text-lg font-bold">
               Biểu đồ doanh thu theo tháng hiện tại
             </h2>
             <div className="h-64 bg-gray-100">
@@ -153,5 +206,5 @@ function Revenue() {
         </div>
       </div>
     </div>
-  )
+  );
 }

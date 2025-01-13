@@ -192,7 +192,7 @@ function DetailOrderUser() {
 
           {/* Thông tin đơn hàng */}
           <div className="flex items-center space-x-2">
-            <span className="font-semibold text-red-500">
+            <span className="font-semibold text-[#ee4d2d]">
               MÃ ĐƠN HÀNG: {orderNumber}
             </span>
             <span className="text-gray-500">|</span>
@@ -379,7 +379,7 @@ function DetailOrderUser() {
                         <div className="font-semibold">x{item.quantity}</div>
                       </div>
                     </div>
-                    <div className="flex gap-2 text-right font-semibold text-red-600">
+                    <div className="flex gap-2 text-right font-semibold text-[#ee4d2d]">
                       Thành Tiền:
                       <CurrencyVND amount={item.price * item.quantity} />
                     </div>
@@ -422,7 +422,7 @@ function DetailOrderUser() {
                   )}
                 </span>
               </div>
-              <div className="flex justify-between py-4 text-lg font-bold text-red-500">
+              <div className="flex justify-between py-4 text-lg font-bold text-[#ee4d2d]">
                 <span>Thành tiền</span>
                 <span>
                   <CurrencyVND amount={totalPrice} />
