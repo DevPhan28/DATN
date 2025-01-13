@@ -1,7 +1,7 @@
 import CurrencyVND from '@/components/config/vnd';
 import Header from '@/components/layoutAdmin/header/header';
-import DashboardOver from '@/components/layoutAdmin/statistics/LineCharNew';
-import DashboardNew from '@/components/layoutAdmin/statistics/LineCharSmall';
+import DashboardNew from '@/components/layoutAdmin/statistics/LineCharNew';
+import DashboardOver from '@/components/layoutAdmin/statistics/LineCharSmall';
 import { useFetchOrdersStatus } from '@/data/oder/useOderList';
 import { createFileRoute } from '@tanstack/react-router';
 
@@ -186,12 +186,12 @@ function Revenue() {
               Biểu đồ doanh thu theo tháng hiện tại
             </h2>
             <div className="h-64 bg-gray-100">
-              <DashboardOver />
+              <DashboardNew />
             </div>
           </div>
         </div>
         <div>
-          <DashboardNew />
+          <DashboardOver />
         </div>
       </div>
     </div>
