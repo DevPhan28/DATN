@@ -1,4 +1,5 @@
 import instance from '@/api/axiosIntance';
+import ChatBot from '@/components/ChatBot';
 import CurrencyVND from '@/components/config/vnd';
 import FeaturedProducts from '@/components/featuredProducts';
 import useCommentMutation from '@/data/Comment/useCommentMutation';
@@ -158,19 +159,6 @@ function DetailProduct() {
     },
   });
 
-  // // Handle size change
-  // const handleSizeChange = e => {
-  //   const size = e.target.value;
-  //   setSelectedSize(size);
-  //   setSelectedColor('');
-
-  //   // Filter available colors based on selected size
-  //   const availableColors = product.variants
-  //     .filter(variant => variant.size === size)
-  //     .map(variant => variant.color);
-
-  //   setAvailableColors([...new Set(availableColors)]);
-  // };
   const handleSizeChange = size => {
     setSelectedSize(size); // Cập nhật kích cỡ được chọn
     setSelectedColor(''); // Reset màu khi thay đổi kích cỡ
@@ -183,7 +171,6 @@ function DetailProduct() {
     setAvailableColors([...new Set(availableColors)]); // Loại bỏ trùng lặp
   };
 
-  // Handle adding to cart
   const handleAddToCart = () => {
     if (!selectedSize || !selectedColor) {
       toast.error('Vui lòng chọn size và màu sắc!');
@@ -251,17 +238,16 @@ function DetailProduct() {
         return;
       }
 
-      const messageContent = `Người dùng đã yêu cầu hỗ trợ về hướng dẫn kích cỡ cho sản phẩm ${product.name}`;
+      const messageContent = `Tôi cần hỗ trợ về hướng dẫn kích cỡ cho sản phẩm ${product.name}`;
       await instance.post('/chat', {
         message: messageContent,
         userId,
       });
-
-      toast.success('Đã gửi yêu cầu hỗ trợ đến admin.');
     } catch (error) {
       toast.error('Không thể gửi yêu cầu, vui lòng thử lại.');
     }
   };
+
   return (
     <div>
       <div>

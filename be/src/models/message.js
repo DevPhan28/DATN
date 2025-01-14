@@ -9,4 +9,12 @@ const messageSchema = new mongoose.Schema({
     isRead: { type: Boolean, default: false }
 });
 
+messageSchema.pre('save', function (next) {
+    if (!this.timestamp) {
+        this.timestamp = new Date();
+    }
+    next();
+});
+
 module.exports = mongoose.model('Message', messageSchema);
+

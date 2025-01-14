@@ -184,15 +184,28 @@ export default function Messenger() {
                       >
                         {message.sender === 'user' && (
                           <div className="mr-4 flex h-10 w-10 items-center justify-center rounded-full bg-gray-300 text-xl font-bold text-white">
-                            {message.userId?.username
-                              ?.charAt(0)
-                              .toLowerCase() || '?'}
+                            {message.userId?.username?.charAt(0).toLowerCase() || '?'}
                           </div>
                         )}
-                        <div
-                          className={`${message.sender === 'user' ? 'bg-gray-100' : 'bg-purple-500 text-white'} rounded-lg p-3`}
-                        >
-                          <p>{message.text}</p>
+                        <div>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {new Intl.DateTimeFormat('vi-VN', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              second: '2-digit',
+                              timeZone: 'Asia/Ho_Chi_Minh',
+                            }).format(new Date(message.timestamp))}
+                          </p>
+                          <div
+                            className={`${message.sender === 'user' ? 'bg-gray-100' : 'bg-purple-500 text-white'
+                              } rounded-lg p-3`}
+                          >
+                            <p>{message.text}</p>
+                          </div>
+
                         </div>
                       </div>
                     ))

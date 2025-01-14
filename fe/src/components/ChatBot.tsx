@@ -161,23 +161,35 @@ const ChatBot = () => {
                                         className="w-8 h-8 rounded-full mr-2"
                                     />
                                 )}
-                                <div
-                                    className={`${
-                                        msg.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'
-                                    } px-4 py-2 rounded-lg max-w-xs`}
-                                >
-                                    {msg.text}
+                                <div>
+                                    <div
+                                        className={`${msg.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'
+                                            } px-4 py-2 rounded-lg max-w-xs`}
+                                    >
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            {new Intl.DateTimeFormat('vi-VN', {
+                                                year: 'numeric',
+                                                month: 'long', // Sử dụng 'long' để hiển thị tên tháng đầy đủ, hoặc 'short' nếu muốn rút gọn
+                                                day: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                timeZone: 'Asia/Ho_Chi_Minh', // Đảm bảo sử dụng múi giờ Việt Nam
+                                            }).format(new Date(msg.timestamp))}
+                                        </p>
+                                        {msg.text}
+                                    </div>
+
                                 </div>
                                 {msg.sender === 'user' && (
                                     <img
-                                        src="https://via.placeholder.com/150" // Placeholder image cho user
+                                        src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg"
                                         alt="User Avatar"
                                         className="w-8 h-8 rounded-full ml-2"
                                     />
                                 )}
                             </div>
                         ))}
-                        {/* Phần tử để cuộn đến */}
+
                         <div ref={messagesEndRef} />
                     </div>
 
