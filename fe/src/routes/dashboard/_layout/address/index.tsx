@@ -14,11 +14,6 @@ const containerStyle = {
   height: '500px',
 };
 
-const defaultCenter = {
-  lat: 21.038164040638485,
-  lng: 105.7472276687622,
-};
-
 interface Location {
   _id: string;
   lat: number;
@@ -30,16 +25,33 @@ function Address() {
     googleMapsApiKey: 'AIzaSyALyc7VkotxfAcosGTKmz9HnCUxwty4BQk',
   });
 
-  const [coordinates, setCoordinates] = useState(defaultCenter);
+  const [coordinates, setCoordinates] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
   const [locations, setLocations] = useState<Location[]>([]);
   const [map, setMap] = useState<google.maps.Map | null>(null);
 
+  // State lưu trữ giá trị của ô nhập liệu
+  const [latInput, setLatInput] = useState<number | string>('');
+  const [lngInput, setLngInput] = useState<number | string>('');
+
   // Lưu vị trí lên server
   const handleSaveLocation = async () => {
+    if (!latInput || !lngInput) {
+      toast('Vui lòng chọn tọa độ trước khi lưu.');
+      return;
+    }
+
     try {
+      const coordinates = {
+        lat: parseFloat(latInput.toString()),
+        lng: parseFloat(lngInput.toString()),
+      };
+
       await axios.post(`http://localhost:8080/api/save`, coordinates);
       toast('Lưu vị trí thành công!');
-      handleSearch(); // Lấy lại danh sách sau khi lưu
+      handleSearch(); // Cập nhật danh sách tọa độ sau khi lưu
     } catch (error) {
       console.error('Error saving location:', error);
       toast('Không thể lưu vị trí. Hãy kiểm tra lại kết nối.');
@@ -53,6 +65,18 @@ function Address() {
       if (Array.isArray(response.data)) {
         const locationsData: Location[] = response.data;
         setLocations(locationsData);
+
+        // Lấy tọa độ mới nhất (nếu có)
+        if (locationsData.length > 0) {
+          const latestLocation = locationsData[locationsData.length - 1];
+          setLatInput(latestLocation.lat);
+          setLngInput(latestLocation.lng);
+          setCoordinates({
+            lat: latestLocation.lat,
+            lng: latestLocation.lng,
+          });
+        }
+
         if (map) {
           const bounds = new window.google.maps.LatLngBounds();
           locationsData.forEach(loc => {
@@ -60,7 +84,6 @@ function Address() {
           });
           map.fitBounds(bounds);
         }
-        // Chỉ hiển thị thông báo khi showToast là true
         if (showToast) {
           toast('Lấy danh sách tọa độ thành công');
         }
@@ -72,7 +95,9 @@ function Address() {
     }
   };
 
-  // Xóa tọa độ từ server
+  useEffect(() => {
+    handleSearch(); // Gọi hàm khi tải trang, không hiển thị toast
+  }, []);
   const handleDeleteLocation = async (id: string) => {
     if (!id) {
       toast('Không tìm thấy ID tọa độ cần xóa.');
@@ -105,31 +130,6 @@ function Address() {
       }
     }
   };
-
-  // Lấy tọa độ hiện tại của người dùng
-  // const handleGeolocation = () => {
-  //   if (navigator.geolocation) {
-  //     navigator.geolocation.getCurrentPosition(
-  //       position => {
-  //         setCoordinates({
-  //           lat: position.coords.latitude,
-  //           lng: position.coords.longitude,
-  //         });
-  //         toast('Tọa độ đã được cập nhật!');
-  //       },
-  //       () => {
-  //         toast('Không thể lấy được vị trí của bạn.');
-  //       }
-  //     );
-  //   } else {
-  //     toast('Trình duyệt của bạn không hỗ trợ định vị!');
-  //   }
-  // };
-
-  useEffect(() => {
-    handleSearch(); // Gọi hàm khi tải trang, không hiển thị toast
-  }, []);
-
   return (
     <div>
       <Header title="Vị trí cửa hàng" />
@@ -138,18 +138,21 @@ function Address() {
           <div className="pb-3">
             <div className="flex justify-between">
               <div>
+                {/* Gán giá trị và sự kiện thay đổi */}
                 <input
                   type="text"
-                  value={coordinates.lat}
-                  readOnly
                   className="w-80 rounded border px-2 py-1"
+                  value={latInput}
+                  onChange={e => setLatInput(e.target.value)}
+                  placeholder="Vĩ độ"
                 />
                 <span>-</span>
                 <input
                   type="text"
-                  value={coordinates.lng}
-                  readOnly
                   className="w-80 rounded border px-2 py-1"
+                  value={lngInput}
+                  onChange={e => setLngInput(e.target.value)}
+                  placeholder="Kinh độ"
                 />
               </div>
               <Button onClick={() => handleSearch(true)}>
@@ -161,17 +164,20 @@ function Address() {
           {isLoaded ? (
             <GoogleMap
               mapContainerStyle={containerStyle}
-              center={coordinates}
+              center={coordinates || { lat: 10.8231, lng: 106.6297 }} // Default: TP.HCM
               zoom={15}
               onLoad={mapInstance => setMap(mapInstance)}
-              onClick={e =>
-                setCoordinates({
+              onClick={e => {
+                const newCoordinates = {
                   lat: e.latLng.lat(),
                   lng: e.latLng.lng(),
-                })
-              }
+                };
+                setCoordinates(newCoordinates);
+                setLatInput(newCoordinates.lat);
+                setLngInput(newCoordinates.lng);
+              }}
             >
-              <Marker position={coordinates} />
+              {coordinates && <Marker position={coordinates} />}
               {locations.map(loc => (
                 <Marker
                   key={loc._id}
@@ -185,12 +191,10 @@ function Address() {
 
           <div className="mt-3 flex items-center justify-between">
             <span>
-              Tọa độ hiện tại: {coordinates.lat}, {coordinates.lng}
+              Tọa độ hiện tại: <strong>{latInput || 'N/A'}</strong>,{' '}
+              <strong>{lngInput || 'N/A'}</strong>
             </span>
             <div className="flex space-x-2">
-              {/* <Button onClick={handleGeolocation} variant="secondary">
-                Định vị
-              </Button> */}
               <Button onClick={handleSaveLocation}>Lưu vị trí</Button>
             </div>
           </div>
