@@ -89,6 +89,8 @@ function OrderDetail() {
     refund_completed: 9,
     exchange_completed: 10,
     canceled_complaint: 11,
+    refund_initiated: 12,
+    refund_done: 13,
   };
 
   const statusIndex = statusOrder[status] || 0;
@@ -244,6 +246,12 @@ function OrderDetail() {
                 'Giao hàng',
                 'Đã nhận hàng',
               ].map((statusText, index, arr) => {
+                if (statusIndex === 12 || statusIndex === 13) {
+                  if (index < 5) {
+                    return null;
+                  }
+                }
+
                 const isCanceled = statusIndex === 5;
                 const isCompleted = index <= statusIndex && !isCanceled;
                 const isLast = index === arr.length - 1;
@@ -283,6 +291,42 @@ function OrderDetail() {
                   </React.Fragment>
                 );
               })}
+
+              {/* Thêm trạng thái "Đang hoàn trả" và "Đã hoàn trả" */}
+              {statusIndex === 12 || statusIndex === 13 ? (
+                <React.Fragment>
+                  {/* Trạng thái "Đang hoàn trả" */}
+                  <div className="flex flex-col items-center">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-yellow-500 font-bold text-white">
+                      {'✓'}
+                    </div>
+                    <p className="mt-2 text-center text-sm text-yellow-500">
+                      Đơn hàng đang hoàn trả tiền cho khách
+                    </p>
+                  </div>
+
+                  {/* Gạch ngang giữa trạng thái hoàn trả */}
+                  <div className="mb-4 h-1 w-full max-w-[50px] border-[1px] bg-yellow-500 sm:max-w-[100px] md:max-w-[150px]"></div>
+
+                  {/* Trạng thái "Đã hoàn trả" */}
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`flex h-8 w-8 items-center justify-center rounded-full font-bold text-white ${
+                        statusIndex === 13 ? 'bg-green-500' : 'bg-gray-300'
+                      }`}
+                    >
+                      {statusIndex === 13 ? '✓' : '13'}
+                    </div>
+                    <p
+                      className={`mt-2 text-center text-sm ${
+                        statusIndex === 13 ? 'text-green-500' : 'text-gray-500'
+                      }`}
+                    >
+                      Đơn hàng đã hoàn trả tiền cho khách thành công
+                    </p>
+                  </div>
+                </React.Fragment>
+              ) : null}
             </div>
           </div>
 
@@ -479,6 +523,24 @@ function OrderDetail() {
                   <tr className="border-t">
                     <td className="px-4 py-3 font-semibold text-red-500">
                       Đơn hàng đã bị hủy
+                    </td>
+                    <td className="px-2 py-1 text-gray-500" colSpan="3">
+                      Không có thông tin chi tiết.
+                    </td>
+                  </tr>
+                ) : statusIndex2 === 12 ? ( // Kiểm tra nếu trạng thái là "đang hoàn trả"
+                  <tr className="border-t">
+                    <td className="px-4 py-3 font-semibold text-yellow-500">
+                      Đơn hàng đang hoàn trả tiền cho khách
+                    </td>
+                    <td className="px-2 py-1 text-gray-500" colSpan="3">
+                      Không có thông tin chi tiết.
+                    </td>
+                  </tr>
+                ) : statusIndex2 === 13 ? ( // Kiểm tra nếu trạng thái là "đã hoàn trả"
+                  <tr className="border-t">
+                    <td className="px-4 py-3 font-semibold text-green-500">
+                      Đơn hàng đã hoàn trả tiền cho khách thành công
                     </td>
                     <td className="px-2 py-1 text-gray-500" colSpan="3">
                       Không có thông tin chi tiết.
