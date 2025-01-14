@@ -25,8 +25,8 @@ function OrderList() {
     error,
   } = useFetchOrdersStatus({
     page: currentPage + 1,
-    limit: 7,
-    status: selectedTab === 'all-delivery' ? undefined : selectedTab,
+    limit: 11,
+    // status: selectedTab === 'all-delivery' ? undefined : selectedTab,
   });
 
   const deliveryStatuses = [

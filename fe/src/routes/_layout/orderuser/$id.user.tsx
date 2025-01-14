@@ -7,6 +7,7 @@ import {
   ArrowUturnLeft,
   Cash,
   Check,
+  CheckCircleMiniSolid,
   DocumentText,
   MapPin,
   RocketLaunch,
@@ -155,21 +156,45 @@ function DetailOrderUser() {
   ];
 
   const getFilteredSteps = currentStatus => {
-    if (currentStatus === statusIndex) {
+    // Kiểm tra nếu là trạng thái 'canceled'
+    if (currentStatus === statusOrder['canceled']) {
       return [
         {
           label: 'Đơn hàng đã bị hủy',
           icon: <DocumentText />,
           time: '10:00 24/11/2024',
           description: 'Đơn hàng của bạn đã bị hủy',
-          status: statusIndex,
+          status: currentStatus,
+        },
+      ];
+    }
+
+    if (currentStatus === statusOrder['refund_done']) {
+      return [
+        {
+          label: 'Hoàn tiền thành công',
+          icon: <CheckCircleMiniSolid />,
+          time: '11:00 24/11/2024',
+          description: 'Số tiền của bạn đã được hoàn thành công vào tài khoản',
+          status: currentStatus,
+        },
+      ];
+    }
+
+    if (currentStatus === statusOrder['refund_initiated']) {
+      return [
+        {
+          label: 'Đang hoàn tiền',
+          icon: <CheckCircleMiniSolid />,
+          time: '11:00 24/11/2024',
+          description: 'Yêu cầu hoàn tiền của bạn đang được xử lý',
+          status: currentStatus,
         },
       ];
     }
 
     return steps1;
   };
-
   const currentStatus = statusOrder.canceled; // Trạng thái hiện tại của đơn hàng
   const filteredSteps = getFilteredSteps(currentStatus);
 
