@@ -277,54 +277,51 @@ const getProductAll = async (req, res) => {
 /// search products
 const searchProduct = async (req, res) => {
   try {
-    // Lấy giá trị tìm kiếm từ query
     const { search = "", limit = 10, page = 1 } = req.query;
-    const skip = (page - 1) * limit; // Tính toán số sản phẩm cần bỏ qua
+    const skip = (page - 1) * limit;
 
-    // Kiểm tra độ dài từ khóa trước khi tìm kiếm (tối thiểu 3 ký tự)
-    if (search.length < 2) {
-      return res.status(400).json({ message: "Vui lòng nhập từ khóa dài ít nhất 2 ký tự." });
-    }
+    // Loại bỏ khoảng trắng thừa
+    const trimmedSearch = search.trim();
 
-    // Tạo query tìm kiếm, sử dụng RegEx để tìm kiếm tên sản phẩm theo từng phần của tên
-    const query = {
-      name: { $regex: `^${search}`, $options: "i" }, // Tìm kiếm không phân biệt chữ hoa và chữ thường, tìm theo phần bắt đầu
-    };
-
-    // Tìm kiếm sản phẩm dựa trên query
-    const products = await Product.find(query)
-      .limit(Number(limit))
-      .skip(Number(skip))
-      .populate("category", "name"); // Populates tên danh mục
-
-    const totalItems = await Product.countDocuments(query); // Đếm tổng số sản phẩm theo query tìm kiếm
-
-    if (products.length === 0) {
-      return res.status(200).json({
-        meta: {
-          totalItems: 0,
-          totalPages: 0, // Tính toán tổng số trang
-          currentPage: Number(page), // Trang hiện tại
-          limit: Number(limit), // Số sản phẩm trên mỗi trang
-        },
-        data: [], // Nếu không tìm thấy sản phẩm
+    // Kiểm tra nếu từ khóa tìm kiếm rỗng
+    if (!trimmedSearch) {
+      return res.status(400).json({
+        message: "Vui lòng nhập từ khóa tìm kiếm.",
       });
     }
 
+    // Tạo query tìm kiếm
+    const query = {
+      name: { $regex: trimmedSearch, $options: "i" }, // Tìm kiếm không phân biệt chữ hoa/chữ thường
+    };
+
+    // Lấy danh sách sản phẩm
+    const products = await Product.find(query)
+      .limit(Number(limit))
+      .skip(Number(skip))
+      .populate("category", "name");
+
+    // Đếm tổng số sản phẩm
+    const totalItems = await Product.countDocuments(query);
+
+    // Trả về kết quả
     return res.status(200).json({
       meta: {
         totalItems,
-        totalPages: Math.ceil(totalItems / limit), // Tính toán tổng số trang
-        currentPage: Number(page), // Trang hiện tại
-        limit: Number(limit), // Số sản phẩm trên mỗi trang
+        totalPages: Math.ceil(totalItems / limit),
+        currentPage: Number(page),
+        limit: Number(limit),
       },
-      data: products, // Trả về danh sách sản phẩm tìm được
+      data: products,
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
-
 };
+
+
+
+
 const filterProducts = async (req, res) => {
   try {
     const { color, size, minPrice, maxPrice, limit = 10, page = 1 } = req.query;

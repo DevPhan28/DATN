@@ -60,19 +60,24 @@ function SearchList() {
       {/* Hiển thị danh sách sản phẩm */}
       {isSuccess && data?.data.length > 0 ? (
         <>
-          <div className="">
-            <div className="main-content flex h-48 w-full flex-col items-center justify-center">
-              <div className="text-content">
-               
-                <div className="link caption1 mt-3 flex items-center justify-center gap-1">
-                  <p>
-                    Kết quả tìm kiếm cho từ khóa:{' '}
-                    <span className="font-semibold">{keyword}</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
+            <div className="text-content">
+  <div className="link caption1 mt-3 flex items-center justify-center gap-1">
+  <div className="text-center mt-5">
+  {pagination.totalItems > 0 ? (
+    <p className="text-lg font-medium text-gray-700">
+      Có <span className="font-semibold text-blue-600">{pagination.totalItems}</span> sản phẩm
+      phù hợp với từ khóa: <span className="font-semibold">{keyword}</span>
+    </p>
+  ) : (
+    <p className="text-lg font-medium text-red-500">
+      Không tìm thấy sản phẩm nào phù hợp với từ khóa: <span className="font-semibold">{keyword}</span>
+    </p>
+  )}
+</div>
+  </div>
+</div>
+
+         
 
           <div className="bg-gray-50 py-10 pt-5">
             <div className="m-auto mt-10 max-w-7xl bg-white shadow sm:p-5 md:p-5 lg:p-5 xl:p-0">
@@ -119,14 +124,15 @@ function SearchList() {
 
               {/* Button "Load More" */}
               {pagination.currentPage < pagination.totalPages && (
-                <div className="mt-6 text-center">
-                  <button
-                    onClick={handleLoadMore}
-                    className="rounded-lg bg-blue-500 px-6 py-2 text-white hover:bg-blue-600"
-                  >
-                    Tải thêm
-                  </button>
-                </div>
+              <button
+              onClick={handleLoadMore}
+              className={`rounded-lg px-6 py-2 text-white ${
+                isFetching ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
+              }`}
+              disabled={isFetching}
+            >
+              {isFetching ? "Đang tải..." : "Tải thêm"}
+            </button>
               )}
             </div>
           </div>
