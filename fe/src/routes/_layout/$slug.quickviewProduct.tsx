@@ -1,15 +1,11 @@
 import instance from '@/api/axiosIntance';
 import CurrencyVND from '@/components/config/vnd';
 import FeaturedProducts from '@/components/featuredProducts';
-import ProductRecommendations from '@/components/ProductRecommendations';
-import { useCart } from '@/data/cart/useCartLogic';
 import useCommentMutation from '@/data/Comment/useCommentMutation';
 import { useSocket } from '@/data/socket/useSocket';
 import {
-  ChevronRightMini,
   EllipsisHorizontal,
   StarSolid,
-  ThumbUp,
   Trash,
 } from '@medusajs/icons';
 import { DropdownMenu, IconButton, toast } from '@medusajs/ui';
@@ -85,7 +81,7 @@ function DetailProduct() {
           );
           const average = totalRating / response.data.length;
           setAverageRating(average); // Cập nhật số sao trung bình
-        } catch (err) {}
+        } catch (err) { }
       };
       fetchComments();
     }
@@ -247,12 +243,25 @@ function DetailProduct() {
   const uniqueSizes = [
     ...new Set(product.variants.map(variant => variant.size)),
   ];
-  const userId = localStorage.getItem('userId');
-  // const {
-  //   handleQuantityChange,
-  //   incrementQuantity,
-  //   decrementQuantity,
-  // } = useCart(userId);
+  const sendMessageToAdmin = async () => {
+    try {
+      const userId = localStorage.getItem('userId'); // Lấy userId từ localStorage
+      if (!userId) {
+        toast.error('Không tìm thấy thông tin người dùng.');
+        return;
+      }
+
+      const messageContent = `Người dùng đã yêu cầu hỗ trợ về hướng dẫn kích cỡ cho sản phẩm ${product.name}`;
+      await instance.post('/chat', {
+        message: messageContent,
+        userId,
+      });
+
+      toast.success('Đã gửi yêu cầu hỗ trợ đến admin.');
+    } catch (error) {
+      toast.error('Không thể gửi yêu cầu, vui lòng thử lại.');
+    }
+  };
   return (
     <div>
       <div>
@@ -378,22 +387,23 @@ function DetailProduct() {
                           <button
                             type="button"
                             onClick={() => handleSizeChange(size)}
-                            className={`rounded border px-4 py-2 ${
-                              selectedSize === size
+                            className={`rounded border px-4 py-2 ${selectedSize === size
                                 ? 'border-blue-500 bg-blue-500 text-white'
                                 : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100'
-                            }`}
+                              }`}
                           >
                             {size}
                           </button>
                         ))}
                       </div>
                       <a
-                        href="#"
                         className="sizeguide-link"
                         data-bs-toggle="modal"
                         data-bs-target="#sizeGuide"
-                        onClick={e => e.preventDefault()}
+                        onClick={e => {
+                          e.preventDefault();
+                          sendMessageToAdmin();
+                        }}
                       >
                         Hướng dẫn kích cỡ
                       </a>
@@ -407,11 +417,10 @@ function DetailProduct() {
                               type="button"
                               key={color}
                               onClick={() => setSelectedColor(color)}
-                              className={`h-8 w-8 rounded-full border focus:outline-none ${
-                                selectedColor === color
+                              className={`h-8 w-8 rounded-full border focus:outline-none ${selectedColor === color
                                   ? 'border-blue-500 ring-2 ring-blue-500'
                                   : 'border-gray-300'
-                              }`}
+                                }`}
                               style={{
                                 backgroundColor: color,
                                 boxShadow:

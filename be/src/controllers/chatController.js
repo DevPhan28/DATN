@@ -11,15 +11,43 @@ const createMessage = async (req, res) => {
 
     try {
         const userObjectId = new mongoose.Types.ObjectId(userId);
+
+        // Lấy thời gian hiện tại
+        const currentDate = new Date();
+        currentDate.setHours(0, 0, 0, 0); // Đặt giờ về 0 để so sánh trong ngày
+
+        // Kiểm tra tin nhắn cuối cùng của người dùng
+        const lastMessage = await Message.findOne({
+            userId: userObjectId,
+            sender: 'user',
+            createdAt: { $gte: currentDate } // Tin nhắn từ đầu ngày
+        });
+
+        const messagesToSave = [];
+        if (!lastMessage) {
+            const greetingMessage = new Message({
+                text: "Chào bạn! Cảm ơn đã liên hệ. Vui lòng chờ một chút, chúng tôi sẽ phản hồi ngay.",
+                sender: 'admin',
+                receiver: 'user',
+                userId: userObjectId
+            });
+            messagesToSave.push(greetingMessage);
+        }
+
         const userMessage = new Message({
             text: message,
             sender: 'user',
             receiver: 'admin',
             userId: userObjectId
         });
-        await userMessage.save();
+        messagesToSave.push(userMessage);
+
+        // Lưu tất cả tin nhắn
+        await Message.insertMany(messagesToSave);
+
         return res.status(201).json({
-            userMessage,  
+            userMessage,
+            greetingMessage: messagesToSave.length > 1 ? messagesToSave[0] : null, // Trả về tin nhắn chào hỏi nếu có
         });
     } catch (error) {
         console.error("Error saving message:", error);

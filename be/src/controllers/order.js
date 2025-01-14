@@ -183,8 +183,8 @@ const getOrders = async (req, res) => {
     } = req.query;
 
     const validStatuses = [
-      'all-delivery', 
-      'all-complaint',
+      "all-delivery",
+      "all-complaint",
       "pending",
       "pendingPayment",
       "confirmed",
@@ -198,17 +198,30 @@ const getOrders = async (req, res) => {
       "refund_completed",
       "exchange_completed",
       "canceled_complaint",
+      "refund_initiated",
+      "refund_done", 
+      "all-refund", 
     ];
 
     const filter = {};
 
     if (status) {
-      const statusArray = status.split(",").map(s => s.trim()).filter(s => validStatuses.includes(s));
+      const statusArray = status
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => validStatuses.includes(s));
       if (statusArray.length > 0) {
-        if (statusArray.includes('all-delivery')) {
-          filter.status = { $in: ["pending","pendingPayment",'shipped', 'delivered', 'received',"canceled",] };
-        } else if (statusArray.includes('all-complaint')) {
-          filter.status = { $in: ['complaint', 'refund_in_progress', 'exchange_in_progress',"refund_completed","exchange_completed","canceled_complaint"] };
+        if (statusArray.includes("all-delivery")) {
+          filter.status = {
+            $in: ["pending", "pendingPayment", "shipped", "delivered", "received", "canceled"],
+          };
+        } else if (statusArray.includes("all-complaint")) {
+          filter.status = {
+            $in: ["complaint", "refund_in_progress", "exchange_in_progress", "refund_completed", "exchange_completed", "canceled_complaint"],
+          };
+        } else if (statusArray.includes("all-refund")) {
+          filter.status = { $in: ["refund_initiated", "refund_done"] };
+          filter.paymentMethod = "online"; 
         } else {
           filter.status = { $in: statusArray };
         }
@@ -231,7 +244,8 @@ const getOrders = async (req, res) => {
       { $group: { _id: null, total: { $sum: "$totalPrice" } } },
     ]);
 
-    const totalDeliveredAmount = totalDeliveredValue.length > 0 ? totalDeliveredValue[0].total : 0;
+    const totalDeliveredAmount =
+      totalDeliveredValue.length > 0 ? totalDeliveredValue[0].total : 0;
 
     return res.status(StatusCodes.OK).json({
       data: orders,
@@ -251,7 +265,6 @@ const getOrders = async (req, res) => {
       .json({ error: error.message });
   }
 };
-
 
 const getOrderById = async (req, res) => {
   try {
@@ -333,32 +346,29 @@ const updateOrder = async (req, res) => {
         .status(StatusCodes.NOT_FOUND)
         .json({ error: "Order not found" });
     }
-
-    // Nếu trạng thái chuyển thành 'refund_completed', hoàn lại số lượng vào countInStock
-    if ((status === "refund_completed" && order.status !== "refund_completed" ) ||(status === "canceled" && order.status !== "canceled" )  ) {
+    if ((status === "refund_completed" && order.status !== "refund_completed") || 
+        (status === "canceled" && order.status !== "canceled")) {
       for (const item of order.items) {
         const product = await Product.findById(item.productId);
 
         if (product) {
-          // Tìm variant bằng cách khớp color và size thay vì variantId
           const variantIndex = product.variants.findIndex(
             (v) => v.color === item.color && v.size === item.size
           );
 
           if (variantIndex >= 0) {
-            // Tăng số lượng cho biến thể được tìm thấy
             product.variants[variantIndex].countInStock += item.quantity;
           } else {
-            // Nếu không có variant, tăng countInStock cho sản phẩm
             product.countInStock += item.quantity;
           }
 
-          await product.save(); // Lưu thay đổi
+          await product.save();
         }
       }
     }
-
-    // Cập nhật trạng thái đơn hàng nếu khác trạng thái hiện tại
+    if (status === "received" && order.status !== "received") {
+      order.paymentStatus = "pending";
+    }
     if (order.status !== status) {
       order.statusHistory.push(order.status);
       order.status = status;
@@ -366,12 +376,13 @@ const updateOrder = async (req, res) => {
       console.log("Order status updated and saved.");
     }
 
-    const Id = new ObjectId(order.userId); // Chuyển sang ObjectId
+    const Id = new ObjectId(order.userId);
     const user = await User.findOne({ _id: Id });
 
-      if (!user || !user.email) {
-        throw new Error('User not found or email is missing.');
-      }
+    if (!user || !user.email) {
+      throw new Error('User not found or email is missing.');
+    }
+    
     const email = user.email;
     if (email) {
       await Mail.sendOrderStatusUpdate(email, order);
@@ -387,7 +398,6 @@ const updateOrder = async (req, res) => {
       .json({ error: error.message });
   }
 };
-
 
 const deleteOrder = async (req, res) => {
   try {
@@ -422,45 +432,40 @@ const cancelOrder = async (req, res) => {
   try {
     const order = await Order.findById(orderId);
 
-    // Kiểm tra nếu đơn hàng không tồn tại
     if (!order) {
       return res.status(404).json({ message: "Đơn hàng không tồn tại" });
     }
 
-    // Kiểm tra trạng thái của đơn hàng, chỉ cho phép hủy nếu trạng thái là "pending"
     if (order.status !== "pending") {
       return res.status(400).json({
         message: "Đơn hàng đã được xác nhận hoặc đang xử lý, không thể hủy",
       });
     }
-
-    // Tăng lại số lượng vào countInStock cho từng sản phẩm trong đơn hàng
     for (const item of order.items) {
       const product = await Product.findById(item.productId);
 
       if (product) {
-        // Kiểm tra nếu có variant (ví dụ như color/size/weight)
         const variantIndex = product.variants.findIndex(
           (v) => v.color === item.color && v.size === item.size
         );
 
         if (variantIndex >= 0) {
-          // Nếu tìm thấy variant, tăng số lượng vào countInStock của variant đó
           product.variants[variantIndex].countInStock += item.quantity;
         } else {
-          // Nếu không có variant, tăng số lượng vào countInStock chung của sản phẩm
           product.countInStock += item.quantity;
         }
 
-        await product.save(); // Lưu lại thay đổi
+        await product.save(); 
       }
     }
 
-    // Cập nhật trạng thái thành "canceled"
-    order.status = "canceled";
+    if (order.paymentMethod === "cod") {
+      order.status = "canceled";
+    } else if (order.paymentMethod === "online") {
+      order.status = "refund_initiated";
+      order.paymentStatus = "pendingRefund";
+    }
     await order.save();
-
-    // Gửi email thông báo nếu có
     if (order.customerInfo && order.customerInfo.email) {
       await Mail.sendOrderStatusUpdate(order.customerInfo.email, order);
     }
@@ -491,7 +496,8 @@ const confirmReceived = async (req, res) => {
       });
     }
 
-    order.status = "delivered"; // Cập nhật trạng thái từ 'received' sang 'delivered'
+    order.status = "delivered"; 
+    order.paymentStatus = 'pending'
     await order.save();
 
     if (order.customerInfo && order.customerInfo.email) {

@@ -62,6 +62,8 @@ const OrderSchema = new mongoose.Schema(
         "refund_completed",
         "exchange_completed",
         "canceled_complaint",
+        "refund_initiated",
+        "refund_done"
       ],
       default: "pending",
     },
@@ -80,7 +82,7 @@ const OrderSchema = new mongoose.Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ["pending", "paid", "failed", "processing", "cod"],
+      enum: ["pending", "paid", "failed", "processing", "cod", "pendingRefund", "doneRefund"],
       default: "pending",
     },
     transactionid: { type: String }, // Mã giao dịch ZaloPay

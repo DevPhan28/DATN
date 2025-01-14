@@ -385,18 +385,6 @@ function NewCheckout() {
                       alt="Zalo Pay"
                     />
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => handlePaymentMethodChange('momo')}
-                    className={`flex w-full justify-between rounded-lg border p-3 ${paymentMethod === 'momo' ? 'border-red-500 bg-red-100' : ''} focus:outline-none`}
-                  >
-                    Thanh toán qua momo
-                    <img
-                      className="ml-2 mt-1 w-14"
-                      src="./zalo_pay.png"
-                      alt="Zalo Pay"
-                    />
-                  </button>
                 </div>
 
                 <p className="mt-3 text-sm text-gray-500">

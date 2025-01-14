@@ -54,6 +54,10 @@ const getStatusLabel = (status: string) => {
       return 'Đổi trả hàng thành công';
     case 'canceled_complaint':
       return 'Hủy khiếu nại';
+      case 'refund_done':
+      return 'Hoàn tiền thành công';
+      case 'refund_initiated':
+      return 'Chờ hoàn tiền';
     default:
       return status;
   }
@@ -92,7 +96,7 @@ function UserOrder() {
 
         // Cập nhật danh sách đơn hàng sau khi hủy
         const updatedOrders = orders.map((order: Order) =>
-          order._id === orderId ? { ...order, status: 'canceled' } : order
+          order._id === orderId ? { ...order, status: 'refund_initiated', paymentStatus: "pendingRefund" } : order
         );
         setOrders(updatedOrders);
       } catch (error) {
@@ -126,7 +130,7 @@ function UserOrder() {
         toast.success('Đơn hàng đã được xác nhận.');
         // Cập nhật trạng thái đơn hàng từ 'received' sang 'delivered'
         const updatedOrders = orders.map((order: Order) =>
-          order._id === orderId ? { ...order, status: 'delivered' } : order
+          order._id === orderId ? { ...order, status: 'delivered',paymentStatus: 'pending' } : order
         );
         setOrders(updatedOrders);
       })
@@ -176,6 +180,7 @@ function UserOrder() {
     { id: 'delivered', label: 'Đã giao' },
     { id: 'canceled', label: 'Đã hủy' },
     { id: 'complaint', label: 'Khiếu nại' },
+    { id: 'refund', label: 'Hoàn tiền' },
   ];
 
   const filteredOrders = orders?.filter((order: Order) => {
@@ -215,6 +220,9 @@ function UserOrder() {
 
     if (selectedTab === 'canceled') {
       return order.status === 'canceled';
+    }
+    if (selectedTab === 'refund') {
+      return order.status === 'refund_done' || order.status === 'refund_initiated'  ;
     }
 
     if (selectedTab === 'complaint') {
@@ -305,14 +313,14 @@ function UserOrder() {
                           order.status === 'canceled' ||
                           order.status === 'canceled_complaint'
                             ? 'bg-red-200 text-red-600'
-                            : order.status === 'pending'
+                            : order.status === 'pending'|| order.status === 'refund_initiated'
                               ? 'bg-yellow-200 text-yellow-700'
                               : order.status === 'confirmed'
                                 ? 'bg-blue-200 text-blue-700'
                                 : order.status === 'shipped' ||
                                     order.status === 'received'
                                   ? 'bg-indigo-200 text-indigo-700'
-                                  : order.status === 'delivered'
+                                  : order.status === 'delivered'|| order.status === 'refund_done'
                                     ? 'bg-green-200 text-green-700'
                                     : order.status === 'complaint'
                                       ? 'bg-purple-500 text-white'
