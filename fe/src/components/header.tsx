@@ -108,6 +108,7 @@ const Header = () => {
     decrementQuantity,
     productPrice,
     handleDeleteSelectedProducts,
+    handleDeleteByIdProduct,
     toggleSelectProduct,
     toggleSelectAll,
     totalSelectedPrice,
@@ -220,7 +221,7 @@ const Header = () => {
                     className="fa-solid fa-magnifying-glass text-xl cursor-pointer"
                     onClick={() => {
                       toggleShowSearch();
-                      
+
                       setTimeout(() => inputRef.current?.focus(), 1)
                     }}
                   ></i>
@@ -516,9 +517,10 @@ const Header = () => {
                   </div>
 
                   <button
-                    onClick={handleDeleteSelectedProducts}
+                    onClick={() => handleDeleteByIdProduct(product.variantId)} // Truyền variantId của sản phẩm
                     className="btn-close-xs position-absolute js-cart-item-remove end-0 top-0 py-2"
                   />
+
                 </div>
               ))
             )}
