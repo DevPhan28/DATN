@@ -369,6 +369,9 @@ const updateOrder = async (req, res) => {
     if (status === "received" && order.status !== "received") {
       order.paymentStatus = "pending";
     }
+    if (status === "refund_done" && order.status !== "refund_done") {
+      order.paymentStatus = "doneRefund";
+    }
     if (order.status !== status) {
       order.statusHistory.push(order.status);
       order.status = status;

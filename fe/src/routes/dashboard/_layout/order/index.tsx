@@ -423,7 +423,9 @@ function OrderList() {
                           (order.status === 'complaint' &&
                             status.value !== 'refund_in_progress' &&
                             status.value !== 'exchange_in_progress' &&
-                            status.value !== 'delivered');
+                            status.value !== 'delivered') ||
+                            (order.status === 'refund_done' &&
+                              status.value === 'refund_initiated');
                         return (
                           <option
                             key={status.value}
