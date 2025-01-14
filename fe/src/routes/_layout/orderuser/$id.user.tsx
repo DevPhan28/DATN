@@ -84,6 +84,8 @@ function DetailOrderUser() {
     refund_completed: 9,
     exchange_completed: 10,
     canceled_complaint: 11,
+    refund_done: 12,
+    refund_initiated: 13,
   };
 
   const statusIndex = statusOrder[status] || 0;
@@ -211,6 +213,8 @@ function DetailOrderUser() {
                 exchange_in_progress: 'ĐANG ĐỔI TRẢ HÀNG',
                 exchange_completed: 'ĐỔI TRẢ HÀNG THÀNH CÔNG',
                 canceled_complaint: 'HUỶ KHIẾU NẠI',
+                refund_done: 'HOÀN TIỀN THÀNH CÔNG',
+                refund_initiated: 'ĐANG HOÀN TIỀN',
               }[status] || status}
             </span>
           </div>
@@ -221,14 +225,12 @@ function DetailOrderUser() {
           {/* Tiến trình đơn hàng */}
           <div className="mb-6 flex items-center justify-around">
             {steps.map((step, index) => {
-              const stepOrder = statusOrder[step.status]; // Lấy thứ tự trạng thái
-              const isActive = stepOrder <= statusIndex; // Kiểm tra trạng thái kích hoạt
-              const isCurrent = stepOrder === statusIndex; // Kiểm tra trạng thái hiện tại
-              const isLastStep = index === steps.length - 1; // Kiểm tra bước cuối cùng
+              const stepOrder = statusOrder[step.status];
+              const isActive = stepOrder <= statusIndex;
+              const isCurrent = stepOrder === statusIndex;
+              const isLastStep = index === steps.length - 1;
 
               let stepLabel = step.label;
-
-              // Đổi nhãn cho trạng thái 'pendingPayment'
               if (step.status === 'pendingPayment') {
                 if (statusIndex === statusOrder['canceled']) {
                   stepLabel = 'Đơn hàng hủy';
@@ -241,31 +243,43 @@ function DetailOrderUser() {
                       : 'Đã thanh toán';
                 }
               }
+              const isRefundStep =
+                statusIndex === statusOrder['refund_done'] ||
+                statusIndex === statusOrder['refund_initiated'];
 
-              // Kiểm tra nếu trạng thái sau 'canceled'
+              if (isRefundStep && index === 1) {
+                stepLabel =
+                  statusIndex === statusOrder['refund_done']
+                    ? 'Hoàn tiền thành công'
+                    : 'Đang hoàn tiền';
+              }
+
               const isDisabled =
-                statusIndex === statusOrder['canceled'] && index > 1; // Nếu trạng thái là "canceled" ở bước 2, làm mờ các bước sau (index > 1)
+                (isRefundStep && index > 1) ||
+                (statusIndex === statusOrder['canceled'] && index > 1);
 
-              // Nếu bị ẩn, làm mờ bước
               return (
                 <div key={index} className="flex items-center">
-                  {/* Nút trạng thái */}
                   <div className="flex flex-col items-center">
                     <div
                       className={`mb-2 flex h-10 w-10 items-center justify-center rounded-full ${
                         isDisabled
-                          ? 'bg-gray-300' // Bị "ẩn"
+                          ? 'bg-gray-300'
                           : isActive
-                            ? 'bg-green-500' // Đã hoàn thành
-                            : 'bg-gray-300' // Chưa hoàn thành
+                            ? 'bg-green-500'
+                            : 'bg-gray-300'
                       } ${isCurrent && !isDisabled ? 'ring-2 ring-green-600' : ''}`}
                     >
-                      {step.icon}
+                      {index === 1 && isRefundStep ? (
+                        <span className="text-sm font-bold text-white">💵</span>
+                      ) : (
+                        step.icon
+                      )}
                     </div>
                     <span
                       className={`text-sm font-medium ${
                         isDisabled
-                          ? 'text-gray-400' // Bị "ẩn"
+                          ? 'text-gray-400'
                           : isActive
                             ? 'text-gray-800'
                             : 'text-gray-400'
@@ -275,14 +289,13 @@ function DetailOrderUser() {
                     </span>
                   </div>
 
-                  {/* Gạch ngang nối các bước (trừ bước cuối cùng) */}
                   {!isLastStep && (
                     <div
                       className={`mx-2 mb-4 h-[2px] w-36 ${
                         isDisabled
-                          ? 'bg-gray-300' // Gạch ngang "ẩn"
+                          ? 'bg-gray-300'
                           : stepOrder < statusIndex
-                            ? 'bg-green-500' // Đã hoàn thành
+                            ? 'bg-green-500'
                             : 'bg-gray-300' // Chưa hoàn thành
                       }`}
                     ></div>
@@ -291,7 +304,7 @@ function DetailOrderUser() {
               );
             })}
           </div>
-          ;
+
           <hr />
           <div className="mb-6 mt-5 flex justify-between">
             <div className="rounded-lg bg-white p-4">
