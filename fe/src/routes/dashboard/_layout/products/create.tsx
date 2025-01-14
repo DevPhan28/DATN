@@ -204,19 +204,13 @@ function AddBrand() {
       )}
       <Header title="Create New Products" pathname="/" />
       <form onSubmit={handleSubmit(onCreateProduct)} className="m-8">
-        <div className="my-3 flex justify-between">
-          <div className="w-[330px]">
-            <Input
-              placeholder="Search"
-              id="search-input"
-              size="small"
-              type="search"
-            />
-          </div>
+        <div className="my-3 flex justify-end">
           <div className="flex gap-2">
-            <Button variant="secondary"
+            <Button
+              variant="secondary"
               type="button"
-              onClick={() => navigate({ to: '/dashboard/products' })} >
+              onClick={() => navigate({ to: '/dashboard/products' })}
+            >
               Hủy
             </Button>
             <Button variant="primary" type="submit">
@@ -237,7 +231,7 @@ function AddBrand() {
             {/* Product Name */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className=" text-sm font-medium text-ui-fg-base">
+                <label className="text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Tên sản phẩm
                 </label>
                 <Input
@@ -257,7 +251,7 @@ function AddBrand() {
 
             {/* Image Upload */}
             <div>
-              <label className=" text-sm font-medium text-ui-fg-base">
+              <label className="text-sm font-medium text-ui-fg-base">
                 <span className="text-ui-tag-red-text">*</span> Ảnh
               </label>
               <p className="mb-2 text-xs text-ui-fg-muted">
@@ -310,7 +304,7 @@ function AddBrand() {
             {/* Price */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className=" text-sm font-medium text-ui-fg-base">
+                <label className="text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Giá (VND)
                 </label>
                 <Input
@@ -334,7 +328,7 @@ function AddBrand() {
             {/* Category */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className=" text-sm font-medium text-ui-fg-base">
+                <label className="text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Danh mục
                 </label>
                 <div className="w-full">
@@ -364,7 +358,7 @@ function AddBrand() {
             {/* Description */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className=" text-sm font-medium text-ui-fg-base">
+                <label className="text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Mô tả
                 </label>
                 <Textarea
@@ -376,7 +370,7 @@ function AddBrand() {
 
             {/* Gallery Upload */}
             <div>
-              <label className=" text-sm font-medium text-ui-fg-base">
+              <label className="text-sm font-medium text-ui-fg-base">
                 <span className="text-ui-tag-red-text">*</span> Ảnh trưng bày
               </label>
               <p className="mb-2 text-xs text-ui-fg-muted">
@@ -432,7 +426,7 @@ function AddBrand() {
               </div>
 
               <div className="flex flex-col">
-                <label className=" text-sm font-medium text-ui-fg-base">
+                <label className="text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Content
                 </label>
                 <div className="mt-2 flex flex-1 flex-col">
@@ -459,7 +453,6 @@ function AddBrand() {
                   )}
                 </div>
               </div>
-
             </div>
             {/* Variants */}
             <div>
@@ -470,7 +463,7 @@ function AddBrand() {
                 {fields.map((item, index) => (
                   <div key={item.id} className="mb-4 flex space-x-4">
                     <div className="flex-1 space-y-3">
-                      <label className=" text-sm font-medium text-ui-fg-base">
+                      <label className="text-sm font-medium text-ui-fg-base">
                         <span className="text-ui-tag-red-text">*</span> Size
                       </label>
                       <Input
@@ -483,11 +476,15 @@ function AddBrand() {
                             const isDuplicate = variants.some(
                               (variant, i) =>
                                 i !== index &&
-                                variant.color.trim().toLowerCase() === value.trim().toLowerCase() &&
-                                variant.size.trim().toLowerCase() === variants[index].size.trim().toLowerCase()
+                                variant.color.trim().toLowerCase() ===
+                                  value.trim().toLowerCase() &&
+                                variant.size.trim().toLowerCase() ===
+                                  variants[index].size.trim().toLowerCase()
                             );
-                            return isDuplicate ? 'Kích thước đã tồn tại.' : true;
-                          }
+                            return isDuplicate
+                              ? 'Kích thước đã tồn tại.'
+                              : true;
+                          },
                         })}
                       />
 
@@ -498,7 +495,7 @@ function AddBrand() {
                       )}
                     </div>
                     <div className="flex-1 space-y-3">
-                      <label className=" text-sm font-medium text-ui-fg-base">
+                      <label className="text-sm font-medium text-ui-fg-base">
                         <span className="text-ui-tag-red-text">*</span> Màu
                       </label>
                       <Input
@@ -511,11 +508,13 @@ function AddBrand() {
                             const isDuplicate = variants.some(
                               (variant, i) =>
                                 i !== index &&
-                                variant.color.trim().toLowerCase() === value.trim().toLowerCase() &&
-                                variant.size.trim().toLowerCase() === variants[index].size.trim().toLowerCase()
+                                variant.color.trim().toLowerCase() ===
+                                  value.trim().toLowerCase() &&
+                                variant.size.trim().toLowerCase() ===
+                                  variants[index].size.trim().toLowerCase()
                             );
                             return isDuplicate ? 'màu sắc đã tồn tại.' : true;
-                          }
+                          },
                         })}
                       />
 
@@ -526,7 +525,7 @@ function AddBrand() {
                       )}
                     </div>
                     <div className="flex-1 space-y-3">
-                      <label className=" text-sm font-medium text-ui-fg-base">
+                      <label className="text-sm font-medium text-ui-fg-base">
                         <span className="text-ui-tag-red-text">*</span> Giá
                         (VND)
                       </label>
@@ -546,7 +545,7 @@ function AddBrand() {
                       )}
                     </div>
                     <div className="flex-1 space-y-3">
-                      <label className=" text-sm font-medium text-ui-fg-base">
+                      <label className="text-sm font-medium text-ui-fg-base">
                         <span className="text-ui-tag-red-text">*</span> Số lượng
                         trong kho
                       </label>
@@ -572,7 +571,7 @@ function AddBrand() {
                       )}
                     </div>
                     <div className="flex-1 space-y-3">
-                      <label className=" text-sm font-medium text-ui-fg-base">
+                      <label className="text-sm font-medium text-ui-fg-base">
                         <span className="text-ui-tag-red-text">*</span> Khối
                         lượng
                       </label>
@@ -634,4 +633,3 @@ function AddBrand() {
 }
 
 export default AddBrand;
-

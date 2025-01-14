@@ -8,6 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
+  Legend,
 } from 'recharts';
 import {
   format,
@@ -86,27 +87,40 @@ const DashboardNew = () => {
       {/* Phần biểu đồ */}
       <div className="h-96">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={dailyRevenueData}>
+          <LineChart
+            width={500}
+            height={300}
+            data={dailyRevenueData}
+            margin={{
+              top: 5,
+              right: 30,
+              left: 20,
+              bottom: 5,
+            }}
+          >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis
-              dataKey="day"
-              tickFormatter={tick => tick.slice(8)} // Hiển thị chỉ ngày (1, 2, ..., 31)
-            />
-            <YAxis />
+            <XAxis dataKey="day" tickFormatter={tick => tick.slice(8)} />
+            <YAxis yAxisId="left" />
+            <YAxis yAxisId="right" orientation="right" />
             <Tooltip />
+            <Legend />
             <Line
+              yAxisId="left"
               type="monotone"
               dataKey="revenue"
               stroke="#4bc0c0"
               name="Doanh thu"
+              activeDot={{ r: 8 }}
             />
             <Line
+              yAxisId="right"
               type="monotone"
               dataKey="delivered"
               stroke="#4CAF50"
               name="Đơn hàng thành công"
             />
             <Line
+              yAxisId="right"
               type="monotone"
               dataKey="canceled"
               stroke="#FF5733"
@@ -114,11 +128,6 @@ const DashboardNew = () => {
             />
           </LineChart>
         </ResponsiveContainer>
-        <div className="flex justify-center gap-4">
-          <p className="flex gap-2 text-teal-500">Doanh thu</p>
-          <p className="flex gap-2 text-green-600">Đơn hàng thành công</p>
-          <p className="flex gap-2 text-red-400">Đơn hàng huỷ</p>
-        </div>
       </div>
     </div>
   );

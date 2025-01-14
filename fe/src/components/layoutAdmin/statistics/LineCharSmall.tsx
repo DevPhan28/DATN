@@ -11,6 +11,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   CartesianGrid,
+  Legend,
 } from 'recharts';
 import {
   format,
@@ -219,21 +220,27 @@ const DashboardOver = () => {
           <LineChart data={currentYearRevenue}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey={selectedMonth > 0 ? 'day' : 'month'} />
-            <YAxis />
+            <YAxis yAxisId="left" />
+            <YAxis yAxisId="right" orientation="right" />
             <Tooltip />
+            <Legend />
             <Line
+              yAxisId="left"
               type="monotone"
               dataKey="revenue"
               stroke="#4bc0c0"
               name="Doanh thu"
             />
             <Line
+              yAxisId="right"
               type="monotone"
               dataKey="delivered"
               stroke="#4CAF50"
               name="Đơn hàng thành công"
+              activeDot={{ r: 8 }}
             />
             <Line
+              yAxisId="right"
               type="monotone"
               dataKey="canceled"
               stroke="#FF5733"
@@ -241,11 +248,6 @@ const DashboardOver = () => {
             />
           </LineChart>
         </ResponsiveContainer>
-        <div className="flex justify-center gap-4">
-          <p className="flex gap-2 text-teal-500">Doanh thu</p>
-          <p className="flex gap-2 text-green-600">Đơn hàng thành công</p>
-          <p className="flex gap-2 text-red-400">Đơn hàng huỷ</p>
-        </div>
       </div>
     </div>
   );

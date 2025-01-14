@@ -9,7 +9,12 @@ import {
 import axios from 'axios';
 import { useRef, useState, useEffect } from 'react';
 import { ArrowDownTray, PlusMini, Trash, XMark } from '@medusajs/icons';
-import { Controller, SubmitHandler, useFieldArray, useForm } from 'react-hook-form';
+import {
+  Controller,
+  SubmitHandler,
+  useFieldArray,
+  useForm,
+} from 'react-hook-form';
 import instance from '@/api/axiosIntance';
 import TextareaDescription from '@/components/textarea';
 
@@ -101,7 +106,7 @@ function EditProduct() {
           price: variant.price,
           countInStock: variant.countInStock,
           sku: variant.sku,
-          weight: variant.weight
+          weight: variant.weight,
         })),
       });
     }
@@ -191,15 +196,15 @@ function EditProduct() {
       const [responseThumbnail, responseGallery] = await Promise.all([
         selectedImage
           ? axios.post(
-            `http://localhost:8080/api/upload-thumbnail-product`,
-            formDataThumbnail
-          )
+              `http://localhost:8080/api/upload-thumbnail-product`,
+              formDataThumbnail
+            )
           : Promise.resolve({ data: data.image }), // Nếu không tải lên hình mới, giữ hình hiện tại
         selectedGallery.length > 0
           ? axios.post(
-            `http://localhost:8080/api/upload-gallery-product`,
-            formDataGallery
-          )
+              `http://localhost:8080/api/upload-gallery-product`,
+              formDataGallery
+            )
           : Promise.resolve({ data: data.gallery }), // Nếu không tải lên gallery mới, giữ gallery hiện tại
       ]);
 
@@ -228,15 +233,7 @@ function EditProduct() {
     <div className="h-screen overflow-y-auto">
       <Header title="Sửa sản phẩm" pathname="/dashboard/products" />
       <form onSubmit={handleSubmit(onCreateProduct)} className="m-8">
-        <div className="my-3 flex justify-between">
-          <div className="w-[330px]">
-            <Input
-              placeholder="Search"
-              id="search-input"
-              size="small"
-              type="search"
-            />
-          </div>
+        <div className="my-3 flex justify-end">
           <div className="flex gap-2">
             <Button
               variant="secondary"
@@ -255,8 +252,8 @@ function EditProduct() {
             Thông tin chung
           </h1>
           <p className="mb-4 text-sm font-normal text-ui-fg-subtle">
-            Cung cấp các chi tiết cơ bản về sản phẩm như tên, chủng loại, giá cả,
-            giảm giá và mô tả.
+            Cung cấp các chi tiết cơ bản về sản phẩm như tên, chủng loại, giá
+            cả, giảm giá và mô tả.
           </p>
 
           <div className="space-y-4">
@@ -287,8 +284,8 @@ function EditProduct() {
                 <span className="text-ui-tag-red-text">*</span> Ảnh
               </label>
               <p className="mb-2 text-xs text-ui-fg-muted">
-
-                Kích thước tệp tối đa là 500KB. Hỗ trợ các định dạng .jpg và .png.
+                Kích thước tệp tối đa là 500KB. Hỗ trợ các định dạng .jpg và
+                .png.
               </p>
               <button
                 type="button"
@@ -298,7 +295,6 @@ function EditProduct() {
                 <div className="mb-2 flex items-center">
                   <ArrowDownTray className="mr-1 h-5 w-5" />
                   <p className="text-xs font-medium text-ui-fg-base">
-
                     Tải lên file
                   </p>
                   <input
@@ -311,7 +307,6 @@ function EditProduct() {
                   />
                 </div>
                 <p className="mb-2 text-center text-xs text-ui-fg-muted">
-
                   Kéo và thả file vào đây hoặc bấm vào để tải lên
                 </p>
               </button>
@@ -406,7 +401,6 @@ function EditProduct() {
               </div>
             </div>
 
-
             {/* Description */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
@@ -433,8 +427,8 @@ function EditProduct() {
                 <span className="text-ui-tag-red-text">*</span> Ảnh trưng bày
               </label>
               <p className="mb-2 text-xs text-ui-fg-muted">
-
-                Kích thước tệp tối đa là 500KB. Hỗ trợ các định dạng .jpg và .png.
+                Kích thước tệp tối đa là 500KB. Hỗ trợ các định dạng .jpg và
+                .png.
               </p>
               <button
                 type="button"
@@ -444,7 +438,6 @@ function EditProduct() {
                 <div className="mb-2 flex items-center">
                   <ArrowDownTray className="mr-1 h-5 w-5" />
                   <p className="text-xs font-medium text-ui-fg-base">
-
                     Tải lên file
                   </p>
                   <input
@@ -458,61 +451,60 @@ function EditProduct() {
                   />
                 </div>
                 <p className="mb-2 text-center text-xs text-ui-fg-muted">
-
                   Kéo và thả file vào đây hoặc bấm vào để tải lên
                 </p>
               </button>
               <div className="mt-5">
                 {selectedGallery.length > 0
                   ? selectedGallery.map(item => (
-                    <div
-                      key={item.name}
-                      className="mb-3 flex items-center justify-between gap-3 rounded-lg border bg-ui-bg-subtle-hover px-2 py-3"
-                    >
-                      <div>
-                        <p className="text-sm font-normal text-ui-fg-base">
-                          {item.name}
-                        </p>
-                        <p className="text-xs font-normal text-ui-fg-subtle">
-                          {formatFileSize(item.size)}
-                        </p>
-                      </div>
-                      <XMark
-                        className="cursor-pointer"
-                        onClick={() =>
-                          setSelectedGallery(prev =>
-                            prev.filter(file => file.name !== item.name)
-                          )
-                        }
-                      />
-                    </div>
-                  ))
-                  : product.gallery &&
-                  product.gallery.map(imgUrl => (
-                    <div
-                      key={imgUrl}
-                      className="mb-3 flex items-center justify-between gap-3 rounded-lg border bg-ui-bg-subtle-hover px-2 py-3"
-                    >
-                      <div>
-                        <img
-                          src={imgUrl}
-                          alt="Gallery Image"
-                          className="h-10 w-10 object-cover"
+                      <div
+                        key={item.name}
+                        className="mb-3 flex items-center justify-between gap-3 rounded-lg border bg-ui-bg-subtle-hover px-2 py-3"
+                      >
+                        <div>
+                          <p className="text-sm font-normal text-ui-fg-base">
+                            {item.name}
+                          </p>
+                          <p className="text-xs font-normal text-ui-fg-subtle">
+                            {formatFileSize(item.size)}
+                          </p>
+                        </div>
+                        <XMark
+                          className="cursor-pointer"
+                          onClick={() =>
+                            setSelectedGallery(prev =>
+                              prev.filter(file => file.name !== item.name)
+                            )
+                          }
                         />
-                        {/* <p className="text-sm font-normal text-ui-fg-base">{imgUrl}</p> */}
                       </div>
-                      <XMark
-                        className="cursor-pointer"
-                        onClick={() => {
-                          // Implement removal logic, e.g., remove from gallery array
-                          const updatedGallery = watch('gallery').filter(
-                            url => url !== imgUrl
-                          );
-                          setValue('gallery', updatedGallery);
-                        }}
-                      />
-                    </div>
-                  ))}
+                    ))
+                  : product.gallery &&
+                    product.gallery.map(imgUrl => (
+                      <div
+                        key={imgUrl}
+                        className="mb-3 flex items-center justify-between gap-3 rounded-lg border bg-ui-bg-subtle-hover px-2 py-3"
+                      >
+                        <div>
+                          <img
+                            src={imgUrl}
+                            alt="Gallery Image"
+                            className="h-10 w-10 object-cover"
+                          />
+                          {/* <p className="text-sm font-normal text-ui-fg-base">{imgUrl}</p> */}
+                        </div>
+                        <XMark
+                          className="cursor-pointer"
+                          onClick={() => {
+                            // Implement removal logic, e.g., remove from gallery array
+                            const updatedGallery = watch('gallery').filter(
+                              url => url !== imgUrl
+                            );
+                            setValue('gallery', updatedGallery);
+                          }}
+                        />
+                      </div>
+                    ))}
               </div>
             </div>
             {/* detaildescription */}
@@ -530,7 +522,9 @@ function EditProduct() {
                     <TextareaDescription
                       apiKey="vx5npguuuktlxhbv9tv6vvgjk1x5astnj8kznhujei9w6ech"
                       value={value}
-                      onChange={content => handleEditorChange(content, onChange)}
+                      onChange={content =>
+                        handleEditorChange(content, onChange)
+                      }
                       className="h-full w-full"
                     />
                   )}
@@ -567,11 +561,15 @@ function EditProduct() {
                             const isDuplicate = variants.some(
                               (variant, i) =>
                                 i !== index &&
-                                variant.color.trim().toLowerCase() === value.trim().toLowerCase() &&
-                                variant.size.trim().toLowerCase() === variants[index].size.trim().toLowerCase()
+                                variant.color.trim().toLowerCase() ===
+                                  value.trim().toLowerCase() &&
+                                variant.size.trim().toLowerCase() ===
+                                  variants[index].size.trim().toLowerCase()
                             );
-                            return isDuplicate ? 'Kích thướcthước đã tồn tại.' : true;
-                          }
+                            return isDuplicate
+                              ? 'Kích thướcthước đã tồn tại.'
+                              : true;
+                          },
                         })}
                       />
                       {errors.variants?.[index]?.size && (
@@ -596,11 +594,13 @@ function EditProduct() {
                             const isDuplicate = variants.some(
                               (variant, i) =>
                                 i !== index &&
-                                variant.color.trim().toLowerCase() === value.trim().toLowerCase() &&
-                                variant.size.trim().toLowerCase() === variants[index].size.trim().toLowerCase()
+                                variant.color.trim().toLowerCase() ===
+                                  value.trim().toLowerCase() &&
+                                variant.size.trim().toLowerCase() ===
+                                  variants[index].size.trim().toLowerCase()
                             );
                             return isDuplicate ? 'màu sắc đã tồn tại.' : true;
-                          }
+                          },
                         })}
                       />
                       {errors.variants?.[index]?.color && (
@@ -692,4 +692,4 @@ function EditProduct() {
   );
 }
 
-export default EditProduct
+export default EditProduct;
