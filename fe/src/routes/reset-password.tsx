@@ -1,3 +1,5 @@
+import Footer from '@/components/footer';
+import Header from '@/components/header';
 import {
   checkValidCode,
   fetchUpdateNewPassword,
@@ -74,113 +76,113 @@ function UpdatePassword() {
   const password = watch('password');
 
   return (
-    <div className="relative h-screen w-full">
-      {/* Background image */}
-      <img
-        src="/image.png"
-        alt="background-login"
-        className="absolute z-0 h-full w-full object-cover"
-      />
+    <div>
+      <Header />
+      <main className='py-10'>
+        <div className="mb-4" />
+        <section className="login-register container max-w-3xl">
+          <h2 className="d-none">Đăng Nhập &amp; Đăng Ký</h2>
+          <ul className="nav nav-tabs mb-5" id="login_register" role="tablist">
+            <li className="nav-item" role="presentation">
+              <a
+                className="nav-link nav-link_underscore active"
+                id="login-tab"
+                data-bs-toggle="tab"
+                href="#tab-item-login"
+                role="tab"
+                aria-controls="tab-item-login"
+                aria-selected="true"
+              >
+                Đặt lại mật khẩu
+              </a>
+            </li>
+          </ul>
 
-      {/* Overlay with content */}
-      <div className="relative flex h-full w-full flex-col items-center justify-between gap-10 px-6 py-6 md:flex-row md:items-end md:gap-40 md:pl-20 md:pr-10">
-        {/* Left section with text */}
-        <div className="w-full space-y-5 text-center text-ui-bg-base md:w-1/2 md:text-left">
-          <p className="text-header-login-1 font-bold">
-            Tối ưu hóa quy trình làm việc của bạn
-          </p>
-          <p className="txt-large">
-            Truy cập bảng điều khiển của bạn để quản lý thương hiệu, doanh số và
-            hiệu suất một cách dễ dàng!
-          </p>
-        </div>
-
-        {/* Right section with form */}
-        <div className="flex w-full flex-col items-center justify-center rounded-3xl bg-ui-bg-base px-8 py-10 shadow-lg md:w-1/2 md:px-16">
-          {/* Logo */}
-          <img
-            src="./fasion zone.png"
-            alt="fashionzone-logo"
-            className="mb-6 w-24 object-cover md:mb-8 md:w-32"
-          />
-
-          {/* Form section */}
-          <form
-            onSubmit={e => void handleSubmit(onSubmit)(e)}
-            className="w-full space-y-6 md:space-y-10"
-          >
-            {/* Welcome message */}
-            <div className="space-y-1 text-center">
-              <p className="txt-compact-large text-ui-fg-subtle">
-                Chào mừng đến với Fashion Zone
-              </p>
-              <p className="text-header-web-2 font-semibold text-ui-fg-base">
-                Đặt lại mật khẩu cho tài khoản của bạn
-              </p>
-            </div>
-
-            {/* Inputs */}
-            <div className="space-y-4">
-              {/* Password input */}
-              <div className="txt-compact-medium-plus space-y-2 text-ui-fg-subtle">
-                <label htmlFor="password">Nhập mật khẩu mới</label>
-                <Input
-                  id="password"
-                  type="password"
-                  aria-label="password"
-                  {...register('password', {
-                    required: 'Mật khẩu là bắt buộc',
-                    minLength: {
-                      value: 6,
-                      message: 'Mật khẩu phải có ít nhất 6 ký tự',
-                    },
-                  })}
-                  placeholder="Nhập mật khẩu mới"
-                />
-                {errors.password && (
-                  <p className="text-red-500">{errors.password.message}</p>
-                )}
-              </div>
-
-              {/* Confirm Password input */}
-              <div className="txt-compact-medium-plus space-y-2 text-ui-fg-subtle">
-                <label htmlFor="confirmPassword">Nhập lại mật khẩu</label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  aria-label="confirmPassword"
-                  {...register('confirmPassword', {
-                    required: 'Vui lòng xác nhận mật khẩu',
-                    validate: value =>
-                      value === password || 'Mật khẩu không khớp',
-                  })}
-                  placeholder="Nhập lại mật khẩu"
-                />
-                {errors.confirmPassword && (
-                  <p className="text-red-500">
-                    {errors.confirmPassword.message}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Submit button */}
-            <Button
-              type="submit"
-              className="w-full bg-blue-600 text-white hover:bg-blue-700"
+          <div className="tab-content pt-2" id="login_register_tab_content">
+            <div
+              className="tab-pane fade show active"
+              id="tab-item-login"
+              role="tabpanel"
+              aria-labelledby="login-tab"
             >
-              Đặt lại mật khẩu
-            </Button>
-          </form>
+              <div className="login-form">
+                <form
+                  name="login-form"
+                  className="needs-validation"
+                  noValidate
+                  onSubmit={e => void handleSubmit(onSubmit)(e)}
+                >
+                  <div className="form-floating mb-3">
+                    <input
+                      {...register('password', {
+                        required: 'Mật khẩu là bắt buộc',
+                        minLength: {
+                          value: 6,
+                          message: 'Mật khẩu phải có ít nhất 6 ký tự',
+                        },
+                      })}
+                      placeholder="Nhập mật khẩu mới"
+                      className="form-control form-control_gray"
+                      id="password"
 
-          {/* Back to login page */}
-          <p className="txt-compact-large mt-6 text-ui-fg-subtle">
-            <Link className="text-blue-600 hover:underline" to="/login">
-              Quay lại trang đăng nhập!
-            </Link>
-          </p>
-        </div>
-      </div>
+                      type='password'
+                    />
+                    {errors.password && (
+                      <p className="text-red-500">{errors.password.message}</p>
+                    )}
+                    <label htmlFor="customerPasswodRegisterInput">
+                      Mật khẩu mới *
+                    </label>
+                  </div>
+                  <div className="form-floating mb-3">
+                    <input
+                      {...register('confirmPassword', {
+                        required: 'Vui lòng xác nhận mật khẩu',
+                        validate: value =>
+                          value === password || 'Mật khẩu không khớp',
+                      })}
+                      className="form-control form-control_gray"
+                      id="confirmPassword"
+                      placeholder="Nhập lại mật khẩu"
+
+                      type='password'
+                    />
+                    {errors.confirmPassword && (
+                      <p className="text-red-500">
+                        {errors.confirmPassword.message}
+                      </p>
+                    )}
+                    <label htmlFor="customerPasswodRegisterInput">
+                      Nhập lại Mật khẩu  *
+                    </label>
+                  </div>
+                  <div className="pb-3" />
+
+
+                  <button
+                    className="btn btn-primary w-100 text-uppercase"
+                    type="submit"
+                  >
+                    Đặt lại mật khẩu
+                  </button>
+                  <div className="customer-option mt-4 text-center">
+                    <span className="text-gray-600">
+                      Bạn chưa có tài khoản?
+                    </span>
+                    <Link
+                      to="/register"
+                      className="ml-2 font-semibold text-blue-500 no-underline hover:text-blue-700"
+                    >
+                      Đăng ký ngay
+                    </Link>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+      <Footer />
     </div>
   );
 }
