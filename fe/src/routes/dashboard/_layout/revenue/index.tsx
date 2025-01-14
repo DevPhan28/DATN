@@ -50,23 +50,35 @@ function Revenue() {
   // Lấy tháng hiện tại
   const currentMonth = new Date().toLocaleString('default', { month: 'short' }); // 'Jan', 'Feb', 'Mar', ...
 
-  // Tìm doanh thu của tháng hiện tại
   const currentMonthData = data.find(item => item.month === currentMonth);
 
   const currentMonthRevenue = currentMonthData ? currentMonthData.revenue : 0;
 
   console.log(`Doanh thu tháng ${currentMonth}: ${currentMonthRevenue}`);
 
+  const totalRevenued = listOrder.reduce(
+    (acc, curr) => acc + curr.totalPrice,
+    0
+  );
   const deliveredRevenue = listOrder
     .filter(order => order.status === 'delivered')
     .reduce((acc, curr) => acc + curr.totalPrice, 0);
+
+  const deliveredPercentage = Math.round(
+    (deliveredRevenue / totalRevenued) * 100
+  );
+
   const canceledRevenue = listOrder
     .filter(order => order.status === 'canceled')
     .reduce((acc, curr) => acc + curr.totalPrice, 0);
 
+  const canceledPercentage = Math.round(
+    (canceledRevenue / totalRevenued) * 100
+  );
+
   const haha = [
-    { name: 'Thành công', value: deliveredRevenue },
-    { name: 'Thất bại', value: canceledRevenue },
+    { name: 'Thành công', value: deliveredPercentage },
+    { name: 'Thất bại', value: canceledPercentage },
   ];
   const totalOrders = listOrder.length;
   const deliveredOrders = listOrder.filter(
@@ -76,8 +88,10 @@ function Revenue() {
     order => order.status === 'canceled'
   ).length;
 
-  const successPercentage = (deliveredOrders / totalOrders) * 100; // Tính % thành công (delivered)
-  const failurePercentage = (canceledOrders / totalOrders) * 100; // Tính % thất bại (canceled)
+  const successPercentage =
+    Math.round((deliveredOrders / totalOrders) * 100 * 100) / 100;
+  const failurePercentage =
+    Math.round((canceledOrders / totalOrders) * 100 * 100) / 100;
 
   const hihi = [
     { name: 'Thành công', value: successPercentage },
@@ -157,7 +171,7 @@ function Revenue() {
                 </div>
                 <div className="flex w-1/2 justify-center">
                   {/* Tăng kích thước biểu đồ */}
-                  <PieChart width={200} height={200}>
+                  <PieChart width={220} height={200}>
                     <Pie
                       data={haha}
                       dataKey="value"
