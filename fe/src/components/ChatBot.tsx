@@ -1,7 +1,7 @@
 import instance from '@/api/axiosIntance';
 import { useSocket } from '@/data/socket/useSocket'; // Đảm bảo rằng bạn đã cấu hình socket context
 import { useState, useEffect, useRef } from 'react';
-
+import { ChatBubble } from "@medusajs/icons"
 const ChatBot = () => {
     const [messages, setMessages] = useState([]); // Lưu trữ danh sách tin nhắn
     const [input, setInput] = useState(''); // Lưu trữ nội dung nhập từ người dùng
@@ -118,30 +118,33 @@ const ChatBot = () => {
     }, [messages]);
 
     return (
-        <div>
+        <div className='z-10 absolute'>
             {/* Nút mở khung chat */}
             {!isChatOpen && (
                 <button
                     onClick={handleChatButtonClick}
                     className="fixed bottom-4 right-4 bg-white shadow-lg rounded-lg flex items-center p-2 cursor-pointer"
                 >
-                    <span className="text-orange-500 text-lg mr-2">💬</span>
-                    <span className="text-orange-500 font-semibold">Chat</span>
+                    <div className="flex gap-2 items-center">
+                        <span className="text-black font-semibold">Nhắn tin</span>
+                        <i className="fa-regular fa-comment text-[25px]"></i>
+                        {/* <ChatBubble /> */}
+                    </div>
                 </button>
             )}
 
             {/* Giao diện khung chat */}
             {isChatOpen && (
                 <div className="fixed bottom-4 right-4 w-80 bg-white shadow-lg rounded-lg overflow-hidden z-50">
-                    <div className="bg-blue-600 text-white p-4 flex items-center">
+                    <div className="bg-black text-white p-4 flex items-center">
                         <img
-                            className="w-10 h-10 bg-gray-300 rounded-full mr-2"
-                            src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg"
+                            className="w-10 h-10 bg-white  rounded-full mr-2 object-cover"
+                            src="/logo_fashion.png"
                             alt="Admin"
                         />
                         <div>
-                            <p className="font-bold">Fashion Zone (Admin)</p>
-                            <p className="text-sm">Offline</p>
+                            <p className="font-bold">Fashion Zone</p>
+                            <p className="text-[10px] text-gray-400">không hoạt động</p>
                         </div>
                         <button
                             onClick={() => setIsChatOpen(false)}
@@ -154,18 +157,15 @@ const ChatBot = () => {
                     <div className="p-4 h-80 overflow-y-auto space-y-2">
                         {messages.map((msg, index) => (
                             <div key={index} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                {msg.sender !== 'user' && (
-                                    <img
-                                        src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg"
-                                        alt="Admin Avatar"
-                                        className="w-8 h-8 rounded-full mr-2"
-                                    />
-                                )}
-                                <div>
-                                    <div
-                                        className={`${msg.sender === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'
-                                            } px-4 py-2 rounded-lg max-w-xs`}
-                                    >
+                                <div className='flex items-center'>
+                                    {msg.sender !== 'user' && (
+                                        <img
+                                            src="/logo_fashion.png"
+                                            alt="Admin Avatar"
+                                            className="w-10 h-10 rounded-full mr-2 border mt-4"
+                                        />
+                                    )}
+                                    <div>
                                         <p className="text-xs text-gray-500 mt-1">
                                             {new Intl.DateTimeFormat('vi-VN', {
                                                 year: 'numeric',
@@ -176,15 +176,21 @@ const ChatBot = () => {
                                                 timeZone: 'Asia/Ho_Chi_Minh', // Đảm bảo sử dụng múi giờ Việt Nam
                                             }).format(new Date(msg.timestamp))}
                                         </p>
-                                        {msg.text}
-                                    </div>
+                                        <div
+                                            className={`${msg.sender === 'user' ? 'bg-black text-white' : 'bg-gray-200 text-gray-800'
+                                                } px-2 py-2 rounded-lg max-w-xs`}
+                                        >
 
+                                            {msg.text}
+                                        </div>
+
+                                    </div>
                                 </div>
                                 {msg.sender === 'user' && (
                                     <img
                                         src="https://res.cloudinary.com/dlzhmxsqp/image/upload/v1716288330/e_commerce/s4nl3tlwpgafsvufcyke.jpg"
                                         alt="User Avatar"
-                                        className="w-8 h-8 rounded-full ml-2"
+                                        className="w-8 h-8 rounded-full ml-2 mt-4"
                                     />
                                 )}
                             </div>
@@ -193,19 +199,19 @@ const ChatBot = () => {
                         <div ref={messagesEndRef} />
                     </div>
 
-                    <div className="flex items-center p-4 border-t">
+                    <div className="flex items-center p-4 border-t gap-2">
                         <input
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             type="text"
-                            placeholder="Type a message..."
-                            className="flex-grow px-4 py-2 border rounded-lg focus:outline-none"
+                            placeholder="Nhập tin nhắn..."
+                            className="flex-grow px-3 py-2 border rounded-lg focus:outline-none"
                         />
                         <button
                             onClick={sendMessage}
-                            className="ml-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+                            className=" bg-black text-white px-4 py-2 rounded-lg hover:bg-blue-600"
                         >
-                            Send
+                            Gửi
                         </button>
                     </div>
                 </div>

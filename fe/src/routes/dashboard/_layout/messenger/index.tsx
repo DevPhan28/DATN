@@ -133,13 +133,13 @@ export default function Messenger() {
               {/* Sidebar */}
               <div className="w-1/3 border-r border-gray-200">
                 <div className="border-b border-gray-200 p-4">
-                  <h1 className="text-lg font-bold">Messages</h1>
+                  <h1 className="text-lg font-bold">Khách Hàng</h1>
                 </div>
                 <ul className="h-[calc(100vh-80px)] overflow-y-auto">
                   {Object.values(chats).map(chat => (
                     <li
                       key={chat.userId}
-                      className={`flex cursor-pointer items-center px-4 py-3 hover:bg-gray-100 ${activeChat === chat.userId ? 'bg-gray-100' : ''}`}
+                      className={`flex cursor-pointer items-center px-2 py-3 hover:bg-gray-100 ${activeChat === chat.userId ? 'bg-gray-100' : ''}`}
                       onClick={() => handleChatClick(chat.userId)} // Chọn cuộc trò chuyện
                     >
                       <div className="mr-4 flex h-10 w-10 items-center justify-center rounded-full bg-gray-300 text-xl font-bold text-white">
@@ -182,30 +182,32 @@ export default function Messenger() {
                         key={message._id}
                         className={`flex ${message.sender === 'user' ? 'items-start' : 'items-end justify-end'} mb-4`}
                       >
-                        {message.sender === 'user' && (
-                          <div className="mr-4 flex h-10 w-10 items-center justify-center rounded-full bg-gray-300 text-xl font-bold text-white">
-                            {message.userId?.username?.charAt(0).toLowerCase() || '?'}
-                          </div>
-                        )}
-                        <div>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {new Intl.DateTimeFormat('vi-VN', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                              second: '2-digit',
-                              timeZone: 'Asia/Ho_Chi_Minh',
-                            }).format(new Date(message.timestamp))}
-                          </p>
-                          <div
-                            className={`${message.sender === 'user' ? 'bg-gray-100' : 'bg-purple-500 text-white'
-                              } rounded-lg p-3`}
-                          >
-                            <p>{message.text}</p>
-                          </div>
+                        <div className="flex items-center">
+                          {message.sender === 'user' && (
+                            <div className="mr-4 mt-1 flex h-10 w-10 items-center justify-center rounded-full bg-gray-300 text-xl font-bold text-white">
+                              {message.userId?.username?.charAt(0).toLowerCase() || '?'}
+                            </div>
+                          )}
+                          <div>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {new Intl.DateTimeFormat('vi-VN', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit',
+                                timeZone: 'Asia/Ho_Chi_Minh',
+                              }).format(new Date(message.timestamp))}
+                            </p>
+                            <div
+                              className={`${message.sender === 'user' ? 'bg-gray-100' : 'bg-black text-white'
+                                } rounded-lg p-3`}
+                            >
+                              <p>{message.text}</p>
+                            </div>
 
+                          </div>
                         </div>
                       </div>
                     ))
@@ -220,14 +222,14 @@ export default function Messenger() {
                     type="text"
                     value={newMessage}
                     onChange={e => setNewMessage(e.target.value)}
-                    placeholder="Type your message here..."
-                    className="flex-1 rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder="Nhập tin nhắn..."
+                    className="flex-1 rounded-lg border border-gray-300 p-2 focus:outline-none focus:ring-2 "
                   />
                   <button
                     onClick={handleSendMessage}
-                    className="ml-4 rounded-lg bg-purple-500 p-2 text-white hover:bg-purple-600"
+                    className="ml-4 px-4 rounded-lg bg-black p-2 text-white hover:bg-slate-900"
                   >
-                    Send
+                    Gửi
                   </button>
                 </div>
               </div>

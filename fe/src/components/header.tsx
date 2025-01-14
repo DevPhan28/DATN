@@ -157,8 +157,8 @@ const Header = () => {
         className={`${isSticky ? 'bg-white' : 'bg-white'} header_sticky fixed left-0 top-0 w-full transition-all duration-300`}
       >
         <Banertime />
-        <div className="container mt-[-10px] px-[55px]">
-          <div className="header-desk header-desk_type_1">
+        <div className="container mt-[-10px] px-[55px] ">
+          <div className="header-desk header-desk_type_1 ">
             <div className="logo">
               <a href="/">
                 <img
