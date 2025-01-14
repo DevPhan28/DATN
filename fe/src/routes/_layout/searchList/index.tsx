@@ -63,9 +63,7 @@ function SearchList() {
           <div className="">
             <div className="main-content flex h-48 w-full flex-col items-center justify-center">
               <div className="text-content">
-                <div className="text-center text-4xl font-semibold">
-                  Tìm kiếm sản phẩm
-                </div>
+               
                 <div className="link caption1 mt-3 flex items-center justify-center gap-1">
                   <p>
                     Kết quả tìm kiếm cho từ khóa:{' '}
@@ -79,11 +77,12 @@ function SearchList() {
           <div className="bg-gray-50 py-10 pt-5">
             <div className="m-auto mt-10 max-w-7xl bg-white shadow sm:p-5 md:p-5 lg:p-5 xl:p-0">
               <div className="mb-4 mt-5 flex flex-wrap items-center justify-between p-4 sm:mb-8">
-                <div className="flex flex-wrap space-x-4 sm:space-x-8">
-                  <button className="border-b-2 border-gray-900 text-gray-900">
-                    Tất cả sản phẩm
-                  </button>
-                </div>
+               <div className="flex flex-wrap space-x-4 sm:space-x-8 w-fit">
+  <button className="border-b-2 border-gray-900 text-gray-900">
+    Tất cả sản phẩm
+  </button>
+</div>
+
               </div>
 
               <div className="grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 sm:gap-8 md:grid-cols-3 lg:grid-cols-4">
@@ -99,20 +98,18 @@ function SearchList() {
                     />
                     <Link
                       to={`/${product.slug ? product.slug : product._id}/quickviewProduct`}
-                      className="quick-view duration-900 absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-full bg-white px-4 py-2 opacity-0 shadow transition-all hover:bg-black hover:text-white group-hover:translate-y-[-100px] group-hover:opacity-100"
+                      className="quick-view duration-900 absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-none bg-white px-4 py-2 opacity-0 shadow transition-all hover:bg-black hover:text-white group-hover:translate-y-[-100px] group-hover:opacity-100"
                     >
-                      Xem nhanh
-                    </Link>
-                    <h2 className="mt-2 flex items-center justify-between text-gray-500">
-                      {product.name}
-                      <div className="flex space-x-2">
-                        <Link
-                          to={`/${product.slug ? product.slug : product._id}/detailproduct`}
-                        >
-                          <ShoppingCartSolid />
-                        </Link>
-                      </div>
-                    </h2>
+                     Chi tiết
+                            </Link>
+                            <h2 className="mt-2 flex items-center justify-between text-gray-500">
+          <span className="font-bold text-xl">{product.name}</span>
+          <div className="flex space-x-2">
+            <Link to={`/${product.slug ? product.slug : product._id}/detailproduct`}>
+              <ShoppingCartSolid />
+            </Link>
+          </div>
+        </h2>
                     <p className="mt-2 flex justify-start text-gray-600">
                       <CurrencyVND amount={product.price} />
                     </p>

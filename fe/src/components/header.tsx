@@ -1,14 +1,22 @@
 import { useCart } from '@/data/cart/useCartLogic';
 import { useFetchCart } from '@/data/cart/useFetchCart';
 import { toast } from '@medusajs/ui';
-import { Link, useNavigate } from '@tanstack/react-router';
-import { useEffect, useRef, useState } from 'react';
+import { Link, useLocation, useNavigate } from '@tanstack/react-router';
+import { ChangeEvent, KeyboardEvent, KeyboardEventHandler, useEffect, useRef, useState } from 'react';
 import '../../css/plugins/swiper.min.css';
 import imgCart from '../assets/images/cart_trong.jpg';
 import nav_bg from '../assets/images/nav-bg.jpg';
 import Banertime from './Banertime';
 import CurrencyVND from './config/vnd';
 const Header = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchStr, setSearchStr] = useState<string>();
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
   // Trạng thái hiển thị của menu
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -20,6 +28,25 @@ const Header = () => {
       setIsLoggedIn(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (location.pathname !== '/searchList') {
+      setSearchStr('');
+    }
+  }, [location.pathname]);
+
+  const toggleShowSearch = () => setShowSearch(!showSearch);
+
+  const onInputChange = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      navigate({
+        to: '/searchList',
+        search: {
+          search: e.target.value
+        }
+      })
+    }
+  }
 
   const toggleSearch = () => {
     setIsSearchOpen(!isSearchOpen); // Đổi trạng thái khi nhấn icon search
@@ -67,9 +94,6 @@ const Header = () => {
 
   // Truy xuất tên người dùng (username)
   const username = storedData?.user?.username || 'Không có tên người dùng';
-
-  //Cart-giỏ hàng
-  const navigate = useNavigate();
 
   // if (!userId) {
   //   return <LoginCart />;
@@ -177,11 +201,31 @@ const Header = () => {
             {/* /.navigation */}
             <div className="header-tools d-flex align-items-center">
               <div className="header-tools__item hover-container">
-                <div className="js-hover__open position-relative">
-                  <a className="js-search-popup search-field__actor" href="#">
-                    <i className="fa-solid fa-magnifying-glass text-xl"></i>
-                  </a>
-                </div>
+                {showSearch ? (
+                  <div className="flex items-center rounded-md border !border-gray-400 px-2">
+                    <input
+                      type="text"
+                      placeholder="Nhập tên sản phẩm"
+                      className="rounded-[inherit] py-1.5 pr-2 outline-none"
+                      onBlur={toggleShowSearch}
+                      onKeyDown={onInputChange}
+                      ref={inputRef}
+                      value={searchStr}
+                      onChange={e => setSearchStr(e.target.value)}
+                    />
+                    <i className="fa-solid fa-magnifying-glass text-md"></i>
+                  </div>
+                ) : (
+                  <i
+                    className="fa-solid fa-magnifying-glass text-xl cursor-pointer"
+                    onClick={() => {
+                      toggleShowSearch();
+                      
+                      setTimeout(() => inputRef.current?.focus(), 1)
+                    }}
+                  ></i>
+                )}
+
                 <div className="search-popup js-hidden-content">
                   <form
                     action="https://uomo-html.flexkitux.com/Demo1/search_result.html"
