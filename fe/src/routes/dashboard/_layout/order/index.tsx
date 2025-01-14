@@ -117,7 +117,7 @@ function OrderList() {
     ? deliveryStatuses.map((status) => status.value)
     : selectedGroup === 'complaint'
     ? complaintStatuses.map((status) => status.value)
-    : selectedGroup === 'all-refund'
+    : selectedGroup === 'refund'
     ? refundStatuses.map((status) => status.value)
     : [];
 
