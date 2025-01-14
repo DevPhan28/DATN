@@ -235,9 +235,7 @@ function OrderDetail() {
         <div className="min-h-screen bg-gray-50 p-3">
           {/* Chi tiết theo dõi đơn hàng */}
           <div className="mb-2 rounded-lg bg-white p-4 shadow-md">
-            <h2 className="mb-4 text-lg font-bold">
-              Chi tiết theo dõi đơn hàng
-            </h2>
+            <h2 className="mb-4 text-lg font-bold">Theo dõi đơn hàng</h2>
             <div className="flex w-full items-center justify-between">
               {[
                 'Đã Đặt Hàng',
@@ -246,17 +244,22 @@ function OrderDetail() {
                 'Giao hàng',
                 'Đã nhận hàng',
               ].map((statusText, index, arr) => {
-                const isCompleted = index <= statusIndex; // Trạng thái đã hoàn thành
-                const isLast = index === arr.length - 1; // Kiểm tra trạng thái cuối
+                const isCanceled = statusIndex === 5;
+                const isCompleted = index <= statusIndex && !isCanceled;
+                const isLast = index === arr.length - 1;
+
+                const displayText =
+                  isCanceled && index === arr.length - 1
+                    ? 'Đơn hủy'
+                    : statusText;
 
                 return (
                   <React.Fragment key={index}>
                     <div className="flex flex-col items-center">
-                      {/* Vòng tròn trạng thái */}
                       <div
                         className={`flex h-8 w-8 items-center justify-center rounded-full font-bold text-white ${
                           isCompleted ? 'bg-blue-500' : 'bg-gray-300'
-                        }`}
+                        } ${isCanceled && index === arr.length - 1 ? 'bg-red-500' : ''}`}
                       >
                         {isCompleted ? '✓' : index + 1}
                       </div>
@@ -265,7 +268,7 @@ function OrderDetail() {
                           isCompleted ? 'text-black' : 'text-gray-500'
                         }`}
                       >
-                        {statusText}
+                        {displayText}
                       </p>
                     </div>
 
@@ -472,16 +475,29 @@ function OrderDetail() {
                 </tr>
               </thead>
               <tbody>
-                {statusOrder2.slice(0, statusIndex2 + 1).map((row, index) => (
-                  <tr key={index} className="border-t">
-                    <td className="px-4 py-3 font-semibold">{row.info}</td>
-                    <td className="px-2 py-1">
-                      {row.fullDateTime.toLocaleString()}
+                {statusIndex2 === 5 ? ( // Kiểm tra nếu trạng thái là "canceled"
+                  <tr className="border-t">
+                    <td className="px-4 py-3 font-semibold text-red-500">
+                      Đơn hàng đã bị hủy
                     </td>
-                    <td className="px-2 py-1">{row.message}</td>
-                    <td className="px-2 py-1">{row.detail}</td>
+                    <td className="px-2 py-1 text-gray-500" colSpan="3">
+                      Không có thông tin chi tiết.
+                    </td>
                   </tr>
-                ))}
+                ) : (
+                  statusOrder2
+                    .slice(0, statusIndex2 + 1) // Lọc các trạng thái phù hợp
+                    .map((row, index) => (
+                      <tr key={index} className="border-t">
+                        <td className="px-4 py-3 font-semibold">{row.info}</td>
+                        <td className="px-2 py-1">
+                          {row.fullDateTime.toLocaleString()}
+                        </td>
+                        <td className="px-2 py-1">{row.message}</td>
+                        <td className="px-2 py-1">{row.detail}</td>
+                      </tr>
+                    ))
+                )}
               </tbody>
             </table>
           </div>

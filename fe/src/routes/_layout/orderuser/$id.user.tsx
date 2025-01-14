@@ -86,8 +86,7 @@ function DetailOrderUser() {
     canceled_complaint: 11,
   };
 
-  const statusIndex = statusOrder[status] || 0; // Xác định trạng thái hiện tại
-  console.log('statusIndex', statusIndex);
+  const statusIndex = statusOrder[status] || 0;
 
   const steps = [
     {
@@ -222,14 +221,18 @@ function DetailOrderUser() {
           {/* Tiến trình đơn hàng */}
           <div className="mb-6 flex items-center justify-around">
             {steps.map((step, index) => {
-              const isActive = statusOrder[step.status] <= statusIndex;
-              const isCurrent = statusOrder[step.status] === statusIndex;
-              const isLastStep = index === steps.length - 1;
+              const stepOrder = statusOrder[step.status]; // Lấy thứ tự trạng thái
+              const isActive = stepOrder <= statusIndex; // Kiểm tra trạng thái kích hoạt
+              const isCurrent = stepOrder === statusIndex; // Kiểm tra trạng thái hiện tại
+              const isLastStep = index === steps.length - 1; // Kiểm tra bước cuối cùng
 
               let stepLabel = step.label;
 
+              // Đổi nhãn cho trạng thái 'pendingPayment'
               if (step.status === 'pendingPayment') {
-                if (statusOrder['delivered'] <= statusIndex) {
+                if (statusIndex === statusOrder['canceled']) {
+                  stepLabel = 'Đơn hàng hủy';
+                } else if (statusOrder['delivered'] <= statusIndex) {
                   stepLabel = 'Đã thanh toán';
                 } else {
                   stepLabel =
@@ -239,23 +242,36 @@ function DetailOrderUser() {
                 }
               }
 
+              // Kiểm tra nếu trạng thái sau 'canceled'
+              const isDisabled =
+                statusIndex === statusOrder['canceled'] && index > 1; // Nếu trạng thái là "canceled" ở bước 2, làm mờ các bước sau (index > 1)
+
+              // Nếu bị ẩn, làm mờ bước
               return (
                 <div key={index} className="flex items-center">
                   {/* Nút trạng thái */}
                   <div className="flex flex-col items-center">
                     <div
                       className={`mb-2 flex h-10 w-10 items-center justify-center rounded-full ${
-                        isActive ? 'bg-green-500' : 'bg-gray-300'
-                      } ${isCurrent ? 'ring-2 ring-green-600' : ''}`}
+                        isDisabled
+                          ? 'bg-gray-300' // Bị "ẩn"
+                          : isActive
+                            ? 'bg-green-500' // Đã hoàn thành
+                            : 'bg-gray-300' // Chưa hoàn thành
+                      } ${isCurrent && !isDisabled ? 'ring-2 ring-green-600' : ''}`}
                     >
                       {step.icon}
                     </div>
                     <span
                       className={`text-sm font-medium ${
-                        isActive ? 'text-gray-800' : 'text-gray-400'
+                        isDisabled
+                          ? 'text-gray-400' // Bị "ẩn"
+                          : isActive
+                            ? 'text-gray-800'
+                            : 'text-gray-400'
                       }`}
                     >
-                      {stepLabel} {/* Hiển thị tên bước đã được thay đổi */}
+                      {stepLabel}
                     </span>
                   </div>
 
@@ -263,9 +279,11 @@ function DetailOrderUser() {
                   {!isLastStep && (
                     <div
                       className={`mx-2 mb-4 h-[2px] w-36 ${
-                        statusOrder[step.status] < statusIndex
-                          ? 'bg-green-500'
-                          : 'bg-gray-300'
+                        isDisabled
+                          ? 'bg-gray-300' // Gạch ngang "ẩn"
+                          : stepOrder < statusIndex
+                            ? 'bg-green-500' // Đã hoàn thành
+                            : 'bg-gray-300' // Chưa hoàn thành
                       }`}
                     ></div>
                   )}
@@ -273,9 +291,8 @@ function DetailOrderUser() {
               );
             })}
           </div>
-
+          ;
           <hr />
-          {/* Địa chỉ nhận hàng */}
           <div className="mb-6 mt-5 flex justify-between">
             <div className="rounded-lg bg-white p-4">
               <h3 className="mb-4 border-b pb-2 text-lg font-semibold text-gray-800">
