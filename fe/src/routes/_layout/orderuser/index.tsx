@@ -151,10 +151,10 @@ function UserOrder() {
         const updatedOrders = orders.map((order: Order) =>
           order._id === orderId
             ? {
-                ...order,
-                status: 'refund_initiated',
-                paymentStatus: 'pendingRefund',
-              }
+              ...order,
+              status: 'refund_initiated',
+              paymentStatus: 'pendingRefund',
+            }
             : order
         );
         setOrders(updatedOrders);
@@ -389,11 +389,10 @@ function UserOrder() {
               <button
                 key={tab.id}
                 onClick={() => setSelectedTab(tab.id)}
-                className={`px-2 py-2 text-[15px] sm:px-4 ${
-                  selectedTab === tab.id
-                    ? 'border-b-2 border-red-500 text-red-600'
-                    : ''
-                }`}
+                className={`px-2 py-2 text-[15px] sm:px-4 ${selectedTab === tab.id
+                  ? 'border-b-2 border-red-500 text-red-600'
+                  : ''
+                  }`}
               >
                 {tab.label}{' '}
                 <span className="count text-red-600">
@@ -402,11 +401,10 @@ function UserOrder() {
                       if (tab.id === 'all') return true; // Tab 'Tất cả' đếm tất cả các đơn hàng
                       return order.status === tab.id; // Tab cụ thể đếm theo trạng thái
                     }).length > 0 &&
-                    `(${
-                      orders.filter(order => {
-                        if (tab.id === 'all') return true;
-                        return order.status === tab.id;
-                      }).length
+                    `(${orders.filter(order => {
+                      if (tab.id === 'all') return true;
+                      return order.status === tab.id;
+                    }).length
                     })`}
                 </span>
               </button>
@@ -425,35 +423,34 @@ function UserOrder() {
                   <div key={order._id} className="">
                     <div className="mb-0.5 flex items-center justify-between rounded-sm border-[0.5px] border-gray-200 bg-white px-6 py-3">
                       <span
-                        className={`rounded-full px-4 py-1 text-sm font-medium ${
-                          order.status === 'canceled' ||
+                        className={`rounded-full px-4 py-1 text-sm font-medium ${order.status === 'canceled' ||
                           order.status === 'canceled_complaint'
-                            ? 'bg-red-200 text-red-600'
-                            : order.status === 'pending' ||
-                                order.status === 'refund_initiated'
-                              ? 'bg-yellow-200 text-yellow-700'
-                              : order.status === 'confirmed'
-                                ? 'bg-blue-200 text-blue-700'
-                                : order.status === 'shipped' ||
-                                    order.status === 'received'
-                                  ? 'bg-indigo-200 text-indigo-700'
-                                  : order.status === 'delivered' ||
-                                      order.status === 'refund_done'
-                                    ? 'bg-green-200 text-green-700'
-                                    : order.status === 'complaint'
-                                      ? 'bg-purple-500 text-white'
-                                      : order.status === 'refund_in_progress' ||
-                                          order.status ===
-                                            'exchange_in_progress'
-                                        ? 'bg-orange-200 text-orange-700'
-                                        : order.status === 'refund_completed' ||
-                                            order.status ===
-                                              'exchange_completed'
-                                          ? 'bg-teal-200 text-teal-700'
-                                          : order.status === 'pendingPayment'
-                                            ? 'bg-gray-200 text-gray-700'
-                                            : ''
-                        }`}
+                          ? 'bg-red-200 text-red-600'
+                          : order.status === 'pending' ||
+                            order.status === 'refund_initiated'
+                            ? 'bg-yellow-200 text-yellow-700'
+                            : order.status === 'confirmed'
+                              ? 'bg-blue-200 text-blue-700'
+                              : order.status === 'shipped' ||
+                                order.status === 'received'
+                                ? 'bg-indigo-200 text-indigo-700'
+                                : order.status === 'delivered' ||
+                                  order.status === 'refund_done'
+                                  ? 'bg-green-200 text-green-700'
+                                  : order.status === 'complaint'
+                                    ? 'bg-purple-500 text-white'
+                                    : order.status === 'refund_in_progress' ||
+                                      order.status ===
+                                      'exchange_in_progress'
+                                      ? 'bg-orange-200 text-orange-700'
+                                      : order.status === 'refund_completed' ||
+                                        order.status ===
+                                        'exchange_completed'
+                                        ? 'bg-teal-200 text-teal-700'
+                                        : order.status === 'pendingPayment'
+                                          ? 'bg-gray-200 text-gray-700'
+                                          : ''
+                          }`}
                       >
                         {getStatusLabel(order.status)}
                       </span>
@@ -708,34 +705,60 @@ function UserOrder() {
       {showComplaintModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50">
           <div className="rounded-lg bg-white p-6 shadow-md">
-            <h2 className="mb-4 text-lg font-semibold">
+            <h2 className="mb-4 text-lg font-semibold text-gray-800">
               Tình huống bạn đang gặp?
             </h2>
-            <div className="flex flex-col space-y-2">
-              <Link
-                to={`/refund/${userId}/${selectedOrderId}`}
-                className="w-full rounded bg-blue-500 p-2 text-white"
+            <div className="flex flex-col space-y-4">
+              <button
+                onClick={() => window.location.href = `/refund/${userId}/${selectedOrderId}`}
+                className="flex w-full items-center rounded-lg border border-red-500 p-4 text-left hover:bg-red-50"
               >
-                Tôi đã nhận hàng nhưng không còn nhu cầu/hàng có vấn đề ( sai
-                mẫu, lỗi, khác mô tả...)
-              </Link>
-              <Link
-                to={`/exchange/${userId}/${selectedOrderId}`}
-                className="mt-2 w-full rounded bg-blue-500 p-2 text-white"
+                <div className="flex items-center justify-center h-10 w-10 rounded-full bg-red-100 text-red-500">
+                  <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 5.636l-6.364 6.364m0 0l-6.364-6.364m6.364 6.364v6.364M21 3l-9 18-9-18" />
+                  </svg>
+                </div>
+                <div className="ml-4">
+                  <p className="font-medium text-gray-800">
+                    Tôi đã nhận hàng nhưng hàng có vấn đề (bể vỡ, sai mẫu, hàng lỗi, khác mô tả...) - Miễn ship hoàn về
+                  </p>
+                  <p className="mt-1 text-sm text-gray-600">
+                    Lưu ý: Trường hợp yêu cầu Trả Hàng Hoàn tiền của bạn được chấp nhận, Voucher có thể sẽ không được hoàn lại
+                  </p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => window.location.href = `/exchange/${userId}/${selectedOrderId}`}
+                className="flex w-full items-center rounded-lg border border-orange-500 p-4 text-left hover:bg-orange-50"
               >
-                Tôi chưa nhận hàng/nhận thiếu hàng
-              </Link>
+                <div className="flex items-center justify-center h-10 w-10 rounded-full bg-orange-100 text-orange-500">
+                  <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                </div>
+                <div className="ml-4">
+                  <p className="font-medium text-gray-800">
+                    Tôi chưa nhận hàng/nhận thiếu hàng
+                  </p>
+                  <p className="mt-1 text-sm text-gray-600">
+                    Lưu ý: Trường hợp yêu cầu Trả Hàng Hoàn tiền của bạn được chấp nhận, Shopee Xu, Voucher, Phí vận chuyển có thể không được hoàn lại
+                  </p>
+                </div>
+              </button>
             </div>
-            <div className="mt-4 flex justify-end">
+
+            <div className="mt-6 flex justify-end">
               <button
                 onClick={() => setShowComplaintModal(false)}
-                className="ml-2 rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
+                className="rounded bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
               >
                 Hủy
               </button>
             </div>
           </div>
         </div>
+
       )}
     </div>
   );

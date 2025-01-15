@@ -194,7 +194,7 @@ const CardProduct: React.FC = () => {
                       </div>
                       <div className="pc__info position-relative">
                         <div className="flex justify-between">
-                          <h6 className="pc__title">
+                          <h6 className="pc__title text-[16px] capitalize">
                             <Link
                               to={`${product.slug ? product.slug : product._id}/quickviewProduct`}
                             >
@@ -309,7 +309,7 @@ const CardProduct: React.FC = () => {
                       </div>
                       <div className="pc__info position-relative">
                         <div className="flex justify-between">
-                          <h6 className="pc__title">
+                          <h6 className="pc__title text-[16px] capitalize ">
                             <Link
                               to={`${product.slug ? product.slug : product._id}/quickviewProduct`}
                             >

@@ -3,6 +3,7 @@ import ChatBot from '@/components/ChatBot';
 import CurrencyVND from '@/components/config/vnd';
 import FeaturedProducts from '@/components/featuredProducts';
 import useCommentMutation from '@/data/Comment/useCommentMutation';
+import { useFetchCategory } from '@/data/products/useProductList';
 import { useSocket } from '@/data/socket/useSocket';
 import {
   EllipsisHorizontal,
@@ -19,6 +20,8 @@ export const Route = createFileRoute('/_layout/$slug/quickviewProduct')({
 });
 
 function DetailProduct() {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const { data: categories } = useFetchCategory();
   const [currentImage, setCurrentImage] = useState('');
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -375,8 +378,8 @@ function DetailProduct() {
                             type="button"
                             onClick={() => handleSizeChange(size)}
                             className={`rounded border px-4 py-2 ${selectedSize === size
-                                ? 'border-blue-500 bg-blue-500 text-white'
-                                : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100'
+                              ? 'border-blue-500 bg-blue-500 text-white'
+                              : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-100'
                               }`}
                           >
                             {size}
@@ -405,8 +408,8 @@ function DetailProduct() {
                               key={color}
                               onClick={() => setSelectedColor(color)}
                               className={`h-8 w-8 rounded-full border focus:outline-none ${selectedColor === color
-                                  ? 'border-blue-500 ring-2 ring-blue-500'
-                                  : 'border-gray-300'
+                                ? 'border-blue-500 ring-2 ring-blue-500'
+                                : 'border-gray-300'
                                 }`}
                               style={{
                                 backgroundColor: color,
@@ -479,7 +482,7 @@ function DetailProduct() {
                     >
                       <use href="#icon_heart" />
                     </svg>
-                    <span>Add to Wishlist</span>
+                    <span className='mt-2'>Danh sách yêu thích</span>
                   </a>
                   <share-button className="share-button">
                     <button className="menu-link menu-link_us-s to-share d-flex align-items-center border-0 bg-transparent">
@@ -492,7 +495,7 @@ function DetailProduct() {
                       >
                         <use href="#icon_sharing" />
                       </svg>
-                      <span>Share</span>
+                      <span>Chia sẻ</span>
                     </button>
                     <details
                       id="Details-share-template__main"
@@ -549,13 +552,26 @@ function DetailProduct() {
                     <label>SKU:</label>
                     <span>N/A</span>
                   </div>
-                  <div className="meta-item">
-                    <label>Categories:</label>
-                    <span>Casual &amp; Urban Wear, Jackets, Men</span>
-                  </div>
-                  <div className="meta-item">
-                    <label>Tags:</label>
-                    <span>biker, black, bomber, leather</span>
+                  <div className="meta-item flex items-center gap-2">
+                    <label>Danh mục:</label>
+                    <div className='flex gap-2'>
+                      {categories?.map(
+                        (category: { _id: string; name: string }) => (
+                          <div
+                            key={category._id}
+                            onClick={e => {
+                              e.preventDefault();
+                              setSelectedCategory(category._id); // Gọi hàm để cập nhật danh mục
+                            }}
+                            className={`${selectedCategory === category._id ? 'border-b-2' : ''}`}
+                          >
+                            <a href="#" className="menu-link menu-link_us-s">
+                              {category.name}
+                            </a>
+                          </div>
+                        )
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

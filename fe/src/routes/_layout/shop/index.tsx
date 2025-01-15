@@ -103,7 +103,7 @@ function Shop() {
           );
           const average = totalRating / response.data.length;
           setAverageRating(average); // Cập nhật số sao trung bình
-        } catch (err) {}
+        } catch (err) { }
       };
       fetchComments();
     }
@@ -145,14 +145,17 @@ function Shop() {
                 </div>
                 <div className="shop-banner__content position-absolute start-50 top-50 translate-middle container">
                   <h2 className="stroke-text h1 smooth-16 text-uppercase fw-bold mb-xl-4 mb-xl-5 mb-3">
-                    Jackets &amp; Coats
+                    Thời trang &amp; giá rẻ
                   </h2>
                   <ul className="d-flex list-unstyled text-uppercase h6 flex-wrap">
                     <li
                       onClick={() => setSelectedCategory(null)}
                       className="me-xl-4 me-3 pe-1"
                     >
-                      <a className="menu-link menu-link_us-s menu-link_active">
+                      <a
+
+                        className="menu-link menu-link_us-s menu-link_active"
+                      >
                         Tất Cả
                       </a>
                     </li>
@@ -197,7 +200,7 @@ function Shop() {
                     aria-expanded="true"
                     aria-controls="accordion-filter-1"
                   >
-                    Danh mục sản phẩm
+                    Danh Mục sản phẩm
                     <svg
                       className="accordion-button__icon type2"
                       viewBox="0 0 10 6"
@@ -266,31 +269,6 @@ function Shop() {
                 </a>
               </div>
               {/* /.breadcrumb */}
-              <div className="shop-acs d-flex align-items-center justify-content-between justify-content-md-end flex-grow-1">
-                <div className="shop-asc__seprator bg-light d-none d-md-block order-md-0 mx-3" />
-                {/* /.col-size */}
-                <div className="shop-filter d-flex align-items-center order-0 order-md-3 d-lg-none">
-                  <button
-                    className="btn-link btn-link_f d-flex align-items-center js-open-aside ps-0"
-                    data-aside="shopFilter"
-                  >
-                    <svg
-                      className="d-inline-block me-2 align-middle"
-                      width={14}
-                      height={10}
-                      viewBox="0 0 14 10"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <use href="#icon_filter" />
-                    </svg>
-                    <span className="text-uppercase fw-medium d-inline-block align-middle">
-                      Filter
-                    </span>
-                  </button>
-                </div>
-                {/* /.col-size d-flex align-items-center ms-auto ms-md-3 */}
-              </div>
               {/* /.shop-acs */}
             </div>
             {/* /.d-flex justify-content-between */}
@@ -338,7 +316,7 @@ function Shop() {
                         </Link>
                       </div>
                       <div className="pc__info position-relative">
-                        <h6 className="pc__title capitalize">
+                        <h6 className="pc__title text-[16px] capitalize">
                           <a
                             href={`${product.slug ? product.slug : product._id}/quickviewProduct`}
                           >
@@ -351,7 +329,7 @@ function Shop() {
                             <CurrencyVND amount={product.price} />
                           </span>
                         </div>
-                        <div className="product-card__review d-flex align-items-center">
+                        {/* <div className="product-card__review d-flex align-items-center">
                           <div className="reviews-group d-flex">
                             {[...Array(5)].map((_, index) => (
                               <StarSolid
@@ -363,7 +341,8 @@ function Shop() {
                               {averageRating.toFixed(1)}
                             </span>
                           </div>
-                        </div>
+
+                        </div> */}
                       </div>
                     </div>
                   </div>

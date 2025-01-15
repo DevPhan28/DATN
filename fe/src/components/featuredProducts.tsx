@@ -98,7 +98,7 @@ const FeaturedProducts = () => {
               </div>
               <div className="pc__info position-relative">
                 <p className="pc__category">{product.category?.name || "N/A"}</p>
-                <h6 className="pc__title">
+                <h6 className="pc__title text-[16px] capitalize">
                   <a href="product1_simple.html" className="capitalize">
                     {product.name}
                   </a>

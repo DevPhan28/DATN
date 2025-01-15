@@ -149,7 +149,7 @@ function RefundRequestPage() {
   }
 
   return (
-    <div className="mx-auto mb-5 mt-8 max-w-3xl bg-white p-6 shadow-md">
+    <div className="mx-auto mb-5 mt-8 px-[200px] bg-white p-6 shadow-md">
       <h2 className="mb-4 text-xl font-semibold">Tình huống bạn đang gặp?</h2>
       <p className="mb-6 text-gray-600">
         Tôi đã nhận hàng nhưng không còn nhu cầu sử dụng hoặc sản phẩm gặp vấn
