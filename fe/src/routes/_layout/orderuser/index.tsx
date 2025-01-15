@@ -396,7 +396,7 @@ function UserOrder() {
                 }`}
               >
                 {tab.label}{' '}
-                <span className="count">
+                <span className="count text-red-600">
                   {tab.id !== 'delivered' &&
                     orders.filter(order => {
                       if (tab.id === 'all') return true; // Tab 'Tất cả' đếm tất cả các đơn hàng
