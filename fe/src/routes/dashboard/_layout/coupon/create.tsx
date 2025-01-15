@@ -1,4 +1,5 @@
 import Header from '@/components/layoutAdmin/header/header';
+import NewHeader from '@/components/layoutAdmin/header/new-header';
 import useCouponMutation from '@/data/coupon/useCouponMutation';
 import { Button, DatePicker, Input, Select } from '@medusajs/ui';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
@@ -51,7 +52,19 @@ function AddCoupon() {
 
   return (
     <div className="h-screen overflow-y-auto">
-      <Header title="Tạo mã giảm giá" pathname="/" />
+      <div className="fixed left-0 right-0 top-16 z-10 md:relative md:left-auto md:right-auto md:top-0">
+        <NewHeader
+          breadcrumbs={[
+            {
+              title: 'Danh sách phiếu giảm giá',
+              href: '/dashboard/coupon',
+            },
+            {
+              title: 'Thêm phiếu giảm giá',
+            },
+          ]}
+        />
+      </div>
       <form onSubmit={handleSubmit(onCreateCoupon)} className="m-8">
         <div className="my-3 flex justify-between">
           <div className="w-[330px]">
@@ -89,7 +102,7 @@ function AddCoupon() {
             {/* Phiếu giảm giá */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className=" text-sm font-medium text-ui-fg-base">
+                <label className="text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Phiếu giảm giá
                 </label>
                 <Input
@@ -110,7 +123,7 @@ function AddCoupon() {
             {/* Giảm giá */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className=" text-sm font-medium text-ui-fg-base">
+                <label className="text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Giảm giá (%)
                 </label>
                 <Input
@@ -139,7 +152,7 @@ function AddCoupon() {
             {/* Đơn hàng tối thiểu */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className=" text-sm font-medium text-ui-fg-base">
+                <label className="text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Đơn hàng tối
                   thiểu
                 </label>
@@ -164,7 +177,7 @@ function AddCoupon() {
             {/* Số tiền giảm tối đa */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className=" text-sm font-medium text-ui-fg-base">
+                <label className="text-sm font-medium text-ui-fg-base">
                   Số tiền giảm tối đa
                 </label>
                 <Input
@@ -185,7 +198,7 @@ function AddCoupon() {
             {/* Miễn phí vận chuyển */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className=" text-sm font-medium text-ui-fg-base">
+                <label className="text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Miễn phí vận
                   chuyển
                 </label>
@@ -209,7 +222,7 @@ function AddCoupon() {
             {/* Ngày bắt đầu */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className=" text-sm font-medium text-ui-fg-base">
+                <label className="text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Ngày bắt đầu
                 </label>
                 <DatePicker
@@ -222,7 +235,7 @@ function AddCoupon() {
             {/* Ngày hết hạn */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className=" text-sm font-medium text-ui-fg-base">
+                <label className="text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Ngày hết hạn
                 </label>
                 <DatePicker
@@ -235,7 +248,7 @@ function AddCoupon() {
             {/* Trạng thái */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className=" text-sm font-medium text-ui-fg-base">
+                <label className="text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Trạng thái
                 </label>
                 <Select

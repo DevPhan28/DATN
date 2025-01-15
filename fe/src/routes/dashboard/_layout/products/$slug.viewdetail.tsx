@@ -1,6 +1,7 @@
 import instance from '@/api/axiosIntance';
 import CurrencyVND from '@/components/config/vnd';
 import Header from '@/components/layoutAdmin/header/header';
+import NewHeader from '@/components/layoutAdmin/header/new-header';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useParams } from '@tanstack/react-router';
 
@@ -44,7 +45,19 @@ function DetailProduct() {
 
   return (
     <div className="h-screen overflow-y-auto">
-      <Header title="Chi tiết sản phẩm" pathname="/" />
+      <div className="fixed left-0 right-0 top-16 z-10 md:relative md:left-auto md:right-auto md:top-0">
+        <NewHeader
+          breadcrumbs={[
+            {
+              title: 'Danh sách sản phẩm',
+              href: '/dashboard/products',
+            },
+            {
+              title: 'Chi tiết sản phẩm',
+            },
+          ]}
+        />
+      </div>
       <div className="m-8 overflow-hidden rounded-lg bg-white shadow-md">
         <div className="grid max-w-6xl grid-cols-3">
           {/* Product Image */}
@@ -70,7 +83,7 @@ function DetailProduct() {
             <div className="font-semibold text-black">
               Giá:{' '}
               <span className="text-xl font-semibold text-red-600">
-                <CurrencyVND amount={data.product.price}/>
+                <CurrencyVND amount={data.product.price} />
               </span>
             </div>
             <div className="font-semibold text-black">
@@ -141,7 +154,7 @@ function DetailProduct() {
                         {variant.color}
                       </td>
                       <td className="border px-4 py-2 text-black">
-                         <CurrencyVND amount={variant.price}/>
+                        <CurrencyVND amount={variant.price} />
                       </td>
                       <td className="border px-4 py-2 text-black">
                         {variant.sku}

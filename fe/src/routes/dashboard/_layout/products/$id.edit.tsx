@@ -17,6 +17,7 @@ import {
 } from 'react-hook-form';
 import instance from '@/api/axiosIntance';
 import TextareaDescription from '@/components/textarea';
+import NewHeader from '@/components/layoutAdmin/header/new-header';
 
 export const Route = createFileRoute('/dashboard/_layout/products/$id/edit')({
   loader: async ({ params }: { params: RouteParams }) => {
@@ -231,7 +232,19 @@ function EditProduct() {
   };
   return (
     <div className="h-screen overflow-y-auto">
-      <Header title="Sửa sản phẩm" pathname="/dashboard/products" />
+      <div className="fixed left-0 right-0 top-16 z-10 md:relative md:left-auto md:right-auto md:top-0">
+        <NewHeader
+          breadcrumbs={[
+            {
+              title: 'Danh sách sản phẩm',
+              href: '/dashboard/products',
+            },
+            {
+              title: 'Cập nhật sản phẩm',
+            },
+          ]}
+        />
+      </div>
       <form onSubmit={handleSubmit(onCreateProduct)} className="m-8">
         <div className="my-3 flex justify-end">
           <div className="flex gap-2">

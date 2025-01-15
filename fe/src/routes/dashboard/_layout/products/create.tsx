@@ -1,5 +1,6 @@
 import instance from '@/api/axiosIntance';
 import Header from '@/components/layoutAdmin/header/header';
+import NewHeader from '@/components/layoutAdmin/header/new-header';
 import TextareaDescription from '@/components/textarea';
 import useProductMutation from '@/data/products/useProductMutation';
 import { ArrowDownTray, PlusMini, Trash, XMark } from '@medusajs/icons';
@@ -202,7 +203,19 @@ function AddBrand() {
           </div>
         </div>
       )}
-      <Header title="Create New Products" pathname="/" />
+      <div className="fixed left-0 right-0 top-16 z-10 md:relative md:left-auto md:right-auto md:top-0">
+        <NewHeader
+          breadcrumbs={[
+            {
+              title: 'Danh sách sản phẩm',
+              href: '/dashboard/products',
+            },
+            {
+              title: 'thêm sản phẩm mới',
+            },
+          ]}
+        />
+      </div>
       <form onSubmit={handleSubmit(onCreateProduct)} className="m-8">
         <div className="my-3 flex justify-end">
           <div className="flex gap-2">

@@ -5,6 +5,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useEffect } from 'react';
 import instance from '@/api/axiosIntance';
+import NewHeader from '@/components/layoutAdmin/header/new-header';
 
 export const Route = createFileRoute('/dashboard/_layout/coupon/$id/edit')({
   loader: async ({ params }: { params: RouteParams }) => {
@@ -48,7 +49,7 @@ function EditCoupon() {
       minOrder: 0,
       expirationDate: new Date(),
       startDate: new Date(),
-      maxDiscountAmount: undefined, 
+      maxDiscountAmount: undefined,
       isActive: true,
       isFreeShipping: false,
     },
@@ -60,7 +61,7 @@ function EditCoupon() {
       setValue('code', couponData.code);
       setValue('discount', couponData.discount);
       setValue('minOrder', couponData.minOrder);
-      setValue('expirationDate', new Date(couponData.expirationDate)); 
+      setValue('expirationDate', new Date(couponData.expirationDate));
       setValue('startDate', new Date(couponData.startDate));
       setValue('maxDiscountAmount', couponData.maxDiscountAmount);
       setValue('isActive', couponData.isActive);
@@ -68,7 +69,7 @@ function EditCoupon() {
     }
   }, [couponData, setValue]);
 
-  const onEditCoupon: SubmitHandler<CouponFormValues> = async (data) => {
+  const onEditCoupon: SubmitHandler<CouponFormValues> = async data => {
     try {
       editCoupon.mutate(data);
       navigate({ to: '/dashboard/coupon' });
@@ -79,7 +80,19 @@ function EditCoupon() {
 
   return (
     <div className="h-screen overflow-y-auto">
-      <Header title="Edit Coupon" pathname="/dashboard/coupons" />
+      <div className="fixed left-0 right-0 top-16 z-10 md:relative md:left-auto md:right-auto md:top-0">
+        <NewHeader
+          breadcrumbs={[
+            {
+              title: 'Danh sách phiếu giảm giá',
+              href: '/dashboard/coupon',
+            },
+            {
+              title: 'Cập nhật phiếu giảm giá',
+            },
+          ]}
+        />
+      </div>
       <form onSubmit={handleSubmit(onEditCoupon)} className="m-8">
         <div className="my-3 flex justify-between">
           <Button
@@ -95,9 +108,12 @@ function EditCoupon() {
         </div>
 
         <div className="rounded-lg border bg-ui-bg-base p-7">
-          <h1 className="text-2xl font-medium text-ui-fg-base">Thông tin phiếu giảm giá</h1>
+          <h1 className="text-2xl font-medium text-ui-fg-base">
+            Thông tin phiếu giảm giá
+          </h1>
           <p className="mb-4 text-sm font-normal text-ui-fg-subtle">
-            Cập nhật chi tiết phiếu giảm giá như mã, giảm giá, ngày hết hạn và trạng thái.
+            Cập nhật chi tiết phiếu giảm giá như mã, giảm giá, ngày hết hạn và
+            trạng thái.
           </p>
 
           <div className="space-y-4">
@@ -115,7 +131,9 @@ function EditCoupon() {
                   })}
                 />
                 {errors.code && (
-                  <span className="text-xs text-red-500">{errors.code.message}</span>
+                  <span className="text-xs text-red-500">
+                    {errors.code.message}
+                  </span>
                 )}
               </div>
             </div>
@@ -134,11 +152,16 @@ function EditCoupon() {
                   {...register('discount', {
                     required: 'Giảm giá là bắt buộc',
                     min: { value: 0, message: 'Giảm giá phải là số dương' },
-                    max: { value: 100, message: 'Giảm giá không được vượt quá 100%' },
+                    max: {
+                      value: 100,
+                      message: 'Giảm giá không được vượt quá 100%',
+                    },
                   })}
                 />
                 {errors.discount && (
-                  <span className="text-xs text-red-500">{errors.discount.message}</span>
+                  <span className="text-xs text-red-500">
+                    {errors.discount.message}
+                  </span>
                 )}
               </div>
             </div>
@@ -147,7 +170,8 @@ function EditCoupon() {
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
                 <label className="block text-sm font-medium text-ui-fg-base">
-                  <span className="text-ui-tag-red-text">*</span> Đơn hàng tối thiểu
+                  <span className="text-ui-tag-red-text">*</span> Đơn hàng tối
+                  thiểu
                 </label>
                 <Input
                   type="number"
@@ -156,11 +180,16 @@ function EditCoupon() {
                   size="base"
                   {...register('minOrder', {
                     required: 'Đơn hàng tối thiểu là bắt buộc',
-                    min: { value: 0, message: 'Đơn hàng tối thiểu phải là số dương' },
+                    min: {
+                      value: 0,
+                      message: 'Đơn hàng tối thiểu phải là số dương',
+                    },
                   })}
                 />
                 {errors.minOrder && (
-                  <span className="text-xs text-red-500">{errors.minOrder.message}</span>
+                  <span className="text-xs text-red-500">
+                    {errors.minOrder.message}
+                  </span>
                 )}
               </div>
             </div>
@@ -178,7 +207,9 @@ function EditCoupon() {
                   {...register('maxDiscountAmount')}
                 />
                 {errors.maxDiscountAmount && (
-                  <span className="text-xs text-red-500">{errors.maxDiscountAmount.message}</span>
+                  <span className="text-xs text-red-500">
+                    {errors.maxDiscountAmount.message}
+                  </span>
                 )}
               </div>
             </div>
@@ -191,7 +222,9 @@ function EditCoupon() {
                 </label>
                 <Select
                   defaultValue={String(couponData.isFreeShipping)}
-                  onValueChange={(value) => setValue('isFreeShipping', value === 'true')}
+                  onValueChange={value =>
+                    setValue('isFreeShipping', value === 'true')
+                  }
                 >
                   <Select.Trigger>
                     <Select.Value placeholder="Chọn một tùy chọn" />
@@ -211,7 +244,7 @@ function EditCoupon() {
                 </label>
                 <DatePicker
                   defaultValue={new Date(couponData.startDate)}
-                  onChange={(value) => setValue('startDate', value)}
+                  onChange={value => setValue('startDate', value)}
                 />
               </div>
             </div>
@@ -224,7 +257,7 @@ function EditCoupon() {
                 </label>
                 <DatePicker
                   defaultValue={new Date(couponData.expirationDate)}
-                  onChange={(value) => setValue('expirationDate', value)}
+                  onChange={value => setValue('expirationDate', value)}
                 />
               </div>
             </div>
@@ -237,7 +270,9 @@ function EditCoupon() {
                 </label>
                 <Select
                   defaultValue={String(couponData.isActive)}
-                  onValueChange={(value) => setValue('isActive', value === 'true')}
+                  onValueChange={value =>
+                    setValue('isActive', value === 'true')
+                  }
                 >
                   <Select.Trigger>
                     <Select.Value placeholder="Chọn trạng thái" />

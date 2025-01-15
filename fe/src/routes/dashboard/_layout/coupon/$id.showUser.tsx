@@ -2,6 +2,7 @@ import { createFileRoute, useParams } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import instance from '@/api/axiosIntance';
 import Header from '@/components/layoutAdmin/header/header';
+import NewHeader from '@/components/layoutAdmin/header/new-header';
 
 // Route định nghĩa
 export const Route = createFileRoute('/dashboard/_layout/coupon/$id/showUser')({
@@ -20,7 +21,7 @@ function CouponUserList() {
     queryFn: async () => {
       const response = await instance.get(`/coupon/${id}/users`);
       console.log(data);
-      
+
       return response.data;
     },
     enabled: !!id, // Chỉ chạy query khi có `id`
@@ -45,7 +46,19 @@ function CouponUserList() {
   return (
     <div className="h-screen overflow-y-auto">
       {/* Header */}
-      <Header title="Danh sách người dùng sử dụng mã giảm giá" pathname="/" />
+      <div className="fixed left-0 right-0 top-16 z-10 md:relative md:left-auto md:right-auto md:top-0">
+        <NewHeader
+          breadcrumbs={[
+            {
+              title: 'Danh sách phiếu giảm giá',
+              href: '/dashboard/coupon',
+            },
+            {
+              title: 'Danh sách người dùng sử dụng mã giảm giá',
+            },
+          ]}
+        />
+      </div>
       <div className="m-8 rounded-lg bg-white p-6 shadow-lg">
         <h1 className="mb-4 text-2xl font-bold text-gray-800">
           Người dùng sử dụng mã giảm giá
@@ -74,14 +87,18 @@ function CouponUserList() {
                   }`}
                 >
                   <td className="border px-4 py-2 text-black">{index + 1}</td>
-                  <td className="border px-4 py-2 text-black">{user.username}</td>
+                  <td className="border px-4 py-2 text-black">
+                    {user.username}
+                  </td>
                   <td className="border px-4 py-2 text-black">{user.email}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : (
-          <p className="text-gray-600">Chưa có người dùng nào sử dụng mã giảm giá này.</p>
+          <p className="text-gray-600">
+            Chưa có người dùng nào sử dụng mã giảm giá này.
+          </p>
         )}
       </div>
     </div>

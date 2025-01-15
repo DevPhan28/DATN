@@ -1,4 +1,5 @@
 import Header from '@/components/layoutAdmin/header/header';
+import NewHeader from '@/components/layoutAdmin/header/new-header';
 import TextareaDescription from '@/components/textarea';
 import useBlogMutation from '@/data/blog/useBlogMutation';
 import { ArrowDownTray, XMark } from '@medusajs/icons';
@@ -141,7 +142,6 @@ function AddBlog() {
       );
 
       // Kiểm tra phản hồi từ server
-
     } catch (error) {
       console.error('Failed to upload image:', error);
       throw new Error('Failed to upload image');
@@ -155,7 +155,19 @@ function AddBlog() {
 
   return (
     <div className="h-screen overflow-y-auto">
-      <Header title="Tạo bài viết" pathname="/" />
+      <div className="fixed left-0 right-0 top-16 z-10 md:relative md:left-auto md:right-auto md:top-0">
+        <NewHeader
+          breadcrumbs={[
+            {
+              title: 'Danh sách bài viết',
+              href: '/dashboard/blog',
+            },
+            {
+              title: 'Thêm bài viết mới',
+            },
+          ]}
+        />
+      </div>
       <form onSubmit={handleSubmit(onCreateBlog)} className="m-8">
         <div className="my-3 flex justify-between">
           <div className="w-[330px]">
@@ -192,7 +204,7 @@ function AddBlog() {
             {/* Tiêu đề */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className=" text-sm font-medium text-ui-fg-base">
+                <label className="text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Tiêu đề
                 </label>
                 <Input
@@ -212,7 +224,7 @@ function AddBlog() {
             {/* Tác giả */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className=" text-sm font-medium text-ui-fg-base">
+                <label className="text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Tác giả
                 </label>
                 <Input
@@ -232,7 +244,7 @@ function AddBlog() {
             {/* Thẻ */}
             <div className="flex space-x-4">
               <div className="flex-1 space-y-3">
-                <label className=" text-sm font-medium text-ui-fg-base">
+                <label className="text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Thẻ
                 </label>
                 <Input
@@ -251,7 +263,7 @@ function AddBlog() {
             </div>
             {/* Ảnh đại diện  */}
             <div>
-              <label className=" text-sm font-medium text-ui-fg-base">
+              <label className="text-sm font-medium text-ui-fg-base">
                 <span className="text-ui-tag-red-text">*</span> Ảnh
               </label>
               <p className="mb-2 text-xs text-ui-fg-muted">
@@ -274,7 +286,6 @@ function AddBlog() {
                     ref={fileInputRef}
                     accept=".jpg, .png"
                     onChange={handleThumbnailChange}
-
                     className="hidden cursor-pointer"
                   />
                 </div>
@@ -301,7 +312,7 @@ function AddBlog() {
                 )}
               </div>
               <div className="flex flex-col">
-                <label className=" text-sm font-medium text-ui-fg-base">
+                <label className="text-sm font-medium text-ui-fg-base">
                   <span className="text-ui-tag-red-text">*</span> Nội dung
                 </label>
                 <div className="mt-2 flex flex-1 flex-col">

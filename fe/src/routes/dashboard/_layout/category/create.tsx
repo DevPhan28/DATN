@@ -1,5 +1,6 @@
 import instance from '@/api/axiosIntance';
 import Header from '@/components/layoutAdmin/header/header';
+import NewHeader from '@/components/layoutAdmin/header/new-header';
 import { Button, Input, toast, Switch, Label } from '@medusajs/ui'; // Import Switch và Label
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -47,24 +48,21 @@ function AddCategory() {
 
   return (
     <div className="h-screen overflow-y-auto">
-      <Header title="Create New Category" pathname="/" />
+      <div className="fixed left-0 right-0 top-16 z-10 md:relative md:left-auto md:right-auto md:top-0">
+        <NewHeader
+          breadcrumbs={[
+            {
+              title: 'Danh sách danh mục',
+              href: '/dashboard/category',
+            },
+            {
+              title: 'Thêm mới danh mục',
+            },
+          ]}
+        />
+      </div>
       <form onSubmit={handleSubmit(onCreateCategory)} className="m-8">
-        <div className="my-3 flex justify-between">
-          <div className="flex gap-3 pt-2">
-            <button
-              type="button"
-              className="text-sm font-medium text-ui-fg-subtle hover:cursor-pointer"
-              onClick={() => navigate({ to: '/dashboard/category' })}
-            >
-              Danh sách danh mục
-            </button>
-            <button
-              type="submit"
-              className="text-sm font-medium text-ui-fg-subtle"
-            >
-              Tạo mới
-            </button>
-          </div>
+        <div className="my-3 flex justify-end">
           <div className="flex gap-2">
             <Button
               variant="secondary"

@@ -1,6 +1,7 @@
 import instance from '@/api/axiosIntance';
 import CurrencyVND from '@/components/config/vnd';
 import Header from '@/components/layoutAdmin/header/header';
+import NewHeader from '@/components/layoutAdmin/header/new-header';
 import { toast } from '@medusajs/ui';
 import { createFileRoute, useParams } from '@tanstack/react-router';
 import { format } from 'date-fns';
@@ -232,7 +233,19 @@ function OrderDetail() {
 
   return (
     <div>
-      <Header title="View Detail Oder" />
+      <div className="fixed left-0 right-0 top-16 z-10 md:relative md:left-auto md:right-auto md:top-0">
+        <NewHeader
+          breadcrumbs={[
+            {
+              title: 'Danh sách đơn hàng',
+              href: '/dashboard/order',
+            },
+            {
+              title: 'Chi tiết đơn hàng',
+            },
+          ]}
+        />
+      </div>
       <div className="max-h-[600px] overflow-y-scroll">
         <div className="min-h-screen bg-gray-50 p-3">
           {/* Chi tiết theo dõi đơn hàng */}
