@@ -268,42 +268,25 @@ const getOrders = async (req, res) => {
 
 const getOrderById = async (req, res) => {
   try {
-    const { userId } = req.params;
-    const { page = 1, limit = 10 } = req.query; 
+    const { userId, orderId } = req.params; // Lấy userId và orderId từ params
 
-    const pageNumber = parseInt(page);
-    const limitNumber = parseInt(limit);
+    // Tìm đơn hàng dựa trên orderId và userId
+    const order = await Order.findOne({ _id: orderId, userId });
 
-    const skip = (pageNumber - 1) * limitNumber;
-
-    const orders = await Order.find({ userId })
-      .skip(skip) 
-      .limit(limitNumber) 
-      .sort({ createdAt: -1 }); 
-
-    if (!orders || orders.length === 0) {
-      return res.status(StatusCodes.OK).json({ data: [], total: 0, page: pageNumber });
+    if (!order) {
+      return res
+        .status(StatusCodes.NOT_FOUND)
+        .json({ message: "Order not found or does not belong to the user" });
     }
 
-    const totalOrders = await Order.countDocuments({ userId });
-
-    const totalPages = Math.ceil(totalOrders / limitNumber);
-
-    return res.status(StatusCodes.OK).json({
-      data: orders,
-      meta: {
-        totalItems: totalOrders,
-        totalPages: totalPages,
-        currentPage: pageNumber,
-        pageSize: limitNumber,
-      },
-    });
+    return res.status(StatusCodes.OK).json({ data: order });
   } catch (error) {
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ error: error.message });
   }
 };
+
 
 
 const getOrdersByUserId = async (req, res) => {
@@ -364,9 +347,9 @@ const updateOrder = async (req, res) => {
 
           await product.save();
         }
-      }
+      } 
     }
-    if (status === "received" && order.status !== "received") {
+    if (status === "delivered" && order.status !== "delivered") {
       order.paymentStatus = "pending";
     }
     if (status === "refund_done" && order.status !== "refund_done") {

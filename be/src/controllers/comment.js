@@ -82,11 +82,6 @@ const checkReviewedProducts = async (req, res) => {
       productId: { $in: productIds },
     }).distinct('productId'); // Lấy danh sách các productId đã có comment
 
-    if (!reviewedProducts || reviewedProducts.length === 0) {
-      return res.status(404).json({
-        message: 'Không có sản phẩm nào đã được đánh giá',
-      });
-    }
 
     res.status(200).json({
       message: 'Danh sách sản phẩm đã được đánh giá',
