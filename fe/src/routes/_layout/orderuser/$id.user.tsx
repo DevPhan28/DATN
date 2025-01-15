@@ -7,7 +7,6 @@ import {
   ArrowUturnLeft,
   Cash,
   Check,
-  CheckCircleMiniSolid,
   DocumentText,
   MapPin,
   RocketLaunch,
@@ -40,7 +39,14 @@ function DetailOrderUser() {
       }
     };
 
+    // Gọi hàm để lấy dữ liệu lần đầu
     fetchOrderDetail();
+
+    // Cập nhật dữ liệu mỗi 30 giây
+    const intervalId = setInterval(fetchOrderDetail, 30000);
+
+    // Cleanup: dừng việc polling khi component bị unmount
+    return () => clearInterval(intervalId);
   }, [id]);
 
   if (loading) {
@@ -119,82 +125,115 @@ function DetailOrderUser() {
     },
   ];
 
+  const addMinutes = (date, minutes) => {
+    return new Date(date.getTime() + minutes * 60000); // Cộng thêm phút
+  };
+
+  const generateTimes = (startTime, stepInterval, numberOfSteps) => {
+    const times = [];
+    let currentTime = startTime;
+
+    for (let i = 0; i < numberOfSteps; i++) {
+      times.push(
+        currentTime.toLocaleString('vi-VN', {
+          hour: '2-digit',
+          minute: '2-digit',
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+        })
+      );
+      currentTime = addMinutes(currentTime, stepInterval); // Cộng thêm khoảng cách thời gian
+    }
+
+    return times;
+  };
+
+  // Ví dụ: thời gian bắt đầu từ hiện tại, khoảng cách 15 phút giữa các bước
+  const startTime = new Date();
+  const stepInterval = 2; // Khoảng cách 15 phút
+  const numberOfSteps = 5;
+  const times = generateTimes(startTime, stepInterval, numberOfSteps);
+
   const steps1 = [
     {
       label: 'Đơn hàng đặt thành công',
       icon: <DocumentText />,
-      time: '09:36 23/11/2024',
+      time: times[0],
       description: 'Đơn hàng đã được đặt',
       status: statusOrder.pending,
     },
     {
       label: 'Đơn hàng chưa được thanh toán',
       icon: <DocumentText />,
-      time: '09:37 23/11/2024',
+      time: times[1],
       description: 'Vui lòng thanh toán khi nhận hàng',
       status: statusOrder.pendingPayment,
     },
     {
       label: 'Đơn hàng đang giao',
       icon: <DocumentText />,
-      time: '09:37 23/11/2024',
+      time: times[2],
       description: 'Đơn hàng sẽ sớm được giao, vui lòng chú ý điện thoại',
       status: statusOrder.shipped,
     },
     {
       label: 'Đơn hàng giao thành công',
       icon: <DocumentText />,
-      time: '10:21 24/11/2024',
+      time: times[3],
       description: 'Đơn hàng đã được giao cho bạn',
       status: statusOrder.delivered,
     },
     {
       label: 'Đơn hàng thành công',
       icon: <DocumentText />,
+      time: times[4],
       status: statusOrder.delivered,
     },
   ];
 
   const getFilteredSteps = currentStatus => {
-    // Kiểm tra nếu là trạng thái 'canceled'
-    if (currentStatus === statusOrder['canceled']) {
+    if (currentStatus === statusIndex) {
       return [
         {
           label: 'Đơn hàng đã bị hủy',
           icon: <DocumentText />,
-          time: '10:00 24/11/2024',
+          time: times[3],
           description: 'Đơn hàng của bạn đã bị hủy',
-          status: currentStatus,
+          status: statusIndex,
         },
       ];
     }
 
-    if (currentStatus === statusOrder['refund_done']) {
+    if (statusIndex === 12) {
+      // Trạng thái refund_done
       return [
         {
-          label: 'Hoàn tiền thành công',
-          icon: <CheckCircleMiniSolid />,
-          time: '11:00 24/11/2024',
-          description: 'Số tiền của bạn đã được hoàn thành công vào tài khoản',
-          status: currentStatus,
+          label: 'Đã hoàn tiền',
+          icon: <DocumentText />,
+          time: times[6],
+          description: 'Đơn hàng của bạn đã được hoàn tiền thành công',
+          status: 12,
         },
       ];
     }
 
-    if (currentStatus === statusOrder['refund_initiated']) {
+    if (statusIndex === 13) {
+      // Trạng thái refund_initiated
       return [
         {
           label: 'Đang hoàn tiền',
-          icon: <CheckCircleMiniSolid />,
-          time: '11:00 24/11/2024',
-          description: 'Yêu cầu hoàn tiền của bạn đang được xử lý',
-          status: currentStatus,
+          icon: <DocumentText />,
+          time: times[7],
+          description: 'Đơn hàng của bạn đang trong quá trình hoàn tiền',
+          status: 13,
         },
       ];
     }
 
     return steps1;
   };
+
   const currentStatus = statusOrder.canceled; // Trạng thái hiện tại của đơn hàng
   const filteredSteps = getFilteredSteps(currentStatus);
 
@@ -304,7 +343,7 @@ function DetailOrderUser() {
                     <span
                       className={`text-sm font-medium ${
                         isDisabled
-                          ? 'text-gray-400'
+                          ? 'text-gray-400' // Bị "ẩn"
                           : isActive
                             ? 'text-gray-800'
                             : 'text-gray-400'
@@ -314,13 +353,14 @@ function DetailOrderUser() {
                     </span>
                   </div>
 
+                  {/* Gạch ngang nối các bước (trừ bước cuối cùng) */}
                   {!isLastStep && (
                     <div
                       className={`mx-2 mb-4 h-[2px] w-36 ${
                         isDisabled
-                          ? 'bg-gray-300'
+                          ? 'bg-gray-300' // Gạch ngang "ẩn"
                           : stepOrder < statusIndex
-                            ? 'bg-green-500'
+                            ? 'bg-green-500' // Đã hoàn thành
                             : 'bg-gray-300' // Chưa hoàn thành
                       }`}
                     ></div>
@@ -365,49 +405,54 @@ function DetailOrderUser() {
             </div>
 
             <div className="mt-5 space-y-3 text-sm">
-              {getFilteredSteps(currentStatus) // Lọc các bước hiển thị dựa trên trạng thái
-                .map((step, index) => (
-                  <div
-                    key={index}
-                    className={`relative flex items-start space-x-3 ${index <= statusIndex ? 'opacity-100 transition-opacity duration-500' : 'opacity-0'}`} // Hiệu ứng hiển thị dần dần cho bước
-                  >
-                    {/* Icon */}
-                    <div className="flex flex-col items-center">
+              {getFilteredSteps(currentStatus).map((step, index) => (
+                <div
+                  key={index}
+                  className={`relative flex transform items-start space-x-3 transition-all duration-500 ${
+                    index <= statusIndex
+                      ? 'translate-y-0 opacity-100'
+                      : '-translate-y-5 opacity-0'
+                  }`}
+                  style={{
+                    transitionDelay: `${index * 100}ms`,
+                  }}
+                >
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`flex h-8 w-8 items-center justify-center rounded-full ${
+                        index <= statusIndex ? 'bg-teal-500' : 'bg-gray-300'
+                      }`}
+                    >
+                      <p className="text-white">{step.icon}</p>
+                    </div>
+                    {index < filteredSteps.length - 1 && (
                       <div
-                        className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                          index <= statusIndex ? 'bg-teal-500' : 'bg-gray-300'
+                        className={`mt-2 h-20 w-[2px] transition-all duration-500 ${
+                          index < statusIndex
+                            ? 'bg-teal-500 opacity-100'
+                            : 'bg-gray-300 opacity-0'
+                        }`}
+                      ></div>
+                    )}
+                  </div>
+
+                  <p className="text-gray-500">{step.time}</p>
+                  <div>
+                    <div className="flex flex-col">
+                      <p
+                        className={`font-semibold ${
+                          index <= statusIndex
+                            ? 'text-teal-500'
+                            : 'text-gray-600'
                         }`}
                       >
-                        <p className="text-white">{step.icon}</p>
-                      </div>
-                      {/* Line */}
-                      {index < filteredSteps.length - 1 && (
-                        <div
-                          className={`mt-2 h-20 w-[2px] bg-gray-300 transition-opacity duration-500 ${
-                            index < statusIndex ? 'opacity-100' : 'opacity-0'
-                          }`}
-                        ></div>
-                      )}
-                    </div>
-
-                    {/* Nội dung */}
-                    <p className="text-gray-500">{step.time}</p>
-                    <div>
-                      <div className="flex flex-col">
-                        <p
-                          className={`font-semibold ${
-                            index <= statusIndex
-                              ? 'text-teal-500'
-                              : 'text-gray-600'
-                          }`}
-                        >
-                          {step.label}
-                        </p>
-                        <p className="text-gray-500">{step.description}</p>
-                      </div>
+                        {step.label}
+                      </p>
+                      <p className="text-gray-500">{step.description}</p>
                     </div>
                   </div>
-                ))}
+                </div>
+              ))}
             </div>
           </div>
           <hr />
