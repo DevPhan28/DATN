@@ -1,12 +1,11 @@
 import { CategoriesIcon, IconHome, StoreIcon } from '@/components/icon.tsx';
 import {
-  ArrowDownLeft,
   ChatBubble,
   CurrencyDollar,
+  MapPin,
   Pencil,
   ReceiptPercent,
   Tag,
-  MapPin,
 } from '@medusajs/icons';
 import ItemSidebar from './item-sidebar';
 
@@ -80,14 +79,6 @@ const menuAddress: MenuItem[] = [
     name: 'Vị trí cửa hàng',
     icon: <MapPin />,
     href: '/dashboard/address',
-  },
-];
-const menuAccount: MenuItem[] = [
-  {
-    id: 1,
-    name: 'Website',
-    icon: <ArrowDownLeft />,
-    href: '/',
   },
 ];
 
@@ -219,22 +210,6 @@ const Sidebar = () => {
             ))}
           </div>
         </section>
-        <div className="space-y-1">
-          <div className="py-1.5 pl-2 text-xs font-medium text-ui-fg-muted">
-            Khác
-          </div>
-          <div>
-            {menuAccount.map(item => (
-              <ItemSidebar
-                key={item.id}
-                href={item.href}
-                id={item.id}
-                name={item.name}
-                icon={item.icon}
-              />
-            ))}
-          </div>
-        </div>
       </nav>
     </aside>
   );
