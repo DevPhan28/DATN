@@ -117,6 +117,7 @@ function DetailProduct() {
     }
 
     try {
+      console.log('Product ID being sent:', product._id);
       // Call createComment mutation with rating
       createComment.mutate({
         productId: product._id,
@@ -749,22 +750,6 @@ function DetailProduct() {
                           defaultValue={''}
                         />
                       </div>
-
-                      {/* <div className="form-check mb-4">
-                        <input
-                          className="form-check-input form-check-input_fill"
-                          type="checkbox"
-                          defaultValue
-                          id="remember_checkbox"
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="remember_checkbox"
-                        >
-                          Save my name, email, and website in this browser for
-                          the next time I comment.
-                        </label>
-                      </div> */}
                       <div className="form-action">
                         <button
                           type="submit"

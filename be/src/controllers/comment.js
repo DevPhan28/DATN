@@ -74,7 +74,31 @@ const getCommentsByProduct = async (req, res) => {
     });
   }
 };
+const checkReviewedProducts = async (req, res) => {
+  const { productIds } = req.body; // Lấy danh sách productId từ request body
 
+  try {
+    const reviewedProducts = await Comment.find({
+      productId: { $in: productIds },
+    }).distinct('productId'); // Lấy danh sách các productId đã có comment
+
+    if (!reviewedProducts || reviewedProducts.length === 0) {
+      return res.status(404).json({
+        message: 'Không có sản phẩm nào đã được đánh giá',
+      });
+    }
+
+    res.status(200).json({
+      message: 'Danh sách sản phẩm đã được đánh giá',
+      reviewedProducts, // Trả về danh sách các productId đã có comment
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Lỗi khi kiểm tra sản phẩm đã được đánh giá',
+      error: error.message,
+    });
+  }
+};
 const deleteComment = async (req, res) => {
   const { commentId } = req.params;
   const { userId, role } = req.user;
@@ -124,4 +148,5 @@ module.exports = {
   getCommentsByProduct,
   deleteComment,
   deleteCommentByAdmin,
+  checkReviewedProducts
 };
