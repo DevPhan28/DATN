@@ -113,13 +113,13 @@ function OrderList() {
 
   const handleStatusChange = (orderId, newStatus, currentStatus) => {
     const validStatuses =
-    selectedGroup === 'delivery'
-    ? deliveryStatuses.map((status) => status.value)
-    : selectedGroup === 'complaint'
-    ? complaintStatuses.map((status) => status.value)
-    : selectedGroup === 'refund'
-    ? refundStatuses.map((status) => status.value)
-    : [];
+      selectedGroup === 'delivery'
+        ? deliveryStatuses.map(status => status.value)
+        : selectedGroup === 'complaint'
+          ? complaintStatuses.map(status => status.value)
+          : selectedGroup === 'refund'
+            ? refundStatuses.map(status => status.value)
+            : [];
 
     if (!validStatuses.includes(newStatus)) {
       toast.error('Trạng thái không hợp lệ cho nhóm hiện tại.');
@@ -131,20 +131,21 @@ function OrderList() {
         newStatus
       )
     )
-
-    if (
-      (currentStatus === 'refund_in_progress' &&
-        newStatus !== 'refund_completed') ||
-      (currentStatus === 'refund_completed' &&
-        newStatus !== 'refund_in_progress') ||
-      (currentStatus === 'exchange_in_progress' &&
-        newStatus !== 'exchange_completed') ||
-      (currentStatus === 'exchange_completed' &&
-        newStatus !== 'exchange_in_progress')
-    ) {
-      toast.error('Trạng thái không hợp lệ trong quá trình hoàn trả/đổi trả.');
-      return;
-    }
+      if (
+        (currentStatus === 'refund_in_progress' &&
+          newStatus !== 'refund_completed') ||
+        (currentStatus === 'refund_completed' &&
+          newStatus !== 'refund_in_progress') ||
+        (currentStatus === 'exchange_in_progress' &&
+          newStatus !== 'exchange_completed') ||
+        (currentStatus === 'exchange_completed' &&
+          newStatus !== 'exchange_in_progress')
+      ) {
+        toast.error(
+          'Trạng thái không hợp lệ trong quá trình hoàn trả/đổi trả.'
+        );
+        return;
+      }
     setIsLoading(true);
 
     updateOrderStatus.mutate(
@@ -171,7 +172,10 @@ function OrderList() {
 
   const filteredOrders = listOrder?.filter(order => {
     if (selectedGroup === 'refund') {
-      return ['refund_initiated', 'refund_done'].includes(order.status) && order.paymentMethod === 'online';
+      return (
+        ['refund_initiated', 'refund_done'].includes(order.status) &&
+        order.paymentMethod === 'online'
+      );
     }
     if (selectedTab === 'all-delivery') {
       if (selectedGroup === 'delivery') {
@@ -263,12 +267,12 @@ function OrderList() {
         </button>
       </div>
       <div className="m-6 flex justify-start space-x-4 rounded-lg border bg-white px-6 py-4">
-      {(selectedGroup === 'delivery'
+        {(selectedGroup === 'delivery'
           ? deliveryTabs
           : selectedGroup === 'complaint'
-          ? complaintTabs
-          : refundTabs
-        ).map((tab) => (
+            ? complaintTabs
+            : refundTabs
+        ).map(tab => (
           <button
             key={tab.id}
             onClick={() => setSelectedTab(tab.id)}
@@ -375,9 +379,9 @@ function OrderList() {
                       <span>Thanh toán khi nhận</span>
                     ) : order.paymentStatus === 'pendingRefund' ? (
                       <span>Chờ hoàn tiền</span>
-                    ): order.paymentStatus === 'doneRefund' ? (
+                    ) : order.paymentStatus === 'doneRefund' ? (
                       <span>Đã hoàn tiền</span>
-                    ):(
+                    ) : (
                       order.paymentStatus
                     )}
                   </Table.Cell>
@@ -391,13 +395,13 @@ function OrderList() {
                           order.status
                         )
                       }
-                      className="w-full min-w-[150px] rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-gray-700"
+                      className="w-full min-w-[150px] cursor-pointer rounded-md border border-gray-300 bg-white px-2 py-1 text-sm text-gray-700"
                     >
                       {(selectedGroup === 'delivery'
                         ? deliveryStatuses
                         : selectedGroup === 'complaint'
-                        ? complaintStatuses
-                        : refundStatuses
+                          ? complaintStatuses
+                          : refundStatuses
                       ).map(status => {
                         const isDisabled =
                           order.status === 'pendingPayment' ||
@@ -407,14 +411,12 @@ function OrderList() {
                           order.status === 'exchange_completed' ||
                           (selectedGroup === 'delivery' &&
                             !(
-                              (
-                                isNextDeliveryStatusValid(
-                                  order.status,
-                                  status.value
-                                ) ||
-                                (order.status === 'pending' &&
-                                  status.value === 'canceled')
-                              )
+                              isNextDeliveryStatusValid(
+                                order.status,
+                                status.value
+                              ) ||
+                              (order.status === 'pending' &&
+                                status.value === 'canceled')
                             )) ||
                           (order.status === 'refund_in_progress' &&
                             status.value !== 'refund_completed') ||
@@ -424,8 +426,8 @@ function OrderList() {
                             status.value !== 'refund_in_progress' &&
                             status.value !== 'exchange_in_progress' &&
                             status.value !== 'delivered') ||
-                            (order.status === 'refund_done' &&
-                              status.value === 'refund_initiated');
+                          (order.status === 'refund_done' &&
+                            status.value === 'refund_initiated');
                         return (
                           <option
                             key={status.value}

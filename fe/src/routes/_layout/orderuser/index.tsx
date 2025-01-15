@@ -229,13 +229,13 @@ function UserOrder() {
 
       // Đóng box review
       handleCloseReviewBox();
-       // Hiển thị thông báo "Cảm ơn bạn đã đánh giá"
-    setShowThankYouMessage(true);
+      // Hiển thị thông báo "Cảm ơn bạn đã đánh giá"
+      setShowThankYouMessage(true);
 
-    // Đặt thời gian để ẩn thông báo sau vài giây (ví dụ 3 giây)
-    setTimeout(() => {
-      setShowThankYouMessage(false);
-    }, 3000);
+      // Đặt thời gian để ẩn thông báo sau vài giây (ví dụ 3 giây)
+      setTimeout(() => {
+        setShowThankYouMessage(false);
+      }, 3000);
     } catch (err) {
       toast.error(err.message);
     }
@@ -384,18 +384,21 @@ function UserOrder() {
         <CustomUser />
 
         <div className="ml-6 w-3/4">
-          <div className="mb-2 flex flex-wrap justify-start rounded-sm border-[0.5px] border-b border-gray-200 bg-white shadow sm:space-x-0">
+          <div className="mb-2 flex flex-wrap justify-between rounded-sm border-[0.5px] border-b border-gray-200 bg-white shadow sm:space-x-0">
             {tabs.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setSelectedTab(tab.id)}
-                className={`px-2 py-2 text-gray-700 sm:px-4 ${
+                className={`px-2 py-2 text-[15px] sm:px-4 ${
                   selectedTab === tab.id
                     ? 'border-b-2 border-red-500 text-red-600'
                     : ''
                 }`}
               >
-                {tab.label}
+                {tab.label}{' '}
+                {tab.id !== 'all' && tab.id !== 'pendingPayment' && (
+                  <span className="text-red-600">({tab.id.length})</span>
+                )}
               </button>
             ))}
           </div>
@@ -568,10 +571,10 @@ function UserOrder() {
                             )}
                           </span>
                           {showThankYouMessage && (
-  <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-4 rounded-lg shadow-lg">
-    Cảm ơn bạn đã đánh giá!
-  </div>
-)}
+                            <div className="fixed bottom-5 left-1/2 -translate-x-1/2 transform rounded-lg bg-green-500 p-4 text-white shadow-lg">
+                              Cảm ơn bạn đã đánh giá!
+                            </div>
+                          )}
                           {order.status === 'delivered' &&
                             !reviewedProductIds.includes(item.productId) && (
                               <button
@@ -693,7 +696,7 @@ function UserOrder() {
 
       {/* Complaint Modal */}
       {showComplaintModal && (
-        <div className="fixed inset-0 flex items-center justify-center  bg-gray-600 bg-opacity-50 ">
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-600 bg-opacity-50">
           <div className="rounded-lg bg-white p-6 shadow-md">
             <h2 className="mb-4 text-lg font-semibold">
               Tình huống bạn đang gặp?
