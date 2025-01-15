@@ -52,7 +52,7 @@ const menuCoupon: MenuItem[] = [
 const menuBlog: MenuItem[] = [
   {
     id: 1,
-    name: 'Danh sách blog',
+    name: 'Danh sách bài viết',
     icon: <Pencil />,
     href: '/dashboard/blog',
   },
@@ -60,7 +60,7 @@ const menuBlog: MenuItem[] = [
 const menuRevenue: MenuItem[] = [
   {
     id: 1,
-    name: 'Tổng doanh thu',
+    name: 'Doanh thu',
     icon: <CurrencyDollar />,
     href: '/dashboard/revenue',
   },
@@ -148,7 +148,7 @@ const Sidebar = () => {
         </section>
         <section className="space-y-1">
           <header className="py-1.5 pl-2 text-xs font-medium text-ui-fg-muted">
-            Blog
+            Bài viết
           </header>
           <div>
             {menuBlog.map(item => (
@@ -164,7 +164,7 @@ const Sidebar = () => {
         </section>
         <section className="space-y-1">
           <header className="py-1.5 pl-2 text-xs font-medium text-ui-fg-muted">
-            Tổng doanh thu
+            Doanh thu
           </header>
           <div>
             {menuRevenue.map(item => (

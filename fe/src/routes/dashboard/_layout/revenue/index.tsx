@@ -61,7 +61,10 @@ function Revenue() {
     0
   );
   const deliveredRevenue = listOrder
-    .filter(order => order.status === 'delivered')
+    .filter(
+      order =>
+        order.status === 'delivered' || order.status === 'exchange_completed'
+    )
     .reduce((acc, curr) => acc + curr.totalPrice, 0);
 
   const deliveredPercentage = Math.round(
@@ -69,7 +72,10 @@ function Revenue() {
   );
 
   const canceledRevenue = listOrder
-    .filter(order => order.status === 'canceled')
+    .filter(
+      order =>
+        order.status === 'canceled' || order.status === 'refund_completed'
+    )
     .reduce((acc, curr) => acc + curr.totalPrice, 0);
 
   const canceledPercentage = Math.round(
@@ -82,10 +88,11 @@ function Revenue() {
   ];
   const totalOrders = listOrder.length;
   const deliveredOrders = listOrder.filter(
-    order => order.status === 'delivered'
+    order =>
+      order.status === 'delivered' || order.status === 'exchange_completed'
   ).length;
   const canceledOrders = listOrder.filter(
-    order => order.status === 'canceled'
+    order => order.status === 'canceled' || order.status === 'refund_completed'
   ).length;
 
   const successPercentage =
@@ -98,7 +105,10 @@ function Revenue() {
     { name: 'Thất bại', value: failurePercentage },
   ];
   const totalRevenue = listOrder
-    .filter(order => order.status === 'delivered')
+    .filter(
+      order =>
+        order.status === 'delivered' || order.status === 'exchange_completed'
+    )
     .map(order => order.totalPrice)
     .reduce((acc, curr) => acc + curr, 0);
 
@@ -107,7 +117,7 @@ function Revenue() {
   const renderLabel = ({ name, value }) => `${value}%`;
   return (
     <div className="h-screen overflow-y-scroll">
-      <Header title="Tổng Doanh Thu" />
+      <Header title="Doanh Thu" />
       <div className="flex flex-col gap-1 rounded-lg px-6 py-4">
         {/* Main Container */}
         <div className="grid grid-cols-12 gap-3">
