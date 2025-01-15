@@ -55,11 +55,22 @@ const DashboardNew = () => {
         if (!revenueByDay[day]) {
           revenueByDay[day] = { revenue: 0, delivered: 0, canceled: 0 };
         }
+
+        // Cộng doanh thu
         revenueByDay[day].revenue += order.totalPrice;
 
-        if (order.status === 'delivered') {
+        // Xử lý trạng thái đơn hàng
+        if (
+          order.status === 'delivered' ||
+          order.status === 'exchange_completed' // Doanh thu của `exchange_completed` cũng được tính vào `delivered`
+        ) {
           revenueByDay[day].delivered++;
-        } else if (order.status === 'canceled') {
+        }
+
+        if (
+          order.status === 'canceled' ||
+          order.status === 'refund_completed' // Hủy đơn cũng tính cả trạng thái `refund_completed`
+        ) {
           revenueByDay[day].canceled++;
         }
       }
@@ -78,7 +89,6 @@ const DashboardNew = () => {
 
     setDailyRevenueData(chartData);
   }, [listOrder]);
-
   if (orderLoading) return <p>Loading...</p>;
   if (orderError) return <p>Error: {orderError.message}</p>;
 

@@ -396,9 +396,19 @@ function UserOrder() {
                 }`}
               >
                 {tab.label}{' '}
-                {tab.id !== 'all' && tab.id !== 'pendingPayment' && (
-                  <span className="text-red-600">({tab.id.length})</span>
-                )}
+                <span className="count">
+                  {tab.id !== 'delivered' &&
+                    orders.filter(order => {
+                      if (tab.id === 'all') return true; // Tab 'Tất cả' đếm tất cả các đơn hàng
+                      return order.status === tab.id; // Tab cụ thể đếm theo trạng thái
+                    }).length > 0 &&
+                    `(${
+                      orders.filter(order => {
+                        if (tab.id === 'all') return true;
+                        return order.status === tab.id;
+                      }).length
+                    })`}
+                </span>
               </button>
             ))}
           </div>
