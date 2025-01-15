@@ -396,7 +396,6 @@ function UserOrder() {
                 }`}
               >
                 {tab.label}{' '}
-<<<<<<< Updated upstream
                 <span className="count text-red-600">
                   {tab.id !== 'delivered' &&
                     orders.filter(order => {
@@ -410,11 +409,6 @@ function UserOrder() {
                       }).length
                     })`}
                 </span>
-=======
-                {tab.id !== 'all' && tab.id !== 'pendingPayment' && (
-                  <span className="text-red-600">({tab.id.length})</span>
-                )}
->>>>>>> Stashed changes
               </button>
             ))}
           </div>
