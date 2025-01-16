@@ -5,16 +5,16 @@ const User = require("../models/user");
 const Order = require("../models/order");
 
 const addComment = async (req, res) => {
-  const { commentText, rating, userId, productSlug, orderId, productId } = req.body;
+  const { commentText, rating, userId, productSlug, orderId, ProductId } = req.body;
 
   // Kiểm tra các trường bắt buộc
-  if (!productSlug || !commentText || !rating || !userId || !orderId || productId) {
+  if (!productSlug || !commentText || !rating || !userId || !orderId || !ProductId) {
     return res.status(400).json({ message: "Thiếu các trường bắt buộc" });
   }
 
   try {
     // Kiểm tra xem người dùng có bình luận cho sản phẩm trong đơn hàng này chưa
-    const existingComment = await Comment.findOne({ userId, orderId, productSlug});
+    const existingComment = await Comment.findOne({ userId, orderId, productSlug });
     if (existingComment) {
       return res.status(400).json({ message: 'Bạn đã bình luận cho đơn hàng này rồi' });
     }
@@ -22,7 +22,7 @@ const addComment = async (req, res) => {
     // Kiểm tra xem người dùng và đơn hàng có tồn tại không
     const user = await User.findById(userId);
     const order = await Order.findById(orderId);
-    // const productId = await Product.findById(productId);
+    const productId = await Product.findById(ProductId);
 
     if (!user || !order) {
       return res.status(404).json({ message: "Không tìm thấy người dùng hoặc đơn hàng" });
@@ -40,13 +40,13 @@ const addComment = async (req, res) => {
     }
 
     // Tạo bình luận mới
-    const newComment = new Comment({
-      productId,
+    const newComment = new Comment({ 
       userId,
       commentText,
       rating,
       productSlug,  
-      orderId,                
+      orderId,   
+      productId,             
     });
 
     await newComment.save();

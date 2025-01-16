@@ -140,7 +140,7 @@ function UserOrder() {
     setProductSlug(product.slug)
     setProductId(product.productId)
   };
-  console.log("id", OrderId);
+  console.log("id", ProductId);
 
   const handleCloseReviewBox = () => {
     document.body.style.overflow = 'auto';
@@ -251,7 +251,7 @@ function UserOrder() {
         commentText: newComment, // Nội dung bình luận
         userId: localStorage.getItem('userId') || '', // Lấy userId từ localStorage
         rating,
-        productId: ProductId,
+        ProductId: ProductId,
       });
   
       // Log phản hồi từ backend để kiểm tra (nếu cần)

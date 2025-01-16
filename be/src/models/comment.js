@@ -32,10 +32,10 @@ const commentSchema = new mongoose.Schema(
       ref: "Order", // Liên kết đến đơn hàng
       required: true, // Lưu ID của đơn hàng
     },
-    ProductId: {
+    productId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Product", // Liên kết đến đơn hàng
-      required: true, // Lưu ID của đơn hàng
+      ref: "Product",
+      required: true, 
     },
   },
   { timestamps: true, versionKey: false }

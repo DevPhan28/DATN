@@ -17,18 +17,6 @@ const useCommentMutation = () => {
 
     onSuccess: async response => {
       const { productId } = response.data; // Lấy productId từ phản hồi
-
-      // Kiểm tra nếu productId không tồn tại trong phản hồi từ backend
-      if (!productId) {
-        toast.error('Product ID missing in response from server.');
-        return;
-      }
-
-      toast.success('Comment added successfully!', {
-        description: 'Your comment has been posted.',
-        duration: 1000,
-      });
-
       // Refresh comments data cho sản phẩm
       await queryClient.invalidateQueries({
         queryKey: [QUERY_KEY.FETCH_COMMENT_BY_PRODUCT, productId],
