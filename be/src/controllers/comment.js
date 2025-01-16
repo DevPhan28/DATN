@@ -5,44 +5,56 @@ const User = require("../models/user");
 const Order = require("../models/order");
 
 const addComment = async (req, res) => {
-  const { productId, content, rating, userId } = req.body;
-  if (!productId || !content || !userId) {
+  const { commentText, rating, userId, productSlug, orderId, productId } = req.body;
+
+  // Kiểm tra các trường bắt buộc
+  if (!productSlug || !commentText || !rating || !userId || !orderId || productId) {
     return res.status(400).json({ message: "Thiếu các trường bắt buộc" });
-  }
-  const existingComment = await Comment.findOne({ userId, productId });
-  if (existingComment) {
-    return res.status(400).json({ message: 'Bạn đã bình luận sản phẩm này rồi' });
   }
 
   try {
-    const product = await Product.findById(productId);
+    // Kiểm tra xem người dùng có bình luận cho sản phẩm trong đơn hàng này chưa
+    const existingComment = await Comment.findOne({ userId, orderId, productSlug});
+    if (existingComment) {
+      return res.status(400).json({ message: 'Bạn đã bình luận cho đơn hàng này rồi' });
+    }
+
+    // Kiểm tra xem người dùng và đơn hàng có tồn tại không
     const user = await User.findById(userId);
+    const order = await Order.findById(orderId);
+    // const productId = await Product.findById(productId);
 
-    if (!product || !user) {
-      return res.status(404).json({ message: "Không tìm thấy sản phẩm hoặc người dùng" });
+    if (!user || !order) {
+      return res.status(404).json({ message: "Không tìm thấy người dùng hoặc đơn hàng" });
     }
 
-    const order = await Order.findOne({
-      userId,
-      "items.productId": productId, 
-      status: { $in: ["delivered", "received"] }, 
-    });
-
-    if (!order) {
-      return res.status(400).json({ message: "Bạn cần mua sản phẩm trước khi bình luận" });
+    // Kiểm tra trạng thái của đơn hàng (phải là 'delivered' hoặc 'received')
+    if (!["delivered", "received"].includes(order.status)) {
+      return res.status(400).json({ message: "Bạn cần nhận đơn hàng trước khi bình luận" });
     }
+
+    // Kiểm tra xem sản phẩm có trong đơn hàng hay không
+    const product = order.items.find(item => item.slug === productSlug);
+    if (!product) {
+      return res.status(400).json({ message: "Sản phẩm này không có trong đơn hàng" });
+    }
+
+    // Tạo bình luận mới
     const newComment = new Comment({
       productId,
       userId,
-      commentText: content,
+      commentText,
       rating,
+      productSlug,  
+      orderId,                
     });
 
     await newComment.save();
 
     res.status(201).json({
       message: "Bình luận đã được thêm thành công!",
-      productId: productId,
+      orderSlug: productSlug,  
+      orderId: orderId,
     });
   } catch (error) {
     console.error(error);
@@ -73,19 +85,28 @@ const getCommentsByProduct = async (req, res) => {
       error: error.message,
     });
   }
-};
+}; 
 const checkReviewedProducts = async (req, res) => {
-  const { productIds } = req.body; // Lấy danh sách productId từ request body
+  const { data } = req.body;
+
+  if (!data || !Array.isArray(data)) {
+    return res.status(400).json({
+      message: 'Payload không hợp lệ. Cần có mảng chứa orderId và productSlugs.',
+    });
+  }
 
   try {
+    // Tìm các sản phẩm đã được đánh giá
     const reviewedProducts = await Comment.find({
-      productId: { $in: productIds },
-    }).distinct('productId'); // Lấy danh sách các productId đã có comment
-
+      $or: data.map(item => ({
+        orderId: item.orderId,
+        productSlug: { $in: item.productSlugs },
+      })),
+    }).select('orderId productSlug -_id'); // Chỉ lấy orderId và productSlug
 
     res.status(200).json({
       message: 'Danh sách sản phẩm đã được đánh giá',
-      reviewedProducts, // Trả về danh sách các productId đã có comment
+      reviewedProducts,
     });
   } catch (error) {
     res.status(500).json({
@@ -94,6 +115,7 @@ const checkReviewedProducts = async (req, res) => {
     });
   }
 };
+
 const deleteComment = async (req, res) => {
   const { commentId } = req.params;
   const { userId, role } = req.user;

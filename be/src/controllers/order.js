@@ -319,7 +319,7 @@ const getOrdersByUserId = async (req, res) => {
 const updateOrder = async (req, res) => {
   try {
     const { orderId } = req.params;
-    const { status } = req.body;
+    let { status } = req.body;
 
     const order = await Order.findById(orderId);
 
@@ -355,11 +355,16 @@ const updateOrder = async (req, res) => {
     if (status === "refund_done" && order.status !== "refund_done") {
       order.paymentStatus = "doneRefund";
     }
+    if (status === "canceled" && order.status !== "canceled") {
+      if(order.paymentMethod === 'online'){
+        order.paymentStatus = "pendingRefund";
+        status = 'refund_initiated'
+      }
+    }
     if (order.status !== status) {
       order.statusHistory.push(order.status);
       order.status = status;
       await order.save();
-      console.log("Order status updated and saved.");
     }
 
     const Id = new ObjectId(order.userId);

@@ -80,41 +80,67 @@ function UserOrder() {
   const [isReviewBoxVisible, setReviewBoxVisible] = useState(false);
   const [rating, setRating] = useState(0); // State for product rating
   const [newComment, setNewComment] = useState('');
-  const { createComment, removeComment } = useCommentMutation();
+  const { createComment } = useCommentMutation();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [reviewedProductIds, setReviewedProductIds] = useState([]);
   const [showThankYouMessage, setShowThankYouMessage] = useState(false);
-
-  const checkReviewedProducts = async productIds => {
+  const [OrderId, setOrderId] = useState(null);
+  const [ProductSlug, setProductSlug] = useState(null);
+  const [ProductId, setProductId] = useState(null);
+  const fetchReviewedProducts = async () => {
     try {
-      const response = await instance.post('/comments/check-reviewed', {
-        productIds,
-      });
-      return response.data.reviewedProducts; // Trả về danh sách productId đã được đánh giá
+      if (!orders || orders.length === 0) {
+        console.error('Không có đơn hàng để kiểm tra.');
+        return;
+      }
+  
+      // Tạo payload chỉ chứa các mục hợp lệ
+      const dataToCheck = orders
+        .map(order => ({
+          orderId: order._id,
+          productSlugs: order.items.map(item => item.slug).filter(Boolean), // Lọc productSlugs null hoặc undefined
+        }))
+        .filter(data => data.orderId && data.productSlugs.length > 0); // Lọc các mục không có orderId hoặc productSlugs hợp lệ
+  
+      if (dataToCheck.length === 0) {
+        console.warn('Không có dữ liệu hợp lệ để gửi.');
+        return;
+      }
+  
+      console.log('Payload gửi lên:', { data: dataToCheck });
+  
+      // Gửi dữ liệu đến API
+      const response = await instance.post('/comments/check-reviewed', { data: dataToCheck });
+  
+      const reviewedProducts = response.data.reviewedProducts || [];
+      console.log("Danh sách sản phẩm đã đánh giá:", reviewedProducts);
+  
+      // Cập nhật danh sách đã đánh giá
+      setReviewedProductIds(reviewedProducts.map(item => ({
+        orderId: item.orderId,
+        productSlug: item.productSlug,
+      })));
     } catch (error) {
       console.error('Lỗi khi kiểm tra sản phẩm đã được đánh giá:', error);
-      return [];
     }
   };
+  
 
-  const fetchReviewedProducts = async () => {
-    const productIds = orders.flatMap(order =>
-      order.items.map(item => item.productId)
-    );
-    const reviewedProducts = await checkReviewedProducts(productIds);
-    setReviewedProductIds(reviewedProducts); // Cập nhật lại reviewedProductIds
-  };
 
   useEffect(() => {
     fetchReviewedProducts(); // Cập nhật ngay khi component render hoặc khi orders thay đổi
   }, [orders]);
 
-  const handleOpenReviewBox = product => {
+  const handleOpenReviewBox = (orderId, product) => {
     document.body.style.overflow = 'hidden';
     setReviewBoxVisible(true);
-    console.log('Opening review box for product:', product); // Log thông tin sản phẩm
-    setSelectedProduct(product); // Nếu bạn cần lưu sản phẩm đã chọn để hiển thị
+    setSelectedProduct(product);
+    console.log("product", product.slug);
+    setOrderId(orderId)
+    setProductSlug(product.slug)
+    setProductId(product.productId)
   };
+  console.log("id", OrderId);
 
   const handleCloseReviewBox = () => {
     document.body.style.overflow = 'auto';
@@ -200,47 +226,64 @@ function UserOrder() {
         console.error('Error confirming order:', error);
       });
   };
-  const handleCommentSubmit = async productId => {
+
+  const handleCommentSubmit = async () => {
     if (!newComment.trim()) {
       toast.error('Vui lòng nhập bình luận.');
       return;
     }
-
+  
     if (rating === 0) {
       toast.error('Vui lòng chọn đánh giá sao.');
       return;
     }
-
+  
+    if (!OrderId || !ProductSlug) {
+      toast.error('Không xác định được đơn hàng hoặc sản phẩm.');
+      return;
+    }
+  
     try {
       // Gọi mutation để tạo bình luận
-      await createComment.mutateAsync({
-        productId: productId,
-        content: newComment,
-        userId: localStorage.getItem('userId') || '',
-        rating: rating,
+      const response = await createComment.mutateAsync({
+        orderId: OrderId, // Truyền ID của đơn hàng
+        productSlug: ProductSlug, // Truyền slug của sản phẩm
+        commentText: newComment, // Nội dung bình luận
+        userId: localStorage.getItem('userId') || '', // Lấy userId từ localStorage
+        rating,
+        productId: ProductId,
       });
-
+  
+      // Log phản hồi từ backend để kiểm tra (nếu cần)
+      console.log('Phản hồi từ backend:', response);
+  
       // Cập nhật lại danh sách các sản phẩm đã được đánh giá
       await fetchReviewedProducts(); // Đảm bảo fetch lại ngay sau khi gửi bình luận thành công
-
+  
       // Reset input và rating sau khi gửi bình luận thành công
       setNewComment('');
       setRating(0);
-
+  
       // Đóng box review
       handleCloseReviewBox();
+  
       // Hiển thị thông báo "Cảm ơn bạn đã đánh giá"
+      toast.success('Cảm ơn bạn đã đánh giá!');
       setShowThankYouMessage(true);
-
+  
       // Đặt thời gian để ẩn thông báo sau vài giây (ví dụ 3 giây)
       setTimeout(() => {
         setShowThankYouMessage(false);
       }, 3000);
     } catch (err) {
-      toast.error(err.message);
+      // Hiển thị lỗi từ backend nếu có
+      console.error('Error submitting comment:', err);
+      toast.error(
+        err?.response?.data?.message || err.message || 'Có lỗi xảy ra khi gửi bình luận.'
+      );
     }
   };
-
+  
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
     setUserId(storedUser?.user?._id || null);
@@ -354,11 +397,6 @@ function UserOrder() {
       setCurrentPage(newPage);
     }
   };
-
-  const total = ordersToDisplay
-    .map(item => (item.price || 0) * (item.quantity || 0))
-    .reduce((sum, price) => sum + price, 0);
-
   return (
     <div className="bg-gray-50">
       <div className="bg-white">
@@ -494,9 +532,7 @@ function UserOrder() {
                             {isReviewBoxVisible && selectedProduct && (
                               <div className="fixed inset-0 flex items-center justify-center backdrop-blur-sm">
                                 <div className="relative z-50 mt-20 w-full max-w-3xl rounded-lg bg-white p-6 shadow-lg">
-                                  <h3 className="text-lg font-semibold">
-                                    Đánh giá sản phẩm
-                                  </h3>
+                                  <h3 className="text-lg font-semibold">Đánh giá sản phẩm</h3>
                                   <div className="mb-0.5 rounded-sm border-gray-200 bg-white px-6 py-3">
                                     <div className="flex items-center space-x-4">
                                       <img
@@ -505,40 +541,30 @@ function UserOrder() {
                                         className="h-16 w-16 rounded-lg object-cover shadow-sm"
                                       />
                                       <div className="flex-1">
-                                        <p className="text-xl font-semibold text-gray-800">
-                                          {selectedProduct.name}
-                                        </p>
+                                        <p className="text-xl font-semibold text-gray-800">{selectedProduct.name}</p>
                                         <p className="text-sm text-gray-600">
-                                          Phân loại hàng: Màu:{' '}
-                                          {selectedProduct.color || ''}{' '}
-                                          {selectedProduct.size
-                                            ? `, Size: ${selectedProduct.size}`
-                                            : ''}
+                                          Phân loại hàng: Màu: {selectedProduct.color || ''}{' '}
+                                          {selectedProduct.size ? `, Size: ${selectedProduct.size}` : ''}
                                         </p>
-                                        <p className="font-medium text-gray-800">
-                                          x{selectedProduct.quantity}
-                                        </p>
+                                        <p className="font-medium text-gray-800">x{selectedProduct.quantity}</p>
                                       </div>
                                     </div>
                                   </div>
-
                                   <div className="product-single__review-form">
-                                    <form name="customer-review-form">
+                                    <form>
                                       <div className="select-star-rating">
                                         <span className="star-rating flex">
                                           Chất lượng sản phẩm:
-                                          {[1, 2, 3, 4, 5].map(star => (
+                                          {[1, 2, 3, 4, 5].map((star) => (
                                             <StarSolid
                                               key={star}
                                               className={`cursor-pointer ${rating >= star ? 'text-orange-300' : 'text-orange-200'}`}
-                                              onClick={() =>
-                                                handleRatingChange(star)
-                                              }
+                                              onClick={() => setRating(star)}
                                             />
                                           ))}
                                         </span>
                                       </div>
-                                      <div className="">
+                                      <div>
                                         <textarea
                                           id="form-input-review"
                                           className="form-control form-control_gray"
@@ -546,14 +572,11 @@ function UserOrder() {
                                           cols={30}
                                           rows={8}
                                           value={newComment}
-                                          onChange={e =>
-                                            setNewComment(e.target.value)
-                                          }
+                                          onChange={(e) => setNewComment(e.target.value)}
                                         />
                                       </div>
                                     </form>
                                   </div>
-
                                   <div className="mt-4 flex justify-end">
                                     <button
                                       onClick={handleCloseReviewBox}
@@ -563,11 +586,7 @@ function UserOrder() {
                                     </button>
                                     <button
                                       type="submit"
-                                      onClick={() =>
-                                        handleCommentSubmit(
-                                          selectedProduct.productId
-                                        )
-                                      } // Gửi đúng productId của sản phẩm được chọn
+                                      onClick={handleCommentSubmit}
                                       className="rounded-md bg-[#ee4d2d] px-4 py-2 text-white"
                                     >
                                       Gửi đánh giá
@@ -583,17 +602,20 @@ function UserOrder() {
                             </div>
                           )}
                           {order.status === 'delivered' &&
-                            !reviewedProductIds.includes(item.productId) && (
+                            (!reviewedProductIds || reviewedProductIds.length === 0 ||
+                              !reviewedProductIds.some(
+                                reviewed => reviewed.orderId === order._id && reviewed.productSlug === item.slug
+                              )) && (
                               <button
-                                onClick={() => handleOpenReviewBox(item)} // Truyền đúng sản phẩm item vào hàm
+                                onClick={() => handleOpenReviewBox(order._id, item)}
                                 className="mr-2 rounded-md border-[1px] border-[#ee4d2d] px-4 py-2 text-[#ee4d2d] hover:border-red-600"
                               >
                                 Đánh giá sản phẩm
                               </button>
                             )}
+
                         </div>
                       ))}
-
                       <div className="border-t border-dotted border-gray-200">
                         <div className="flex items-center justify-end pt-3">
                           <div className="w-auto">
@@ -617,16 +639,6 @@ function UserOrder() {
                             Thanh Toán Lại
                           </button>
                         )}
-                        {/* {order.status === 'delivered' &&
-                          order.items.map(item => (
-                            <Link
-                              key={item.productId}
-                              to={`/${CreateSlugByTitle(item.name)}/quickviewProduct#comments-section`}
-                              className="mr-2 rounded-md border-[1px] border-red-500 px-4 py-2 text-red-500 hover:border-red-600"
-                            >
-                              Đánh giá sản phẩm {item.name}
-                            </Link>
-                          ))} */}
                         {order.status === 'pending' && (
                           <button
                             onClick={() => deleteEntity(order._id)}

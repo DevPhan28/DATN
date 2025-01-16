@@ -1,4 +1,3 @@
-// models/comment.js
 const mongoose = require("mongoose");
 
 const commentSchema = new mongoose.Schema(
@@ -10,13 +9,8 @@ const commentSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: false,  // Email có thể có hoặc không, tùy thuộc vào việc có gửi lên từ frontend hay không
-      select: false,    // Không trả về email khi query Comment
-    },
-    productId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product", // Liên kết đến sản phẩm
-      required: true,
+      required: false,
+      select: false,
     },
     commentText: {
       type: String,
@@ -28,7 +22,21 @@ const commentSchema = new mongoose.Schema(
       required: true,
       min: 1,
       max: 5, // Giá trị đánh giá từ 1 đến 5 sao
-    }
+    },
+    productSlug: {
+      type: String,
+      required: true, // Lưu slug của đơn hàng
+    },
+    orderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Order", // Liên kết đến đơn hàng
+      required: true, // Lưu ID của đơn hàng
+    },
+    ProductId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product", // Liên kết đến đơn hàng
+      required: true, // Lưu ID của đơn hàng
+    },
   },
   { timestamps: true, versionKey: false }
 );

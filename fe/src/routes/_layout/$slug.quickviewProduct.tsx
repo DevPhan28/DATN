@@ -739,44 +739,6 @@ function DetailProduct() {
                       <p>Chưa có bình luận nào</p>
                     )}
                   </div>
-                  <div className="product-single__review-form">
-                    <form name="customer-review-form">
-                      <h5>Hãy đánh giá “{product.name}”</h5>
-                      <div className="select-star-rating">
-                        {/* <label>Your rating *</label> */}
-                        <span className="star-rating flex">
-                          {[1, 2, 3, 4, 5].map(star => (
-                            <StarSolid
-                              key={star}
-                              className={`cursor-pointer ${rating >= star ? 'text-orange-300' : 'text-orange-200'}`}
-                              onClick={() => handleRatingChange(star)}
-                            />
-                          ))}
-                        </span>
-                      </div>
-                      <div className="mb-4">
-                        <textarea
-                          id="form-input-review"
-                          className="form-control form-control_gray"
-                          placeholder="Đánh giá của bạn"
-                          cols={30}
-                          rows={8}
-                          value={newComment}
-                          onChange={e => setNewComment(e.target.value)}
-                          defaultValue={''}
-                        />
-                      </div>
-                      <div className="form-action">
-                        <button
-                          type="submit"
-                          onClick={handleCommentSubmit}
-                          className="btn btn-primary"
-                        >
-                          Đăng bình luận
-                        </button>
-                      </div>
-                    </form>
-                  </div>
                 </div>
               </div>
             </div>
