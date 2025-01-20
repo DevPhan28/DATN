@@ -41,25 +41,25 @@ function ExchangeRequestPage() {
     const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
     const userId = storedUser?.user?._id;
     const userEmail = storedUser?.user?.email;
-
-    if (userEmail) setEmail(userEmail);
+    
+    if (userEmail) {
+      setEmail(userEmail);
+    }
+  
     if (!userId || !orderId) {
-      toast.error('Không tìm thấy thông tin người dùng hoặc đơn hàng.');
+      console.error('userId hoặc orderId không tồn tại');
       return;
     }
-
+  
     const fetchOrder = async () => {
       setLoading(true);
       try {
+        // Gọi API lấy thông tin đơn hàng theo userId và orderId
         const response = await instance.get(`/orders/${userId}/${orderId}`);
         console.log('Dữ liệu trả về từ API:', response.data);
-
-        if (
-          response.data &&
-          response.data.data &&
-          response.data.data.length > 0
-        ) {
-          setOrder(response.data.data[0]); // Gán đơn hàng đầu tiên vào state
+  
+        if (response.data && response.data.data) {
+          setOrder(response.data.data); // Gán dữ liệu đơn hàng vào state
         } else {
           setOrder(null); // Nếu không có dữ liệu hợp lệ, set null
         }
@@ -70,9 +70,9 @@ function ExchangeRequestPage() {
         setLoading(false);
       }
     };
-
+  
     fetchOrder();
-  }, [orderId]);
+  }, [orderId, navigate]);
 
   const handleSubmit = async () => {
     if (!reason) {

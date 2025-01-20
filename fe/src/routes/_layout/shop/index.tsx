@@ -1,16 +1,15 @@
+import instance from '@/api/axiosIntance';
 import CurrencyVND from '@/components/config/vnd';
+import FilterBar from '@/components/FilterBar';
 import useCartMutation from '@/data/cart/useCartMutation';
 import {
   useFetchCategory,
   useFetchProductAll,
 } from '@/data/products/useProductList';
 import { ChevronLeft, ChevronRight, StarSolid } from '@medusajs/icons';
-import { toast } from '@medusajs/ui';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import anhbanershop from '../../../assets/images/shop/shop_banner_character1.png';
-import instance from '@/api/axiosIntance';
-import FilterBar from '@/components/FilterBar';
 export const Route = createFileRoute('/_layout/shop/')({
   component: Shop,
 });
@@ -83,14 +82,12 @@ function Shop() {
     };
 
     filterProducts();
-    
   }, [selectedCategory, searchTerm, listProduct]);
   const displayedProducts =
     filteredProducts.length > 0 ? filteredProducts : listProduct;
 
   const handleFilterChange = (filtered: Product[]) => {
     setFilteredProducts(filtered);
-   
   };
   useEffect(() => {
     if (product) {
@@ -106,7 +103,7 @@ function Shop() {
           );
           const average = totalRating / response.data.length;
           setAverageRating(average); // Cập nhật số sao trung bình
-        } catch (err) {}
+        } catch (err) { }
       };
       fetchComments();
     }
@@ -148,7 +145,7 @@ function Shop() {
                 </div>
                 <div className="shop-banner__content position-absolute start-50 top-50 translate-middle container">
                   <h2 className="stroke-text h1 smooth-16 text-uppercase fw-bold mb-xl-4 mb-xl-5 mb-3">
-                    Jackets &amp; Coats
+                    Thời trang &amp; giá rẻ
                   </h2>
                   <ul className="d-flex list-unstyled text-uppercase h6 flex-wrap">
                     <li
@@ -156,7 +153,7 @@ function Shop() {
                       className="me-xl-4 me-3 pe-1"
                     >
                       <a
-                       
+
                         className="menu-link menu-link_us-s menu-link_active"
                       >
                         Tất Cả
@@ -203,7 +200,7 @@ function Shop() {
                     aria-expanded="true"
                     aria-controls="accordion-filter-1"
                   >
-                    Product Categories
+                    Danh Mục sản phẩm
                     <svg
                       className="accordion-button__icon type2"
                       viewBox="0 0 10 6"
@@ -259,7 +256,7 @@ function Shop() {
                   href="#"
                   className="menu-link menu-link_us-s text-uppercase fw-medium"
                 >
-                  Home
+                  Trang chủ
                 </a>
                 <span className="breadcrumb-separator menu-link fw-medium pe-1 ps-1">
                   /
@@ -268,74 +265,10 @@ function Shop() {
                   href="#"
                   className="menu-link menu-link_us-s text-uppercase fw-medium"
                 >
-                  The Shop
+                  Cửa hàng
                 </a>
               </div>
               {/* /.breadcrumb */}
-              <div className="shop-acs d-flex align-items-center justify-content-between justify-content-md-end flex-grow-1">
-                <select
-                  className="shop-acs__select form-select order-md-0 order-1 w-auto border-0 py-0"
-                  aria-label="Sort Items"
-                  name="total-number"
-                >
-                  <option selected>Default Sorting</option>
-                  <option value={1}>Featured</option>
-                  <option value={2}>Best selling</option>
-                  <option value={3}>Alphabetically, A-Z</option>
-                  <option value={3}>Alphabetically, Z-A</option>
-                  <option value={3}>Price, low to high</option>
-                  <option value={3}>Price, high to low</option>
-                  <option value={3}>Date, old to new</option>
-                  <option value={3}>Date, new to old</option>
-                </select>
-                <div className="shop-asc__seprator bg-light d-none d-md-block order-md-0 mx-3" />
-                <div className="col-size align-items-center d-none d-lg-flex order-1">
-                  <span className="text-uppercase fw-medium me-2">View</span>
-                  <button
-                    className="btn-link fw-medium js-cols-size me-2"
-                    data-target="products-grid"
-                    data-cols={2}
-                  >
-                    2
-                  </button>
-                  <button
-                    className="btn-link fw-medium js-cols-size me-2"
-                    data-target="products-grid"
-                    data-cols={3}
-                  >
-                    3
-                  </button>
-                  <button
-                    className="btn-link fw-medium js-cols-size"
-                    data-target="products-grid"
-                    data-cols={4}
-                  >
-                    4
-                  </button>
-                </div>
-                {/* /.col-size */}
-                <div className="shop-filter d-flex align-items-center order-0 order-md-3 d-lg-none">
-                  <button
-                    className="btn-link btn-link_f d-flex align-items-center js-open-aside ps-0"
-                    data-aside="shopFilter"
-                  >
-                    <svg
-                      className="d-inline-block me-2 align-middle"
-                      width={14}
-                      height={10}
-                      viewBox="0 0 14 10"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <use href="#icon_filter" />
-                    </svg>
-                    <span className="text-uppercase fw-medium d-inline-block align-middle">
-                      Filter
-                    </span>
-                  </button>
-                </div>
-                {/* /.col-size d-flex align-items-center ms-auto ms-md-3 */}
-              </div>
               {/* /.shop-acs */}
             </div>
             {/* /.d-flex justify-content-between */}
@@ -383,7 +316,7 @@ function Shop() {
                         </Link>
                       </div>
                       <div className="pc__info position-relative">
-                        <h6 className="pc__title capitalize">
+                        <h6 className="pc__title text-[16px] capitalize">
                           <a
                             href={`${product.slug ? product.slug : product._id}/quickviewProduct`}
                           >
@@ -396,7 +329,7 @@ function Shop() {
                             <CurrencyVND amount={product.price} />
                           </span>
                         </div>
-                        <div className="product-card__review d-flex align-items-center">
+                        {/* <div className="product-card__review d-flex align-items-center">
                           <div className="reviews-group d-flex">
                             {[...Array(5)].map((_, index) => (
                               <StarSolid
@@ -408,8 +341,8 @@ function Shop() {
                               {averageRating.toFixed(1)}
                             </span>
                           </div>
-                        
-                        </div>
+
+                        </div> */}
                       </div>
                     </div>
                   </div>

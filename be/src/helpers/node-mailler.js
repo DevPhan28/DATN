@@ -101,6 +101,8 @@ const Mail = {
     refund_completed: 'Hoàn trả hàng thành công',
     exchange_in_progress: 'Đang đổi trả hàng',
     exchange_completed: 'Đổi trả hàng thành công',
+    refund_done: 'Hoàn tiền thành công',
+    refund_initiated: 'Chờ hoàn tiền',
     };
 
     return statusTranslations[status] || status;
